@@ -41,6 +41,7 @@ const CategoriesSection = () => {
   return (
     <section
       className={`
+         hidden md:flex
         py-24 px-6 w-full mx-auto relative
         ${theme.background} ${theme.text}
         transition-colors duration-300

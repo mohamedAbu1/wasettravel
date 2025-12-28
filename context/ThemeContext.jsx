@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import lightTheme from "@/constants/theme/lightTheme";
@@ -13,30 +13,41 @@ export function ThemeProvider({ children }) {
   // Load saved theme
   useEffect(() => {
     const saved = localStorage.getItem("theme") || "light";
-    setThemeName(saved);
-    setTheme(saved === "dark" ? darkTheme : lightTheme);
+    applyTheme(saved);
+  }, []);
 
-    if (saved === "dark") {
+  // Apply theme helper
+  const applyTheme = (mode) => {
+    setThemeName(mode);
+    setTheme(mode === "dark" ? darkTheme : lightTheme);
+
+    // Toggle class for Tailwind dark mode
+    if (mode === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, []);
+
+    // Update CSS variables for global usage
+    document.documentElement.style.setProperty(
+      "--color",
+      mode === "dark" ? "#c9a34a" : "#ffffff"
+    );
+    document.documentElement.style.setProperty(
+      "--foreground",
+      mode === "dark" ? "#ededed" : "#171717"
+    );
+    document.documentElement.style.setProperty(
+      "--background",
+      mode === "dark" ? "#0a0a0a" : "#ffffff"
+    );
+  };
 
   // Toggle theme
   const toggleTheme = () => {
     const newTheme = themeName === "dark" ? "light" : "dark";
-    setThemeName(newTheme);
     localStorage.setItem("theme", newTheme);
-
-    const selectedTheme = newTheme === "dark" ? darkTheme : lightTheme;
-    setTheme(selectedTheme);
-
-    if (newTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    applyTheme(newTheme);
   };
 
   return (

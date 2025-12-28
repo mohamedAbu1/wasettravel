@@ -13,34 +13,42 @@ import {
   FaUmbrellaBeach,
   FaCalendarAlt,
 } from "react-icons/fa";
+import { addDays } from "date-fns";
 import { useTheme } from "@/context/ThemeContext";
-
+import {
+  DatePicker,
+  DesktopDatePicker,
+  LocalizationProvider,
+} from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 const Content = () => {
-  const { theme } = useTheme(); // theme يحتوي على خصائص من lightTheme أو darkTheme
-
-  const [city, setCity] = useState("");
-  const [price, setPrice] = useState("");
-  const [tripType, setTripType] = useState("");
-  const [arrival, setArrival] = useState("");
-  const [departure, setDeparture] = useState("");
+  const { themeName, theme } = useTheme(); // theme يحتوي على خصائص من lightTheme أو darkTheme
+  const [city, setCity] = useState("Luxor");
+  const [price, setPrice] = useState("150");
+  const [tripType, setTripType] = useState("Cultural");
+  const [arrival, setArrival] = useState(addDays(new Date(), 2));
+  const [departure, setDeparture] = useState(addDays(new Date(), 9));
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const handleSearch = () => {
     console.log({ city, price, tripType, arrival, departure });
   };
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 z-30">
+    <div className="hidden md:flex flex-col items-center justify-center text-center px-6 z-30">
       <div className="w-[75%]">
         {/* Company Name */}
-        <h1 className={theme.title} style={{ fontSize: "4.4rem" }}>
+        <h1
+          className={theme.title}
+          style={{ fontSize: "4.4rem", opacity: "0" }}
+        >
           WasetTravel
         </h1>
 
         <p
           className={`text-xl md:text-2xl mt-6 leading-relaxed ${theme.subText} animate-slideUp`}
-        >
-          Luxury journeys across Egypt’s timeless wonders.
-        </p>
+        ></p>
 
         {/* Trip Filter Form */}
         <Box
@@ -66,26 +74,68 @@ const Content = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <FaCity className={theme.icon} />
+                  <FaCity
+                    className={theme.icon}
+                    style={{
+                      paddingLeft: "15px",
+                      color: "#C9A34A",
+                      fontSize: "35px",
+                    }}
+                  />
                 </InputAdornment>
               ),
             }}
             sx={{
               borderRadius: 3,
               "& .MuiOutlinedInput-root": {
-                backgroundColor: theme.inputBg,
-                color: theme.inputText,
-                "& fieldset": { borderColor: theme.inputBorder },
+                padding: "5px",
+                color: "#2C2C2C",
+                fontWeight: "800",
+                letterSpacing: "0.5px",
+                transition: "all 0.3s ease",
+                "& fieldset": {
+                  borderColor: "#C9A34A",
+                  borderRadius: "12px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
+                },
                 "&:hover fieldset": {
-                  borderColor: theme.inputFocus,
-                  backgroundColor: theme.inputHoverBg,
+                  borderColor: "#B9972F",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: theme.inputFocus,
+                  borderColor: "#B9972F",
+                  boxShadow: "0 0 0 2px rgba(201,163,74,0.25)",
                 },
               },
               "& .MuiInputLabel-root": {
-                color: theme.inputLabel,
+                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                fontWeight: "600",
+                letterSpacing: "0.4px",
+              },
+              "& .MuiInputBase-input": {
+                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                padding: "12px 14px",
+              },
+              "& .MuiMenuItem-root": {
+                fontWeight: "500",
+                color: "#2C2C2C",
+                borderRadius: "8px",
+                margin: "4px 8px",
+                padding: "10px 14px",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)", // خلفية ذهبية فاتحة متدرجة
+                  color: "#B9972F",
+                  transform: "scale(1.02)", // حركة خفيفة عند الهوفر
+                },
+                "&.Mui-selected": {
+                  background: "linear-gradient(to right, #C9A34A, #B9972F)", // خلفية ذهبية عند الاختيار
+                  color: "#fff",
+                  fontWeight: "600",
+                },
+                "&.Mui-selected:hover": {
+                  background: "linear-gradient(to right, #B9972F, #A67C00)", // أغمق عند الهوفر مع الاختيار
+                },
               },
             }}
           >
@@ -99,7 +149,32 @@ const Content = () => {
               "Alexandria",
               "Port Said",
             ].map((c) => (
-              <MenuItem key={c} value={c}>
+              <MenuItem
+                key={c}
+                value={c}
+                sx={{
+                  backgroundColor: "transparent",
+                  fontWeight: 500,
+                  color: "#2C2C2C",
+                  borderRadius: "8px",
+                  margin: "4px 8px",
+                  padding: "10px 14px",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
+                    color: "#B9972F",
+                    transform: "scale(1.02)",
+                  },
+                  "&.Mui-selected": {
+                    background: "linear-gradient(to right, #C9A34A, #B9972F)",
+                    color: "#fff",
+                    fontWeight: "600",
+                  },
+                  "&.Mui-selected:hover": {
+                    background: "linear-gradient(to right, #B9972F, #A67C00)",
+                  },
+                }}
+              >
                 {c}
               </MenuItem>
             ))}
@@ -114,24 +189,68 @@ const Content = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <FaDollarSign className={theme.icon} />
+                  <FaDollarSign
+                    className={theme.icon}
+                    style={{
+                      paddingLeft: "15px",
+                      color: "#C9A34A",
+                      fontSize: "30px",
+                    }}
+                  />
                 </InputAdornment>
               ),
             }}
             sx={{
               borderRadius: 3,
               "& .MuiOutlinedInput-root": {
-                color: theme.inputText,
-                "& fieldset": { borderColor: theme.inputBorder },
+                padding: "5px",
+                color: "#2C2C2C",
+                fontWeight: "800",
+                letterSpacing: "0.5px",
+                transition: "all 0.3s ease",
+                "& fieldset": {
+                  borderColor: "#C9A34A",
+                  borderRadius: "12px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
+                },
                 "&:hover fieldset": {
-                  borderColor: theme.inputFocus,
+                  borderColor: "#B9972F",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: theme.inputFocus,
+                  borderColor: "#B9972F",
+                  boxShadow: "0 0 0 2px rgba(201,163,74,0.25)",
                 },
               },
               "& .MuiInputLabel-root": {
-                color: theme.inputLabel,
+                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                fontWeight: "600",
+                letterSpacing: "0.4px",
+              },
+              "& .MuiInputBase-input": {
+                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                padding: "12px 14px",
+              },
+              "& .MuiMenuItem-root": {
+                fontWeight: "500",
+                color: "#2C2C2C",
+                borderRadius: "8px",
+                margin: "4px 8px",
+                padding: "10px 14px",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)", // خلفية ذهبية فاتحة متدرجة
+                  color: "#B9972F",
+                  transform: "scale(1.02)", // حركة خفيفة عند الهوفر
+                },
+                "&.Mui-selected": {
+                  background: "linear-gradient(to right, #C9A34A, #B9972F)", // خلفية ذهبية عند الاختيار
+                  color: "#fff",
+                  fontWeight: "600",
+                },
+                "&.Mui-selected:hover": {
+                  background: "linear-gradient(to right, #B9972F, #A67C00)", // أغمق عند الهوفر مع الاختيار
+                },
               },
             }}
           />
@@ -145,159 +264,348 @@ const Content = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <FaUmbrellaBeach style={{ color: "#C9A34A" }} />{" "}
-                  {/* أيقونة ذهبية */}
+                  <FaUmbrellaBeach
+                    style={{
+                      paddingLeft: "12px",
+                      color: "#C9A34A",
+                      fontSize: "30px",
+                    }}
+                  />
                 </InputAdornment>
               ),
             }}
             sx={{
               borderRadius: 3,
               "& .MuiOutlinedInput-root": {
-                color: "#2C2C2C", // نص غامق
-                fontWeight: "500",
+                padding: "5px",
+                color: "#2C2C2C",
+                fontWeight: "600",
                 letterSpacing: "0.5px",
                 transition: "all 0.3s ease",
+                background: "rgba(255,255,255,0.08)", // خلفية زجاجية شفافة
+                backdropFilter: "blur(8px)",
                 "& fieldset": {
-                  borderColor: "#C9A34A", // حدود ذهبية
+                  borderColor: "#C9A34A",
                   borderRadius: "12px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)", // ظل خفيف
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
                 },
                 "&:hover fieldset": {
-                  borderColor: "#B9972F", // ذهب أغمق عند الهوفر
+                  borderColor: "#B9972F",
                   boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+                  transform: "scale(1.01)", // حركة خفيفة
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "#B9972F", // حدود ذهبية عند التركيز
-                  boxShadow: "0 0 0 2px rgba(201,163,74,0.25)", // توهج ذهبي
+                  borderColor: "#B9972F",
+                  boxShadow: "0 0 0 3px rgba(201,163,74,0.25)",
                 },
               },
               "& .MuiInputLabel-root": {
-                color: "#6E5C4B", // لون الـ Label (رملي)
-                fontWeight: "600",
+                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                fontWeight: "800",
                 letterSpacing: "0.4px",
+                fontSize: "1rem",
               },
               "& .MuiInputBase-input": {
-                color: "#2C2C2C", // لون النص داخل الحقل
+                color: themeName === "dark" ? "#C9A34A" : "#fff",
                 padding: "12px 14px",
+                fontSize: "1rem",
               },
               "& .MuiMenuItem-root": {
                 fontWeight: "500",
                 color: "#2C2C2C",
+                borderRadius: "8px",
+                margin: "4px 8px",
+                padding: "10px 14px",
+                transition: "all 0.3s ease",
                 "&:hover": {
-                  backgroundColor: "#FFF3E0", // خلفية ذهبية فاتحة عند اختيار عنصر
+                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
                   color: "#B9972F",
+                  transform: "scale(1.02)",
+                },
+                "&.Mui-selected": {
+                  background: "linear-gradient(to right, #C9A34A, #B9972F)",
+                  color: "#fff",
+                  fontWeight: "600",
+                },
+                "&.Mui-selected:hover": {
+                  background: "linear-gradient(to right, #B9972F, #A67C00)",
                 },
               },
             }}
           >
             {["Luxury", "Cultural", "Safari", "Beach"].map((t) => (
-              <MenuItem key={t} value={t}>
+              <MenuItem
+                key={t}
+                value={t}
+                sx={{
+                  backgroundColor: "transparent",
+                  fontWeight: 500,
+                  color: "#2C2C2C",
+                  borderRadius: "8px",
+                  margin: "4px 8px",
+                  padding: "10px 14px",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
+                    color: "#B9972F",
+                    transform: "scale(1.02)",
+                  },
+                  "&.Mui-selected": {
+                    background: "linear-gradient(to right, #C9A34A, #B9972F)",
+                    color: "#fff",
+                    fontWeight: "600",
+                  },
+                  "&.Mui-selected:hover": {
+                    background: "linear-gradient(to right, #B9972F, #A67C00)",
+                  },
+                }}
+              >
                 {t}
               </MenuItem>
             ))}
           </TextField>
 
-          {/* Arrival */}
-          <TextField
-            type="date"
-            label="Departure"
-            value={departure}
-            onChange={(e) => setDeparture(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaCalendarAlt style={{ color: "#C9A34A" }} />{" "}
-                  {/* أيقونة ذهبية */}
-                </InputAdornment>
-              ),
-            }}
-            InputLabelProps={{ shrink: true }}
-            sx={{
-              borderRadius: 3,
-              "& .MuiOutlinedInput-root": {
-                color: "#2C2C2C", // نص غامق
-                fontWeight: "500",
-                letterSpacing: "0.5px",
-                transition: "all 0.3s ease",
-                "& fieldset": {
-                  borderColor: "#C9A34A", // حدود ذهبية
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)", // ظل خفيف
-                },
-                "&:hover fieldset": {
-                  borderColor: "#B9972F", // ذهب أغمق عند الهوفر
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#B9972F", // حدود ذهبية عند التركيز
-                  boxShadow: "0 0 0 2px rgba(201,163,74,0.25)", // توهج ذهبي
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#6E5C4B", // لون الـ Label (رملي)
-                fontWeight: "600",
-                letterSpacing: "0.4px",
-              },
-              "& .MuiInputBase-input": {
-                color: "#2C2C2C", // لون النص داخل الحقل
-                padding: "12px 14px",
-              },
-            }}
-          />
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            {/* Arrival */}
+            <div className="flex-1 min-w-[120px] flex flex-col rounded-b-2xl">
+              <DatePicker
+                label="Check-in"
+                value={arrival}
+                onChange={(date) => setArrival(date)}
+                slotProps={{
+                  textField: {
+                    sx:
+                      themeName === "dark"
+                        ? {
+                            "& .MuiOutlinedInput-root": {
+                              background: "var(--input-glass-bg)",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "var(--color)",
+                              },
+                              "&.Mui-focused": {
+                                boxShadow: "0 0 0 3px var(--focus-ring)",
+                              },
+                            },
+                            "& .MuiInputBase-input": {
+                              color: "var(--input-text)",
+                              caretColor: "var(--color)",
+                            },
+                            "& .MuiInputLabel-root": { color: "var(--color)" },
+                          }
+                        : {
+                            "& .MuiOutlinedInput-root": {
+                              background: "var(--input-glass-bg)",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "var(--color)",
+                              },
+                              "&.Mui-focused": {
+                                boxShadow: "0 0 0 3px var(--focus-ring)",
+                              },
+                            },
+                            "& .MuiInputBase-input": {
+                              color: "var(--input-text)",
+                              caretColor: "var(--color)",
+                            },
+                            "& .MuiInputLabel-root": { color: "var(--color)" },
+                          },
+                  },
 
-          {/* Departure */}
-          <TextField
-            type="date"
-            label="Departure"
-            value={departure}
-            onChange={(e) => setDeparture(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaCalendarAlt style={{ color: "#C9A34A" }} />{" "}
-                  {/* أيقونة ذهبية */}
-                </InputAdornment>
-              ),
-            }}
-            InputLabelProps={{ shrink: true }}
-            sx={{
-              borderRadius: 3,
-              "& .MuiOutlinedInput-root": {
-                color: "#2C2C2C", // نص غامق
-                fontWeight: "500",
-                letterSpacing: "0.5px",
-                transition: "all 0.3s ease",
-                "& fieldset": {
-                  borderColor: "#C9A34A", // حدود ذهبية
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)", // ظل خفيف
-                },
-                "&:hover fieldset": {
-                  borderColor: "#B9972F", // ذهب أغمق عند الهوفر
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#B9972F", // حدود ذهبية عند التركيز
-                  boxShadow: "0 0 0 2px rgba(201,163,74,0.25)", // توهج ذهبي
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#6E5C4B", // لون الـ Label (رملي)
-                fontWeight: "600",
-                letterSpacing: "0.4px",
-              },
-              "& .MuiInputBase-input": {
-                color: "#2C2C2C", // لون النص داخل الحقل
-                padding: "12px 14px",
-              },
-            }}
-          />
+                  // Popper and calendar
+                  popper: {
+                    sx: {
+                      "& .MuiPaper-root": {
+                        borderRadius: "16px",
+                        background: "rgba(255,255,255,0.9)",
+                        backdropFilter: "blur(12px)",
+                        border: "1px solid #C9A34A",
+                        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+                        padding: "8px",
+                      },
 
+                      // Header styling
+                      "& .MuiPickersCalendarHeader-root": {
+                        background:
+                          "linear-gradient(to right, #C9A34A, #B9972F)",
+                        color: "#fff",
+                        borderRadius: "12px",
+                        marginBottom: "8px",
+                        fontWeight: 600,
+                        letterSpacing: "0.5px",
+                      },
+
+                      // Days — remove blue/black focus on buttons
+                      "& .MuiPickersDay-root": {
+                        fontWeight: 500,
+                        borderRadius: "8px",
+                        transition: "all 0.25s ease",
+                        outline: "none",
+                        // Prevent default button outline
+                        "&:focus": {
+                          outline: "none",
+                          boxShadow: "0 0 0 3px rgba(201,163,74,0.25)",
+                        },
+                        "&:hover": {
+                          background:
+                            "linear-gradient(to right, #FFF8E1, #FFE082)",
+                          color: "#B9972F",
+                          transform: "scale(1.05)",
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                        },
+                        "&.Mui-selected": {
+                          background:
+                            "linear-gradient(to right, #C9A34A, #B9972F)",
+                          color: "#fff",
+                          fontWeight: 600,
+                          boxShadow: "0 0 0 2px rgba(201,163,74,0.30)",
+                        },
+                        "&.Mui-selected:hover": {
+                          background:
+                            "linear-gradient(to right, #B9972F, #A67C00)",
+                          color: "#fff",
+                        },
+                        "&.Mui-disabled": {
+                          color: "#999",
+                          opacity: 0.6,
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+
+            {/* Departure */}
+            <div className="flex-1 min-w-[200px] flex flex-col">
+              <DatePicker
+                label={"Check-out"}
+                value={departure}
+                selected={endDate}
+                onChange={(date) => setDeparture(date)}
+                placeholderText="Select departure date"
+                minDate={
+                  startDate ? addDays(startDate, 7) : addDays(new Date(), 4)
+                }
+                // المغادرة بعد الوصول بـ 7 أيام على الأقل، أو بعد 4 أيام من اليوم لو الوصول مش متحدد
+                slotProps={{
+                  textField: {
+                    sx:
+                      themeName === "dark"
+                        ? {
+                            "& .MuiOutlinedInput-root": {
+                              background: "var(--input-glass-bg)",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "var(--color)",
+                              },
+                              "&.Mui-focused": {
+                                boxShadow: "0 0 0 3px var(--focus-ring)",
+                              },
+                            },
+                            "& .MuiInputBase-input": {
+                              color: "var(--input-text)",
+                              caretColor: "var(--color)",
+                            },
+                            "& .MuiInputLabel-root": { color: "var(--color)" },
+                          }
+                        : {
+                            "& .MuiOutlinedInput-root": {
+                              background: "var(--input-glass-bg)",
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "var(--color)",
+                              },
+                              "&.Mui-focused": {
+                                boxShadow: "0 0 0 3px var(--focus-ring)",
+                              },
+                            },
+                            "& .MuiInputBase-input": {
+                              color: "var(--input-text)",
+                              caretColor: "var(--color)",
+                            },
+                            "& .MuiInputLabel-root": { color: "var(--color)" },
+                          },
+                  },
+
+                  // Popper and calendar
+                  popper: {
+                    sx: {
+                      "& .MuiPaper-root": {
+                        borderRadius: "16px",
+                        background: "rgba(255,255,255,0.9)",
+                        backdropFilter: "blur(12px)",
+                        border: "1px solid #C9A34A",
+                        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+                        padding: "8px",
+                      },
+
+                      // Header styling
+                      "& .MuiPickersCalendarHeader-root": {
+                        background:
+                          "linear-gradient(to right, #C9A34A, #B9972F)",
+                        color: "#fff",
+                        borderRadius: "12px",
+                        marginBottom: "8px",
+                        fontWeight: 600,
+                        letterSpacing: "0.5px",
+                      },
+
+                      // Days — remove blue/black focus on buttons
+                      "& .MuiPickersDay-root": {
+                        fontWeight: 500,
+                        borderRadius: "8px",
+                        transition: "all 0.25s ease",
+                        outline: "none",
+                        // Prevent default button outline
+                        "&:focus": {
+                          outline: "none",
+                          boxShadow: "0 0 0 3px rgba(201,163,74,0.25)",
+                        },
+                        "&:hover": {
+                          background:
+                            "linear-gradient(to right, #FFF8E1, #FFE082)",
+                          color: "#B9972F",
+                          transform: "scale(1.05)",
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                        },
+                        "&.Mui-selected": {
+                          background:
+                            "linear-gradient(to right, #C9A34A, #B9972F)",
+                          color: "#fff",
+                          fontWeight: 600,
+                          boxShadow: "0 0 0 2px rgba(201,163,74,0.30)",
+                        },
+                        "&.Mui-selected:hover": {
+                          background:
+                            "linear-gradient(to right, #B9972F, #A67C00)",
+                          color: "#fff",
+                        },
+                        "&.Mui-disabled": {
+                          color: "#999",
+                          opacity: 0.6,
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+          </LocalizationProvider>
           {/* Search Button */}
           <Button
             variant="contained"
             onClick={handleSearch}
-            className={theme.buttonPrimary}
+            sx={{
+              backgroundColor: "#C9A34A", // اللون الأساسي
+              color: "#fff", // لون النص
+              fontWeight: "600",
+              borderRadius: "12px",
+              px: 4,
+              py: 1.5,
+              textTransform: "uppercase",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+              "&:hover": {
+                backgroundColor: "#B9972F", // لون عند الـ hover
+                boxShadow: "0 6px 14px rgba(0,0,0,0.25)",
+              },
+            }}
           >
             Search
           </Button>

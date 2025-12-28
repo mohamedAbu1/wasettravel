@@ -24,16 +24,16 @@ export default function Home() {
       <HeroSection />
 
       {/* ================= CATEGORIES SECTION ================= */}
-      <CategoriesSection />
+      {/* <CategoriesSection /> */}
 
       {/* ================= TOP TRIPS SECTION ================= */}
-      <TopTripsSection />
+      {/* <TopTripsSection /> */}
 
       {/* ================= CITIES SECTION ================= */}
-      <CitiesSection />
+      {/* <CitiesSection /> */}
 
       {/* ================= FOOTER ================= */}
-      <Footer />
+      {/* <Footer /> */}
     </main>
   );
 }

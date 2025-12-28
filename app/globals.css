@@ -1,22 +1,26 @@
 @import "tailwindcss";
 
-:root {
+/* Base (light) */
+:root,
+:root[data-theme="light"] {
   --background: #ffffff;
   --foreground: #171717;
+  --color: #c9a34a; /* gold */
+  --color-hover: #b9972f; /* gold hover */
+  --input-glass-bg: rgba(255, 255, 255, 0.08);
+  --input-text: #2c2c2c;
+  --focus-ring: rgba(201, 163, 74, 0.25);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Dark */
+:root[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --color: #fff; /* brighter gold for dark */
+  --color-hover: #e6c200;
+  --input-glass-bg: rgba(255, 255, 255, 0.06);
+  --input-text: #e6e6e6;
+  --focus-ring: rgba(255, 215, 0, 0.25);
 }
 
 body {
@@ -25,12 +29,22 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 @keyframes heroZoom {
-  0% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 @keyframes fade {
-  0% { opacity: 0; transform: scale(1.05); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .animate-fade {
@@ -43,18 +57,24 @@ body {
   color: white;
   padding: 10px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(6px);
   transition: 0.3s;
 }
 
 .social-icon:hover {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
   transform: translateX(5px);
 }
 @keyframes fade {
-  0% { opacity: 0; transform: scale(1.05); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .animate-fade {
@@ -67,13 +87,13 @@ body {
   color: white;
   padding: 10px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(6px);
   transition: 0.3s;
 }
 
 .social-icon:hover {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
   transform: translateX(5px);
 }
 @keyframes fillLine {
@@ -98,11 +118,141 @@ body {
 .animate-fill-slow {
   animation: fillLine 1.4s ease-out forwards;
 }
+/* Remove default focus ring across pickers buttons */
+.MuiPickersDay-root,
+.MuiButtonBase-root {
+  outline: none !important;
+}
+.MuiButtonBase-root:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(201, 163, 74, 0.25) !important; /* Gold focus */
+}
 
+/* Prevent black border on hover around inputs */
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #b9972f !important;
+}
+.MuiOutlinedInput-notchedOutline {
+  border-color: #c9a34a !important;
+}
 
+/* Remove Chrome blue autofill background */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #2c2c2c !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+  box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.08) inset !important;
+}
 
+/* Safari focus ring override */
+*:focus {
+  outline: none !important;
+}
+.css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root {
+  color: var(--color) !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid #c9a34a !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
+}
+.css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root:hover {
+  border-color: #b9972f !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
 
+.css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root.Mui-focused {
+  border-color: #b9972f !important;
+  box-shadow: 0 0 0 3px rgba(201, 163, 74, 0.25) !important;
+}
+/* .MuiInputAdornment-root .MuiSvgIcon-root {
+  color: #c9a34a !important;
+  transition: all 0.3s ease !important;
+}
+.MuiInputAdornment-root .MuiSvgIcon-root:hover {
+  color: #b9972f !important;
+  transform: scale(1.1) !important;
+} */
+/* Outlined input root */
+.MuiOutlinedInput-root {
+  color: var(--color) !important;
+  border-radius: 14px !important;
+  background: var(--input-glass-bg) !important;
+  backdrop-filter: blur(8px) !important;
+}
 
+/* Outline border */
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--color) !important;
+}
 
+/* Hover */
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-hover) !important;
+}
 
+/* Focus ring + border */
+.MuiOutlinedInput-root.Mui-focused {
+  box-shadow: 0 0 0 3px var(--focus-ring) !important;
+}
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-hover) !important;
+}
+.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: #B9972F !important;
+}
 
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #B9972F !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #B9972F !important;
+}
+
+/* Input text */
+.MuiInputBase-input {
+  color: var(--input-text) !important;
+  caret-color: var(--color) !important;
+}
+
+/* Calendar icon color */
+.MuiInputAdornment-root .MuiSvgIcon-root {
+  color: var(--color) !important;
+  transition: all 0.3s ease !important;
+}
+.MuiInputAdornment-root .MuiSvgIcon-root:hover {
+  color: var(--color-hover) !important;
+  transform: scale(1.1) !important;
+}
+
+/* Picker popper (if using MUI pickers) */
+.MuiPaper-root {
+  border: 1px solid var(--color) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Day buttons — focus/hover */
+.MuiPickersDay-root {
+  outline: none !important;
+}
+.MuiPickersDay-root:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--focus-ring) !important;
+}
+/* النص داخل الإنبت */
+.MuiInputBase-input {
+  color:  var(--color)  !important;   /* النص أبيض */
+}
+
+.MuiMenuItem-root.Mui-selected {
+  background: linear-gradient(to right, #C9A34A, #B9972F) !important;
+  font-weight: 600 !important;
+}
+
+.MuiMenuItem-root:hover {
+  background: linear-gradient(to right, #FFF3E0, #FFE0B2) !important;
+  color: #B9972F !important; /* يتحول للذهبي عند الهوفر */
+  transform: scale(1.02);
+}

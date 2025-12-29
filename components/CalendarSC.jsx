@@ -1,5 +1,4 @@
 "use client";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { StyledDatePicker } from "../app/HomeStyled.js";
 import { useData } from "@/context/DataContext.jsx";

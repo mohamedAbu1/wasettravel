@@ -121,7 +121,7 @@ export default function HeroSection() {
           }}
           className="flex flex-wrap gap-4 justify-center font-[Cinzel] text-[48px] lg:text-[64px]"
         >
-          {["W", "A", "S", "E", "T", "𓂀", "T", "O", "U", "R", "S"].map((char, i) => (
+          {["W", "A", "S", "E", "T", "𓂀", "T", "R", "A", "V", "E","L"].map((char, i) => (
             <LogoLetter key={i} char={char} theme={theme} />
           ))}
         </motion.div>

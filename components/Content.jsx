@@ -66,7 +66,7 @@ const Content = () => {
                     className={theme.icon}
                     style={{
                       paddingLeft: "15px",
-                      color: themeName === "dark" ? "#C9A34A" : "#fff",
+                      color: "#C9A34A" ,
                       fontSize: "35px",
                     }}
                   />
@@ -96,12 +96,12 @@ const Content = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                color:"#C9A34A",
                 fontWeight: "600",
                 letterSpacing: "0.4px",
               },
               "& .MuiInputBase-input": {
-                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                color:"#C9A34A",
                 padding: "12px 14px",
               },
               "& .MuiMenuItem-root": {
@@ -181,7 +181,7 @@ const Content = () => {
                     className={theme.icon}
                     style={{
                       paddingLeft: "15px",
-                      color: themeName === "dark" ? "#C9A34A" : "#fff",
+                      color: "#C9A34A",
                       fontSize: "30px",
                     }}
                   />
@@ -211,12 +211,12 @@ const Content = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                color:"#C9A34A",
                 fontWeight: "600",
                 letterSpacing: "0.4px",
               },
               "& .MuiInputBase-input": {
-                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                color: "#C9A34A" ,
                 padding: "12px 14px",
               },
               "& .MuiMenuItem-root": {
@@ -255,7 +255,7 @@ const Content = () => {
                   <FaUmbrellaBeach
                     style={{
                       paddingLeft: "12px",
-                      color: themeName === "dark" ? "#C9A34A" : "#fff",
+                      color: "#C9A34A" ,
                       fontSize: "30px",
                     }}
                   />
@@ -288,13 +288,13 @@ const Content = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                color:"#C9A34A" ,
                 fontWeight: "800",
                 letterSpacing: "0.4px",
                 fontSize: "1rem",
               },
               "& .MuiInputBase-input": {
-                color: themeName === "dark" ? "#C9A34A" : "#fff",
+                color:  "#C9A34A",
                 padding: "12px 14px",
                 fontSize: "1rem",
               },

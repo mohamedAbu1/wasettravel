@@ -20,6 +20,9 @@ export function DataProvider({ children }) {
   const [departure, setDeparture] = useState(addDays(new Date(), 9));
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   const handleSearch = () => {
@@ -118,6 +121,10 @@ export function DataProvider({ children }) {
         handleSearch,
         specialDates,
         DayWithIcon,
+        handleOpen,
+        handleClose,
+        open,
+        setOpen,
       }}
     >
       {children}

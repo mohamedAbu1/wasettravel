@@ -7,6 +7,7 @@ import { MdEmail } from "react-icons/md";
 import { useTheme } from "@/context/ThemeContext";
 import Content from "./Content";
 import DownloadAppSection from "./DownloadAppSection";
+import SignUpButton from "./SignUpButton";
 
 export default function HeroSection() {
   const { theme } = useTheme();
@@ -126,6 +127,8 @@ export default function HeroSection() {
           ))}
         </motion.div>
       </motion.div>
+
+      <SignUpButton />
     </section>
   );
 }

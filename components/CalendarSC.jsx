@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-duplicate-props */
 /* eslint-disable react/display-name */
 "use client";
 import React, { forwardRef } from "react";
@@ -8,11 +9,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { MdDateRange } from "react-icons/md"; // أيقونة احترافية للتقويم
 // Custom Input Component
 const CustomInput = forwardRef(({ value, onClick, placeholder }, ref) => (
-  <button
-    className="luxury-input w-full text-left"
-    onClick={onClick}
-    ref={ref}
-  >
+  <button className="luxury-input w-full text-left" onClick={onClick} ref={ref}>
     <span className={`luxury-label ${value ? "active" : ""}`}>
       {placeholder}
     </span>
@@ -29,24 +26,32 @@ const CalendarSC = () => {
     setDeparture,
     addDays,
     startDate,
+    specialDates,
   } = useData();
   const { themeName } = useTheme();
 
   return (
     <div className="flex gap-6">
       {/* Arrival */}
-      <div className="flex-1 min-w-[160px] flex flex-col">
+      <div className="flex-1 min-w-[210px] flex flex-col">
         <DatePicker
           selected={arrival}
           onChange={(date) => setArrival(date)}
           dateFormat="dd/MM/yyyy"
           placeholderText="Check-in"
           customInput={<CustomInput />}
+          minDate={addDays(new Date(), 2)}
+          dayClassName={(day) => {
+            const special = specialDates.find(
+              (item) => item.date.toDateString() === day.toDateString()
+            );
+            return special ? "special-day" : "";
+          }}
         />
       </div>
 
       {/* Departure */}
-      <div className="flex-1 min-w-[160px] flex flex-col">
+      <div className="flex-1 min-w-[210px] flex flex-col">
         <DatePicker
           selected={departure}
           onChange={(date) => setDeparture(date)}

@@ -7,6 +7,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useData } from "@/context/DataContext";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -14,7 +15,7 @@ export default function Header() {
   const { themeName, toggleTheme, theme } = useTheme();
   const pathname = usePathname();
   const navItems = ["Home", "Trips", "Cities", "Contact", "Admin"];
-
+  const { handleOpen } = useData();
   // Scroll effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -132,6 +133,7 @@ export default function Header() {
           {/* CTA */}
           <motion.div whileHover={{ scale: 1.1 }}>
             <Button
+              onClick={handleOpen}
               style={{
                 padding: "12px 24px",
                 background: "linear-gradient(to right, #ca8a04, #eab308)",
@@ -143,7 +145,7 @@ export default function Header() {
                 transition: "all 0.3s ease",
               }}
             >
-              Book Now
+              Sign Up
             </Button>
           </motion.div>
 
@@ -185,7 +187,9 @@ export default function Header() {
                 {["Home", "Trips", "Cities", "Contact"].map((item) => (
                   <Link
                     key={item}
-                    href={`/${item.toLowerCase() === "home" ? "" : item.toLowerCase()}`}
+                    href={`/${
+                      item.toLowerCase() === "home" ? "" : item.toLowerCase()
+                    }`}
                     onClick={() => setMenuOpen(false)}
                     className="hover:text-[#d4af37] transition"
                   >

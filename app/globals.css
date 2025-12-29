@@ -171,7 +171,7 @@ body {
 
 /* Picker Popper */
 .MuiPaper-root {
-  border: 1px solid var(--color) !important;
+  border: 1px solid #b9972f !important;
   background: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(12px) !important;
   border-radius: 22px !important;
@@ -259,10 +259,10 @@ body {
   padding: 19px 12px;
   font-size: 16px;
   font-weight: 500;
-  color: var(--color);
+  color: #b9972f;
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(8px);
-  border: 1px solid  var(--color);
+  border: 1px solid  #b9972f;
   transition: all 0.3s ease;
 }
 
@@ -277,7 +277,7 @@ body {
   left: 18px;
   transform: translateY(-50%);
   font-size: 14px;
-  color:  var(--color);
+  color:  #b9972f;
   transition: 0.3s ease;
   pointer-events: none;
 }
@@ -285,7 +285,7 @@ body {
 .luxury-label.active {
   top: 6px;
   font-size: 12px;
-  color: var(--color);
+  color: #b9972f;
 }
 
 .luxury-value {
@@ -403,4 +403,35 @@ body {
   background: linear-gradient(to right, #fff8e1, #ffe082);
   color: #b9972f;
   transform: scale(1.05);
+}
+.special-day {
+  background: linear-gradient(to right, #c9a34a, #b9972f) !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+  position: relative;
+}
+
+.special-day::after {
+  content: "★"; /* أو أي رمز */
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 12px;
+  color: #fff;
+}
+/* الأيام الممنوعة */
+.react-datepicker__day--disabled {
+  color: #999 !important;          /* لون رمادي باهت */
+  background: rgba(0,0,0,0.1) !important; /* خلفية باهتة */
+  border-radius: 8px;
+  cursor: not-allowed !important;  /* مؤشر ممنوع */
+  opacity: 0.6;
+}
+
+/* عند محاولة hover على يوم ممنوع */
+.react-datepicker__day--disabled:hover {
+  background: rgba(0,0,0,0.15) !important;
+  color: #aaa !important;
+  transform: none !important;      /* منع أي تأثير */
+  box-shadow: none !important;
 }

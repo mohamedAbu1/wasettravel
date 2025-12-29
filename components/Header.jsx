@@ -131,7 +131,7 @@ export default function Header() {
           </motion.div>
 
           {/* CTA */}
-          <motion.div whileHover={{ scale: 1.1 }}>
+          <motion.div whileHover={{ scale: 1.1 }} className=" hidden md:flex">
             <Button
               onClick={handleOpen}
               style={{
@@ -150,76 +150,17 @@ export default function Header() {
           </motion.div>
 
           {/* Mobile Menu Button */}
-          <button
+          {/* <button
             className={`md:hidden ${theme.icon} text-3xl`}
             onClick={() => setMenuOpen(true)}
           >
             <FiMenu />
-          </button>
+          </button> */}
         </div>
       </div>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ x: "100%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: "100%", opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-end"
-          >
-            <div
-              className={`w-64 ${theme.card} h-full p-6 border-l ${theme.border} shadow-xl`}
-            >
-              {/* Close Button */}
-              <button
-                className={`${theme.icon} text-3xl mb-8`}
-                onClick={() => setMenuOpen(false)}
-              >
-                <FiX />
-              </button>
-
-              {/* Menu Items */}
-              <nav
-                className={`flex flex-col gap-6 ${theme.subText} text-lg font-medium`}
-              >
-                {["Home", "Trips", "Cities", "Contact"].map((item) => (
-                  <Link
-                    key={item}
-                    href={`/${
-                      item.toLowerCase() === "home" ? "" : item.toLowerCase()
-                    }`}
-                    onClick={() => setMenuOpen(false)}
-                    className="hover:text-[#d4af37] transition"
-                  >
-                    {item}
-                  </Link>
-                ))}
-              </nav>
-
-              {/* CTA */}
-              <motion.div whileHover={{ scale: 1.05 }}>
-                <Button
-                  style={{
-                    marginTop: "2.5rem",
-                    padding: "12px 24px",
-                    background: "linear-gradient(to right, #ca8a04, #eab308)",
-                    color: "#fff",
-                    fontWeight: "600",
-                    letterSpacing: "0.05em",
-                    borderRadius: "0.5rem",
-                    boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  Book Now
-                </Button>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+     
     </motion.header>
   );
 }

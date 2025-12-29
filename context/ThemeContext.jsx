@@ -3,18 +3,22 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import lightTheme from "@/constants/theme/lightTheme";
 import darkTheme from "@/constants/theme/darkTheme";
+// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 const ThemeContext = createContext();
+// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 export function ThemeProvider({ children }) {
   const [themeName, setThemeName] = useState("light");
   const [theme, setTheme] = useState(lightTheme);
+  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   // Load saved theme
   useEffect(() => {
     const saved = localStorage.getItem("theme") || "light";
     applyTheme(saved);
   }, []);
+  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   // Apply theme helper
   const applyTheme = (mode) => {
@@ -42,6 +46,7 @@ export function ThemeProvider({ children }) {
       mode === "dark" ? "#0a0a0a" : "#ffffff"
     );
   };
+  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   // Toggle theme
   const toggleTheme = () => {
@@ -49,6 +54,7 @@ export function ThemeProvider({ children }) {
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
   };
+  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   return (
     <ThemeContext.Provider value={{ theme, themeName, toggleTheme }}>

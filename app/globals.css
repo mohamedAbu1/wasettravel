@@ -226,7 +226,6 @@ body {
   background: linear-gradient(to right, #b9972f, #a67c00) !important;
 }
 .css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root {
-  /* border: 1px solid var(--color) !important; */
   border-radius: 12px !important;
   padding: 3px !important;
   color: var(--color) !important;

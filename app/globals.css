@@ -120,10 +120,6 @@ body {
   transition: all 0.3s ease !important;
   background: "rgba(255,255,255,0.08)" !important;
   backdrop-filter: blur(8px) !important;
-
-
-
-                                                                   
 }
 .MuiOutlinedInput-notchedOutline {
   border-color: var(--color) !important;
@@ -225,7 +221,7 @@ body {
 .MuiMenuItem-root.Mui-selected:hover {
   background: linear-gradient(to right, #b9972f, #a67c00) !important;
 }
-.css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root {
+/* .css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root {
   border-radius: 12px !important;
   padding: 3px !important;
   color: var(--color) !important;
@@ -249,4 +245,162 @@ body {
 }
 .MuiPickersOutlinedInput-notchedOutline {
   border: 1px solid var(--color) !important;
+} */
+/* .MuiFormControl-root.MuiPickersTextField-root .MuiOutlinedInput-root {
+  border-radius: 12px !important;
+  padding: 3px !important;
+  color: var(--color) !important;
+} */
+.luxury-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 14px;
+  padding: 19px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  border: 1px solid  var(--color);
+  transition: all 0.3s ease;
+}
+
+.luxury-input:hover {
+  border-color: #b9972f;
+  box-shadow: 0 0 12px rgba(201, 163, 74, 0.3);
+}
+
+.luxury-label {
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color:  var(--color);
+  transition: 0.3s ease;
+  pointer-events: none;
+}
+
+.luxury-label.active {
+  top: 6px;
+  font-size: 12px;
+  color: var(--color);
+}
+
+.luxury-value {
+  flex: 1;
+  /* margin-left: 18px; */
+  color:  var(--color);
+  font-weight: 600;
+}
+
+.luxury-icon {
+  margin-left: auto;
+  font-size: 18px;
+  color:  var(--color);
+}
+
+/* Calendar popup */
+.react-datepicker {
+  border-radius: 25px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid #c9a34a !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+  padding: 8px !important;
+}
+
+.react-datepicker__day {
+  color: #a67c00 !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  transition: all 0.25s ease !important;
+}
+
+.react-datepicker__day:hover {
+  background: linear-gradient(to right, #fff8e1, #ffe082) !important;
+  color: #b9972f !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.react-datepicker__day--selected {
+  background: linear-gradient(to right, #c9a34a, #b9972f) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 0 2px rgba(201, 163, 74, 0.3) !important;
+}
+
+/* خلفية الجدول */
+.react-datepicker {
+  background: rgba(20, 20, 20, 0.85); /* خلفية زجاجية داكنة */
+  border-radius: 16px;
+  border: 1px solid #c9a34a;
+  backdrop-filter: blur(12px);
+  padding: 12px;
+  columns: red !important;
+}
+
+/* رأس الجدول (الشهور والسنة) */
+.react-datepicker__header {
+  background: linear-gradient(to right, #c9a34a, #b9972f) !important;
+  color: #fff !important;
+  border-radius: 12px;
+  padding: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* أسماء الشهر والسنة */
+.react-datepicker__current-month {
+  color: #fff !important;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+/* أسماء الأيام */
+.react-datepicker__day-name {
+  font-size: 14px;        /* حجم الخط */
+  font-weight: 600;       /* سمك الخط */
+  color: #c9a34a !important;         /* اللون الذهبي */
+  text-transform: uppercase; /* تحويل للحروف الكبيرة */
+  letter-spacing: 1px;    /* مسافة بين الحروف */
+  background: rgba(255,255,255,0.05); /* خلفية خفيفة */
+  border-radius: 6px;
+  padding: 4px;
+}
+
+/* الأيام */
+.react-datepicker__day {
+  width: 40px; /* حجم الخانة */
+  height: 40px; /* حجم الخانة */
+  line-height: 40px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #eee !important;
+  transition: all 0.25s ease;
+}
+
+/* اليوم الحالي */
+.react-datepicker__day--today {
+  border: 1px solid #c9a34a;
+  color: #c9a34a;
+  font-weight: 700;
+}
+
+/* اليوم المختار */
+.react-datepicker__day--selected {
+  background: linear-gradient(to right, #c9a34a, #b9972f);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 0 0 2px rgba(201, 163, 74, 0.3);
+}
+
+/* Hover */
+.react-datepicker__day:hover {
+  background: linear-gradient(to right, #fff8e1, #ffe082);
+  color: #b9972f;
+  transform: scale(1.05);
 }

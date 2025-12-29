@@ -31,43 +31,7 @@ const CalendarSC = () => {
             onChange={(date) => setArrival(date)}
             slots={{ day: DayWithIcon }}
             slotProps={{
-              textField: {
-                sx:
-                  themeName === "dark"
-                    ? {
-                        "& .MuiOutlinedInput-root": {
-                          background: "var(--input-glass-bg)",
-                          backdropFilter: "blur(8px)",
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "var(--color)",
-                          },
-                          "&.Mui-focused": {
-                            boxShadow: "0 0 0 3px var(--focus-ring)",
-                          },
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "var(--input-text)",
-                          caretColor: "var(--color)",
-                        },
-                        "& .MuiInputLabel-root": { color: "var(--color)" },
-                      }
-                    : {
-                        "& .MuiOutlinedInput-root": {
-                          background: "var(--input-glass-bg)",
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "var(--color)",
-                          },
-                          "&.Mui-focused": {
-                            boxShadow: "0 0 0 3px var(--focus-ring)",
-                          },
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "var(--input-text)",
-                          caretColor: "var(--color)",
-                        },
-                        "& .MuiInputLabel-root": { color: "var(--color)" },
-                      },
-              },
+           
 
               // Popper and calendar
               popper: {
@@ -131,7 +95,7 @@ const CalendarSC = () => {
 
         {/* Departure */}
         <div className="flex-1 min-w-[200px] flex flex-col">
-          <DatePicker
+          <StyledDatePicker
             label="Check-out"
             value={departure}
             onChange={setDeparture}
@@ -139,39 +103,7 @@ const CalendarSC = () => {
             // استخدم slots لتعويض اختلافات الإصدارات
             slots={{ day: DayWithIcon }}
             slotProps={{
-              textField: {
-                sx: {
-                  "& .MuiOutlinedInput-root": {
-                    minHeight: "64px",
-                    background: "rgba(255,255,255,0.08)",
-                    borderRadius: "14px",
-                    backdropFilter: "blur(8px)",
-                    transition: "all 0.3s ease",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "1px solid #C9A34A",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#B9972F",
-                    },
-                    "&.Mui-focused": {
-                      boxShadow: "0 0 12px rgba(201,163,74,0.4)",
-                    },
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "#fff",
-                    caretColor: "#C9A34A",
-                    fontSize: "18px",
-                    fontWeight: 500,
-                    padding: "16px 20px",
-                  },
-                  "& .MuiInputLabel-root": {
-                    color: "#C9A34A",
-                    fontSize: "16px",
-                    fontWeight: 600,
-                  },
-                  "& .MuiInputLabel-root.Mui-focused": { color: "#B9972F" },
-                },
-              },
+              
               popper: {
                 sx: {
                   "& .MuiPaper-root": {

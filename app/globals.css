@@ -225,7 +225,7 @@ body {
 .MuiMenuItem-root.Mui-selected:hover {
   background: linear-gradient(to right, #b9972f, #a67c00) !important;
 }
-.css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root {
+/* .css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root {
   border-radius: 12px !important;
   padding: 3px !important;
   color: var(--color) !important;
@@ -249,4 +249,4 @@ body {
 }
 .MuiPickersOutlinedInput-notchedOutline {
   border: 1px solid var(--color) !important;
-}
+} */

@@ -19,7 +19,12 @@ import {
   DatePicker,
   DesktopDatePicker,
   LocalizationProvider,
+  PickersDay,
 } from "@mui/x-date-pickers";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import CelebrationIcon from "@mui/icons-material/Celebration";
+import StarIcon from "@mui/icons-material/Star";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 const Content = () => {
   const { themeName, theme } = useTheme(); // theme يحتوي على خصائص من lightTheme أو darkTheme
@@ -34,6 +39,85 @@ const Content = () => {
   const handleSearch = () => {
     console.log({ city, price, tripType, arrival, departure });
   };
+  const specialDates = [
+    {
+      date: new Date(2026, 11, 25),
+      type: "Holiday",
+      icon: <CelebrationIcon sx={{ color: "#e6c200", fontSize: 18 }} />,
+      discount: 0.3,
+    },
+    {
+      date: new Date(2026, 0, 1),
+      type: "Newyear",
+      icon: <StarIcon sx={{ color: "#C9A34A", fontSize: 18 }} />,
+      discount: 0.2,
+    },
+    {
+      date: new Date(2026, 1, 15),
+      type: "Offer",
+      icon: <LocalOfferIcon sx={{ color: "#B9972F", fontSize: 18 }} />,
+      discount: 0.5,
+    },
+    {
+      date: new Date(2026, 1, 14),
+      type: "Valentine'sDay",
+      icon: <LocalOfferIcon sx={{ color: "#B9972F", fontSize: 18 }} />,
+      discount: 0.5,
+    },
+    {
+      date: new Date(2026, 2, 20),
+      type: "EidAlFitr",
+      icon: <LocalOfferIcon sx={{ color: "#B9972F", fontSize: 18 }} />,
+      discount: 0.5,
+    },
+    {
+      date: new Date(2026, 2, 21),
+      type: "Mother'sDay",
+      icon: <LocalOfferIcon sx={{ color: "#B9972F", fontSize: 18 }} />,
+      discount: 0.5,
+    },
+    {
+      date: new Date(2026, 2, 8),
+      type: "InternationalWomen'sDay",
+      icon: <LocalOfferIcon sx={{ color:  themeName === "dark" ? "#fff" : "#C9A34A", fontSize: 18 }} />,
+      discount: 0.5,
+    },
+    {
+      date: new Date(2026, 3, 1),
+      type: "Calendar",
+      icon: <CalendarMonthIcon sx={{ color: themeName === "dark" ? "#fff" : "#C9A34A", fontSize: 18 }} />,
+      discount: 0.1,
+    },
+  ];
+  function DayWithIcon(props) {
+    const { day } = props;
+
+    // البحث عن اليوم في المصفوفة
+    const special = specialDates.find(
+      (item) => item.date.toDateString() === day.toDateString()
+    );
+
+    return (
+      <Box sx={{ position: "relative" }}>
+        <PickersDay {...props} />
+        {special && (
+          <Box
+            sx={{
+              position: "absolute",
+              right: -6,
+              top: -6,
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
+          >
+            {special.icon}
+          </Box>
+        )}
+      </Box>
+    );
+  }
+
+  // مصفوفة التواريخ الخاصة
 
   return (
     <div className="hidden md:flex flex-col items-center justify-center text-center px-6 z-30">
@@ -78,7 +162,7 @@ const Content = () => {
                     className={theme.icon}
                     style={{
                       paddingLeft: "15px",
-                      color: "#C9A34A",
+                      color: themeName === "dark" ? "#C9A34A" : "#fff",
                       fontSize: "35px",
                     }}
                   />
@@ -193,7 +277,7 @@ const Content = () => {
                     className={theme.icon}
                     style={{
                       paddingLeft: "15px",
-                      color: "#C9A34A",
+                      color: themeName === "dark" ? "#C9A34A" : "#fff",
                       fontSize: "30px",
                     }}
                   />
@@ -267,7 +351,7 @@ const Content = () => {
                   <FaUmbrellaBeach
                     style={{
                       paddingLeft: "12px",
-                      color: "#C9A34A",
+                      color: themeName === "dark" ? "#C9A34A" : "#fff",
                       fontSize: "30px",
                     }}
                   />
@@ -372,6 +456,7 @@ const Content = () => {
                 label="Check-in"
                 value={arrival}
                 onChange={(date) => setArrival(date)}
+                slots={{ day: DayWithIcon }}
                 slotProps={{
                   textField: {
                     sx:
@@ -379,6 +464,7 @@ const Content = () => {
                         ? {
                             "& .MuiOutlinedInput-root": {
                               background: "var(--input-glass-bg)",
+                              backdropFilter: "blur(8px)",
                               "& .MuiOutlinedInput-notchedOutline": {
                                 borderColor: "var(--color)",
                               },
@@ -477,66 +563,59 @@ const Content = () => {
             {/* Departure */}
             <div className="flex-1 min-w-[200px] flex flex-col">
               <DatePicker
-                label={"Check-out"}
+                label="Check-out"
                 value={departure}
-                selected={endDate}
-                onChange={(date) => setDeparture(date)}
-                placeholderText="Select departure date"
+                onChange={setDeparture}
                 minDate={
                   startDate ? addDays(startDate, 7) : addDays(new Date(), 4)
                 }
-                // المغادرة بعد الوصول بـ 7 أيام على الأقل، أو بعد 4 أيام من اليوم لو الوصول مش متحدد
+                // استخدم slots لتعويض اختلافات الإصدارات
+                slots={{ day: DayWithIcon }}
                 slotProps={{
                   textField: {
-                    sx:
-                      themeName === "dark"
-                        ? {
-                            "& .MuiOutlinedInput-root": {
-                              background: "var(--input-glass-bg)",
-                              "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "var(--color)",
-                              },
-                              "&.Mui-focused": {
-                                boxShadow: "0 0 0 3px var(--focus-ring)",
-                              },
-                            },
-                            "& .MuiInputBase-input": {
-                              color: "var(--input-text)",
-                              caretColor: "var(--color)",
-                            },
-                            "& .MuiInputLabel-root": { color: "var(--color)" },
-                          }
-                        : {
-                            "& .MuiOutlinedInput-root": {
-                              background: "var(--input-glass-bg)",
-                              "& .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "var(--color)",
-                              },
-                              "&.Mui-focused": {
-                                boxShadow: "0 0 0 3px var(--focus-ring)",
-                              },
-                            },
-                            "& .MuiInputBase-input": {
-                              color: "var(--input-text)",
-                              caretColor: "var(--color)",
-                            },
-                            "& .MuiInputLabel-root": { color: "var(--color)" },
-                          },
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        minHeight: "64px",
+                        background: "rgba(255,255,255,0.08)",
+                        borderRadius: "14px",
+                        backdropFilter: "blur(8px)",
+                        transition: "all 0.3s ease",
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "1px solid #C9A34A",
+                        },
+                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#B9972F",
+                        },
+                        "&.Mui-focused": {
+                          boxShadow: "0 0 12px rgba(201,163,74,0.4)",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        color: "#fff",
+                        caretColor: "#C9A34A",
+                        fontSize: "18px",
+                        fontWeight: 500,
+                        padding: "16px 20px",
+                      },
+                      "& .MuiInputLabel-root": {
+                        color: "#C9A34A",
+                        fontSize: "16px",
+                        fontWeight: 600,
+                      },
+                      "& .MuiInputLabel-root.Mui-focused": { color: "#B9972F" },
+                    },
                   },
-
-                  // Popper and calendar
                   popper: {
                     sx: {
                       "& .MuiPaper-root": {
                         borderRadius: "16px",
-                        background: "rgba(255,255,255,0.9)",
+                        background: "rgba(255,255,255,0.08)",
                         backdropFilter: "blur(12px)",
                         border: "1px solid #C9A34A",
-                        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
                         padding: "8px",
+                        animation: "fadeIn 0.4s ease-out",
                       },
-
-                      // Header styling
                       "& .MuiPickersCalendarHeader-root": {
                         background:
                           "linear-gradient(to right, #C9A34A, #B9972F)",
@@ -546,14 +625,11 @@ const Content = () => {
                         fontWeight: 600,
                         letterSpacing: "0.5px",
                       },
-
-                      // Days — remove blue/black focus on buttons
                       "& .MuiPickersDay-root": {
                         fontWeight: 500,
                         borderRadius: "8px",
                         transition: "all 0.25s ease",
                         outline: "none",
-                        // Prevent default button outline
                         "&:focus": {
                           outline: "none",
                           boxShadow: "0 0 0 3px rgba(201,163,74,0.25)",
@@ -577,10 +653,7 @@ const Content = () => {
                             "linear-gradient(to right, #B9972F, #A67C00)",
                           color: "#fff",
                         },
-                        "&.Mui-disabled": {
-                          color: "#999",
-                          opacity: 0.6,
-                        },
+                        "&.Mui-disabled": { color: "#999", opacity: 0.6 },
                       },
                     },
                   },

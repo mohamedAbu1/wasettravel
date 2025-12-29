@@ -221,36 +221,7 @@ body {
 .MuiMenuItem-root.Mui-selected:hover {
   background: linear-gradient(to right, #b9972f, #a67c00) !important;
 }
-/* .css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root {
-  border-radius: 12px !important;
-  padding: 3px !important;
-  color: var(--color) !important;
-  z-index: 888 !important;
-  
-}
-.css-vycme6-MuiPickersInputBase-root-MuiPickersOutlinedInput-root:focus {
-  border: 1px solid var(--color) !important;
-}
-.css-17x6evk-MuiFormControl-root-MuiPickersTextField-root {
-  border-radius: 12px !important;
-}
-.css-1fb7els-MuiPickersSectionList-root-MuiPickersInputBase-sectionsContainer-MuiPickersOutlinedInput-sectionsContainer {
-  padding: 16.5px 5px !important;
-}
-.css-17x6evk-MuiFormControl-root-MuiPickersTextField-root .MuiInputLabel-root {
-  z-index: 9999 !important;
-}
-.css-113d811-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
-  color: none !important;
-}
-.MuiPickersOutlinedInput-notchedOutline {
-  border: 1px solid var(--color) !important;
-} */
-/* .MuiFormControl-root.MuiPickersTextField-root .MuiOutlinedInput-root {
-  border-radius: 12px !important;
-  padding: 3px !important;
-  color: var(--color) !important;
-} */
+
 .luxury-input {
   position: relative;
   display: flex;
@@ -339,7 +310,6 @@ body {
   border: 1px solid #c9a34a;
   backdrop-filter: blur(12px);
   padding: 12px;
-  columns: red !important;
 }
 
 /* رأس الجدول (الشهور والسنة) */

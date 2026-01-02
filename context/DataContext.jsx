@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { addDays } from "date-fns";
 import { useTheme } from "@/context/ThemeContext";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -9,6 +9,8 @@ import CelebrationIcon from "@mui/icons-material/Celebration";
 import StarIcon from "@mui/icons-material/Star";
 import { Box } from "@mui/material";
 import { PickersDay } from "@mui/x-date-pickers";
+import { desktopImages, mobileImages } from "@/constants/images";
+// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 const DataContext = createContext();
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 export function DataProvider({ children }) {
@@ -20,9 +22,14 @@ export function DataProvider({ children }) {
   const [departure, setDeparture] = useState(addDays(new Date(), 9));
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [images, setImages] = useState(desktopImages);
+  const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const handleLoginOpen = () => {setLoginOpen(true) ,setOpen(false)};
+  const handleLoginClose = () => setLoginOpen(false);
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   const handleSearch = () => {
@@ -99,6 +106,26 @@ export function DataProvider({ children }) {
     );
   }
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setImages(mobileImages);
+      } else {
+        setImages(desktopImages);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   return (
     <DataContext.Provider
@@ -125,6 +152,13 @@ export function DataProvider({ children }) {
         handleClose,
         open,
         setOpen,
+        images,
+        setImages,
+        index,
+        loginOpen,
+        setLoginOpen,
+        handleLoginClose,
+        handleLoginOpen,
       }}
     >
       {children}

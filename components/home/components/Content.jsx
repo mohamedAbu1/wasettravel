@@ -20,10 +20,11 @@ const Content = () => {
     setTripType,
     handleSearch,
   } = useData();
+  const isFormValid = city && price && tripType;
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   return (
     <div className="hidden md:flex flex-col items-center justify-center text-center px-6 z-30">
-      <div className="w-[75%]">
+      <div className="w-[85%]">
         {/* Company Name */}
         <h1
           className={theme.title}
@@ -66,7 +67,7 @@ const Content = () => {
                     className={theme.icon}
                     style={{
                       paddingLeft: "15px",
-                      color: "#C9A34A" ,
+                      color: "#C9A34A",
                       fontSize: "35px",
                     }}
                   />
@@ -96,12 +97,12 @@ const Content = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color:"#C9A34A",
+                color: "#C9A34A",
                 fontWeight: "600",
                 letterSpacing: "0.4px",
               },
               "& .MuiInputBase-input": {
-                color:"#C9A34A",
+                color: "#C9A34A",
                 padding: "12px 14px",
               },
               "& .MuiMenuItem-root": {
@@ -180,7 +181,7 @@ const Content = () => {
                   <FaDollarSign
                     className={theme.icon}
                     style={{
-                      paddingLeft: "15px",
+                      paddingLeft: "0px",
                       color: "#C9A34A",
                       fontSize: "30px",
                     }}
@@ -190,6 +191,14 @@ const Content = () => {
             }}
             sx={{
               borderRadius: 3,
+              "& input[type=number]::-webkit-inner-spin-button, & input[type=number]::-webkit-outer-spin-button":
+                {
+                  WebkitAppearance: "none",
+                  margin: 0,
+                },
+              "& input[type=number]": {
+                MozAppearance: "textfield", // لإخفاء الأسهم في Firefox
+              },
               "& .MuiOutlinedInput-root": {
                 padding: "5px",
                 color: "#2C2C2C",
@@ -211,34 +220,13 @@ const Content = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color:"#C9A34A",
+                color: "#C9A34A",
                 fontWeight: "600",
                 letterSpacing: "0.4px",
               },
               "& .MuiInputBase-input": {
-                color: "#C9A34A" ,
+                color: "#C9A34A",
                 padding: "12px 14px",
-              },
-              "& .MuiMenuItem-root": {
-                fontWeight: "500",
-                color: "#2C2C2C",
-                borderRadius: "8px",
-                margin: "4px 8px",
-                padding: "10px 14px",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)", // خلفية ذهبية فاتحة متدرجة
-                  color: "#B9972F",
-                  transform: "scale(1.02)", // حركة خفيفة عند الهوفر
-                },
-                "&.Mui-selected": {
-                  background: "linear-gradient(to right, #C9A34A, #B9972F)", // خلفية ذهبية عند الاختيار
-                  color: "#fff",
-                  fontWeight: "600",
-                },
-                "&.Mui-selected:hover": {
-                  background: "linear-gradient(to right, #B9972F, #A67C00)", // أغمق عند الهوفر مع الاختيار
-                },
               },
             }}
           />
@@ -255,7 +243,7 @@ const Content = () => {
                   <FaUmbrellaBeach
                     style={{
                       paddingLeft: "12px",
-                      color: "#C9A34A" ,
+                      color: "#C9A34A",
                       fontSize: "30px",
                     }}
                   />
@@ -288,13 +276,13 @@ const Content = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color:"#C9A34A" ,
+                color: "#C9A34A",
                 fontWeight: "800",
                 letterSpacing: "0.4px",
                 fontSize: "1rem",
               },
               "& .MuiInputBase-input": {
-                color:  "#C9A34A",
+                color: "#C9A34A",
                 padding: "12px 14px",
                 fontSize: "1rem",
               },
@@ -360,9 +348,10 @@ const Content = () => {
           <Button
             variant="contained"
             onClick={handleSearch}
+            disabled={!isFormValid}
             sx={{
-              backgroundColor: "#C9A34A", // اللون الأساسي
-              color: "#fff", // لون النص
+              backgroundColor: "#C9A34A",
+              color: "#fff",
               fontWeight: "600",
               borderRadius: "12px",
               px: 4,
@@ -370,12 +359,13 @@ const Content = () => {
               textTransform: "uppercase",
               boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
               "&:hover": {
-                backgroundColor: "#B9972F", // لون عند الـ hover
+                backgroundColor: "#B9972F",
                 boxShadow: "0 6px 14px rgba(0,0,0,0.25)",
               },
             }}
           >
-            Search
+            {" "}
+            Search{" "}
           </Button>
         </Box>
       </div>

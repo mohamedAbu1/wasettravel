@@ -33,7 +33,7 @@ const CalendarSC = () => {
   return (
     <div className="flex gap-6">
       {/* Arrival */}
-      <div className="flex-1 xl:min-w-[210px] flex flex-col">
+      <div className="flex-1 max-w-[120px] xl:min-w-[210px] flex flex-col">
         <DatePicker
           selected={arrival}
           onChange={(date) => setArrival(date)}
@@ -51,7 +51,7 @@ const CalendarSC = () => {
       </div>
 
       {/* Departure */}
-      <div className="flex-1 xl:min-w-[210px] flex flex-col">
+      <div className="flex-1 max-w-[120px] xl:min-w-[210px] flex flex-col">
         <DatePicker
           selected={departure}
           onChange={(date) => setDeparture(date)}

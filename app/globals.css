@@ -121,9 +121,9 @@ body {
   background: "rgba(255,255,255,0.08)" !important;
   backdrop-filter: blur(8px) !important;
 }
-.MuiOutlinedInput-notchedOutline {
+/* .MuiOutlinedInput-notchedOutline {
   border-color: var(--color) !important;
-}
+} */
 .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
   border-color: var(--color-hover) !important;
 }
@@ -141,12 +141,12 @@ body {
   font-size: 18px !important; /* حجم النص أكبر */
   font-weight: 500 !important;
   letter-spacing: 0.5px !important;
-  padding: 16px 20px !important; /* Padding داخلي أكبر */
+  padding: 16px 0px !important; /* Padding داخلي أكبر */
 }
 
 /* Input Label */
 .MuiInputLabel-root {
-  color: var(--color) !important;
+  /* color: var(--color) !important; */
   font-size: 16px !important; /* حجم الليبل أكبر */
   font-weight: 600 !important;
   transition: all 0.3s ease !important;

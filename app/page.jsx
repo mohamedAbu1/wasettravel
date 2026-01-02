@@ -1,14 +1,16 @@
-"use client";
-import CategoriesSection from "@/components/CategoriesSection";
-import CitiesSection from "@/components/CitiesSection";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import TopTripsSection from "@/components/TopTripsSection";
-import { useTheme } from "@/context/ThemeContext";
-
+import Footer from "@/components/Footer/Footer";
+import Header from "@/components/header/Header";
+import CarBookingSection from "@/components/home/CarBookingSection";
+import CategoriesSection from "@/components/home/CategoriesSection";
+import CitiesSection from "@/components/home/CitiesSection";
+import HeroSection from "@/components/home/HeroSection";
+import OurSection from "@/components/home/OurSection";
+import TopTripsSection from "@/components/home/TopTripsSection";
+import LoginModal from "@/components/home/components/LoginModal";
+import SignUpButton from "@/components/home/components/SignUpButton";
+// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 export default function Home() {
-  const { theme } = useTheme();
+  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   return (
     <main
@@ -16,6 +18,7 @@ export default function Home() {
         min-h-screen font-sans
        bg-white
         transition-colors duration-300
+         overflow-hidden
       `}
     >
       <Header />
@@ -24,16 +27,20 @@ export default function Home() {
       <HeroSection />
 
       {/* ================= CATEGORIES SECTION ================= */}
-      {/* <CategoriesSection /> */}
+      <CategoriesSection />
 
       {/* ================= TOP TRIPS SECTION ================= */}
-      {/* <TopTripsSection /> */}
+      <TopTripsSection />
 
       {/* ================= CITIES SECTION ================= */}
-      {/* <CitiesSection /> */}
-
+      <CitiesSection />
+      <OurSection />
+      <CarBookingSection />
       {/* ================= FOOTER ================= */}
-      {/* <Footer /> */}
+      <Footer />
+
+      <SignUpButton />
+      <LoginModal />
     </main>
   );
 }

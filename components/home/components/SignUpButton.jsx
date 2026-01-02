@@ -16,48 +16,39 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 
 export default function SignUpModal() {
-  const { handleClose, open } = useData();
+  const { handleClose, open, handleLoginOpen } = useData();
   const { themeName } = useTheme();
   const isDark = themeName === "dark";
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
+        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
         style={{
           background: isDark
-            ? "rgba(0,0,0,0.1)"
-            : "rgba(255,255,255,0.1)",
-          backdropFilter: "blur(8px)",
-          borderRadius: "20px",
-          border: "1px solid rgba(201,163,74,0.4)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+            ? "rgba(20,20,20,0.55)"
+            : "linear-gradient(135deg, #ffffff, #fdf6e3)",
+          backdropFilter: "blur(18px)",
+          borderRadius: "24px",
+          border: "1px solid rgba(201,163,74,0.3)",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
           overflow: "hidden",
         }}
       >
         {/* Header */}
-        <div
-          style={{
-            textAlign: "center",
-            padding: "28px 0 16px",
-            background: "transparent",
-          }}
-        >
+        <div style={{ textAlign: "center", padding: "32px 0 20px" }}>
           <h1
             style={{
               fontFamily: "Cinzel, serif",
-              fontSize: "42px",
+              fontSize: "46px",
               fontWeight: "700",
-              letterSpacing: "3px",
+              letterSpacing: "4px",
               textTransform: "uppercase",
               background: "linear-gradient(to right, #c9a34a, #b9972f)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              textShadow: isDark
-                ? "1px 1px 2px rgba(255,255,255,0.2)"
-                : "1px 1px 2px rgba(0,0,0,0.4)",
             }}
           >
             WasetTravel
@@ -69,8 +60,8 @@ export default function SignUpModal() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "18px",
-            padding: "28px",
+            gap: "20px",
+            padding: "32px",
           }}
         >
           <TextField
@@ -114,53 +105,51 @@ export default function SignUpModal() {
             }}
           />
 
-          <Divider style={{ margin: "12px 0", color: isDark ? "#aaa" : "#555" }}>
+          <Divider style={{ margin: "16px 0", color: "#b9972f" }}>
             or sign up with
           </Divider>
 
           {/* Social Buttons */}
-          <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
-            <IconButton
-              style={{
-                border: "1px solid rgba(255,255,255,0.3)",
-                borderRadius: "12px",
-                padding: "10px 20px",
-                backdropFilter: "blur(6px)",
-              }}
-            >
-              <FcGoogle size={24} />
+          <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
+            <IconButton>
+              <FcGoogle size={26} />
             </IconButton>
-            <IconButton
-              style={{
-                border: "1px solid rgba(255,255,255,0.3)",
-                borderRadius: "12px",
-                padding: "10px 20px",
-                color: "#1877f2",
-                backdropFilter: "blur(6px)",
-              }}
-            >
-              <FaFacebook size={24} />
+            <IconButton style={{ color: "#1877f2" }}>
+              <FaFacebook size={26} />
             </IconButton>
           </div>
 
           {/* Sign Up Button */}
-          <motion.div whileHover={{ scale: 1.05 }}>
+          <motion.div whileHover={{ scale: 1.05 }} style={{ marginTop: "16px" }}>
             <Button
               variant="contained"
               fullWidth
               style={{
-                marginTop: "12px",
-                background: "linear-gradient(to right, #ca8a04, #eab308)",
+                background: "linear-gradient(to right, #c9a34a, #eab308)",
                 color: "#fff",
-                fontWeight: "600",
-                padding: "12px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                fontWeight: "700",
+                padding: "14px",
+                borderRadius: "14px",
               }}
             >
               Sign Up
             </Button>
           </motion.div>
+
+          {/* زر فتح نافذة تسجيل الدخول */}
+          <Button
+            variant="text"
+            fullWidth
+            onClick={handleLoginOpen}
+            style={{
+              marginTop: "8px",
+              color: "#c9a34a",
+              fontWeight: "600",
+              textTransform: "none",
+            }}
+          >
+            Already have an account? Login
+          </Button>
         </DialogContent>
       </motion.div>
     </Dialog>

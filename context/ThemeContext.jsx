@@ -49,7 +49,7 @@ export function ThemeProvider({ children }) {
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   // Toggle theme
-  const toggleTheme = () => {
+  const toggleThemeFun = () => {
     const newTheme = themeName === "dark" ? "light" : "dark";
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
@@ -57,7 +57,7 @@ export function ThemeProvider({ children }) {
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   return (
-    <ThemeContext.Provider value={{ theme, themeName, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, themeName, toggleThemeFun }}>
       {children}
     </ThemeContext.Provider>
   );

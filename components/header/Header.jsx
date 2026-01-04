@@ -1,20 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiMenu, FiX } from "react-icons/fi";
-import { BsSun, BsMoon } from "react-icons/bs";
 import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@mui/material";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useData } from "@/context/DataContext";
+import ThemeToggle from "../ThemeToggle";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { themeName, toggleTheme, theme } = useTheme();
+  const { themeName, theme } = useTheme();
   const pathname = usePathname();
-  const navItems = ["Home", "Trips", "Cities", "Contact", "Admin"];
+  const navItems = ["Home", "Trips", "About", "Contact", "Admin"];
   const { handleOpen } = useData();
   // Scroll effect
   useEffect(() => {
@@ -65,7 +63,7 @@ export default function Header() {
               transition: { staggerChildren: 0.15 },
             },
           }}
-          className={`hidden md:flex items-center gap-10 ${theme.subText} font-medium text-lg`}
+          className={`hidden lg:flex items-center gap-10 ${theme.subText} font-medium text-lg`}
         >
           {navItems.map((item) => {
             const path =
@@ -110,25 +108,8 @@ export default function Header() {
         {/* Right Section */}
         <div className="flex items-center gap-4">
           {/* Theme Toggle */}
-          <motion.div whileHover={{ rotate: 20, scale: 1.1 }}>
-            <Button
-              onClick={toggleTheme}
-              className={`
-                p-2 rounded-full border transition-all duration-300
-                ${
-                  themeName === "dark"
-                    ? "bg-yellow-500 text-black border-yellow-600 hover:bg-yellow-600 hover:text-white"
-                    : "bg-gray-200 text-gray-800 border-gray-300 hover:bg-gray-300 hover:text-black"
-                }
-              `}
-            >
-              {themeName === "dark" ? (
-                <BsSun size={20} color="#fff" />
-              ) : (
-                <BsMoon size={20} color="#999" />
-              )}
-            </Button>
-          </motion.div>
+          <ThemeToggle />
+         
 
           {/* CTA */}
           <motion.div whileHover={{ scale: 1.1 }} className=" hidden md:flex">
@@ -149,18 +130,8 @@ export default function Header() {
             </Button>
           </motion.div>
 
-          {/* Mobile Menu Button */}
-          {/* <button
-            className={`md:hidden ${theme.icon} text-3xl`}
-            onClick={() => setMenuOpen(true)}
-          >
-            <FiMenu />
-          </button> */}
         </div>
-      </div>
-
-      {/* Mobile Menu */}
-     
+      </div>     
     </motion.header>
   );
 }

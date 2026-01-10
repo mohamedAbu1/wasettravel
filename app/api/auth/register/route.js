@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { z } from "zod";
-import { supabaseAdmin as supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import { createSessionCookie } from "@/lib/utils/JWToken";
 import { UserSchema } from "@/lib/schemas/userSchema";
 import { maleAvatars, femaleAvatars } from "@/constants/images";

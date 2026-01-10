@@ -1,0 +1,12 @@
+{
+  "header": {
+    "home": "Home",
+    "trips": "Trips",
+    "about": "About",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "tripsId":{
+    "submitReview":"Submit Review"
+  }
+}

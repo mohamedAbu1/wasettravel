@@ -1,24 +1,58 @@
 "use client";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { useAuth } from "@/context/AuthContext"; // نستدعي الـ Context اللي فيه register
 import {
   Button,
-  TextField,
   Dialog,
   DialogContent,
   Divider,
+  FormControlLabel,
+  FormLabel,
   IconButton,
   InputAdornment,
+  Radio,
+  RadioGroup,
+  TextField,
 } from "@mui/material";
+import { motion, AnimatePresence } from "framer-motion";
+import { MdEmail, MdLock, MdPerson } from "react-icons/md";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook, FaFemale, FaMale } from "react-icons/fa";
 import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
-import { MdPerson, MdEmail, MdLock } from "react-icons/md";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { useSecurity } from "@/context/SecurityContext";
 
 export default function SignUpModal() {
-  const { handleClose, open, handleLoginOpen } = useData();
+  const { handleLoginOpen } = useData();
   const { themeName } = useTheme();
   const isDark = themeName === "dark";
+  const { validateField } = useSecurity(); // دالة التحقق
+  // state للحقول
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [gender, setGender] = useState("");
+
+  const { register, loading, error, open, handleClose } = useAuth(); // من الـ Context
+
+  const handleSubmit = async () => {
+    const nameError = validateField("Full Name", fullName);
+    const emailError = validateField("Email", email);
+    const passwordError = validateField("Password", password);
+    if (nameError || emailError || passwordError || !gender) {
+      toast.error(
+        nameError || emailError || passwordError || "Gender is required"
+      );
+      return;
+    }
+    try {
+      await register(email, password, fullName, gender);
+      handleClose(); // إغلاق المودال بعد النجاح
+    } catch (err) {
+      toast.error("❌ Error: " + err.message);
+    }
+  };
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
@@ -68,6 +102,8 @@ export default function SignUpModal() {
             label="Full Name"
             variant="outlined"
             fullWidth
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -82,6 +118,8 @@ export default function SignUpModal() {
             type="email"
             variant="outlined"
             fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -96,6 +134,8 @@ export default function SignUpModal() {
             type="password"
             variant="outlined"
             fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -104,13 +144,49 @@ export default function SignUpModal() {
               ),
             }}
           />
-
+          <FormLabel
+            component="legend"
+            style={{ color: "#c9a34a", fontWeight: "600" }}
+          >
+            Gender
+          </FormLabel>
+          <RadioGroup
+            row
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            style={{ justifyContent: "center", gap: "20px" }}
+          >
+            <FormControlLabel
+              value="male"
+              control={<Radio />}
+              label={
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <FaMale color="#1e40af" /> Male
+                </div>
+              }
+            />
+            <FormControlLabel
+              value="female"
+              control={<Radio />}
+              label={
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <FaFemale color="#db2777" /> Female
+                </div>
+              }
+            />
+          </RadioGroup>
           <Divider style={{ margin: "16px 0", color: "#b9972f" }}>
             or sign up with
           </Divider>
 
           {/* Social Buttons */}
-          <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
+          <div
+            style={{ display: "flex", gap: "16px", justifyContent: "center" }}
+          >
             <IconButton>
               <FcGoogle size={26} />
             </IconButton>
@@ -120,10 +196,15 @@ export default function SignUpModal() {
           </div>
 
           {/* Sign Up Button */}
-          <motion.div whileHover={{ scale: 1.05 }} style={{ marginTop: "16px" }}>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            style={{ marginTop: "16px" }}
+          >
             <Button
               variant="contained"
               fullWidth
+              onClick={handleSubmit}
+              disabled={loading}
               style={{
                 background: "linear-gradient(to right, #c9a34a, #eab308)",
                 color: "#fff",
@@ -132,9 +213,11 @@ export default function SignUpModal() {
                 borderRadius: "14px",
               }}
             >
-              Sign Up
+              {loading ? "Creating..." : "Sign Up"}
             </Button>
           </motion.div>
+
+          {/* {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>} */}
 
           {/* زر فتح نافذة تسجيل الدخول */}
           <Button

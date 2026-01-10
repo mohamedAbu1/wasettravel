@@ -44,7 +44,7 @@ const CarBookingSection = () => {
           <span
             key={i}
             className={`absolute ${
-              themeName === "dark" ? "text-gray-700" : "text-[#c9a34a]"
+              themeName === "dark" ? "text-[#c9a34a]" : "text-[#c9a34a]"
             } opacity-30 text-6xl animate-pulse`}
             style={{
               top: `${Math.random() * 100}%`,

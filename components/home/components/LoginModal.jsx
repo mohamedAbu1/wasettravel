@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -14,11 +15,43 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
+import { useSecurity } from "@/context/SecurityContext"; // ✅ استدعاء الكونتكست
 
 export default function LoginModal() {
   const { loginOpen, handleLoginClose, handleOpen } = useData();
   const { themeName } = useTheme();
   const isDark = themeName === "dark";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // من الـ AuthContext
+  const { login, loading, error, handleClose } = useAuth();
+
+  // من SecurityContext
+  const { validateField } = useSecurity();
+
+  const handleSubmit = async () => {
+    // ✅ تحقق من الحقول قبل تسجيل الدخول
+    const emailError = validateField("Email", email);
+    const passwordError = validateField("Password", password);
+
+    if (emailError || passwordError) {
+      toast.error(emailError || passwordError);
+      return;
+    }
+
+    try {
+      await login(email, password);
+      toast.success("Logged in successfully!");
+      handleLoginClose();
+      handleClose();
+    } catch (err) {
+      toast.error("❌ Error: The email or password is incorrect.");
+    }
+  };
 
   return (
     <Dialog open={loginOpen} onClose={handleLoginClose} fullWidth maxWidth="sm">
@@ -69,6 +102,8 @@ export default function LoginModal() {
             label="Email"
             type="email"
             fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -82,6 +117,8 @@ export default function LoginModal() {
             label="Password"
             type="password"
             fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -96,7 +133,9 @@ export default function LoginModal() {
           </Divider>
 
           {/* Social Buttons */}
-          <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
+          <div
+            style={{ display: "flex", gap: "16px", justifyContent: "center" }}
+          >
             <IconButton>
               <FcGoogle size={26} />
             </IconButton>
@@ -110,6 +149,8 @@ export default function LoginModal() {
             <Button
               variant="contained"
               fullWidth
+              onClick={handleSubmit}
+              disabled={loading}
               style={{
                 marginTop: "12px",
                 background: "linear-gradient(to right, #c9a34a, #eab308)",
@@ -120,7 +161,7 @@ export default function LoginModal() {
                 boxShadow: "0 6px 24px rgba(201,163,74,0.4)",
               }}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </motion.div>
 
@@ -130,7 +171,7 @@ export default function LoginModal() {
             fullWidth
             onClick={() => {
               handleLoginClose();
-              handleOpen(); // يفتح نافذة Sign Up
+              handleOpen();
             }}
             style={{
               marginTop: "8px",

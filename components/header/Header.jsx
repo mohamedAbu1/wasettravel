@@ -1,20 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useTheme } from "@/context/ThemeContext";
-import { Button } from "@mui/material";
-import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { useData } from "@/context/DataContext";
-import ThemeToggle from "../ThemeToggle";
+import { useTheme } from "@/context/ThemeContext";
+import Logo from "./components/Logo";
+import NavBar from "./components/NavBar";
+import RightBar from "./components/RightBar";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const { themeName, theme } = useTheme();
-  const pathname = usePathname();
-  const navItems = ["Home", "Trips", "About", "Contact", "Admin"];
-  const { handleOpen } = useData();
-  // Scroll effect
+  const { theme } = useTheme();
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
@@ -33,105 +28,10 @@ export default function Header() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-        >
-          <Link href="/" className="flex items-center gap-2">
-            <span
-              className={
-                themeName === "dark"
-                  ? `text-4xl font-bold tracking-wide text-white`
-                  : `text-4xl font-bold tracking-wide text-[#d4af37]`
-              }
-            >
-              WasetTravel
-            </span>
-          </Link>
-        </motion.div>
-
-        {/* Desktop Navigation */}
-        <motion.nav
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.15 },
-            },
-          }}
-          className={`hidden lg:flex items-center gap-10 ${theme.subText} font-medium text-lg`}
-        >
-          {navItems.map((item) => {
-            const path =
-              item.toLowerCase() === "home" ? "/" : `/${item.toLowerCase()}`;
-            const isActive = pathname === path;
-            return (
-              <motion.div
-                key={item}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 },
-                }}
-              >
-                <Link
-                  href={path}
-                  className={`relative group ${
-                    isActive ? "text-[#d4af37] font-semibold" : ""
-                  }`}
-                >
-                  <span
-                    className={`transition ${
-                      isActive
-                        ? "text-[#d4af37]"
-                        : themeName === "dark"
-                        ? "text-amber-50 hover:text-[#d4af37]"
-                        : "text-[#999] hover:text-[#d4af37]"
-                    }`}
-                  >
-                    {item}
-                  </span>
-                  <span
-                    className={`absolute left-0 -bottom-1 h-[2px] bg-[#d4af37] transition-all ${
-                      isActive ? "w-full" : "w-0 group-hover:w-full"
-                    }`}
-                  ></span>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </motion.nav>
-
-        {/* Right Section */}
-        <div className="flex items-center gap-4">
-          {/* Theme Toggle */}
-          <ThemeToggle />
-         
-
-          {/* CTA */}
-          <motion.div whileHover={{ scale: 1.1 }} className=" hidden md:flex">
-            <Button
-              onClick={handleOpen}
-              style={{
-                padding: "12px 24px",
-                background: "linear-gradient(to right, #ca8a04, #eab308)",
-                color: "#fff",
-                fontWeight: "600",
-                letterSpacing: "0.05em",
-                borderRadius: "0.5rem",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-                transition: "all 0.3s ease",
-              }}
-            >
-              Sign Up
-            </Button>
-          </motion.div>
-
-        </div>
-      </div>     
+        <Logo />
+        <NavBar />
+        <RightBar />
+      </div>
     </motion.header>
   );
 }

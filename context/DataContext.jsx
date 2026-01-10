@@ -24,9 +24,6 @@ export function DataProvider({ children }) {
   const [endDate, setEndDate] = useState(null);
   const [images, setImages] = useState(desktopImages);
   const [index, setIndex] = useState(0);
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const handleLoginOpen = () => {setLoginOpen(true) ,setOpen(false)};
   const handleLoginClose = () => setLoginOpen(false);
@@ -148,10 +145,6 @@ export function DataProvider({ children }) {
         handleSearch,
         specialDates,
         DayWithIcon,
-        handleOpen,
-        handleClose,
-        open,
-        setOpen,
         images,
         setImages,
         index,

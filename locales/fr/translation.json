@@ -1,0 +1,9 @@
+{
+  "header": {
+    "home": "Accueil",
+    "trips": "Voyages",
+    "about": "À propos",
+    "contact": "Contact",
+    "admin": "Admin"
+  }
+}

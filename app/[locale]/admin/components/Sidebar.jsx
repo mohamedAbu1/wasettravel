@@ -8,6 +8,7 @@ import {
   FaUsers,
   FaClipboardList,
   FaChartBar,
+  FaEnvelope, // ✅ أيقونة الرسايل
 } from "react-icons/fa";
 import EgyptianBackground from "@/components/trips/EgyptianBackground";
 
@@ -70,6 +71,13 @@ export default function Sidebar({ setActiveSection }) {
           className="flex items-center gap-3"
         >
           <FaChartBar /> Reports
+        </button>
+        <button
+          style={{ cursor: "pointer" }}
+          onClick={() => setActiveSection("messages")}
+          className="flex items-center gap-3"
+        >
+          <FaEnvelope /> Messages
         </button>
       </nav>
     </aside>

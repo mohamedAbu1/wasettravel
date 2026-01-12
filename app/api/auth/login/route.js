@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { createSessionCookie } from "@/lib/utils/JWToken";
 import { supabase } from "@/lib/supabaseClient";
 
+// ✅ تسجيل الدخول
 export async function POST(request) {
   try {
     const { email, password } = await request.json();
@@ -36,17 +37,16 @@ export async function POST(request) {
       email: user.email,
       name: user.name,
       role: user.role,
-      avatar_url: user.avatar_url, // ✅ أضفها هنا
+      avatar_url: user.avatar_url,
     });
 
     // أرسل التوكين والبيانات
     const res = NextResponse.json({
       message: "تم تسجيل الدخول بنجاح",
       user,
-      token, // علشان نخزنه في localStorage بالـ client
+      token,
     });
 
-    // ضبط الكوكيز في الـ headers
     res.headers.set("Set-Cookie", cookie);
     return res;
   } catch (e) {

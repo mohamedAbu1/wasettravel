@@ -54,7 +54,9 @@
     "Gender": "Gender",
     "Luxor": "Luxor",
     "OneDayTrips": "One Day Trips",
-    "SelectCategory": "SelectCategory"
+    "SelectCategory": "SelectCategory",
+    "p6":"No 5-star reviews yet",
+    "h6":"What Our Travelers Say"
   },
   "trips": {
     "Searchtrips": "Search trips...",

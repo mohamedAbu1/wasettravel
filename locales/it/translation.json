@@ -52,7 +52,9 @@
     "Gender": "Genere",
     "Luxor": "Luxor",
     "OneDayTrips": "Gite di un giorno",
-    "SelectCategory": "SelezionaCategoria"
+    "SelectCategory": "SelezionaCategoria",
+    "p6": "Nessuna recensione a 5 stelle ancora",
+    "h6": "Cosa dicono i nostri viaggiatori"
   },
   "trips": {
     "Searchtrips": "Cerca viaggi...",

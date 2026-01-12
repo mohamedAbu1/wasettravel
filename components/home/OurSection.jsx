@@ -171,6 +171,7 @@ const OurSection = () => {
 
           <button
             onClick={() => router.push("/about")}
+            style={{cursor:"pointer"}}
             className={`hover:scale-105 px-6 py-3 rounded-lg font-semibold transition shadow-lg ${
               themeName === "dark"
                 ? "bg-amber-400 text-black hover:bg-yellow-500"

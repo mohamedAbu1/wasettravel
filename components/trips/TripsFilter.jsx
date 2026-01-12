@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/static-components */
+"use client";
 import React from "react";
 import { FaMapMarkerAlt, FaDollarSign, FaTags, FaFire } from "react-icons/fa";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 
 const AnkhIcon = () => (
   <span className="text-[#c9a34a] dark:text-gold text-xl font-bold">☥</span>
@@ -31,7 +33,10 @@ export default function TripsFilter({ filters, setFilters }) {
   ];
 
   const Divider = () => (
-    <div className="relative flex items-center justify-center my-4">
+    <motion.div
+      variants={fadeUp}
+      className="relative flex items-center justify-center my-4"
+    >
       <hr
         className={`w-full border-t-2 ${
           filters.themeName === "dark"
@@ -42,32 +47,48 @@ export default function TripsFilter({ filters, setFilters }) {
       <div className="absolute bg-inherit px-2">
         <AnkhIcon />
       </div>
-    </div>
+    </motion.div>
   );
 
   if (loading) {
     return <p className="text-center text-gray-500">{t("Loading")}</p>;
   }
 
+  // ✨ Variants للأنيميشن
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const staggerContainer = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.2 } }
+  };
+
   return (
-    <aside
+    <motion.aside
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={staggerContainer}
       className={`p-6 rounded-xl shadow-lg transition ${
         filters.themeName === "dark"
           ? "bg-gradient-to-br from-[#0a0a0a] via-[#111] to-[#1a1a1a] border border-[#c9a34a]/40 text-gray-100"
           : "bg-white/0 border border-[#c9a34a]/30 text-[#3a2c0a] "
       }`}
     >
-      <h3
+      <motion.h3
+        variants={fadeUp}
         className={`text-xl font-bold mb-6 ${
           filters.themeName === "dark" ? "text-[#c9a34a]" : "text-[#3a2c0a]"
         }`}
       >
         {t("Filters")}
-      </h3>
+      </motion.h3>
 
-      <div className="flex flex-col gap-8">
+      <motion.div variants={staggerContainer} className="flex flex-col gap-8">
         {/* المدن */}
-        <div>
+        <motion.div variants={fadeUp}>
           <label className="flex items-center gap-2 font-semibold mb-3">
             <FaMapMarkerAlt className="text-[#c9a34a]" /> {t("Cities")} :
           </label>
@@ -76,7 +97,8 @@ export default function TripsFilter({ filters, setFilters }) {
               const cityName =
                 city.name?.[currentLang] || city.name?.["en"] || city.name;
               return (
-                <label
+                <motion.label
+                  variants={fadeUp}
                   key={city.id ?? cityName}
                   className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
                 >
@@ -87,16 +109,16 @@ export default function TripsFilter({ filters, setFilters }) {
                     onChange={() => handleCheckboxChange("city", cityName)}
                   />
                   {cityName}
-                </label>
+                </motion.label>
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         <Divider />
 
         {/* الكاتجري */}
-        <div>
+        <motion.div variants={fadeUp}>
           <label className="flex items-center gap-2 font-semibold mb-3">
             <FaTags className="text-[#c9a34a]" /> {t("Categories")}:
           </label>
@@ -105,7 +127,8 @@ export default function TripsFilter({ filters, setFilters }) {
               const categoryName =
                 cat.name?.[currentLang] || cat.name?.["en"] || cat.name;
               return (
-                <label
+                <motion.label
+                  variants={fadeUp}
                   key={cat.id ?? categoryName}
                   className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
                 >
@@ -116,22 +139,23 @@ export default function TripsFilter({ filters, setFilters }) {
                     onChange={() => handleCheckboxChange("category", categoryName)}
                   />
                   {categoryName}
-                </label>
+                </motion.label>
               );
             })}
           </div>
-        </div>
+        </motion.div>
 
         <Divider />
 
         {/* السعر */}
-        <div>
+        <motion.div variants={fadeUp}>
           <label className="flex items-center gap-2 font-semibold mb-3">
             <FaDollarSign className="text-[#c9a34a]" />{t("PriceRange")} :
           </label>
           <div className="flex flex-col gap-2 ml-6">
             {priceRanges.map((range) => (
-              <label
+              <motion.label
+                variants={fadeUp}
                 key={range.value}
                 className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
               >
@@ -143,15 +167,15 @@ export default function TripsFilter({ filters, setFilters }) {
                   onChange={() => setFilters({ ...filters, price: range.value })}
                 />
                 {range.label}
-              </label>
+              </motion.label>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         <Divider />
 
         {/* الأكثر طلباً */}
-        <div>
+        <motion.div variants={fadeUp}>
           <label className="flex items-center gap-2 font-semibold cursor-pointer hover:text-[#c9a34a] transition">
             <FaFire className="text-[#c9a34a]" />{t("MostPopular")} 
             <input
@@ -163,8 +187,8 @@ export default function TripsFilter({ filters, setFilters }) {
               }
             />
           </label>
-        </div>
-      </div>
-    </aside>
+        </motion.div>
+      </motion.div>
+    </motion.aside>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useAuth } from "@/context/AuthContext"; // نستدعي الـ Context اللي فيه register
+import { useAuth } from "@/context/AuthContext";
 import {
   Button,
   Dialog,
@@ -14,7 +14,7 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { MdEmail, MdLock, MdPerson } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaFemale, FaMale } from "react-icons/fa";
@@ -28,15 +28,47 @@ export default function SignUpModal() {
   const { handleLoginOpen } = useData();
   const { themeName } = useTheme();
   const isDark = themeName === "dark";
-  const { validateField } = useSecurity(); // دالة التحقق
-  // state للحقول
+  const { validateField } = useSecurity();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [gender, setGender] = useState("");
   const { t } = useTranslation("home");
 
-  const { register, loading, error, open, handleClose } = useAuth(); // من الـ Context
+  const { register, loading, error, open, handleClose } = useAuth();
+
+  // 🎨 ألوان واضحة للكتابة حسب الثيم
+  const mainTextColor = isDark ? "#ffffff" : "#1a1a1a";   // النص الأساسي
+  const placeholderColor = isDark ? "#FFD700" : "#3a2c0a"; // الـ placeholder
+  const labelColor = isDark ? "#FFD700" : "#3a2c0a";       // الـ label
+  const borderColor = isDark ? "#FFD700" : "#c9a34a";      // الإطار
+
+ const textFieldStyle = {
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: borderColor },
+    "&:hover fieldset": { borderColor: borderColor },
+    "&.Mui-focused fieldset": { borderColor: borderColor },
+    backgroundColor: isDark ? "rgba(0,0,0,0.6)" : "#fff",
+  },
+  "& .MuiInputLabel-root": {
+    color: labelColor,
+    fontWeight: "600",
+    fontSize: "0.95rem",
+    letterSpacing: "0.5px",
+  },
+  "& .MuiInputBase-input": {
+    color: mainTextColor,        // لون النص الأساسي
+    fontWeight: "600",
+    fontSize: "1rem",
+    letterSpacing: "0.3px",
+  },
+  "& .MuiInputBase-input::placeholder": {
+    color: placeholderColor,     // لون الـ placeholder
+    opacity: 0.8,
+    fontStyle: "italic",
+  },
+};
+
 
   const handleSubmit = async () => {
     const nameError = validateField("Full Name", fullName);
@@ -50,7 +82,7 @@ export default function SignUpModal() {
     }
     try {
       await register(email, password, fullName, gender);
-      handleClose(); // إغلاق المودال بعد النجاح
+      handleClose();
     } catch (err) {
       toast.error("❌ Error: " + err.message);
     }
@@ -109,27 +141,49 @@ export default function SignUpModal() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <MdPerson color="#c9a34a" />
+                  <MdPerson color={borderColor} />
                 </InputAdornment>
               ),
             }}
+            sx={textFieldStyle}
           />
 
-          <TextField
-            label={t("Email")}
-            type="email"
-            variant="outlined"
-            fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <MdEmail color="#c9a34a" />
-                </InputAdornment>
-              ),
-            }}
-          />
+        <TextField
+  label={t("Email")}
+  type="email"
+  variant="outlined"
+  fullWidth
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  InputProps={{
+    startAdornment: (
+      <InputAdornment position="start">
+        <MdEmail color={isDark ? "#FFD700" : "#c9a34a"} />
+      </InputAdornment>
+    ),
+  }}
+  sx={{
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": { borderColor: isDark ? "#FFD700" : "#c9a34a" },
+      "&:hover fieldset": { borderColor: isDark ? "#FFD700" : "#c9a34a" },
+      "&.Mui-focused fieldset": { borderColor: isDark ? "#FFD700" : "#c9a34a" },
+      backgroundColor: isDark ? "rgba(0,0,0,0.6)" : "#fff",
+    },
+    "& .MuiInputLabel-root": {
+      color: isDark ? "#FFD700" : "#3a2c0a",
+      fontWeight: "bold",
+    },
+    "& .MuiInputBase-input": {
+      color: isDark ? "#ffffff" : "#1a1a1a", // لون الكتابة الأساسي
+      fontWeight: "600",
+    },
+    "& .MuiInputBase-input::placeholder": {
+      color: isDark ? "#FFD700" : "#3a2c0a", // لون الـ placeholder
+      opacity: 0.9,
+    },
+  }}
+/>
+
 
           <TextField
             label={t("Password")}
@@ -141,16 +195,18 @@ export default function SignUpModal() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <MdLock color="#c9a34a" />
+                  <MdLock color={borderColor} />
                 </InputAdornment>
               ),
             }}
+            sx={textFieldStyle}
           />
+
           <FormLabel
             component="legend"
             style={{ color: "#c9a34a", fontWeight: "600" }}
           >
-           {t("Gender")} 
+            {t("Gender")}
           </FormLabel>
           <RadioGroup
             row
@@ -162,9 +218,7 @@ export default function SignUpModal() {
               value={t("male")}
               control={<Radio />}
               label={
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
-                >
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <FaMale color="#1e40af" /> {t("male")}
                 </div>
               }
@@ -173,22 +227,19 @@ export default function SignUpModal() {
               value={t("female")}
               control={<Radio />}
               label={
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
-                >
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <FaFemale color="#db2777" /> {t("female")}
                 </div>
               }
             />
           </RadioGroup>
+
           <Divider style={{ margin: "16px 0", color: "#b9972f" }}>
             {t("orsignupwith")}
           </Divider>
 
           {/* Social Buttons */}
-          <div
-            style={{ display: "flex", gap: "16px", justifyContent: "center" }}
-          >
+          <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
             <IconButton>
               <FcGoogle size={26} />
             </IconButton>
@@ -198,10 +249,7 @@ export default function SignUpModal() {
           </div>
 
           {/* Sign Up Button */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            style={{ marginTop: "16px" }}
-          >
+          <motion.div whileHover={{ scale: 1.05 }} style={{ marginTop: "16px" }}>
             <Button
               variant="contained"
               fullWidth
@@ -215,11 +263,9 @@ export default function SignUpModal() {
                 borderRadius: "14px",
               }}
             >
-              {loading ? t("Creating") :t("SignUp")}
+              {loading ? t("Creating") : t("SignUp")}
             </Button>
           </motion.div>
-
-          {/* {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>} */}
 
           {/* زر فتح نافذة تسجيل الدخول */}
           <Button
@@ -233,7 +279,7 @@ export default function SignUpModal() {
               textTransform: "none",
             }}
           >
-           {t("Alreadyhaveanaccount?Login")}
+            {t("Alreadyhaveanaccount?Login")}
           </Button>
         </DialogContent>
       </motion.div>

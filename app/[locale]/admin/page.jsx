@@ -11,6 +11,7 @@ import BookingsList from "./components/BookingsList";
 import Reports from "./components/Reports";
 import ThemeToggle from "@/components/ThemeToggle";
 import EgyptianBackground from "@/components/trips/EgyptianBackground";
+import MessagesList from "./components/MessagesList";
 
 const symbols = [
   "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
@@ -65,6 +66,7 @@ export default function DashboardPage() {
         {activeSection === "users" && <UsersList themeName={themeName} />}
         {activeSection === "bookings" && <BookingsList themeName={themeName} />}
         {activeSection === "reports" && <Reports themeName={themeName} />}
+        {activeSection === "messages" && <MessagesList themeName={themeName} />} {/* ✅ سكشن الرسايل */}
       </section>
     </main>
   );

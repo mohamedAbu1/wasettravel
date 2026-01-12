@@ -9,6 +9,7 @@ import { SecurityProvider } from "@/context/SecurityContext";
 import { TripProvider } from "@/context/TripContext";
 import { ReviewsProvider } from "@/context/ReviewsContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { MessageProvider } from "@/context/MessageContext";
 import { CitiesCategoriesProvider } from "@/context/CitiesCategoriesContext";
 import { ToastContainer } from "react-toastify";
 
@@ -23,12 +24,14 @@ export default function Providers({ children }) {
                 <CitiesCategoriesProvider>
                   <LanguageProvider>
                     <ReviewsProvider>
-                      <ToastContainer
-                        position="top-right"
-                        autoClose={3000}
-                        theme="colored"
-                      />
-                      {children}
+                      <MessageProvider>
+                        <ToastContainer
+                          position="top-right"
+                          autoClose={3000}
+                          theme="colored"
+                        />
+                        {children}
+                      </MessageProvider>
                     </ReviewsProvider>
                   </LanguageProvider>
                 </CitiesCategoriesProvider>

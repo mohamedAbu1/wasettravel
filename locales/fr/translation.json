@@ -52,7 +52,9 @@
     "Gender": "Genre",
     "Luxor": "Louxor",
     "OneDayTrips": "Excursions d'une journée",
-    "SelectCategory": "Sélectionner une catégorie"
+    "SelectCategory": "Sélectionner une catégorie",
+    "p6": "Pas encore d’avis 5 étoiles",
+    "h6": "Ce que disent nos voyageurs"
   },
   "trips": {
     "Searchtrips": "Rechercher des voyages...",

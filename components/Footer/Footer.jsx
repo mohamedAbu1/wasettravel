@@ -3,6 +3,7 @@
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
   const { theme, themeName } = useTheme();
@@ -11,6 +12,7 @@ const Footer = () => {
     "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
     "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
   ];
+  const { t } = useTranslation("footer");
 
   return (
     <footer
@@ -73,7 +75,7 @@ const Footer = () => {
 
       {/* الوصف */}
       <p className="mt-2 text-sm opacity-80 text-center max-w-xl relative z-10">
-        © 2025 — Explore Egypt with Comfort & Luxury
+      {t("p")}
       </p>
 
       {/* روابط سريعة */}
@@ -84,7 +86,7 @@ const Footer = () => {
             themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
           }`}
         >
-          About Us
+          {t("AboutUs")}
         </a>
         <a
           href="#"
@@ -92,7 +94,7 @@ const Footer = () => {
             themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
           }`}
         >
-          Tours
+         {t("Tours")}
         </a>
         <a
           href="#"
@@ -100,7 +102,7 @@ const Footer = () => {
             themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
           }`}
         >
-          Contact
+         {t("Contact")} 
         </a>
       </div>
 
@@ -146,6 +148,7 @@ const Footer = () => {
         >
           <FaYoutube />
         </a>
+
       </div>
     </footer>
   );

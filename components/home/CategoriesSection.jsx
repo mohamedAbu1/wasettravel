@@ -3,9 +3,11 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const CategoriesSection = () => {
   const { theme, themeName } = useTheme();
+  const { t } = useTranslation("home");
 
   const categories = [
     {
@@ -129,10 +131,10 @@ const CategoriesSection = () => {
             }
           `}
         >
-          Explore Categories
+         {t("ExploreCategories")} 
         </h2>
         <p className="mt-4 text-lg opacity-80 text-start">
-          Discover unique journeys crafted for unforgettable memories
+         {t("Discover")}
         </p>
         <div className="flex items-center text-left gap-3 mt-4 ">
           <div

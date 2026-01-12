@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 /* eslint-disable react-hooks/purity */
 "use client";
 import React from "react";
@@ -6,7 +7,9 @@ import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
-
+import { useTranslation } from "react-i18next";
+import LoginModal from "@/components/home/components/LoginModal";
+import SignUpButton from "@/components/home/components/SignUpButton";
 const symbols = [
   "𓂀",
   "𓋹",
@@ -28,12 +31,13 @@ const symbols = [
 
 export default function AboutPage() {
   const { theme, themeName } = useTheme();
+  const { t } = useTranslation("about");
 
   return (
     <main
       className={`relative w-full min-h-screen ${theme.background} ${theme.text} overflow-hidden pt-10`}
     >
-        <Header />
+      <Header />
       {/* Hieroglyphic background */}
       <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 26 }).map((_, i) => (
@@ -68,7 +72,7 @@ export default function AboutPage() {
                 themeName === "dark" ? "text-white/60" : "text-[#6b4f1d]"
               }`}
             >
-              About WasetTravel
+              {t("AboutWasetTravel")}
             </p>
             <h1
               className={`text-4xl lg:text-5xl font-extrabold leading-tight ${
@@ -77,16 +81,14 @@ export default function AboutPage() {
                   : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
               }`}
             >
-              Luxury journeys crafted with heritage and heart
+              {t("h1")}
             </h1>
             <p
               className={`${
                 themeName === "dark" ? "text-white/80" : "text-[#5c4520]"
               } text-lg`}
             >
-              We design immersive experiences across Egypt—from the Nile’s
-              timeless elegance to the White Desert’s quiet wonder. Every detail
-              reflects comfort, culture, and care.
+              {t("p")}
             </p>
             <div className="flex items-center gap-3">
               <div
@@ -150,14 +152,13 @@ export default function AboutPage() {
                 : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
             }`}
           >
-            <h3 className="text-xl font-bold mb-2">Our mission</h3>
+            <h3 className="text-xl font-bold mb-2">{t("h3")}</h3>
             <p
               className={`${
                 themeName === "dark" ? "text-white/80" : "text-[#5c4520]"
               }`}
             >
-              Elevate travel in Egypt through curated, comfortable, and
-              culturally rich experiences.
+              {t("p2")}
             </p>
           </div>
           <div
@@ -167,7 +168,7 @@ export default function AboutPage() {
                 : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
             }`}
           >
-            <h3 className="text-xl font-bold mb-2">Our values</h3>
+            <h3 className="text-xl font-bold mb-2">{t("h2")}</h3>
             <ul className="space-y-2">
               <li>
                 <span
@@ -177,7 +178,7 @@ export default function AboutPage() {
                 >
                   •
                 </span>{" "}
-                Craftsmanship in every detail
+                {t("li")}
               </li>
               <li>
                 <span
@@ -187,7 +188,7 @@ export default function AboutPage() {
                 >
                   •
                 </span>{" "}
-                Authentic heritage
+                {t("li2")}
               </li>
               <li>
                 <span
@@ -197,7 +198,7 @@ export default function AboutPage() {
                 >
                   •
                 </span>{" "}
-                Comfort and care
+                {t("li3")}
               </li>
             </ul>
           </div>
@@ -208,14 +209,13 @@ export default function AboutPage() {
                 : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
             }`}
           >
-            <h3 className="text-xl font-bold mb-2">Why choose us</h3>
+            <h3 className="text-xl font-bold mb-2">{t("h4")}</h3>
             <p
               className={`${
                 themeName === "dark" ? "text-white/80" : "text-[#5c4520]"
               }`}
             >
-              Professional guides, seamless logistics, and designs that honor
-              Egypt’s soul.
+              {t("p3")}
             </p>
           </div>
         </div>
@@ -225,10 +225,10 @@ export default function AboutPage() {
       <section className="relative z-10 py-14 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { label: "Years of excellence", value: "10+" },
-            { label: "Happy travelers", value: "25K+" },
-            { label: "Curated tours", value: "120+" },
-            { label: "Partner hotels", value: "60+" },
+            { label:t("label") , value: "10+" },
+            { label:t("label2") , value: "25K+" },
+            { label:t("label3"), value: "120+" },
+            { label:t("label4"), value: "60+" },
           ].map((stat, i) => (
             <div
               key={i}
@@ -267,16 +267,13 @@ export default function AboutPage() {
           }`}
         >
           <div className="flex-1">
-            <h3 className="text-2xl font-bold mb-3">
-              Rooted in Egyptian heritage
-            </h3>
+            <h3 className="text-2xl font-bold mb-3">{t("h5")}</h3>
             <p
               className={`${
                 themeName === "dark" ? "text-white/80" : "text-[#5c4520]"
               }`}
             >
-              Our visual identity embraces hieroglyphic symbolism, gold accents,
-              and warm tones—bringing elegance to every touchpoint.
+              {t("p4")}
             </p>
           </div>
           <div className="flex-1 relative w-full h-56">
@@ -293,16 +290,13 @@ export default function AboutPage() {
       {/* CTA */}
       <section className="relative z-10 pb-24 px-6">
         <div className="max-w-7xl mx-auto text-center">
-          <h4 className="text-xl font-semibold mb-3">
-            Ready to plan your journey?
-          </h4>
+          <h4 className="text-xl font-semibold mb-3">{t("h6")}</h4>
           <p
             className={`${
               themeName === "dark" ? "text-white/80" : "text-[#5c4520]"
             } mb-6`}
           >
-            Let’s craft an itinerary that feels personal, elegant, and
-            effortless.
+            {t("p5")}
           </p>
           <a
             href="/contact"
@@ -312,11 +306,13 @@ export default function AboutPage() {
                 : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
             }`}
           >
-            Contact us
+            {t("a")}
           </a>
         </div>
       </section>
       <Footer />
+       <SignUpButton />
+            <LoginModal />
     </main>
   );
 }

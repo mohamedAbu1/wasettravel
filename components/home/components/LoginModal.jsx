@@ -18,6 +18,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import { useSecurity } from "@/context/SecurityContext"; // ✅ استدعاء الكونتكست
+import { useTranslation } from "react-i18next";
 
 export default function LoginModal() {
   const { loginOpen, handleLoginClose, handleOpen } = useData();
@@ -26,6 +27,7 @@ export default function LoginModal() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { t } = useTranslation("home");
 
   // من الـ AuthContext
   const { login, loading, error, handleClose } = useAuth();
@@ -85,7 +87,7 @@ export default function LoginModal() {
               textShadow: "0 0 12px rgba(201,163,74,0.25)",
             }}
           >
-            Login
+            {t("Login")}
           </h2>
         </div>
 
@@ -99,7 +101,7 @@ export default function LoginModal() {
           }}
         >
           <TextField
-            label="Email"
+            label={t("Email")}
             type="email"
             fullWidth
             value={email}
@@ -114,7 +116,7 @@ export default function LoginModal() {
           />
 
           <TextField
-            label="Password"
+            label={t("Password")}
             type="password"
             fullWidth
             value={password}
@@ -129,7 +131,7 @@ export default function LoginModal() {
           />
 
           <Divider style={{ margin: "16px 0", color: "#b9972f" }}>
-            or continue with
+            {t("orcontinuewith")}
           </Divider>
 
           {/* Social Buttons */}
@@ -161,7 +163,7 @@ export default function LoginModal() {
                 boxShadow: "0 6px 24px rgba(201,163,74,0.4)",
               }}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? t("Loggingin") : t("Login")}
             </Button>
           </motion.div>
 
@@ -180,7 +182,7 @@ export default function LoginModal() {
               textTransform: "none",
             }}
           >
-            Don’t have an account? Sign Up
+           {t("Don’thaveanaccount?SignUp")} 
           </Button>
         </DialogContent>
       </motion.div>

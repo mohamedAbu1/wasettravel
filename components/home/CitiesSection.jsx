@@ -4,9 +4,11 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const CitiesSection = () => {
   const { theme, themeName } = useTheme();
+  const { t } = useTranslation("home");
 
   const cities = [
     { name: "Cairo", img: "/HomePageImage/pexels-francesco-albanese-2150950215-31730178.webp" },
@@ -80,7 +82,7 @@ const CitiesSection = () => {
             }
           `}
         >
-          Explore Cities
+         {t("ExploreCities")} 
         </h2>
         <div className="flex items-center gap-3 mt-4">
           <div
@@ -157,7 +159,7 @@ const CitiesSection = () => {
                       }
                     `}
                   >
-                    Explore
+                   {t("Explore")}
                   </button>
                 </div>
 

@@ -10,14 +10,17 @@ import StarIcon from "@mui/icons-material/Star";
 import { Box } from "@mui/material";
 import { PickersDay } from "@mui/x-date-pickers";
 import { desktopImages, mobileImages } from "@/constants/images";
+import { useTranslation } from "react-i18next";
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 const DataContext = createContext();
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 export function DataProvider({ children }) {
+    const { i18n, t } = useTranslation("home");
+
   const { themeName, theme } = useTheme(); // theme يحتوي على خصائص من lightTheme أو darkTheme
-  const [city, setCity] = useState("Luxor");
+  const [city, setCity] = useState(t("Luxor"));
   const [price, setPrice] = useState("150");
-  const [tripType, setTripType] = useState("Cultural");
+  const [tripType, setTripType] = useState(t("OneDayTrips"));
   const [arrival, setArrival] = useState(addDays(new Date(), 2));
   const [departure, setDeparture] = useState(addDays(new Date(), 9));
   const [startDate, setStartDate] = useState(null);

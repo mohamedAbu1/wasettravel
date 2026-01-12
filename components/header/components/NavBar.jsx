@@ -21,7 +21,7 @@ export default function NavBar() {
   if (user?.role?.toUpperCase() === "ADMIN") {
     navItems.push("admin");
   }
-console.log(normalizePath)
+  console.log(normalizePath);
   return (
     <motion.nav
       initial="hidden"
@@ -37,7 +37,8 @@ console.log(normalizePath)
     >
       {navItems.map((item) => {
         const path = item === "home" ? "/" : `/${item}`;
-        const isActive = normalizePath === item; // ✅ هنا تستخدمه
+        const firstSegment = pathname.split("/")[1] || "home";
+        const isActive = firstSegment === item;
 
         return (
           <motion.div
@@ -49,7 +50,9 @@ console.log(normalizePath)
           >
             <Link
               href={path}
-              className={`relative group ${isActive ? "text-[#d4af37] font-semibold" : ""}`}
+              className={`relative group ${
+                isActive ? "text-[#d4af37] font-semibold" : ""
+              }`}
             >
               <span
                 className={`transition ${

@@ -1,9 +1,12 @@
+"use client"
 import React from "react";
 import { FaSearch, FaThLarge, FaBars } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle }) {
   const { themeName } = useTheme();
+  const { t } = useTranslation("trips");
 
   return (
     <div
@@ -17,7 +20,7 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
       <FaSearch className={`text-xl ${themeName === "dark" ? "text-gold" : "text-[#3a2c0a]"}`} />
       <input
         type="text"
-        placeholder="Search trips..."
+        placeholder={t("Searchtrips")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className={`flex-1 p-2 rounded-lg border outline-none transition ${
@@ -41,7 +44,7 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
-          <FaThLarge /> Vertical
+          <FaThLarge /> {t("Vertical")}
         </button>
 
         <button
@@ -56,7 +59,7 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
         >
-          <FaBars /> Horizontal
+          <FaBars /> {t("Horizontal")} 
         </button>
       </div>
     </div>

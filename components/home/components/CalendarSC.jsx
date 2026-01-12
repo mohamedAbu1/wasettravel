@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useData } from "@/context/DataContext.jsx";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 import { MdDateRange } from "react-icons/md"; // أيقونة احترافية للتقويم
 // Custom Input Component
 const CustomInput = forwardRef(({ value, onClick, placeholder }, ref) => (
@@ -29,6 +30,7 @@ const CalendarSC = () => {
     specialDates,
   } = useData();
   const { themeName } = useTheme();
+  const { t } = useTranslation("home");
 
   return (
     <div className="flex gap-6">
@@ -38,7 +40,7 @@ const CalendarSC = () => {
           selected={arrival}
           onChange={(date) => setArrival(date)}
           dateFormat="dd/MM/yyyy"
-          placeholderText="Check-in"
+          placeholderText={t("Checkin")}
           customInput={<CustomInput />}
           minDate={addDays(new Date(), 2)}
           dayClassName={(day) => {
@@ -57,7 +59,7 @@ const CalendarSC = () => {
           onChange={(date) => setDeparture(date)}
           minDate={startDate ? addDays(startDate, 7) : addDays(new Date(), 4)}
           dateFormat="dd/MM/yyyy"
-          placeholderText="Check-out"
+          placeholderText={t("Checkout")}
           customInput={<CustomInput />}
         />
       </div>

@@ -7,7 +7,8 @@ import { use } from "react";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/header/Header";
 import EgyptianBackground from "@/components/trips/EgyptianBackground";
-
+import LoginModal from "@/components/home/components/LoginModal";
+import SignUpButton from "@/components/home/components/SignUpButton";
 // الكومبوننتات الجديدة
 import TripHeader from "./components/TripHeader";
 import TripCities from "./components/TripCities";
@@ -57,11 +58,11 @@ export default function TripPage({ params }) {
         <div className="col-span-1 lg:col-span-3">
           <TripHeader trip={trip} lang={lang} />
         </div>
-        <TripInfo trip={trip}  lang={lang}/>
+        <TripInfo trip={trip} lang={lang} />
         {/* المدن + الكاتجريز في عمود واحد */}
         <div className="flex flex-col gap-8">
-          <TripCities trip={trip}  lang={lang}/>
-          <TripCategories trip={trip}  lang={lang}/>
+          <TripCities trip={trip} lang={lang} />
+          <TripCategories trip={trip} lang={lang} />
         </div>
 
         {/* الإنكلودز في العمود الثاني */}
@@ -76,11 +77,13 @@ export default function TripPage({ params }) {
         </div>
         <div className="col-span-1 lg:col-span-3">
           {" "}
-          <TripReviews trip={trip} lang={lang}/>{" "}
+          <TripReviews trip={trip} lang={lang} />{" "}
         </div>
       </div>
 
       <Footer />
+      <SignUpButton />
+      <LoginModal />
     </main>
   );
 }

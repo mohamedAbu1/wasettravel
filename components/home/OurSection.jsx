@@ -11,10 +11,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const OurSection = () => {
   const router = useRouter();
   const { theme, themeName } = useTheme();
+  const { t } = useTranslation("home");
 
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => {
@@ -128,7 +130,7 @@ const OurSection = () => {
               color: themeName === "dark" ? "#aaa" : "#6b4f1d",
             }}
           >
-            About Us
+           {t("AboutUs")} 
           </p>
 
           <h2
@@ -137,7 +139,7 @@ const OurSection = () => {
               color: themeName === "dark" ? "#fff" : "#3a2c0a",
             }}
           >
-            Discover WasetTravel
+           {t("DiscoverWasetTravel")}  
           </h2>
 
           <p
@@ -146,7 +148,7 @@ const OurSection = () => {
               color: themeName === "dark" ? "#ccc" : "#5c4520",
             }}
           >
-            At{" "}
+           {t("At")}{" "}
             <span
               style={{
                 color: "#c9a34a",
@@ -155,19 +157,16 @@ const OurSection = () => {
             >
               WasetTravel
             </span>
-            , we craft unforgettable journeys across Egypt. From luxury Nile
-            cruises to desert adventures, our mission is to combine comfort,
-            heritage, and elegance. With{" "}
+            {t("AtP")}{" "}
             <span
               style={{
                 color: "#c9a34a",
                 fontWeight: 600,
               }}
             >
-              professional guides
+             {t("professionalguides")} 
             </span>{" "}
-            and curated experiences, we ensure every trip reflects the beauty
-            and history of Egypt.
+           {t("AtPP")} 
           </p>
 
           <button
@@ -178,7 +177,7 @@ const OurSection = () => {
                 : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
             }`}
           >
-            Learn More About Us
+           {t("LearnMoreAboutUs")}
           </button>
         </motion.div>
       </div>

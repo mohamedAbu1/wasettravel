@@ -6,10 +6,26 @@ import { useTheme } from "@/context/ThemeContext";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
-
+import { useTranslation } from "react-i18next";
+import LoginModal from "@/components/home/components/LoginModal";
+import SignUpButton from "@/components/home/components/SignUpButton";
 const symbols = [
-  "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
-  "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
+  "𓂀",
+  "𓋹",
+  "𓆣",
+  "𓇼",
+  "𓇯",
+  "𓏏",
+  "𓎛",
+  "𓊽",
+  "𓃾",
+  "𓅓",
+  "𓈇",
+  "𓉐",
+  "𓊹",
+  "𓌙",
+  "𓍿",
+  "𓎟",
 ];
 
 export default function ContactPage() {
@@ -20,6 +36,7 @@ export default function ContactPage() {
     email: "",
     message: "",
   });
+  const { t } = useTranslation("contact");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -30,14 +47,18 @@ export default function ContactPage() {
   };
 
   return (
-    <main className={`relative w-full min-h-screen ${theme.background} ${theme.text} overflow-hidden pt-7`}>
-        <Header />
+    <main
+      className={`relative w-full min-h-screen ${theme.background} ${theme.text} overflow-hidden pt-7`}
+    >
+      <Header />
       {/* خلفية الرموز الفرعونية */}
       <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 25 }).map((_, i) => (
           <span
             key={i}
-            className={`absolute ${themeName === "dark" ? "text-gray-700" : "text-[#c9a34a]"} opacity-20 text-7xl animate-pulse`}
+            className={`absolute ${
+              themeName === "dark" ? "text-gray-700" : "text-[#c9a34a]"
+            } opacity-20 text-7xl animate-pulse`}
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
@@ -50,7 +71,7 @@ export default function ContactPage() {
       </div>
 
       {/* المحتوى */}
-      <section  className="relative z-10 pt-20 px-6">
+      <section className="relative z-10 pt-20 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* معلومات التواصل */}
           <motion.div
@@ -64,22 +85,32 @@ export default function ContactPage() {
                 : "bg-white/70 border border-[#c9a34a]/30 backdrop-blur-sm"
             }`}
           >
-            <h2 className="text-3xl font-bold mb-6">Get in Touch</h2>
-            <p className="mb-6 opacity-80">
-              Reach out to us for inquiries, bookings, or personalized itineraries.
-            </p>
+            <h2 className="text-3xl font-bold mb-6">{t("h1")}</h2>
+            <p className="mb-6 opacity-80">{t("p1")}</p>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <FaPhoneAlt className={themeName === "dark" ? "text-gold" : "text-[#c9a34a]"} />
+                <FaPhoneAlt
+                  className={
+                    themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
+                  }
+                />
                 <span>+20 123 456 7890</span>
               </div>
               <div className="flex items-center gap-3">
-                <FaEnvelope className={themeName === "dark" ? "text-gold" : "text-[#c9a34a]"} />
+                <FaEnvelope
+                  className={
+                    themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
+                  }
+                />
                 <span>info@wasettravel.com</span>
               </div>
               <div className="flex items-center gap-3">
-                <FaMapMarkerAlt className={themeName === "dark" ? "text-gold" : "text-[#c9a34a]"} />
-                <span>Cairo, Egypt</span>
+                <FaMapMarkerAlt
+                  className={
+                    themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
+                  }
+                />
+                <span>{t("sp")}</span>
               </div>
             </div>
           </motion.div>
@@ -97,9 +128,9 @@ export default function ContactPage() {
                 : "bg-white/70 border border-[#c9a34a]/30 backdrop-blur-sm"
             }`}
           >
-            <h2 className="text-3xl font-bold mb-6">Send us a Message</h2>
+            <h2 className="text-3xl font-bold mb-6">{t("h2")}</h2>
             <div>
-              <label className="block mb-2 font-semibold">Full Name</label>
+              <label className="block mb-2 font-semibold">{t("lb")}</label>
               <input
                 type="text"
                 name="name"
@@ -111,11 +142,11 @@ export default function ContactPage() {
                     ? "bg-[#0f0f0f] border-gold/30 text-white"
                     : "bg-[#fdf6e3] border-[#c9a34a]/40 text-[#3a2c0a]"
                 }`}
-                placeholder="Enter your name"
+                placeholder={t("inp")}
               />
             </div>
             <div>
-              <label className="block mb-2 font-semibold">Phone Number</label>
+              <label className="block mb-2 font-semibold">{t("lb2")}</label>
               <input
                 type="tel"
                 name="phone"
@@ -127,11 +158,11 @@ export default function ContactPage() {
                     ? "bg-[#0f0f0f] border-gold/30 text-white"
                     : "bg-[#fdf6e3] border-[#c9a34a]/40 text-[#3a2c0a]"
                 }`}
-                placeholder="Enter your phone number"
+                placeholder={t("inp2")}
               />
             </div>
             <div>
-              <label className="block mb-2 font-semibold">Email Address</label>
+              <label className="block mb-2 font-semibold">{t("lb3")}</label>
               <input
                 type="email"
                 name="email"
@@ -143,11 +174,11 @@ export default function ContactPage() {
                     ? "bg-[#0f0f0f] border-gold/30 text-white"
                     : "bg-[#fdf6e3] border-[#c9a34a]/40 text-[#3a2c0a]"
                 }`}
-                placeholder="Enter your email"
+                placeholder={t("inp3")}
               />
             </div>
             <div>
-              <label className="block mb-2 font-semibold">Message</label>
+              <label className="block mb-2 font-semibold">{t("lb4")}</label>
               <textarea
                 name="message"
                 value={formData.message}
@@ -159,7 +190,7 @@ export default function ContactPage() {
                     ? "bg-[#0f0f0f] border-gold/30 text-white"
                     : "bg-[#fdf6e3] border-[#c9a34a]/40 text-[#3a2c0a]"
                 }`}
-                placeholder="Write your message..."
+                placeholder={t("inp4")}
               ></textarea>
             </div>
             <button
@@ -170,12 +201,14 @@ export default function ContactPage() {
                   : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
               }`}
             >
-              Send Message
+              {t("btn")}
             </button>
           </motion.form>
         </div>
       </section>
       <Footer />
+      <SignUpButton />
+      <LoginModal />
     </main>
   );
 }

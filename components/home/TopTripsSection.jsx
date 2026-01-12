@@ -4,6 +4,7 @@ import Image from "next/image";
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const TopTripsSection = () => {
   const { themeName } = useTheme();
@@ -12,6 +13,7 @@ const TopTripsSection = () => {
     "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
     "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
   ];
+  const { t } = useTranslation("home");
 
   const trips = [
     {
@@ -98,7 +100,7 @@ const TopTripsSection = () => {
               : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
           }`}
         >
-          Top Trips
+          {t("TopTrips")}
         </h2>
         <div className="flex items-center gap-3 mt-4 justify-center">
           <div className={`h-[3px] w-20 ${themeName === "dark" ? "bg-[#c9a34a] opacity-10 w-full" : "bg-[#c9a34a]"}`}></div>
@@ -166,7 +168,7 @@ const TopTripsSection = () => {
                       : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"}
                   `}
                 >
-                  Book Now
+                 {t("BookNow")} 
                 </button>
               </div>
             </div>

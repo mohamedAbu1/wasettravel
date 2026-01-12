@@ -1,6 +1,4 @@
-// file: app/api/categories/route.js
 import { supabase } from "@/lib/supabaseClient";
-
 
 export async function GET() {
   try {

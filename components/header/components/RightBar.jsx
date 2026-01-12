@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import ThemeToggle from "../../ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export default function RightBar() {
   const { isLoggedIn, logout, user, handleOpen } = useAuth();
   const { themeName } = useTheme();
+  const { t } = useTranslation("header");
 
   return (
     <div className="flex items-center gap-4">
@@ -27,7 +29,7 @@ export default function RightBar() {
             transition: "all 0.3s ease",
           }}
         >
-          {isLoggedIn ? "Logout" : "Sign Up"}
+          {isLoggedIn ? t("Logout") : t("SignUp")}
         </Button>
       </motion.div>
       {isLoggedIn && user && (

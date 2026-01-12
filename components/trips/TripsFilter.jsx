@@ -1,12 +1,19 @@
 /* eslint-disable react-hooks/static-components */
 import React from "react";
 import { FaMapMarkerAlt, FaDollarSign, FaTags, FaFire } from "react-icons/fa";
-// أيقونة مفتاح الحياة (Ankh) غير موجودة في react-icons بشكل مباشر، ممكن نستخدم Unicode أو SVG
+import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
+import { useTranslation } from "react-i18next";
+
 const AnkhIcon = () => (
   <span className="text-[#c9a34a] dark:text-gold text-xl font-bold">☥</span>
 );
 
 export default function TripsFilter({ filters, setFilters }) {
+  const { cities: allCities, categories: allCategories, loading } = useCitiesCategories();
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language || "en";
+  const { t } = useTranslation("trips");
+
   const handleCheckboxChange = (type, value) => {
     const current = filters[type] || [];
     if (current.includes(value)) {
@@ -23,29 +30,6 @@ export default function TripsFilter({ filters, setFilters }) {
     { label: "1500+ $", value: "1500+" },
   ];
 
-  const cities = [
-    "Cairo",
-    "Giza",
-    "Luxor",
-    "Aswan",
-    "Hurghada",
-    "Sharm El Sheikh",
-    "Siwa",
-    "Alexandria",
-  ];
-
-  const categories = [
-    "Cruise",
-    "Adventure",
-    "Diving",
-    "Historical",
-    "Safari",
-    "Luxury",
-    "Family",
-    "Romantic",
-  ];
-
-  // مكون الفاصل مع رمز مفتاح الحياة
   const Divider = () => (
     <div className="relative flex items-center justify-center my-4">
       <hr
@@ -61,6 +45,10 @@ export default function TripsFilter({ filters, setFilters }) {
     </div>
   );
 
+  if (loading) {
+    return <p className="text-center text-gray-500">{t("Loading")}</p>;
+  }
+
   return (
     <aside
       className={`p-6 rounded-xl shadow-lg transition ${
@@ -74,30 +62,34 @@ export default function TripsFilter({ filters, setFilters }) {
           filters.themeName === "dark" ? "text-[#c9a34a]" : "text-[#3a2c0a]"
         }`}
       >
-        Filters
+        {t("Filters")}
       </h3>
 
       <div className="flex flex-col gap-8">
         {/* المدن */}
         <div>
           <label className="flex items-center gap-2 font-semibold mb-3">
-            <FaMapMarkerAlt className="text-[#c9a34a]" /> Cities:
+            <FaMapMarkerAlt className="text-[#c9a34a]" /> {t("Cities")} :
           </label>
           <div className="grid grid-cols-2 gap-2 ml-6">
-            {cities.map((city) => (
-              <label
-                key={city}
-                className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
-              >
-                <input
-                  type="checkbox"
-                  className="accent-[#c9a34a] cursor-pointer"
-                  checked={filters.city?.includes(city) || false}
-                  onChange={() => handleCheckboxChange("city", city)}
-                />
-                {city}
-              </label>
-            ))}
+            {allCities.map((city) => {
+              const cityName =
+                city.name?.[currentLang] || city.name?.["en"] || city.name;
+              return (
+                <label
+                  key={city.id ?? cityName}
+                  className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
+                >
+                  <input
+                    type="checkbox"
+                    className="accent-[#c9a34a] cursor-pointer"
+                    checked={filters.city?.includes(cityName) || false}
+                    onChange={() => handleCheckboxChange("city", cityName)}
+                  />
+                  {cityName}
+                </label>
+              );
+            })}
           </div>
         </div>
 
@@ -106,23 +98,27 @@ export default function TripsFilter({ filters, setFilters }) {
         {/* الكاتجري */}
         <div>
           <label className="flex items-center gap-2 font-semibold mb-3">
-            <FaTags className="text-[#c9a34a]" /> Categories:
+            <FaTags className="text-[#c9a34a]" /> {t("Categories")}:
           </label>
           <div className="grid grid-cols-2 gap-2 ml-6">
-            {categories.map((cat) => (
-              <label
-                key={cat}
-                className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
-              >
-                <input
-                  type="checkbox"
-                  className="accent-[#c9a34a] cursor-pointer"
-                  checked={filters.category?.includes(cat) || false}
-                  onChange={() => handleCheckboxChange("category", cat)}
-                />
-                {cat}
-              </label>
-            ))}
+            {allCategories.map((cat) => {
+              const categoryName =
+                cat.name?.[currentLang] || cat.name?.["en"] || cat.name;
+              return (
+                <label
+                  key={cat.id ?? categoryName}
+                  className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
+                >
+                  <input
+                    type="checkbox"
+                    className="accent-[#c9a34a] cursor-pointer"
+                    checked={filters.category?.includes(categoryName) || false}
+                    onChange={() => handleCheckboxChange("category", categoryName)}
+                  />
+                  {categoryName}
+                </label>
+              );
+            })}
           </div>
         </div>
 
@@ -131,7 +127,7 @@ export default function TripsFilter({ filters, setFilters }) {
         {/* السعر */}
         <div>
           <label className="flex items-center gap-2 font-semibold mb-3">
-            <FaDollarSign className="text-[#c9a34a]" /> Price Range:
+            <FaDollarSign className="text-[#c9a34a]" />{t("PriceRange")} :
           </label>
           <div className="flex flex-col gap-2 ml-6">
             {priceRanges.map((range) => (
@@ -157,7 +153,7 @@ export default function TripsFilter({ filters, setFilters }) {
         {/* الأكثر طلباً */}
         <div>
           <label className="flex items-center gap-2 font-semibold cursor-pointer hover:text-[#c9a34a] transition">
-            <FaFire className="text-[#c9a34a]" /> Most Popular
+            <FaFire className="text-[#c9a34a]" />{t("MostPopular")} 
             <input
               type="checkbox"
               className="ml-2 accent-[#c9a34a] cursor-pointer"

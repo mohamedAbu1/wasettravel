@@ -1,9 +1,11 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 /* eslint-disable react-hooks/purity */
 "use client";
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { FaCarSide } from "react-icons/fa";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 const CarBookingSection = () => {
   const { themeName } = useTheme();
@@ -12,6 +14,7 @@ const CarBookingSection = () => {
     "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
     "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
   ];
+  const { t } = useTranslation("home");
 
   return (
     <section
@@ -78,11 +81,10 @@ const CarBookingSection = () => {
                 : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
             }`}
           >
-            Premium Car Transfer
+           {t("PremiumCarTransfer")} 
           </h2>
           <p className="mt-6 text-lg opacity-80 leading-relaxed max-w-xl">
-            Experience luxury airport transfers with modern vehicles and professional drivers. 
-            Travel comfortably and safely from the airport to your hotel and back, with elegance and ease.
+            {t("Experience")}
           </p>
 
           {/* Booking Button */}
@@ -94,7 +96,7 @@ const CarBookingSection = () => {
                 : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
             }`}
           >
-            Book Your Car Now
+           {t("Book")} 
           </a>
         </div>
       </div>

@@ -1,13 +1,12 @@
 // file: app/api/cities/route.js
 import { supabase } from "@/lib/supabaseClient";
 
-
 export async function GET() {
   try {
     const { data, error } = await supabase
       .from("cities")
-      .select("*")
-      .order("name", { ascending: true });
+      .select(`id, name, images`)
+      .order("id", { ascending: true }); // الترتيب حسب id أو أي عمود ثابت
 
     if (error) throw error;
 

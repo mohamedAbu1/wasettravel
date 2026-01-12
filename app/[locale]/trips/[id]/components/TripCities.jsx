@@ -1,9 +1,10 @@
 "use client";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
+import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { motion } from "framer-motion";
 
-// كائن الترجمات
+// كائن الترجمات للعناوين
 const translations = {
   en: { title: "Cities" },
   de: { title: "Städte" },
@@ -15,9 +16,17 @@ const translations = {
 
 export default function TripCities({ trip, lang }) {
   const { themeName } = useTheme();
+  const { cities: allCities } = useCitiesCategories();
 
   // لو اللغة مش موجودة، نرجع للإنجليزية
   const t = translations[lang] || translations.en;
+
+  // دالة ترجمة النصوص من jsonb
+  const getLocalizedText = (obj) => {
+    if (!obj) return "Unknown";
+    if (typeof obj === "string") return obj;
+    return obj?.[lang] || obj?.en || "Unknown";
+  };
 
   return (
     <motion.section
@@ -49,30 +58,40 @@ export default function TripCities({ trip, lang }) {
 
       {/* المدن */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {trip.trip_cities?.map((c, idx) => (
-          <motion.div
-            key={c.city_id}
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: idx * 0.1 }}
-            whileHover={{ scale: 1.05, rotate: 1 }}
-            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer ${
-              themeName === "dark"
-                ? "bg-black/60 hover:bg-black/80"
-                : "bg-[#fdf6e3] hover:bg-[#f5deb3]"
-            }`}
-          >
-            <FaMapMarkerAlt
-              className={`flex-shrink-0 ${
-                themeName === "dark" ? "text-[#c9a34a]" : "text-[#c9a34a]"
+        {trip.trip_cities?.map((c, idx) => {
+          // نجيب المدينة من allCities بالـ id
+          const cityObj = allCities.find((city) => city.id === c.city_id);
+
+          const cityName =
+            getLocalizedText(cityObj?.name) ||
+            getLocalizedText(c.cities?.name) ||
+            "Unknown";
+
+          return (
+            <motion.div
+              key={c.city_id}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: idx * 0.1 }}
+              whileHover={{ scale: 1.05, rotate: 1 }}
+              className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer ${
+                themeName === "dark"
+                  ? "bg-black/60 hover:bg-black/80"
+                  : "bg-[#fdf6e3] hover:bg-[#f5deb3]"
               }`}
-            />
-            <span className="text-sm md:text-base font-medium">
-              {c.cities?.name}
-            </span>
-          </motion.div>
-        ))}
+            >
+              <FaMapMarkerAlt
+                className={`flex-shrink-0 ${
+                  themeName === "dark" ? "text-[#c9a34a]" : "text-[#c9a34a]"
+                }`}
+              />
+              <span className="text-sm md:text-base font-medium">
+                {cityName}
+              </span>
+            </motion.div>
+          );
+        })}
       </div>
     </motion.section>
   );

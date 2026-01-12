@@ -6,7 +6,8 @@ import TripsGrid from "@/components/trips/TripsGrid";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
 import EgyptianBackground from "@/components/trips/EgyptianBackground"; // استدعاء الخلفية
-
+import LoginModal from "@/components/home/components/LoginModal";
+import SignUpButton from "@/components/home/components/SignUpButton";
 export default function TripsPage() {
   const trips = [
     {
@@ -123,7 +124,7 @@ export default function TripsPage() {
 
       {/* المحتوى الرئيسي */}
       <section
-        style={{ marginTop: "85px", paddingBottom: "20px" }}
+        style={{ marginTop: "105px", paddingBottom: "20px" }}
         className="container flex flex-1 gap-6 px-6 relative z-10"
       >
         {/* الفلتر في الجانب الأيسر */}
@@ -139,30 +140,33 @@ export default function TripsPage() {
             cardStyle={cardStyle}
             setCardStyle={setCardStyle}
           />
-          <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
-          {/* البفكيشن */}
+          <TripsGrid trips={currentTrips} cardStyle={cardStyle} />{" "}
           {/* البفكيشن */}{" "}
-          <div className="flex justify-center gap-2 mt-4">
-            {" "}
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1 rounded-lg font-bold transition ${
-                  currentPage === i + 1
-                    ? "bg-[#c9a34a] text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                {" "}
-                {i + 1}{" "}
-              </button>
-            ))}{" "}
-          </div>
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              {" "}
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-3 py-1 rounded-lg font-bold transition ${
+                    currentPage === i + 1
+                      ? "bg-[#c9a34a] text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  {" "}
+                  {i + 1}{" "}
+                </button>
+              ))}{" "}
+            </div>
+          )}
         </div>
       </section>
 
       <Footer />
+      <SignUpButton />
+      <LoginModal />
     </main>
   );
 }

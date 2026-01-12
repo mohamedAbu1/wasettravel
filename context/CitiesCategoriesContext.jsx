@@ -1,5 +1,6 @@
 // file: context/CitiesCategoriesContext.js
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const CitiesCategoriesContext = createContext();
 
@@ -7,6 +8,9 @@ export function CitiesCategoriesProvider({ children }) {
   const [cities, setCities] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { i18n } = useTranslation(); // اللغة الحالية للموقع
+  const language = i18n.language || "en"; // افتراضي إنجليزي لو مش محدد
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,12 +35,25 @@ export function CitiesCategoriesProvider({ children }) {
     fetchData();
   }, []);
 
+  // فلترة أسماء المدن حسب لغة الموقع الحالي
+  const localizedCities = cities.map(city => ({
+    ...city,
+    name: city.translations?.[language] || city.translations?.["en"] || city.name,
+  }));
+
+  // فلترة الكاتجري حسب لغة الموقع الحالي
+  const localizedCategories = categories.map(cat => ({
+    ...cat,
+    name: cat.name?.[language] || cat.name?.["en"] || cat.name,
+  }));
+
   return (
-    <CitiesCategoriesContext.Provider value={{ cities, categories, loading }}>
+    <CitiesCategoriesContext.Provider
+      value={{ cities: localizedCities, categories: localizedCategories, loading }}
+    >
       {children}
     </CitiesCategoriesContext.Provider>
   );
 }
 
-// Hook للاستخدام داخل أي كومبوننت
 export const useCitiesCategories = () => useContext(CitiesCategoriesContext);

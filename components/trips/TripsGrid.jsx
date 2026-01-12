@@ -3,20 +3,27 @@
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useTrip } from "@/context/TripContext";
+import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { useEffect } from "react";
 import { FaStar } from "react-icons/fa";
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // لو بتستخدم App Router
+import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+
 export default function TripsGrid({ cardStyle = "vertical" }) {
   const { themeName } = useTheme();
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const { lang } = useLanguage(); // اللغة الحالية
+  const { cities: allCities, categories: allCategories } =
+    useCitiesCategories();
   const router = useRouter();
+
   useEffect(() => {
     fetchTrips();
   }, []);
 
   const getRandomStars = () => Math.floor(Math.random() * 3) + 3;
+  const { t } = useTranslation("trips");
 
   if (loadingTrips) {
     return <p className="text-center text-gray-500">Loading trips...</p>;
@@ -33,6 +40,44 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
       {trips.map((trip, i) => {
         const stars = getRandomStars();
         const reviews = trip.reviews || Math.floor(Math.random() * 200) + 20;
+
+        // استخراج أسماء المدن والكاتجري مترجمة حسب اللغة الحالية
+        const getLocalizedText = (obj, lang) => {
+          if (!obj) return "Unknown";
+          if (typeof obj === "string") return obj;
+          return obj[lang] || obj["en"] || "Unknown";
+        };
+
+        const tripCities =
+          trip.trip_cities?.length > 0
+            ? trip.trip_cities
+                .map((c) => {
+                  // جرب كل الاحتمالات
+                  return (
+                    getLocalizedText(c.cities?.name, lang) ||
+                    getLocalizedText(c.city?.name, lang) ||
+                    getLocalizedText(c.city_name, lang)
+                  );
+                })
+                .join(" • ")
+            : "Unknown";
+
+        const tripCategories =
+          trip.trip_categories?.length > 0
+            ? trip.trip_categories
+                .map((cat) => {
+                  const catObj = allCategories.find(
+                    (category) => category.id === cat.category_id
+                  );
+                  return (
+                    catObj?.name?.[lang] ||
+                    catObj?.name?.["en"] ||
+                    catObj?.name ||
+                    "General"
+                  );
+                })
+                .join(" • ")
+            : "General";
 
         return (
           <div
@@ -80,16 +125,10 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
               >
                 {trip.title?.[lang] || trip.title?.en || "Untitled"}
               </h4>
+
+              {/* المدن والكاتجري مترجمة */}
               <p className="text-sm opacity-90">
-                {trip.trip_cities?.length
-                  ? trip.trip_cities.map((c) => c.cities?.name).join(" • ")
-                  : "Unknown"}{" "}
-                •{" "}
-                {trip.trip_categories?.length
-                  ? trip.trip_categories
-                      .map((cat) => cat.categories?.name)
-                      .join(" • ")
-                  : "General"}
+                {tripCities} • {tripCategories}
               </p>
 
               <p className="text-md font-semibold">
@@ -115,19 +154,21 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                     }`}
                   />
                 ))}
-                <span className="text-sm opacity-80">({reviews} reviews)</span>
+                <span className="text-sm opacity-80">
+                  ({reviews} {t("reviews")})
+                </span>
               </div>
 
               <button
                 style={{ cursor: "pointer" }}
-                onClick={() => router.push(`/trips/${trip.id}`)} // التوجيه للصفحة الديناميكية
+                onClick={() => router.push(`/trips/${trip.id}`)}
                 className={`mt-2 px-4 py-2 rounded-lg font-bold transition ${
                   themeName === "dark"
                     ? "bg-[#c9a34a] text-black hover:bg-yellow-500"
                     : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
                 }`}
               >
-                Book Now
+                {t("btn")}
               </button>
             </div>
           </div>

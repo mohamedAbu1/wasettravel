@@ -22,6 +22,7 @@ import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
 import { toast } from "react-toastify";
 import { useSecurity } from "@/context/SecurityContext";
+import { useTranslation } from "react-i18next";
 
 export default function SignUpModal() {
   const { handleLoginOpen } = useData();
@@ -33,6 +34,7 @@ export default function SignUpModal() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [gender, setGender] = useState("");
+  const { t } = useTranslation("home");
 
   const { register, loading, error, open, handleClose } = useAuth(); // من الـ Context
 
@@ -99,7 +101,7 @@ export default function SignUpModal() {
           }}
         >
           <TextField
-            label="Full Name"
+            label={t("FullName")}
             variant="outlined"
             fullWidth
             value={fullName}
@@ -114,7 +116,7 @@ export default function SignUpModal() {
           />
 
           <TextField
-            label="Email"
+            label={t("Email")}
             type="email"
             variant="outlined"
             fullWidth
@@ -130,7 +132,7 @@ export default function SignUpModal() {
           />
 
           <TextField
-            label="Password"
+            label={t("Password")}
             type="password"
             variant="outlined"
             fullWidth
@@ -148,7 +150,7 @@ export default function SignUpModal() {
             component="legend"
             style={{ color: "#c9a34a", fontWeight: "600" }}
           >
-            Gender
+           {t("Gender")} 
           </FormLabel>
           <RadioGroup
             row
@@ -157,30 +159,30 @@ export default function SignUpModal() {
             style={{ justifyContent: "center", gap: "20px" }}
           >
             <FormControlLabel
-              value="male"
+              value={t("male")}
               control={<Radio />}
               label={
                 <div
                   style={{ display: "flex", alignItems: "center", gap: "8px" }}
                 >
-                  <FaMale color="#1e40af" /> Male
+                  <FaMale color="#1e40af" /> {t("male")}
                 </div>
               }
             />
             <FormControlLabel
-              value="female"
+              value={t("female")}
               control={<Radio />}
               label={
                 <div
                   style={{ display: "flex", alignItems: "center", gap: "8px" }}
                 >
-                  <FaFemale color="#db2777" /> Female
+                  <FaFemale color="#db2777" /> {t("female")}
                 </div>
               }
             />
           </RadioGroup>
           <Divider style={{ margin: "16px 0", color: "#b9972f" }}>
-            or sign up with
+            {t("orsignupwith")}
           </Divider>
 
           {/* Social Buttons */}
@@ -213,7 +215,7 @@ export default function SignUpModal() {
                 borderRadius: "14px",
               }}
             >
-              {loading ? "Creating..." : "Sign Up"}
+              {loading ? t("Creating") :t("SignUp")}
             </Button>
           </motion.div>
 
@@ -231,7 +233,7 @@ export default function SignUpModal() {
               textTransform: "none",
             }}
           >
-            Already have an account? Login
+           {t("Alreadyhaveanaccount?Login")}
           </Button>
         </DialogContent>
       </motion.div>

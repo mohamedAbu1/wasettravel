@@ -1,16 +1,15 @@
 "use client";
-import { Box, Button } from "@mui/material";
+import { Box, Button, StyledEngineProvider } from "@mui/material";
 import { useTheme } from "@/context/ThemeContext";
-import CalendarClient from "./CalendarWrapper";
 import { useData } from "@/context/DataContext";
-import { StyledEngineProvider } from "@mui/material/styles";
 import { InputAdornment, MenuItem, TextField } from "@mui/material";
 import React from "react";
 import { FaCity, FaDollarSign, FaUmbrellaBeach } from "react-icons/fa";
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+import { useTranslation } from "react-i18next";
+import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
+import CalendarClient from "./CalendarWrapper";
 const Content = () => {
-  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-  const { themeName, theme } = useTheme();
+  const { theme } = useTheme();
   const {
     setCity,
     city,
@@ -21,7 +20,9 @@ const Content = () => {
     handleSearch,
   } = useData();
   const isFormValid = city && price && tripType;
-  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  const { i18n, t } = useTranslation("home");
+  const currentLang = i18n.language || "en";
+  const { cities: allCities ,categories:allCategories } = useCitiesCategories();
   return (
     <div className="hidden md:flex flex-col items-center justify-center text-center px-6 z-30">
       <div className="w-[85%]">
@@ -57,7 +58,7 @@ const Content = () => {
           {/* City */}
           <TextField
             select
-            label="Select City"
+            label={t("SelectCity")}
             value={city}
             onChange={(e) => setCity(e.target.value)}
             InputProps={{
@@ -113,66 +114,180 @@ const Content = () => {
                 padding: "10px 14px",
                 transition: "all 0.3s ease",
                 "&:hover": {
-                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)", // خلفية ذهبية فاتحة متدرجة
+                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
                   color: "#B9972F",
-                  transform: "scale(1.02)", // حركة خفيفة عند الهوفر
+                  transform: "scale(1.02)",
                 },
                 "&.Mui-selected": {
-                  background: "linear-gradient(to right, #C9A34A, #B9972F)", // خلفية ذهبية عند الاختيار
+                  background: "linear-gradient(to right, #C9A34A, #B9972F)",
                   color: "#fff",
                   fontWeight: "600",
                 },
                 "&.Mui-selected:hover": {
-                  background: "linear-gradient(to right, #B9972F, #A67C00)", // أغمق عند الهوفر مع الاختيار
+                  background: "linear-gradient(to right, #B9972F, #A67C00)",
                 },
               },
             }}
           >
-            {[
-              "Cairo",
-              "Giza",
-              "Luxor",
-              "Aswan",
-              "Hurghada",
-              "Sharm El-Sheikh",
-              "Alexandria",
-              "Port Said",
-            ].map((c) => (
-              <MenuItem
-                key={c}
-                value={c}
-                sx={{
-                  backgroundColor: "transparent",
-                  fontWeight: 500,
-                  color: "#2C2C2C",
-                  borderRadius: "8px",
-                  margin: "4px 8px",
-                  padding: "10px 14px",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
-                    color: "#B9972F",
-                    transform: "scale(1.02)",
-                  },
-                  "&.Mui-selected": {
-                    background: "linear-gradient(to right, #C9A34A, #B9972F)",
-                    color: "#fff",
-                    fontWeight: "600",
-                  },
-                  "&.Mui-selected:hover": {
-                    background: "linear-gradient(to right, #B9972F, #A67C00)",
-                  },
-                }}
-              >
-                {c}
-              </MenuItem>
-            ))}
+            {allCities.map((c) => {
+              // اختيار الاسم حسب اللغة الحالية
+              const cityName =
+                c.name?.[currentLang] || c.name?.["en"] || c.name;
+
+              return (
+                <MenuItem
+                  key={c.id}
+                  value={cityName}
+                  sx={{
+                    backgroundColor: "transparent",
+                    fontWeight: 500,
+                    color: "#2C2C2C",
+                    borderRadius: "8px",
+                    margin: "4px 8px",
+                    padding: "10px 14px",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
+                      color: "#B9972F",
+                      transform: "scale(1.02)",
+                    },
+                    "&.Mui-selected": {
+                      background: "linear-gradient(to right, #C9A34A, #B9972F)",
+                      color: "#fff",
+                      fontWeight: "600",
+                    },
+                    "&.Mui-selected:hover": {
+                      background: "linear-gradient(to right, #B9972F, #A67C00)",
+                    },
+                  }}
+                >
+                  {cityName}
+                </MenuItem>
+              );
+            })}
+          </TextField>
+
+          {/* Trip Type */}
+          {/* Categories */}
+          <TextField
+            select
+            label={t("SelectCategory")}
+            value={tripType}
+            onChange={(e) => setTripType(e.target.value)} // أو setCategory لو عندك state للكاتجري
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <FaDollarSign
+                    style={{
+                      paddingLeft: "12px",
+                      color: "#C9A34A",
+                      fontSize: "30px",
+                    }}
+                  />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              borderRadius: 3,
+              "& .MuiOutlinedInput-root": {
+                padding: "5px",
+                color: "#2C2C2C",
+                fontWeight: "600",
+                letterSpacing: "0.5px",
+                transition: "all 0.3s ease",
+                background: "rgba(255,255,255,0.08)",
+                backdropFilter: "blur(8px)",
+                "& fieldset": {
+                  borderColor: "#C9A34A",
+                  borderRadius: "12px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#B9972F",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+                  transform: "scale(1.01)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#B9972F",
+                  boxShadow: "0 0 0 3px rgba(201,163,74,0.25)",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#C9A34A",
+                fontWeight: "800",
+                letterSpacing: "0.4px",
+                fontSize: "1rem",
+              },
+              "& .MuiInputBase-input": {
+                color: "#C9A34A",
+                padding: "12px 14px",
+                fontSize: "1rem",
+              },
+              "& .MuiMenuItem-root": {
+                fontWeight: "500",
+                color: "#2C2C2C",
+                borderRadius: "8px",
+                margin: "4px 8px",
+                padding: "10px 14px",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
+                  color: "#B9972F",
+                  transform: "scale(1.02)",
+                },
+                "&.Mui-selected": {
+                  background: "linear-gradient(to right, #C9A34A, #B9972F)",
+                  color: "#fff",
+                  fontWeight: "600",
+                },
+                "&.Mui-selected:hover": {
+                  background: "linear-gradient(to right, #B9972F, #A67C00)",
+                },
+              },
+            }}
+          >
+            {allCategories.map((cat) => {
+              // اختيار الاسم حسب اللغة الحالية من jsonb
+              const categoryName =
+                cat.name?.[currentLang] || cat.name?.["en"] || cat.name;
+
+              return (
+                <MenuItem
+                  key={cat.id}
+                  value={categoryName}
+                  sx={{
+                    backgroundColor: "transparent",
+                    fontWeight: 500,
+                    color: "#2C2C2C",
+                    borderRadius: "8px",
+                    margin: "4px 8px",
+                    padding: "10px 14px",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
+                      color: "#B9972F",
+                      transform: "scale(1.02)",
+                    },
+                    "&.Mui-selected": {
+                      background: "linear-gradient(to right, #C9A34A, #B9972F)",
+                      color: "#fff",
+                      fontWeight: "600",
+                    },
+                    "&.Mui-selected:hover": {
+                      background: "linear-gradient(to right, #B9972F, #A67C00)",
+                    },
+                  }}
+                >
+                  {categoryName}
+                </MenuItem>
+              );
+            })}
           </TextField>
 
           {/* Price */}
           <TextField
             type="number"
-            label="Max Price (USD)"
+            label={t("MaxPrice")}
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             InputProps={{
@@ -230,116 +345,6 @@ const Content = () => {
               },
             }}
           />
-
-          {/* Trip Type */}
-          <TextField
-            select
-            label="Trip Type"
-            value={tripType}
-            onChange={(e) => setTripType(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaUmbrellaBeach
-                    style={{
-                      paddingLeft: "12px",
-                      color: "#C9A34A",
-                      fontSize: "30px",
-                    }}
-                  />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              borderRadius: 3,
-              "& .MuiOutlinedInput-root": {
-                padding: "5px",
-                color: "#2C2C2C",
-                fontWeight: "600",
-                letterSpacing: "0.5px",
-                transition: "all 0.3s ease",
-                background: "rgba(255,255,255,0.08)", // خلفية زجاجية شفافة
-                backdropFilter: "blur(8px)",
-                "& fieldset": {
-                  borderColor: "#C9A34A",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#B9972F",
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-                  transform: "scale(1.01)", // حركة خفيفة
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#B9972F",
-                  boxShadow: "0 0 0 3px rgba(201,163,74,0.25)",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#C9A34A",
-                fontWeight: "800",
-                letterSpacing: "0.4px",
-                fontSize: "1rem",
-              },
-              "& .MuiInputBase-input": {
-                color: "#C9A34A",
-                padding: "12px 14px",
-                fontSize: "1rem",
-              },
-              "& .MuiMenuItem-root": {
-                fontWeight: "500",
-                color: "#2C2C2C",
-                borderRadius: "8px",
-                margin: "4px 8px",
-                padding: "10px 14px",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
-                  color: "#B9972F",
-                  transform: "scale(1.02)",
-                },
-                "&.Mui-selected": {
-                  background: "linear-gradient(to right, #C9A34A, #B9972F)",
-                  color: "#fff",
-                  fontWeight: "600",
-                },
-                "&.Mui-selected:hover": {
-                  background: "linear-gradient(to right, #B9972F, #A67C00)",
-                },
-              },
-            }}
-          >
-            {["Luxury", "Cultural", "Safari", "Beach"].map((t) => (
-              <MenuItem
-                key={t}
-                value={t}
-                sx={{
-                  backgroundColor: "transparent",
-                  fontWeight: 500,
-                  color: "#2C2C2C",
-                  borderRadius: "8px",
-                  margin: "4px 8px",
-                  padding: "10px 14px",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
-                    color: "#B9972F",
-                    transform: "scale(1.02)",
-                  },
-                  "&.Mui-selected": {
-                    background: "linear-gradient(to right, #C9A34A, #B9972F)",
-                    color: "#fff",
-                    fontWeight: "600",
-                  },
-                  "&.Mui-selected:hover": {
-                    background: "linear-gradient(to right, #B9972F, #A67C00)",
-                  },
-                }}
-              >
-                {t}
-              </MenuItem>
-            ))}
-          </TextField>
           {/* CalendarSC */}
           <StyledEngineProvider injectFirst>
             <CalendarClient />
@@ -365,7 +370,7 @@ const Content = () => {
             }}
           >
             {" "}
-            Search{" "}
+            {t("Search")}{" "}
           </Button>
         </Box>
       </div>

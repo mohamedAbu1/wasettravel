@@ -1,7 +1,7 @@
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { FaChartBar } from "react-icons/fa";
-import EgyptianBackground from "@/components/trips/EgyptianBackground";
+import EgyptianBackground from "@/components/layout/EgyptianBackground";
 
 export default function Reports() {
   const { themeName } = useTheme();

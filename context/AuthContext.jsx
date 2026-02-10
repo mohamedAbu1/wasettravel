@@ -3,9 +3,8 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { decodeJwt } from "@/lib/utils/JWToken";
 import { toast } from "react-toastify";
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
 const AuthContext = createContext();
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 export function AuthProvider({ children }) {
   const [open, setOpen] = useState(false);
@@ -16,32 +15,28 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
   // إدارة التوكين
   const saveToken = (token) => {
-    localStorage.setItem("token", token);
-    document.cookie = `token=${token}; path=/; max-age=${2 * 24 * 60 * 60}`;
+    localStorage.setItem("sb_access", token);
+    document.cookie = `sb_access=${token}; path=/; max-age=${2 * 24 * 60 * 60}`;
   };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-  const removeToken = () => {
-    localStorage.removeItem("token");
-    document.cookie = "token=; path=/; max-age=0";
-  };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+const removeToken = () => {
+  localStorage.removeItem("sb_access");
+  // مسح الكوكيز من الفرونت (لو مش HttpOnly)
+  document.cookie = "sb_access=; path=/; max-age=0";
+};
+
 
   const getToken = () => {
-    const lsToken = localStorage.getItem("token");
+    const lsToken = localStorage.getItem("sb_access");
     if (lsToken) return lsToken;
     const cookieToken = document.cookie
       .split("; ")
-      .find((row) => row.startsWith("token="))
+      .find((row) => row.startsWith("sb_access="))
       ?.split("=")[1];
     return cookieToken || null;
   };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   // عند تحميل التطبيق: تحقق من وجود التوكين وعيّن user
   useEffect(() => {
@@ -49,7 +44,6 @@ export function AuthProvider({ children }) {
     if (token) {
       const decoded = decodeJwt(token);
       if (decoded) {
-        console.log("📌 Avatar URL:", decoded.avatar_url); // ✅ هنا
         setUser(decoded);
         setIsLoggedIn(true);
       } else {
@@ -59,7 +53,6 @@ export function AuthProvider({ children }) {
       }
     }
   }, []);
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   // التسجيل
   const register = async (email, password, name, gender, onSuccess) => {
@@ -70,7 +63,7 @@ export function AuthProvider({ children }) {
         email,
         password,
         name,
-        gender, // ✅ أرسل الجنس
+        gender,
       });
       const data = res.data;
 
@@ -91,7 +84,6 @@ export function AuthProvider({ children }) {
       setLoading(false);
     }
   };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   // الدخول
   const login = async (email, password, onSuccess) => {
@@ -113,7 +105,6 @@ export function AuthProvider({ children }) {
       setUser(decoded);
       setIsLoggedIn(true);
 
-      // أغلق المودال بعد النجاح
       if (onSuccess) onSuccess();
 
       return decoded;
@@ -124,15 +115,29 @@ export function AuthProvider({ children }) {
       setLoading(false);
     }
   };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   // الخروج
-  const logout = () => {
-    setUser(null);
-    setIsLoggedIn(false);
-    removeToken();
-  };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+// الخروج
+const logout = async () => {
+  try {
+    // استدعاء الـ API لمسح الكوكيز HttpOnly من السيرفر
+    await axios.post("/api/auth/logout", {}, { withCredentials: true });
+  } catch (err) {
+    console.error("❌ Error clearing cookies on server:", err);
+  }
+
+  // مسح بيانات المستخدم من الـ state
+  setUser(null);
+  setIsLoggedIn(false);
+
+  // مسح التوكن من localStorage والكوكيز العادية
+  removeToken();
+
+  // إشعار للمستخدم
+  toast.info("🚪 Logged out successfully");
+};
+
+
   return (
     <AuthContext.Provider
       value={{

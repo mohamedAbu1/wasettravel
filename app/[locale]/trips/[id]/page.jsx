@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { use } from "react";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/header/Header";
-import EgyptianBackground from "@/components/trips/EgyptianBackground";
+import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import LoginModal from "@/components/home/components/LoginModal";
 import SignUpButton from "@/components/home/components/SignUpButton";
 // الكومبوننتات الجديدة
@@ -17,12 +17,16 @@ import TripIncludes from "./components/TripIncludes";
 import TripItinerary from "./components/TripItinerary";
 import TripInfo from "./components/TripInfo";
 import TripReviews from "./components/TripReviews";
+import ChatWidget from "@/components/layout/ChatWidget";
+import { useAuth } from "@/context/AuthContext";
+import PurchaseButton from "./components/PurchaseButton";
 
 export default function TripPage({ params }) {
   const { id } = use(params);
   const { trips, fetchTrips, getTripById, loadingTrips } = useTrip();
   const { lang } = useLanguage();
   const { themeName } = useTheme();
+  const { user } = useAuth(); // ✅ جلب المستخدم الحالي
 
   useEffect(() => {
     if (!trips.length) {
@@ -78,12 +82,15 @@ export default function TripPage({ params }) {
         <div className="col-span-1 lg:col-span-3">
           {" "}
           <TripReviews trip={trip} lang={lang} />{" "}
+          <PurchaseButton trip={trip} /> {/* زر الشراء */}
         </div>
       </div>
 
       <Footer />
       <SignUpButton />
       <LoginModal />
+                  {user && <ChatWidget />}
+      
     </main>
   );
 }

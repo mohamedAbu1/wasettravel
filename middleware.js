@@ -12,7 +12,17 @@ export function middleware(req) {
     url.pathname.startsWith("/api") ||
     url.pathname.startsWith("/assets") ||
     url.pathname.startsWith("/HomePageImage") ||
-    url.pathname.startsWith("/Aswan")
+    url.pathname.startsWith("/Aswan")||
+    url.pathname.startsWith("/Fayoum")||
+    url.pathname.startsWith("/Luxor")||
+    url.pathname.startsWith("/Cairo")||
+    url.pathname.startsWith("/Hurghada")||
+    url.pathname.startsWith("/Marsa_Alam")||
+    url.pathname.startsWith("/Sharm_El_Sheikh")||
+    url.pathname.startsWith("/Alexandria")||
+    url.pathname.startsWith("/Siwa")||
+    url.pathname.startsWith("/Historicaltourism")||
+    url.pathname.startsWith("/avater")
   ) {
     return NextResponse.next();
   }

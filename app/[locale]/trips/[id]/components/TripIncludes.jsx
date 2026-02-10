@@ -49,7 +49,7 @@ export default function TripIncludes({ trip, lang }) {
 
       {/* العناصر */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {trip.Includes?.map((inc, idx) => (
+        {trip.includes?.map((inc, idx) => (
           <motion.div
             key={inc.id}
             initial={{ opacity: 0, scale: 0.9, y: 20 }}

@@ -1,70 +1,81 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
-// إنشاء الكونتكست
 const MessageContext = createContext();
 
-// ✅ Provider
 export function MessageProvider({ children }) {
   const [messages, setMessages] = useState([]);
-  const [users, setUsers] = useState([]);   // ✅ إضافة حالة للمستخدمين
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
-  // جلب الرسائل من Supabase مباشرة (لو محتاج)
-  const fetchMessages = async (userId = null) => {
-    setLoading(true);
-    const res = await fetch(`/api/messages${userId ? `?userId=${userId}` : ""}`);
-    const data = await res.json();
-    setMessages(data);
-    setLoading(false);
-  };
+  // جلب رسائل المستخدم الحالي
+const fetchMessages = async (userId) => {
+  const res = await fetch(`/api/messages?userId=${userId}`);
+  const data = await res.json();
+  setMessages(Array.isArray(data) ? data : []);
+};
 
-  // جلب المستخدمين مع الرسائل والتعليقات من الـ API
-  const fetchUsersWithData = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/login"); // ✅ استدعاء الـ API اللي عملناه
-      const data = await res.json();
-      setUsers(data);
-    } catch (err) {
-      console.error("Error fetching users:", err);
-    }
-    setLoading(false);
-  };
 
   // إرسال رسالة جديدة
-  const sendMessage = async ({ user_id, content, sender_type }) => {
+  const sendMessage = async ({
+    user_id,
+    user_name,
+    user_image,
+    content,
+    sender_type,
+  }) => {
     const res = await fetch("/api/messages", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id, content, sender_type }),
+      body: JSON.stringify({
+        user_id,
+        user_name,
+        user_image,
+        content,
+        sender_type,
+        status: "sent", // ✅ حالة أولية عند الإرسال
+      }),
     });
     const data = await res.json();
 
-    if (data.error) {
-      console.error("Error sending message:", data.error);
-      return null;
+    if (!data.error) {
+      setMessages((prev) => [...prev, data]);
     }
-
-    setMessages((prev) => [...prev, data]);
     return data;
   };
-console.log(users)
+
+  // تحديث حالة الرسالة إلى "seen"
+  const markMessageSeen = async (messageId) => {
+    const res = await fetch("/api/messages", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messageId }),
+    });
+    const data = await res.json();
+
+    if (!data.error) {
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === messageId ? { ...msg, status: "seen" } : msg))
+      );
+    }
+    return data;
+  };
+useEffect(() => {
+  if (user?.id) {
+    fetchMessages(user.id); // يجلب مرة واحدة فقط
+  }
+}, [user,messages]);
+
+
   return (
     <MessageContext.Provider
-      value={{
-        messages,
-        users,              // ✅ نوفر المستخدمين هنا
-        loading,
-        fetchMessages,
-        fetchUsersWithData, // ✅ دالة لجلب المستخدمين مع بياناتهم
-        sendMessage,
-      }}
+      value={{ messages, loading, fetchMessages, sendMessage, markMessageSeen }}
     >
       {children}
     </MessageContext.Provider>
   );
 }
 
-// ✅ Hook للاستخدام في أي كومبوننت
 export const useMessages = () => useContext(MessageContext);

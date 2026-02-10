@@ -68,7 +68,7 @@ const TopTripsSection = () => {
 
   return (
     <section
-      className={`hidden lg:flex flex-col relative py-24 px-6 transition-colors duration-500 ${
+      className={`hidden lg:flex w-full flex-col relative py-24 px-6 transition-colors duration-500 ${
         themeName === "dark" ? "bg-[#0f0f0f] text-white" : "bg-[#fdf6e3] text-[#3a2c0a]"
       }`}
     >

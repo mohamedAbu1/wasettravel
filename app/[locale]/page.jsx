@@ -1,5 +1,4 @@
-"use client";
-import { useState } from "react";
+"use client"
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/header/Header";
 import CarBookingSection from "@/components/home/CarBookingSection";
@@ -11,14 +10,20 @@ import TopTripsSection from "@/components/home/TopTripsSection";
 import LoginModal from "@/components/home/components/LoginModal";
 import SignUpButton from "@/components/home/components/SignUpButton";
 import TopReviewsSection from "@/components/home/components/TopReviewsSection";
-import ChatWidget from "@/components/home/components/ChatWidget";
+import ChatWidget from "@/components/layout/ChatWidget";
+import { useAuth } from "@/context/AuthContext"; // ✅ استدعاء الـ Auth
 
 export default function Home() {
-  const [chatOpen, setChatOpen] = useState(false);
+  const { user } = useAuth(); // ✅ جلب المستخدم الحالي
 
   return (
     <main
       className={`
+        w-full
+        flex
+        flex-col
+        items-center
+        justify-center
         min-h-screen font-sans
         bg-white
         transition-colors duration-300
@@ -50,16 +55,9 @@ export default function Home() {
       <SignUpButton />
       <LoginModal />
 
-      {/* زر الدردشة السريعة */}
-      <button
-        onClick={() => setChatOpen(!chatOpen)}
-        className="fixed bottom-6 right-6 bg-yellow-500 text-black font-bold px-4 py-3 rounded-full shadow-lg hover:bg-yellow-600 transition"
-      >
-        💬
-      </button>
-
-      {/* نافذة الدردشة */}
-      <ChatWidget />
+      {/* نافذة الدردشة تظهر فقط لو المستخدم مسجل دخول */}
+      {user && <ChatWidget />}
+      
     </main>
   );
 }

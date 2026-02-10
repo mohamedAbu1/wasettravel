@@ -12,14 +12,32 @@ const CarBookingSection = () => {
   const { t } = useTranslation("home");
 
   const symbols = [
-    "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
-    "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
+    "𓂀",
+    "𓋹",
+    "𓆣",
+    "𓇼",
+    "𓇯",
+    "𓏏",
+    "𓎛",
+    "𓊽",
+    "𓃾",
+    "𓅓",
+    "𓈇",
+    "𓉐",
+    "𓊹",
+    "𓌙",
+    "𓍿",
+    "𓎟",
   ];
 
   // ✨ إعدادات الأنيميشن
   const fadeInUp = {
     hidden: { opacity: 0, y: 60 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" },
+    },
   };
 
   return (
@@ -107,9 +125,12 @@ const CarBookingSection = () => {
           </p>
 
           {/* Booking Button */}
-          <motion.a
+          <motion.button
             variants={fadeInUp}
-            href="/car-booking"
+            onClick={() => {
+              // نطلق حدث مخصص يفتحه الـ ChatWidget
+              window.dispatchEvent(new CustomEvent("openCarBookingChat"));
+            }}
             className={`mt-8 inline-block px-10 py-4 rounded-full font-bold text-lg shadow-xl transition-transform transform hover:scale-105 ${
               themeName === "dark"
                 ? "bg-amber-300 text-black hover:bg-yellow-500"
@@ -117,7 +138,7 @@ const CarBookingSection = () => {
             }`}
           >
             {t("Book")}
-          </motion.a>
+          </motion.button>
         </motion.div>
       </motion.div>
     </motion.section>

@@ -14,12 +14,12 @@ export default function ReviewForm({
 }) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="w-[70%] flex items-center gap-2">
+      <div className="w-[100%] flex items-center gap-2">
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder={placeholder}
-          className={`w-full p-3 rounded-lg border focus:outline-none ${
+          className={`w-[70%] p-3 rounded-lg border focus:outline-none ${
             themeName === "dark"
               ? "bg-black/60 border-gold/50 text-gold"
               : "bg-[#fdf6e3] border-[#c9a34a]/50 text-[#3a2c0a]"
@@ -29,6 +29,7 @@ export default function ReviewForm({
 
         <button
           type="button"
+          style={{ cursor: "pointer" }}
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           className="px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
         >
@@ -39,6 +40,7 @@ export default function ReviewForm({
 
       <button
         type="submit"
+        style={{ cursor: "pointer" }}
         className={`px-6 py-2 rounded-lg font-semibold transition ${
           themeName === "dark"
             ? "bg-gold text-black hover:bg-yellow-300"

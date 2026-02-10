@@ -1,10 +1,11 @@
-// src/api/auth/logout/route.ts
+// src/app/api/auth/logout/route.js
 import { NextResponse } from "next/server";
-import { clearSessionCookies } from "@/lib/Cookies";
+import { cookies } from "next/headers";
 
 export async function POST() {
-  clearSessionCookies();
-  const res = NextResponse.json({ ok: true });
-  res.cookies.set("app_jwt", "", { path: "/", httpOnly: true, maxAge: 0 });
-  return res;
+  const c = cookies();
+  c.set("sb_access", "", { path: "/", httpOnly: true, maxAge: 0 });
+  c.set("sb_refresh", "", { path: "/", httpOnly: true, maxAge: 0 });
+
+  return NextResponse.json({ ok: true, message: "Logged out successfully" });
 }

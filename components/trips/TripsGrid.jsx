@@ -1,26 +1,38 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/purity */
+"use client";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useTrip } from "@/context/TripContext";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
+import { useReviews } from "@/context/ReviewsContext";
 import { useEffect } from "react";
 import { FaStar } from "react-icons/fa";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion"; // ✅ استدعاء Framer Motion
 
 export default function TripsGrid({ cardStyle = "vertical" }) {
   const { themeName } = useTheme();
   const { trips, fetchTrips, loadingTrips } = useTrip();
-  const { lang } = useLanguage(); // اللغة الحالية
-  const { cities: allCities, categories: allCategories } =
-    useCitiesCategories();
+  const { lang } = useLanguage();
+  const { cities: allCities, categories: allCategories } = useCitiesCategories();
+  const { reviewsByTrip, fetchReviewsByTrip } = useReviews();
   const router = useRouter();
 
   useEffect(() => {
     fetchTrips();
   }, []);
+
+  // عند تحميل الرحلات، اجلب التعليقات الخاصة بكل رحلة
+  useEffect(() => {
+    if (trips.length > 0) {
+      trips.forEach((trip) => {
+        fetchReviewsByTrip(trip.id);
+      });
+    }
+  }, [trips]);
 
   const getRandomStars = () => Math.floor(Math.random() * 3) + 3;
   const { t } = useTranslation("trips");
@@ -38,10 +50,18 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
       }`}
     >
       {trips.map((trip, i) => {
-        const stars = getRandomStars();
-        const reviews = trip.reviews || Math.floor(Math.random() * 200) + 20;
+        const tripReviews = reviewsByTrip[trip.id] || [];
+        const reviewsCount = tripReviews.length;
 
-        // استخراج أسماء المدن والكاتجري مترجمة حسب اللغة الحالية
+        // احسب متوسط النجوم من التعليقات
+        const avgStars =
+          reviewsCount > 0
+            ? Math.round(
+                tripReviews.reduce((sum, r) => sum + (r.stars || 0), 0) /
+                  reviewsCount
+              )
+            : getRandomStars();
+
         const getLocalizedText = (obj, lang) => {
           if (!obj) return "Unknown";
           if (typeof obj === "string") return obj;
@@ -52,7 +72,6 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
           trip.trip_cities?.length > 0
             ? trip.trip_cities
                 .map((c) => {
-                  // جرب كل الاحتمالات
                   return (
                     getLocalizedText(c.cities?.name, lang) ||
                     getLocalizedText(c.city?.name, lang) ||
@@ -80,8 +99,15 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
             : "General";
 
         return (
-          <div
+          <motion.div
             key={trip.id || i}
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0px 8px 20px rgba(0,0,0,0.3)",
+            }}
             className={`relative rounded-xl shadow-lg overflow-hidden transform transition 
               ${
                 themeName === "dark"
@@ -90,8 +116,8 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
               } 
               ${
                 cardStyle === "horizontal"
-                  ? "h-86 flex animate-slideIn"
-                  : "h-88 animate-fadeScale"
+                  ? "h-86 flex"
+                  : "h-88"
               }`}
           >
             {/* صورة الرحلة */}
@@ -143,19 +169,20 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                 </span>
               </p>
 
+              {/* النجوم وعدد التعليقات */}
               <div className="flex items-center gap-2">
                 {[...Array(5)].map((_, idx) => (
                   <FaStar
                     key={idx}
                     className={`${
-                      idx < stars
+                      idx < avgStars
                         ? "text-yellow-400"
                         : "text-gray-500 opacity-50"
                     }`}
                   />
                 ))}
                 <span className="text-sm opacity-80">
-                  ({reviews} {t("reviews")})
+                  ({reviewsCount > 0 ? reviewsCount : "No"} {t("reviews")})
                 </span>
               </div>
 
@@ -171,7 +198,7 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                 {t("btn")}
               </button>
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>

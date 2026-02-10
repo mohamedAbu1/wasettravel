@@ -1,12 +1,12 @@
-// file: app/api/trips/route.js
 import { supabase } from "@/lib/supabaseClient";
-
 
 export async function POST(req) {
   try {
     const body = await req.json();
+    console.log("📥 Request body:", JSON.stringify(body, null, 2));
 
-    // 1. إنشاء الرحلة
+    // ✅ إدخال الرحلة في جدول trips
+    console.log("➡️ Inserting trip...");
     const { data: trip, error: tripError } = await supabase
       .from("trips")
       .insert({
@@ -18,149 +18,107 @@ export async function POST(req) {
         duration_unit: body.duration_unit,
         cover_image: body.cover_image,
         gallery_images: body.gallery_images,
+        priceLevel: body.priceLevel,
       })
       .select()
       .single();
 
     if (tripError) throw tripError;
+    console.log("✅ Trip inserted:", trip);
 
-    // 2. ربط المدن
-    if (body.cities?.length) {
-      for (const rawCityName of body.cities) {
-        const cityName = (rawCityName ?? "").trim();
-        if (!cityName) continue;
+    // ✅ إدخال الـ includes
+    if (body.includes?.length > 0) {
+      console.log("➡️ Inserting includes:", body.includes);
+      const includesData = body.includes.map((inc) => ({
+        trip_id: trip.id,
+        include_translations: {
+          en: inc.en,
+          es: inc.es,
+          fr: inc.fr,
+          de: inc.de,
+          it: inc.it,
+          zh: inc.zh,
+        },
+      }));
+      const { error: includesError } = await supabase
+        .from("includes")
+        .insert(includesData);
+      if (includesError) throw includesError;
+      console.log("✅ Includes inserted");
+    }
 
-        const { data: city, error: cityLookupErr } = await supabase
-          .from("cities")
-          .select("id, name")
-          .eq("name", cityName)
-          .single();
+    // ✅ إدخال المدن (باستخدام IDs مباشرة)
+    if (body.cities?.length > 0) {
+      console.log("➡️ Linking cities:", body.cities);
+      const citiesData = body.cities.map((cityId) => ({
+        trip_id: trip.id,
+        city_id: cityId,
+      }));
+      const { error: citiesError } = await supabase
+        .from("trip_cities")
+        .insert(citiesData);
+      if (citiesError) throw citiesError;
+      console.log("✅ Cities linked to trip");
+    }
 
-        if (cityLookupErr) {
-          console.error(
-            "City lookup error:",
-            cityLookupErr,
-            "for name:",
-            cityName
-          );
-          continue;
-        }
-        if (!city) {
-          console.warn("City not found, skipping:", cityName);
-          continue;
-        }
+    // ✅ إدخال التصنيفات (باستخدام IDs مباشرة)
+    if (body.categories?.length > 0) {
+      console.log("➡️ Linking categories:", body.categories);
+      const categoriesData = body.categories.map((catId) => ({
+        trip_id: trip.id,
+        category_id: catId,
+      }));
+      const { error: categoriesError } = await supabase
+        .from("trip_categories")
+        .insert(categoriesData);
+      if (categoriesError) throw categoriesError;
+      console.log("✅ Categories linked to trip");
+    }
 
-        const { error: linkErr } = await supabase.from("trip_cities").insert({
-          trip_id: trip.id,
-          city_id: city.id,
+    // ✅ إدخال الأيام والأنشطة
+    if (body.itinerary?.length > 0) {
+      console.log("➡️ Inserting days:", body.itinerary);
+      const daysData = body.itinerary.map((day, index) => ({
+        trip_id: trip.id,
+        day_number: day.day || index + 1,
+      }));
+
+      const { data: insertedDays, error: daysError } = await supabase
+        .from("trip_days")
+        .insert(daysData)
+        .select();
+
+      if (daysError) throw daysError;
+      console.log("✅ Days inserted:", insertedDays);
+
+      const activitiesData = [];
+      insertedDays.forEach((dayRow, index) => {
+        const activities = body.itinerary[index].activities || [];
+        console.log(`➡️ Activities for day ${dayRow.day_number}:`, activities);
+        activities.forEach((act) => {
+          activitiesData.push({
+            day_id: dayRow.id,
+            time: act.time,
+            activity_translations: act.activity || {
+              en: act.en || null,
+              es: act.es || null,
+              fr: act.fr || null,
+              de: act.de || null,
+              it: act.it || null,
+              zh: act.zh || null,
+            },
+          });
         });
+      });
 
-        if (linkErr) {
-          console.error("Trip_Cities insert error:", linkErr, {
-            trip_id: trip.id,
-            city_id: city.id,
-          });
-        } else {
-          console.log(`Linked city ${cityName} to trip ${trip.id}`);
-        }
-      }
-    }
+      console.log("📦 Final activities payload:", activitiesData);
 
-    // 3. ربط التصنيفات
-    if (body.categories?.length) {
-      for (const rawCatName of body.categories) {
-        const catName = (rawCatName ?? "").trim();
-        if (!catName) continue;
-
-        const { data: category, error: catLookupErr } = await supabase
-          .from("categories")
-          .select("id, name")
-          .eq("name", catName)
-          .single();
-
-        if (catLookupErr) {
-          console.error(
-            "Category lookup error:",
-            catLookupErr,
-            "for name:",
-            catName
-          );
-          continue;
-        }
-        if (!category) {
-          console.warn("Category not found, skipping:", catName);
-          continue;
-        }
-
-        const { error: linkErr } = await supabase
-          .from("trip_categories")
-          .insert({
-            trip_id: trip.id,
-            category_id: category.id,
-          });
-
-        if (linkErr) {
-          console.error("Trip_Categories insert error:", linkErr, {
-            trip_id: trip.id,
-            category_id: category.id,
-          });
-        } else {
-          console.log(`Linked category ${catName} to trip ${trip.id}`);
-        }
-      }
-    }
-
-    // 4. إدخال الـ Includes
-    if (body.includes?.length) {
-      for (const inc of body.includes) {
-        const { error: incErr } = await supabase.from("Includes").insert({
-          trip_id: trip.id,
-          include_translations: inc, // {en:"Hotel", es:"Hotel", ...}
-        });
-        if (incErr) {
-          console.error("Includes insert error:", incErr);
-        } else {
-          console.log("Include added:", inc);
-        }
-      }
-    }
-
-    // 5. إدخال الـ Itinerary (Days + Activities)
-    if (body.itinerary?.length) {
-      for (const day of body.itinerary) {
-        // إدخال اليوم في جدول trip_days
-        const { data: tripDay, error: dayError } = await supabase
-          .from("Trip_Days")
-          .insert({
-            trip_id: trip.id,
-            day_number: day.day,
-          })
-          .select()
-          .single();
-
-        if (dayError) {
-          console.error("Trip_Days insert error:", dayError);
-          throw dayError;
-        }
-        console.log("Day added:", tripDay);
-
-        // إدخال الأنشطة المرتبطة باليوم في جدول day_activities
-        if (day.activities?.length) {
-          for (const act of day.activities) {
-            const { error: actErr } = await supabase
-              .from("Day_Activities")
-              .insert({
-                day_id: tripDay.id,
-                time: act.time,
-                activity_translations: act.activity, // {en:"Visit museum", es:"Visitar museo", ...}
-              });
-            if (actErr) {
-              console.error("Day_Activities insert error:", actErr);
-            } else {
-              console.log("Activity added:", act);
-            }
-          }
-        }
+      if (activitiesData.length > 0) {
+        const { error: activitiesError } = await supabase
+          .from("day_activities")
+          .insert(activitiesData);
+        if (activitiesError) throw activitiesError;
+        console.log("✅ Activities inserted");
       }
     }
 
@@ -168,56 +126,71 @@ export async function POST(req) {
       status: 201,
     });
   } catch (err) {
-    console.error("API Error:", err); // يطبع الخطأ في السيرفر
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-    });
+    console.error("❌ API Error:", err);
+    return new Response(
+      JSON.stringify({ success: false, error: err.message }),
+      { status: 500 },
+    );
   }
 }
 
 export async function GET() {
   try {
-    const { data: trips, error } = await supabase
-      .from("trips")
-      .select(`
+    const { data: trips, error } = await supabase.from("trips").select(`
+      id,
+      title,
+      description,
+      price,
+      currency,
+      duration,
+      duration_unit,
+      priceLevel,
+      cover_image,
+      gallery_images,
+      trip_cities (
+        city_id,
+        cities ( id, name )
+      ),
+      trip_categories (
+        category_id,
+        categories ( id, name )
+      ),
+      includes (
         id,
-        title,
-        description,
-        price,
-        currency,
-        duration,
-        duration_unit,
-        priceLevel,
-        cover_image,
-        gallery_images,
-        trip_cities (
-          city_id,
-          cities ( id, name )
-        ),
-        trip_categories (
-          category_id,
-          categories ( id, name )
-        ),
-        Includes (
+        include_translations
+      ),
+      trip_days (
+        id,
+        day_number,
+        day_activities (
           id,
-          include_translations
-        ),
-         Trip_Days (
-          id,
-          day_number,
-          Day_Activities (
-            id,
-            time,
-            activity_translations
-          )
+          time,
+          activity_translations
         )
-      `);
+      ),
+       reviews (
+          id,
+          user_id,
+          trip_id,
+          rating,
+          comment,
+          created_at
+        )
+    `);
 
-    if (error) throw error;
-    return new Response(JSON.stringify({ success: true, trips }), { status: 200 });
+    if (error) {
+      console.error("Trips fetch error:", error);
+      throw error;
+    }
+
+    return new Response(JSON.stringify({ success: true, trips }), {
+      status: 200,
+    });
   } catch (err) {
     console.error("GET /api/trips error:", err);
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    return new Response(
+      JSON.stringify({ success: false, error: err.message }),
+      { status: 500 },
+    );
   }
 }
-

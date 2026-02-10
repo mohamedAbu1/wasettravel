@@ -9,6 +9,8 @@ import { SecurityProvider } from "@/context/SecurityContext";
 import { TripProvider } from "@/context/TripContext";
 import { ReviewsProvider } from "@/context/ReviewsContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { TripIDProvider } from "@/context/TripIDContext";
+import { PurchaseProvider } from "@/context/PurchaseContext";
 import { MessageProvider } from "@/context/MessageContext";
 import { CitiesCategoriesProvider } from "@/context/CitiesCategoriesContext";
 import { ToastContainer } from "react-toastify";
@@ -25,12 +27,16 @@ export default function Providers({ children }) {
                   <LanguageProvider>
                     <ReviewsProvider>
                       <MessageProvider>
-                        <ToastContainer
-                          position="top-right"
-                          autoClose={3000}
-                          theme="colored"
-                        />
-                        {children}
+                        <TripIDProvider>
+                          <PurchaseProvider>
+                            <ToastContainer
+                              position="top-right"
+                              autoClose={3000}
+                              theme="colored"
+                            />
+                            {children}
+                          </PurchaseProvider>
+                        </TripIDProvider>
                       </MessageProvider>
                     </ReviewsProvider>
                   </LanguageProvider>

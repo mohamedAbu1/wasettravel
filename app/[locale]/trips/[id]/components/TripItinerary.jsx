@@ -2,17 +2,16 @@
 import { FaCalendarAlt, FaClock } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
-// دالة لتحويل الوقت من 24h إلى 12h مع AM/PM
 function formatTime(time) {
   if (!time) return "";
   const [hours, minutes] = time.split(":").map(Number);
   const suffix = hours >= 12 ? "PM" : "AM";
-  const formattedHours = ((hours + 11) % 12) + 1; // تحويل للـ 12 ساعة
+  const formattedHours = ((hours + 11) % 12) + 1;
   return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${suffix}`;
 }
 
-// كائن الترجمات
 const translations = {
   en: { title: "Itinerary" },
   de: { title: "Reiseplan" },
@@ -24,9 +23,19 @@ const translations = {
 
 export default function TripItinerary({ trip, lang }) {
   const { themeName } = useTheme();
-
-  // لو اللغة مش موجودة، نرجع للإنجليزية
   const t = translations[lang] || translations.en;
+
+  // ✅ تقسيم الأيام إلى مجموعات كل مجموعة فيها يومين
+  const chunkDays = (days, size = 2) => {
+    const result = [];
+    for (let i = 0; i < days.length; i += size) {
+      result.push(days.slice(i, i + size));
+    }
+    return result;
+  };
+
+  const dayGroups = chunkDays(trip.trip_days || []);
+  const [currentPage, setCurrentPage] = useState(0);
 
   return (
     <motion.section
@@ -61,16 +70,22 @@ export default function TripItinerary({ trip, lang }) {
         {t.title}
       </motion.h2>
 
-      {/* الأيام */}
-      <div className="space-y-6">
-        {trip.Trip_Days?.map((day, dayIdx) => (
+      {/* عرض المجموعة الحالية فقط */}
+      <motion.div
+        key={currentPage}
+        initial={{ opacity: 0, scale: 0.95, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        {dayGroups[currentPage]?.map((day, dayIdx) => (
           <motion.div
             key={day.id}
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: dayIdx * 0.2 }}
-            className={`w-fit rounded-lg p-4 shadow-md transition ${
+            className={`rounded-lg p-4 shadow-md transition ${
               themeName === "dark"
                 ? "bg-black/60 hover:bg-black/80"
                 : "bg-[#fdf6e3] hover:bg-[#f5deb3]"
@@ -84,7 +99,7 @@ export default function TripItinerary({ trip, lang }) {
               Day {day.day_number}
             </h3>
             <ul className="space-y-3">
-              {day.Day_Activities?.map((act, actIdx) => (
+              {day.day_activities?.map((act, actIdx) => (
                 <motion.li
                   key={act.id}
                   initial={{ opacity: 0, x: -20 }}
@@ -93,7 +108,6 @@ export default function TripItinerary({ trip, lang }) {
                   transition={{ duration: 0.5, delay: actIdx * 0.1 }}
                   className="flex items-center gap-3 text-sm md:text-base"
                 >
-                  {/* أيقونة الساعة + الوقت */}
                   <motion.div
                     whileHover={{ scale: 1.2, rotate: 15 }}
                     transition={{ type: "spring", stiffness: 300 }}
@@ -108,7 +122,6 @@ export default function TripItinerary({ trip, lang }) {
                     />
                     <span>{formatTime(act.time)}</span>
                   </motion.div>
-                  {/* النشاط */}
                   <span>
                     {act.activity_translations?.[lang] ||
                       act.activity_translations?.en}
@@ -117,6 +130,28 @@ export default function TripItinerary({ trip, lang }) {
               ))}
             </ul>
           </motion.div>
+        ))}
+      </motion.div>
+
+      {/* ✅ Pagination */}
+      <div className="flex justify-center mt-6 gap-2">
+        {dayGroups.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentPage(idx)}
+            style={{ cursor: "pointer" }}
+            className={`px-3 py-1 rounded-full font-bold transition ${
+              currentPage === idx
+                ? themeName === "dark"
+                  ? "bg-gold text-black"
+                  : "bg-[#c9a34a] text-white"
+                : themeName === "dark"
+                  ? "bg-gray-700 text-gold hover:bg-gray-600"
+                  : "bg-gray-200 text-[#3a2c0a] hover:bg-gray-300"
+            }`}
+          >
+            {idx + 1}
+          </button>
         ))}
       </div>
     </motion.section>

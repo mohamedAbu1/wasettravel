@@ -38,37 +38,36 @@ export default function SignUpModal() {
   const { register, loading, error, open, handleClose } = useAuth();
 
   // 🎨 ألوان واضحة للكتابة حسب الثيم
-  const mainTextColor = isDark ? "#ffffff" : "#1a1a1a";   // النص الأساسي
+  const mainTextColor = isDark ? "#ffffff" : "#1a1a1a"; // النص الأساسي
   const placeholderColor = isDark ? "#FFD700" : "#3a2c0a"; // الـ placeholder
-  const labelColor = isDark ? "#FFD700" : "#3a2c0a";       // الـ label
-  const borderColor = isDark ? "#FFD700" : "#c9a34a";      // الإطار
+  const labelColor = isDark ? "#FFD700" : "#3a2c0a"; // الـ label
+  const borderColor = isDark ? "#FFD700" : "#c9a34a"; // الإطار
 
- const textFieldStyle = {
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": { borderColor: borderColor },
-    "&:hover fieldset": { borderColor: borderColor },
-    "&.Mui-focused fieldset": { borderColor: borderColor },
-    backgroundColor: isDark ? "rgba(0,0,0,0.6)" : "#fff",
-  },
-  "& .MuiInputLabel-root": {
-    color: labelColor,
-    fontWeight: "600",
-    fontSize: "0.95rem",
-    letterSpacing: "0.5px",
-  },
-  "& .MuiInputBase-input": {
-    color: mainTextColor,        // لون النص الأساسي
-    fontWeight: "600",
-    fontSize: "1rem",
-    letterSpacing: "0.3px",
-  },
-  "& .MuiInputBase-input::placeholder": {
-    color: placeholderColor,     // لون الـ placeholder
-    opacity: 0.8,
-    fontStyle: "italic",
-  },
-};
-
+  const textFieldStyle = {
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": { borderColor: borderColor },
+      "&:hover fieldset": { borderColor: borderColor },
+      "&.Mui-focused fieldset": { borderColor: borderColor },
+      backgroundColor: isDark ? "rgba(0,0,0,0.6)" : "#fff",
+    },
+    "& .MuiInputLabel-root": {
+      color: labelColor,
+      fontWeight: "600",
+      fontSize: "0.95rem",
+      letterSpacing: "0.5px",
+    },
+    "& .MuiInputBase-input": {
+      color: mainTextColor, // لون النص الأساسي
+      fontWeight: "600",
+      fontSize: "1rem",
+      letterSpacing: "0.3px",
+    },
+    "& .MuiInputBase-input::placeholder": {
+      color: placeholderColor, // لون الـ placeholder
+      opacity: 0.8,
+      fontStyle: "italic",
+    },
+  };
 
   const handleSubmit = async () => {
     const nameError = validateField("Full Name", fullName);
@@ -148,42 +147,45 @@ export default function SignUpModal() {
             sx={textFieldStyle}
           />
 
-        <TextField
-  label={t("Email")}
-  type="email"
-  variant="outlined"
-  fullWidth
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  InputProps={{
-    startAdornment: (
-      <InputAdornment position="start">
-        <MdEmail color={isDark ? "#FFD700" : "#c9a34a"} />
-      </InputAdornment>
-    ),
-  }}
-  sx={{
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": { borderColor: isDark ? "#FFD700" : "#c9a34a" },
-      "&:hover fieldset": { borderColor: isDark ? "#FFD700" : "#c9a34a" },
-      "&.Mui-focused fieldset": { borderColor: isDark ? "#FFD700" : "#c9a34a" },
-      backgroundColor: isDark ? "rgba(0,0,0,0.6)" : "#fff",
-    },
-    "& .MuiInputLabel-root": {
-      color: isDark ? "#FFD700" : "#3a2c0a",
-      fontWeight: "bold",
-    },
-    "& .MuiInputBase-input": {
-      color: isDark ? "#ffffff" : "#1a1a1a", // لون الكتابة الأساسي
-      fontWeight: "600",
-    },
-    "& .MuiInputBase-input::placeholder": {
-      color: isDark ? "#FFD700" : "#3a2c0a", // لون الـ placeholder
-      opacity: 0.9,
-    },
-  }}
-/>
-
+          <TextField
+            label={t("Email")}
+            type="email"
+            variant="outlined"
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <MdEmail color={isDark ? "#FFD700" : "#c9a34a"} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": { borderColor: isDark ? "#FFD700" : "#c9a34a" },
+                "&:hover fieldset": {
+                  borderColor: isDark ? "#FFD700" : "#c9a34a",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: isDark ? "#FFD700" : "#c9a34a",
+                },
+                backgroundColor: isDark ? "rgba(0,0,0,0.6)" : "#fff",
+              },
+              "& .MuiInputLabel-root": {
+                color: isDark ? "#FFD700" : "#3a2c0a",
+                fontWeight: "bold",
+              },
+              "& .MuiInputBase-input": {
+                color: isDark ? "#ffffff" : "#1a1a1a", // لون الكتابة الأساسي
+                fontWeight: "600",
+              },
+              "& .MuiInputBase-input::placeholder": {
+                color: isDark ? "#FFD700" : "#3a2c0a", // لون الـ placeholder
+                opacity: 0.9,
+              },
+            }}
+          />
 
           <TextField
             label={t("Password")}
@@ -218,7 +220,9 @@ export default function SignUpModal() {
               value={t("male")}
               control={<Radio />}
               label={
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
                   <FaMale color="#1e40af" /> {t("male")}
                 </div>
               }
@@ -227,7 +231,9 @@ export default function SignUpModal() {
               value={t("female")}
               control={<Radio />}
               label={
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
                   <FaFemale color="#db2777" /> {t("female")}
                 </div>
               }
@@ -239,9 +245,16 @@ export default function SignUpModal() {
           </Divider>
 
           {/* Social Buttons */}
-          <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
-            <IconButton>
-              <FcGoogle size={26} />
+          <div
+            style={{ display: "flex", gap: "16px", justifyContent: "center" }}
+          >
+            <IconButton
+              onClick={() => {
+                window.location.href = "/api/oauth/google";
+              }}
+            >
+              {" "}
+              <FcGoogle size={26} />{" "}
             </IconButton>
             <IconButton style={{ color: "#1877f2" }}>
               <FaFacebook size={26} />
@@ -249,7 +262,10 @@ export default function SignUpModal() {
           </div>
 
           {/* Sign Up Button */}
-          <motion.div whileHover={{ scale: 1.05 }} style={{ marginTop: "16px" }}>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            style={{ marginTop: "16px" }}
+          >
             <Button
               variant="contained"
               fullWidth

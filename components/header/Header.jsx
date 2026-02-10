@@ -5,6 +5,7 @@ import { useTheme } from "@/context/ThemeContext";
 import Logo from "./components/Logo";
 import NavBar from "./components/NavBar";
 import RightBar from "./components/RightBar";
+import AdminButton from "./components/AdminButton";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -27,10 +28,11 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-8xl container mx-auto px-6 py-4 flex items-center justify-between">
         <Logo />
         <NavBar />
         <RightBar />
+        <AdminButton /> {/* ✅ زر مستقل */}
       </div>
     </motion.header>
   );

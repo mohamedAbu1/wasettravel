@@ -65,7 +65,6 @@ export function TripProvider({ children }) {
       const result = await res.json();
       if (result.success) {
         setTrips(result.trips);
-        console.log(result.trips);
       }
     } catch (err) {
       console.error("Error fetching trips:", err);

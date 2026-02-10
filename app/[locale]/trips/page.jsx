@@ -5,37 +5,113 @@ import TripsSearch from "@/components/trips/TripsSearch";
 import TripsGrid from "@/components/trips/TripsGrid";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
-import EgyptianBackground from "@/components/trips/EgyptianBackground";
+import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import LoginModal from "@/components/home/components/LoginModal";
 import SignUpButton from "@/components/home/components/SignUpButton";
 import { motion } from "framer-motion";
+import ChatWidget from "@/components/layout/ChatWidget";
+import { useAuth } from "@/context/AuthContext";
 
 export default function TripsPage() {
   const trips = [
-    { title: "Nile Cruise", city: "Cairo", category: "Cruise", price: 500, popular: true, img: "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp" },
-    { title: "Desert Safari", city: "Siwa", category: "Adventure", price: 300, popular: false, img: "/HomePageImage/pexels-ozgomz-7566890.webp" },
-    { title: "Red Sea Diving", city: "Hurghada", category: "Diving", price: 700, popular: true, img: "/HomePageImage/pexels-ozgomz-7566888.webp" },
-    { title: "Nile Cruise", city: "Cairo", category: "Cruise", price: 500, popular: true, img: "/HomePageImage/pexels-oualid-soussi-2150533856-35050672.webp" },
-    { title: "Desert Safari", city: "Siwa", category: "Adventure", price: 300, popular: false, img: "/HomePageImage/pexels-furknsaglam-1596977-21348185.webp" },
-    { title: "Red Sea Diving", city: "Hurghada", category: "Diving", price: 700, popular: true, img: "/HomePageImage/pexels-yasmine-qasem-1054896-2034684.webp" },
-    { title: "Luxor Temples", city: "Luxor", category: "Historical", price: 400, popular: true, img: "/HomePageImage/luxor-temple.webp" },
-    { title: "Aswan Tour", city: "Aswan", category: "Historical", price: 350, popular: false, img: "/HomePageImage/aswan-tour.webp" },
+    {
+      title: "Nile Cruise",
+      city: "Cairo",
+      category: "Cruise",
+      price: 500,
+      popular: true,
+      img: "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
+    },
+    {
+      title: "Desert Safari",
+      city: "Siwa",
+      category: "Adventure",
+      price: 300,
+      popular: false,
+      img: "/HomePageImage/pexels-ozgomz-7566890.webp",
+    },
+    {
+      title: "Red Sea Diving",
+      city: "Hurghada",
+      category: "Diving",
+      price: 700,
+      popular: true,
+      img: "/HomePageImage/pexels-ozgomz-7566888.webp",
+    },
+    {
+      title: "Nile Cruise",
+      city: "Cairo",
+      category: "Cruise",
+      price: 500,
+      popular: true,
+      img: "/HomePageImage/pexels-oualid-soussi-2150533856-35050672.webp",
+    },
+    {
+      title: "Desert Safari",
+      city: "Siwa",
+      category: "Adventure",
+      price: 300,
+      popular: false,
+      img: "/HomePageImage/pexels-furknsaglam-1596977-21348185.webp",
+    },
+    {
+      title: "Red Sea Diving",
+      city: "Hurghada",
+      category: "Diving",
+      price: 700,
+      popular: true,
+      img: "/HomePageImage/pexels-yasmine-qasem-1054896-2034684.webp",
+    },
+    {
+      title: "Luxor Temples",
+      city: "Luxor",
+      category: "Historical",
+      price: 400,
+      popular: true,
+      img: "/HomePageImage/luxor-temple.webp",
+    },
+    {
+      title: "Aswan Tour",
+      city: "Aswan",
+      category: "Historical",
+      price: 350,
+      popular: false,
+      img: "/HomePageImage/aswan-tour.webp",
+    },
   ];
+  const { user } = useAuth(); // ✅ جلب المستخدم الحالي
 
   const [currentPage, setCurrentPage] = useState(1);
   const [cardStyle, setCardStyle] = useState("vertical");
   const tripsPerPage = cardStyle === "vertical" ? 6 : 4;
   const [search, setSearch] = useState("");
-  const [filters, setFilters] = useState({ city: "", category: "", price: "", popular: false });
+  const [filters, setFilters] = useState({
+    city: "",
+    category: "",
+    price: "",
+    popular: false,
+  });
 
   // فلترة الرحلات
   const filteredTrips = trips.filter((trip) => {
-    const matchesSearch = trip.title.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = trip.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
     const matchesCity = filters.city ? trip.city === filters.city : true;
-    const matchesCategory = filters.category ? trip.category === filters.category : true;
-    const matchesPrice = filters.price ? trip.price <= parseInt(filters.price) : true;
+    const matchesCategory = filters.category
+      ? trip.category === filters.category
+      : true;
+    const matchesPrice = filters.price
+      ? trip.price <= parseInt(filters.price)
+      : true;
     const matchesPopular = filters.popular ? trip.popular : true;
-    return matchesSearch && matchesCity && matchesCategory && matchesPrice && matchesPopular;
+    return (
+      matchesSearch &&
+      matchesCity &&
+      matchesCategory &&
+      matchesPrice &&
+      matchesPopular
+    );
   });
 
   // حساب البفكيشن
@@ -47,12 +123,16 @@ export default function TripsPage() {
   // ✨ Variants للأنيميشن
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
   };
 
   const staggerContainer = {
     hidden: {},
-    visible: { transition: { staggerChildren: 0.2 } }
+    visible: { transition: { staggerChildren: 0.2 } },
   };
 
   return (
@@ -76,12 +156,20 @@ export default function TripsPage() {
 
         {/* البحث + الرحلات */}
         <motion.div variants={fadeUp} className="flex-1 flex flex-col gap-6">
-          <TripsSearch search={search} setSearch={setSearch} cardStyle={cardStyle} setCardStyle={setCardStyle} />
+          <TripsSearch
+            search={search}
+            setSearch={setSearch}
+            cardStyle={cardStyle}
+            setCardStyle={setCardStyle}
+          />
           <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
 
           {/* البفكيشن */}
           {totalPages > 1 && (
-            <motion.div variants={fadeUp} className="flex justify-center gap-2 mt-4">
+            <motion.div
+              variants={fadeUp}
+              className="flex justify-center gap-2 mt-4"
+            >
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
@@ -103,6 +191,7 @@ export default function TripsPage() {
       <Footer />
       <SignUpButton />
       <LoginModal />
+      {user && <ChatWidget />}
     </main>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useReviews } from "@/context/ReviewsContext";
 import { useAuth } from "@/context/AuthContext";
-import EgyptianBackground from "@/components/trips/EgyptianBackground";
+import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import ReviewsHeader from "./components/ReviewsHeader";
 import StarRating from "./components/StarRating";
 import ReviewForm from "./components/ReviewForm";
@@ -12,9 +12,29 @@ import ReviewCard from "./components/ReviewCard";
 
 export default function TripReviews({ trip, lang }) {
   const { themeName } = useTheme();
-  const { reviews, addReview, likes, addLike, removeLike } = useReviews();
+  const {
+    reviewsByTrip,
+    addReview,
+    deleteReview,
+    updateReview,
+    likes,
+    addLike,
+    fetchReviewsByTrip,
+    removeLike,
+  } = useReviews();
   const { user } = useAuth();
   const { t } = useTranslation("tripsId");
+
+  // ✅ استدعاء التعليقات الخاصة بالرحلة عند تحميل الكومبوننت
+  useEffect(() => {
+    const loadReviews = async () => {
+      if (trip?.id) {
+        await fetchReviewsByTrip(trip.id);
+        console.log("Fetched reviews for trip:", trip.id);
+      }
+    };
+    loadReviews();
+  }, [trip?.id]);
 
   const translations = {
     en: {
@@ -62,40 +82,44 @@ export default function TripReviews({ trip, lang }) {
   const [comment, setComment] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  // ✅ البفيكشن
+  // ✅ الباجينيشن
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 4;
 
+  // ✅ التعليقات الخاصة بالرحلة الحالية فقط
+  const tripReviews = reviewsByTrip[trip.id] || [];
+
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
-  const currentComments = [...reviews]
+  const currentComments = [...tripReviews]
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(indexOfFirstComment, indexOfLastComment);
 
-  const totalPages = Math.ceil(reviews.length / commentsPerPage);
+  const totalPages = Math.ceil(tripReviews.length / commentsPerPage);
 
+  // ✅ دالة إضافة تعليق
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!comment.trim() || rating === 0 || !user) return;
 
-    const newReview = {
+    await addReview({
       trip_id: trip.id,
-      user_id: user.id,
       rating,
       comment,
       name: user.name || user.email,
       avatar_url: user.avatar_url || null,
       time: new Date().toLocaleTimeString(),
-    };
+    });
 
-    await addReview(newReview);
     setComment("");
     setRating(0);
   };
 
   const averageRating =
-    reviews.length > 0
-      ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
+    tripReviews.length > 0
+      ? (
+          tripReviews.reduce((acc, r) => acc + r.rating, 0) / tripReviews.length
+        ).toFixed(1)
       : 0;
 
   const onEmojiClick = (emojiData) => {
@@ -116,7 +140,7 @@ export default function TripReviews({ trip, lang }) {
       <ReviewsHeader
         title={tr.title}
         averageRating={averageRating}
-        reviewsCount={reviews.length}
+        reviewsCount={tripReviews.length}
         themeName={themeName}
       />
 
@@ -150,26 +174,35 @@ export default function TripReviews({ trip, lang }) {
             key={rev.id || idx}
             rev={rev}
             idx={idx}
+            user={user}
+            deleteReview={deleteReview}
+            updateReview={updateReview}
             themeName={themeName}
             likes={likes}
             addLike={addLike}
             removeLike={removeLike}
           />
         ))}
+        {tripReviews.length === 0 && (
+          <p className="text-center w-full opacity-70">
+            Be the first to review this trip ✨
+          </p>
+        )}
       </div>
 
-      {/* البفيكشن */}
+      {/* الباجينيشن */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 gap-2">
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => prev - 1)}
+            style={{ cursor: "pointer" }}
             className={`px-3 py-1 rounded-lg font-semibold transition ${
               currentPage === 1
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : themeName === "dark"
-                ? "bg-gold text-black hover:bg-yellow-300"
-                : "bg-[#c9a34a] text-white hover:bg-[#a67c00]"
+                  ? "bg-[#c9a34a] text-black hover:bg-yellow-300"
+                  : "bg-[#c9a34a] text-white hover:bg-[#a67c00]"
             }`}
           >
             Prev
@@ -179,10 +212,11 @@ export default function TripReviews({ trip, lang }) {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
+              style={{ cursor: "pointer" }}
               className={`px-3 py-1 rounded-lg font-semibold transition ${
                 currentPage === i + 1
                   ? themeName === "dark"
-                    ? "bg-gold text-black"
+                    ? "bg-[#c9a34a] text-black"
                     : "bg-[#c9a34a] text-white"
                   : "bg-gray-200 hover:bg-gray-300"
               }`}
@@ -194,12 +228,13 @@ export default function TripReviews({ trip, lang }) {
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((prev) => prev + 1)}
+            style={{ cursor: "pointer" }}
             className={`px-3 py-1 rounded-lg font-semibold transition ${
               currentPage === totalPages
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : themeName === "dark"
-                ? "bg-gold text-black hover:bg-yellow-300"
-                : "bg-[#c9a34a] text-white hover:bg-[#a67c00]"
+                  ? "bg-[#c9a34a] text-black hover:bg-yellow-300"
+                  : "bg-[#c9a34a] text-white hover:bg-[#a67c00]"
             }`}
           >
             Next

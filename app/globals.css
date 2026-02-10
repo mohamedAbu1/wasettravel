@@ -24,6 +24,28 @@
   --input-text: #e6e6e6;
   --focus-ring: rgba(255, 215, 0, 0.25);
 }
+/* الاستايل الأساسي للـ scrollbar */
+::-webkit-scrollbar {
+  width: 8px;              /* عرض الشريط */
+  height: 8px;             /* لو فيه scroll أفقي */
+}
+
+/* الخلفية وراء الشريط */
+::-webkit-scrollbar-track {
+  background: transparent !important;      /* لون الخلفية */
+  border-radius: 10px;
+}
+
+/* الجزء المتحرك */
+::-webkit-scrollbar-thumb {
+  background: #C9A34A !important;         /* لون الشريط */
+  border-radius: 10px;
+}
+
+/* عند الوقوف بالماوس */
+::-webkit-scrollbar-thumb:hover {
+  background: #C9A34A;         /* لون أغمق عند hover */
+}
 
 body {
   background: var(--background);
@@ -438,4 +460,7 @@ body {
   .animate-slideIn {
     animation: slideIn 0.5s ease-out forwards;
   }
+}
+.MuiInputBase-input{
+  color: #e6c200 !important;
 }

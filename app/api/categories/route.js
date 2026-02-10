@@ -8,7 +8,6 @@ export async function GET() {
       .order("name", { ascending: true });
 
     if (error) throw error;
-
     return new Response(JSON.stringify({ success: true, categories: data }), {
       status: 200,
     });

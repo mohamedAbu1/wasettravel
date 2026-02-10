@@ -9,6 +9,8 @@ import Footer from "@/components/Footer/Footer";
 import { useTranslation } from "react-i18next";
 import LoginModal from "@/components/home/components/LoginModal";
 import SignUpButton from "@/components/home/components/SignUpButton";
+import ChatWidget from "@/components/layout/ChatWidget";
+import { useAuth } from "@/context/AuthContext";
 const symbols = [
   "𓂀",
   "𓋹",
@@ -30,6 +32,8 @@ const symbols = [
 
 export default function ContactPage() {
   const { theme, themeName } = useTheme();
+  const { user } = useAuth(); // ✅ جلب المستخدم الحالي
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -209,6 +213,7 @@ export default function ContactPage() {
       <Footer />
       <SignUpButton />
       <LoginModal />
+      {user && <ChatWidget />}
     </main>
   );
 }

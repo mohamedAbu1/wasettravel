@@ -1,7 +1,7 @@
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import EgyptianBackground from "@/components/trips/EgyptianBackground";
+import EgyptianBackground from "@/components/layout/EgyptianBackground";
 
 export default function TripsList() {
   const { themeName } = useTheme();

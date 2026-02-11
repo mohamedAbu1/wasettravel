@@ -7,19 +7,22 @@ import { useTrip } from "@/context/TripContext";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { useReviews } from "@/context/ReviewsContext";
 import { useEffect } from "react";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaDollarSign, FaEuroSign } from "react-icons/fa";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion"; // ✅ استدعاء Framer Motion
+import { motion } from "framer-motion";
+import { usePurchase } from "@/context/PurchaseContext";
 
 export default function TripsGrid({ cardStyle = "vertical" }) {
   const { themeName } = useTheme();
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const { lang } = useLanguage();
-  const { cities: allCities, categories: allCategories } = useCitiesCategories();
+  const { cities: allCities, categories: allCategories } =
+    useCitiesCategories();
   const { reviewsByTrip, fetchReviewsByTrip } = useReviews();
   const router = useRouter();
+  const { currency } = usePurchase();
 
   useEffect(() => {
     fetchTrips();
@@ -58,7 +61,7 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
           reviewsCount > 0
             ? Math.round(
                 tripReviews.reduce((sum, r) => sum + (r.stars || 0), 0) /
-                  reviewsCount
+                  reviewsCount,
               )
             : getRandomStars();
 
@@ -86,7 +89,7 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
             ? trip.trip_categories
                 .map((cat) => {
                   const catObj = allCategories.find(
-                    (category) => category.id === cat.category_id
+                    (category) => category.id === cat.category_id,
                   );
                   return (
                     catObj?.name?.[lang] ||
@@ -97,6 +100,14 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                 })
                 .join(" • ")
             : "General";
+
+        // ✅ منطق تحويل السعر لكل رحلة
+        let displayedPrice = trip.price;
+        if (currency === "EUR" && trip.currency === "USD") {
+          displayedPrice = (trip.price * 0.85).toFixed(2);
+        } else if (currency === "USD" && trip.currency === "EUR") {
+          displayedPrice = (trip.price * 1.18).toFixed(2);
+        }
 
         return (
           <motion.div
@@ -114,11 +125,7 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                   ? "border border-gold/30"
                   : "border border-[#c9a34a]/30"
               } 
-              ${
-                cardStyle === "horizontal"
-                  ? "h-86 flex"
-                  : "h-88"
-              }`}
+              ${cardStyle === "horizontal" ? "h-86 flex" : "h-88"}`}
           >
             {/* صورة الرحلة */}
             <Image
@@ -128,7 +135,6 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
               height={800}
               className="object-cover w-full h-full"
             />
-
             {/* Overlay */}
             <div
               className={`absolute inset-0 bg-gradient-to-t ${
@@ -157,15 +163,21 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                 {tripCities} • {tripCategories}
               </p>
 
-              <p className="text-md font-semibold">
+              {/* ✅ السعر مع التحويل */}
+              <p className="text-md font-semibold flex items-center gap-2">
                 <span
-                  className={`px-2 py-1 rounded ${
+                  className={`px-2 py-1 rounded flex items-center gap-1 ${
                     themeName === "dark"
                       ? "bg-[#c9a34a] text-black"
                       : "bg-[#c9a34a] text-white"
                   }`}
                 >
-                  ${trip.price}
+                  {currency === "USD" ? (
+                    <FaDollarSign className="inline" />
+                  ) : (
+                    <FaEuroSign className="inline" />
+                  )}
+                  {displayedPrice} {currency}
                 </span>
               </p>
 
@@ -186,6 +198,7 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                 </span>
               </div>
 
+              {/* زر التفاصيل */}
               <button
                 style={{ cursor: "pointer" }}
                 onClick={() => router.push(`/trips/${trip.id}`)}

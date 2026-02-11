@@ -1,6 +1,7 @@
 "use client";
-import { FaDollarSign, FaClock } from "react-icons/fa";
+import { FaDollarSign, FaEuroSign, FaClock } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
+import { usePurchase } from "@/context/PurchaseContext"; 
 import { motion } from "framer-motion";
 
 // كائن الترجمات
@@ -15,9 +16,17 @@ const translations = {
 
 export default function TripInfo({ trip, lang }) {
   const { themeName } = useTheme();
+  const { currency } = usePurchase(); // ✅ العملة المختارة من الـ context
 
-  // لو اللغة مش موجودة، نرجع للإنجليزية
   const t = translations[lang] || translations.en;
+
+  // ✅ منطق التحويل
+  let displayedPrice = trip.price;
+  if (currency === "EUR" && trip.currency === "USD") {
+    displayedPrice = (trip.price * 0.85).toFixed(2); // تحويل من دولار إلى يورو
+  } else if (currency === "USD" && trip.currency === "EUR") {
+    displayedPrice = (trip.price * 1.18).toFixed(2); // تحويل من يورو إلى دولار
+  }
 
   return (
     <motion.section
@@ -46,6 +55,7 @@ export default function TripInfo({ trip, lang }) {
 
       {/* المعلومات */}
       <div className="space-y-3">
+        {/* السعر */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -54,17 +64,26 @@ export default function TripInfo({ trip, lang }) {
           className="flex items-center gap-2"
         >
           <motion.div whileHover={{ scale: 1.2, rotate: 10 }}>
-            <FaDollarSign
-              className={
-                themeName === "dark" ? "text-yellow-300" : "text-green-600"
-              }
-            />
+            {currency === "USD" ? (
+              <FaDollarSign
+                className={
+                  themeName === "dark" ? "text-yellow-300" : "text-green-600"
+                }
+              />
+            ) : (
+              <FaEuroSign
+                className={
+                  themeName === "dark" ? "text-yellow-300" : "text-blue-600"
+                }
+              />
+            )}
           </motion.div>
           <span>
-            {t.price}: {trip.price} {trip.currency}
+            {t.price}: {displayedPrice} {currency}
           </span>
         </motion.div>
 
+        {/* المدة */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}

@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
-
+import { supabase } from "@/lib/supabaseClient"; // تأكد إنها موجودة
 export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const [open, setOpen] = useState(false);
   const { theme, themeName } = useTheme();
@@ -88,7 +88,28 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   }, [user]);
 
   const isAdmin = user?.role === "ADMIN";
-
+  const handleSendImage = async (file) => {
+    const fileName = `${user.id}-${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabase.storage
+      .from("chat-images")
+      .upload(fileName, file);
+    if (uploadError) {
+      console.error("Upload error:", uploadError.message);
+      return;
+    }
+    const { data: publicUrlData } = supabase.storage
+      .from("chat-images")
+      .getPublicUrl(fileName);
+    const uploadedUrl = publicUrlData.publicUrl;
+    await sendMessage({
+      user_id: user.id,
+      user_name: user.name,
+      user_image: user.avatar_url,
+      content: uploadedUrl,
+      sender_type: "user",
+      status: "sent",
+    });
+  };
   return (
     <>
       {!isAdmin && (
@@ -174,6 +195,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                 text={text}
                 setText={setText}
                 handleSend={handleSend}
+                handleSendImage={handleSendImage} // ✅ أضفها هنا
                 theme={theme}
                 themeName={themeName}
                 user={user}

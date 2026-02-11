@@ -7,7 +7,7 @@ const PurchaseContext = createContext();
 export function PurchaseProvider({ children }) {
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(false);
-
+const [currency, setCurrency] = useState("USD")
   // ✅ جلب المشتريات من API
   const fetchPurchases = async () => {
     setLoading(true);
@@ -41,7 +41,7 @@ export function PurchaseProvider({ children }) {
 
   return (
     <PurchaseContext.Provider
-      value={{ purchases, loading, purchaseTrip, fetchPurchases }}
+      value={{ purchases, loading, purchaseTrip, fetchPurchases,currency ,setCurrency}}
     >
       {children}
     </PurchaseContext.Provider>

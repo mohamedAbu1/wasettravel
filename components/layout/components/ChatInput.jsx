@@ -23,8 +23,8 @@ export default function ChatInput({
         <input
           type="file"
           accept="image/*"
+          onChange={(e) => { const file = e.target.files[0]; if (file) { handleSendImage(file); } }}
           className="hidden"
-          onChange={handleSendImage}
         />
       </label>
       <input
@@ -60,18 +60,18 @@ export default function ChatInput({
       >
         <FaSmile className="text-lg" />
       </button>
-     {showEmojiPicker && (
-  <div
-    className="absolute right-30 bottom-25 z-50 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg"
-    style={{ width: "300px", height: "400px" }}
-  >
-    <Picker
-      data={data}
-      onEmojiSelect={(emoji) => setText(text + emoji.native)}
-      theme={themeName === "dark" ? "dark" : "light"}
-    />
-  </div>
-)}
+      {showEmojiPicker && (
+        <div
+          className="absolute right-30 bottom-25 z-50 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg"
+          style={{ width: "300px", height: "400px" }}
+        >
+          <Picker
+            data={data}
+            onEmojiSelect={(emoji) => setText(text + emoji.native)}
+            theme={themeName === "dark" ? "dark" : "light"}
+          />
+        </div>
+      )}
 
       <motion.button
         style={{ cursor: "pointer" }}

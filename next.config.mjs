@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactCompiler: true,
+  reactStrictMode: true,
   images: {
     domains: [
       "dxpbyrcbklqrjlytmkum.supabase.co", // دومين Supabase Storage

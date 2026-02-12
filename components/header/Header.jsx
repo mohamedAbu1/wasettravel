@@ -29,9 +29,9 @@ export default function Header() {
       }`}
     >
       <div className="max-w-8xl container mx-auto px-6 py-4 flex items-center justify-between">
-        <Logo />
-        <NavBar />
-        <RightBar />
+        <Logo  scrolled={scrolled}/>
+        <NavBar scrolled={scrolled}/>
+        <RightBar scrolled={scrolled}/>
         <AdminButton /> {/* ✅ زر مستقل */}
       </div>
     </motion.header>

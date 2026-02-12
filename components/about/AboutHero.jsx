@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 export default function AboutHero() {
   const { themeName } = useTheme();
@@ -18,15 +19,24 @@ export default function AboutHero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="space-y-5"
         >
-          <p className={`uppercase tracking-widest text-sm ${themeName === "dark" ? "text-white/60" : "text-[#6b4f1d]"}`}>
+          <p
+            className={`uppercase tracking-widest text-sm ${themeName === "dark" ? "text-white/60" : "text-[#6b4f1d]"}`}
+          >
             {t("AboutWasetTravel")}
           </p>
-          <h1 className={`text-4xl lg:text-5xl font-extrabold leading-tight ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}>
+          <DividerWithIcon />
+          <h1
+            className={`text-4xl lg:text-5xl font-extrabold leading-tight ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+          >
             {t("h1")}
           </h1>
-          <p className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"} text-lg`}>
+          <DividerWithIcon />
+          <p
+            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"} text-lg`}
+          >
             {t("p")}
           </p>
+          
         </motion.div>
 
         <motion.div

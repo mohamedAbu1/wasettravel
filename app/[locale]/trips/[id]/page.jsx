@@ -81,16 +81,15 @@ export default function TripPage({ params }) {
         </div>
         <div className="col-span-1 lg:col-span-3">
           {" "}
-          <TripReviews trip={trip} lang={lang} />{" "}
-          <PurchaseButton trip={trip} /> {/* زر الشراء */}
+          <TripReviews trip={trip} lang={lang} /> <PurchaseButton trip={trip} />{" "}
+          {/* زر الشراء */}
         </div>
       </div>
 
       <Footer />
       <SignUpButton />
       <LoginModal />
-                  {user && <ChatWidget />}
-      
+      {user && <ChatWidget />}
     </main>
   );
 }

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 export default function HeritageSection() {
   const { themeName } = useTheme();
@@ -11,12 +12,20 @@ export default function HeritageSection() {
   // ✨ إعدادات الأنيميشن
   const fadeLeft = {
     hidden: { opacity: 0, x: -60 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.8, ease: "easeOut" },
+    },
   };
 
   const fadeRight = {
     hidden: { opacity: 0, x: 60 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.8, ease: "easeOut" },
+    },
   };
 
   return (
@@ -35,14 +44,25 @@ export default function HeritageSection() {
       >
         {/* النص */}
         <motion.div variants={fadeLeft} className="flex-1">
-          <h3 className="text-2xl font-bold mb-3">{t("h5")}</h3>
-          <p className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}>
+          <h3
+            className={`text-2xl font-bold mb-3 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+          >
+            {t("h5")}
+          </h3>
+          <DividerWithIcon />
+
+          <p
+            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
+          >
             {t("p4")}
           </p>
         </motion.div>
 
         {/* الصورة */}
-        <motion.div variants={fadeRight} className="flex-1 relative w-full h-56">
+        <motion.div
+          variants={fadeRight}
+          className="flex-1 relative w-full h-56"
+        >
           <Image
             src="/HomePageImage/pexels-axp-photography-500641970-18934598.webp"
             alt="Egyptian Heritage"

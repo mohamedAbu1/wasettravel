@@ -143,7 +143,7 @@ export default function TripItinerary({ trip, lang }) {
             className={`px-3 py-1 rounded-full font-bold transition ${
               currentPage === idx
                 ? themeName === "dark"
-                  ? "bg-gold text-black"
+                  ? "bg-[#c9a34a] text-black"
                   : "bg-[#c9a34a] text-white"
                 : themeName === "dark"
                   ? "bg-gray-700 text-gold hover:bg-gray-600"

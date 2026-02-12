@@ -120,7 +120,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
           whileTap={{ scale: 0.95 }}
           className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg flex items-center justify-center ${theme.buttonPrimary}`}
         >
-          <FaComments size={22} />
+          <FaComments size={22} color="#fff"/>
         </motion.button>
       )}
 

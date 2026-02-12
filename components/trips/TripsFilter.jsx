@@ -5,16 +5,16 @@ import { FaMapMarkerAlt, FaDollarSign, FaTags, FaFire } from "react-icons/fa";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { useTheme } from "@/context/ThemeContext";
+import Divider from "@/components/layout/Divider"; // ✅ استدعاء الكومبوننت الجديد
 
-const AnkhIcon = () => (
-  <span className="text-[#c9a34a] dark:text-gold text-xl font-bold">☥</span>
-);
 
 export default function TripsFilter({ filters, setFilters }) {
   const { cities: allCities, categories: allCategories, loading } = useCitiesCategories();
   const { i18n } = useTranslation();
   const currentLang = i18n.language || "en";
   const { t } = useTranslation("trips");
+  const { themeName } = useTheme();
 
   const handleCheckboxChange = (type, value) => {
     const current = filters[type] || [];
@@ -32,23 +32,6 @@ export default function TripsFilter({ filters, setFilters }) {
     { label: "1500+ $", value: "1500+" },
   ];
 
-  const Divider = () => (
-    <motion.div
-      variants={fadeUp}
-      className="relative flex items-center justify-center my-4"
-    >
-      <hr
-        className={`w-full border-t-2 ${
-          filters.themeName === "dark"
-            ? "border-gold/40"
-            : "border-[#c9a34a]/40"
-        }`}
-      />
-      <div className="absolute bg-inherit px-2">
-        <AnkhIcon />
-      </div>
-    </motion.div>
-  );
 
   if (loading) {
     return <p className="text-center text-gray-500">{t("Loading")}</p>;
@@ -72,15 +55,15 @@ export default function TripsFilter({ filters, setFilters }) {
       viewport={{ once: true, amount: 0.2 }}
       variants={staggerContainer}
       className={`p-6 rounded-xl shadow-lg transition ${
-        filters.themeName === "dark"
-          ? "bg-gradient-to-br from-[#0a0a0a] via-[#111] to-[#1a1a1a] border border-[#c9a34a]/40 text-gray-100"
-          : "bg-white/0 border border-[#c9a34a]/30 text-[#3a2c0a] "
+        themeName === "dark"
+          ? "bg-gradient-to-br from-[#0a0a0a] via-[#111] to-[#1a1a1a] text-[#b5892e] border border-[#c9a34a]/40 "
+          : "bg-white/0 border border-[#c9a34a]/30  text-[#1a1a1a]"
       }`}
     >
       <motion.h3
         variants={fadeUp}
         className={`text-xl font-bold mb-6 ${
-          filters.themeName === "dark" ? "text-[#c9a34a]" : "text-[#3a2c0a]"
+          filters.themeName === "dark" ? "text-[#c9a34a]" : "text-[#c9a34a]"
         }`}
       >
         {t("Filters")}
@@ -89,8 +72,8 @@ export default function TripsFilter({ filters, setFilters }) {
       <motion.div variants={staggerContainer} className="flex flex-col gap-8">
         {/* المدن */}
         <motion.div variants={fadeUp}>
-          <label className="flex items-center gap-2 font-semibold mb-3">
-            <FaMapMarkerAlt className="text-[#c9a34a]" /> {t("Cities")} :
+          <label className="flex items-center gap-2 font-semibold mb-3 text-[#c9a34a]">
+            <FaMapMarkerAlt /> {t("Cities")} :
           </label>
           <div className="grid grid-cols-2 gap-2 ml-6">
             {allCities.map((city) => {
@@ -115,12 +98,11 @@ export default function TripsFilter({ filters, setFilters }) {
           </div>
         </motion.div>
 
-        <Divider />
-
+        <Divider fadeUp={fadeUp} themeName={themeName} />
         {/* الكاتجري */}
         <motion.div variants={fadeUp}>
-          <label className="flex items-center gap-2 font-semibold mb-3">
-            <FaTags className="text-[#c9a34a]" /> {t("Categories")}:
+          <label className="flex items-center gap-2 font-semibold mb-3 text-[#c9a34a]">
+            <FaTags /> {t("Categories")} :
           </label>
           <div className="grid grid-cols-2 gap-2 ml-6">
             {allCategories.map((cat) => {
@@ -145,12 +127,11 @@ export default function TripsFilter({ filters, setFilters }) {
           </div>
         </motion.div>
 
-        <Divider />
-
+        <Divider fadeUp={fadeUp} themeName={themeName} />
         {/* السعر */}
         <motion.div variants={fadeUp}>
-          <label className="flex items-center gap-2 font-semibold mb-3">
-            <FaDollarSign className="text-[#c9a34a]" />{t("PriceRange")} :
+          <label className="flex items-center gap-2 font-semibold mb-3 text-[#c9a34a]">
+            <FaDollarSign />{t("PriceRange")} :
           </label>
           <div className="flex flex-col gap-2 ml-6">
             {priceRanges.map((range) => (
@@ -172,12 +153,11 @@ export default function TripsFilter({ filters, setFilters }) {
           </div>
         </motion.div>
 
-        <Divider />
-
+        <Divider fadeUp={fadeUp} themeName={themeName} />
         {/* الأكثر طلباً */}
         <motion.div variants={fadeUp}>
-          <label className="flex items-center gap-2 font-semibold cursor-pointer hover:text-[#c9a34a] transition">
-            <FaFire className="text-[#c9a34a]" />{t("MostPopular")} 
+          <label className="flex items-center gap-2 font-semibold cursor-pointer text-[#c9a34a] hover:text-[#c9a34a] transition">
+            <FaFire />{t("MostPopular")} 
             <input
               type="checkbox"
               className="ml-2 accent-[#c9a34a] cursor-pointer"

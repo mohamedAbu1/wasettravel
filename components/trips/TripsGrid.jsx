@@ -122,7 +122,7 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
             className={`relative rounded-xl shadow-lg overflow-hidden transform transition 
               ${
                 themeName === "dark"
-                  ? "border border-gold/30"
+                  ? "border  border-[#c9a34a]/30"
                   : "border border-[#c9a34a]/30"
               } 
               ${cardStyle === "horizontal" ? "h-86 flex" : "h-88"}`}
@@ -133,7 +133,10 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
               alt={trip.title?.[lang] || trip.title?.en || "Trip image"}
               width={660}
               height={800}
-              className="object-cover w-full h-full"
+              className="object-cover w-full h-full rounded-lg"
+              placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+              blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+              priority // ✅ يجعل الصورة الأساسية تتحمل فورًا عند فتح الصفحة
             />
             {/* Overlay */}
             <div
@@ -143,7 +146,6 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                   : "from-[#3a2c0a]/70 via-[#3a2c0a]/40 to-transparent"
               }`}
             />
-
             {/* محتوى الكارد */}
             <div
               className={`absolute bottom-0 p-4 w-full flex flex-col gap-2 text-white ${
@@ -166,10 +168,10 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
               {/* ✅ السعر مع التحويل */}
               <p className="text-md font-semibold flex items-center gap-2">
                 <span
-                  className={`px-2 py-1 rounded flex items-center gap-1 ${
+                  className={`px-2 py-1 rounded flex items-center gap-1 text-white ${
                     themeName === "dark"
-                      ? "bg-[#c9a34a] text-black"
-                      : "bg-[#c9a34a] text-white"
+                      ? "bg-[#c9a34a]"
+                      : "bg-[#c9a34a]"
                   }`}
                 >
                   {currency === "USD" ? (
@@ -202,10 +204,10 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
               <button
                 style={{ cursor: "pointer" }}
                 onClick={() => router.push(`/trips/${trip.id}`)}
-                className={`mt-2 px-4 py-2 rounded-lg font-bold transition ${
+                className={`mt-2 px-4 py-2 rounded-lg font-bold transition text-white ${
                   themeName === "dark"
-                    ? "bg-[#c9a34a] text-black hover:bg-yellow-500"
-                    : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+                    ? "bg-[#c9a34a] hover:bg-yellow-500"
+                    : "bg-[#c9a34a] hover:bg-[#b5892e]"
                 }`}
               >
                 {t("btn")}

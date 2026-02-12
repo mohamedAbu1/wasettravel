@@ -31,20 +31,20 @@ export default function ReviewForm({
           type="button"
           style={{ cursor: "pointer" }}
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="px-3 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+          className={`px-3 py-2 rounded-lg hover:bg-gray-300 ${themeName === "dark" ? "bg-gray-800" : "bg-gray-200"}`}
         >
           😀
         </button>
-        {showEmojiPicker && <EmojiPicker onEmojiClick={onEmojiClick} />}
+        {showEmojiPicker && <EmojiPicker onEmojiClick={onEmojiClick} theme={themeName === "dark" ? "dark" : "light"}/>}
       </div>
 
       <button
         type="submit"
         style={{ cursor: "pointer" }}
-        className={`px-6 py-2 rounded-lg font-semibold transition ${
+        className={`px-6 py-2 rounded-lg font-semibold transition bg-[#c9a34a] text-white ${
           themeName === "dark"
-            ? "bg-gold text-black hover:bg-yellow-300"
-            : "bg-[#c9a34a] text-white hover:bg-[#a67c00]"
+            ? "hover:bg-yellow-300"
+            : "hover:bg-[#a67c00]"
         }`}
       >
         {submitLabel}

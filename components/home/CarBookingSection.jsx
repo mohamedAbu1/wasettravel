@@ -6,6 +6,7 @@ import { FaCarSide } from "react-icons/fa";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 const CarBookingSection = () => {
   const { themeName } = useTheme();
@@ -58,7 +59,11 @@ const CarBookingSection = () => {
           src="/HomePageImage/Copilot_20251003_105735.webp"
           alt="Luxury Car Background"
           fill
-          className="object-cover opacity-20"
+          className="object-cover opacity-20 rounded-lg"
+          placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+          blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+          priority // ✅ لو الصورة أساسية في الصفحة (خلفية أو Hero)
+          quality={85} // ✅ يقلل حجم الصورة ويحافظ على الجودة
         />
         <div
           className={`absolute inset-0 bg-gradient-to-br ${
@@ -103,6 +108,10 @@ const CarBookingSection = () => {
             alt="Luxury Car"
             fill
             className="object-contain drop-shadow-2xl"
+            placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+            blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+            priority // ✅ لو الصورة أساسية في الصفحة (مثلاً Hero أو خلفية مهمة)
+            quality={85} // ✅ يقلل حجم الصورة ويحافظ على جودة مناسبة
           />
         </motion.div>
 
@@ -120,6 +129,8 @@ const CarBookingSection = () => {
           >
             {t("PremiumCarTransfer")}
           </h2>
+          <DividerWithIcon />
+
           <p className="mt-6 text-lg opacity-80 leading-relaxed max-w-xl">
             {t("Experience")}
           </p>
@@ -127,6 +138,7 @@ const CarBookingSection = () => {
           {/* Booking Button */}
           <motion.button
             variants={fadeInUp}
+            style={{ cursor: "pointer" }}
             onClick={() => {
               // نطلق حدث مخصص يفتحه الـ ChatWidget
               window.dispatchEvent(new CustomEvent("openCarBookingChat"));

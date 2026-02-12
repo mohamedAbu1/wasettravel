@@ -11,7 +11,9 @@ import SignUpButton from "@/components/home/components/SignUpButton";
 import { motion } from "framer-motion";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
-
+import Head from "next/head";
+import { useLanguage } from "@/context/LanguageContext";
+import { tripsMetadata } from "@/lib/metadata/trips";
 export default function TripsPage() {
   const trips = [
     {
@@ -79,6 +81,8 @@ export default function TripsPage() {
       img: "/HomePageImage/aswan-tour.webp",
     },
   ];
+  const { lang } = useLanguage();
+  const meta = tripsMetadata[lang] || tripsMetadata.en;
   const { user } = useAuth(); // ✅ جلب المستخدم الحالي
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -136,62 +140,69 @@ export default function TripsPage() {
   };
 
   return (
-    <main className="relative flex flex-col min-h-screen justify-center items-center">
-      <EgyptianBackground />
-      <Header />
+    <>
+      <Head>
+        <title>{meta.title}</title>
+        <meta name="description" content={meta.description} />
+        <meta name="keywords" content={meta.keywords} />
+      </Head>
+      <main className="relative flex flex-col min-h-screen justify-center items-center">
+        <EgyptianBackground />
+        <Header />
 
-      {/* المحتوى الرئيسي */}
-      <motion.section
-        style={{ marginTop: "105px", paddingBottom: "20px" }}
-        className="container flex flex-1 gap-6 px-6 relative z-10"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={staggerContainer}
-      >
-        {/* الفلتر */}
-        <motion.div variants={fadeUp} className="w-1/4">
-          <TripsFilter filters={filters} setFilters={setFilters} />
-        </motion.div>
+        {/* المحتوى الرئيسي */}
+        <motion.section
+          style={{ marginTop: "105px", paddingBottom: "20px" }}
+          className="container flex flex-1 gap-6 px-6 relative z-10"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={staggerContainer}
+        >
+          {/* الفلتر */}
+          <motion.div variants={fadeUp} className="w-1/4">
+            <TripsFilter filters={filters} setFilters={setFilters} />
+          </motion.div>
 
-        {/* البحث + الرحلات */}
-        <motion.div variants={fadeUp} className="flex-1 flex flex-col gap-6">
-          <TripsSearch
-            search={search}
-            setSearch={setSearch}
-            cardStyle={cardStyle}
-            setCardStyle={setCardStyle}
-          />
-          <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
+          {/* البحث + الرحلات */}
+          <motion.div variants={fadeUp} className="flex-1 flex flex-col gap-6">
+            <TripsSearch
+              search={search}
+              setSearch={setSearch}
+              cardStyle={cardStyle}
+              setCardStyle={setCardStyle}
+            />
+            <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
 
-          {/* البفكيشن */}
-          {totalPages > 1 && (
-            <motion.div
-              variants={fadeUp}
-              className="flex justify-center gap-2 mt-4"
-            >
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 rounded-lg font-bold transition ${
-                    currentPage === i + 1
-                      ? "bg-[#c9a34a] text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </motion.div>
-      </motion.section>
+            {/* البفكيشن */}
+            {totalPages > 1 && (
+              <motion.div
+                variants={fadeUp}
+                className="flex justify-center gap-2 mt-4"
+              >
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 rounded-lg font-bold transition ${
+                      currentPage === i + 1
+                        ? "bg-[#c9a34a] text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </motion.div>
+        </motion.section>
 
-      <Footer />
-      <SignUpButton />
-      <LoginModal />
-      {user && <ChatWidget />}
-    </main>
+        <Footer />
+        <SignUpButton />
+        <LoginModal />
+        {user && <ChatWidget />}
+      </main>
+    </>
   );
 }

@@ -3,6 +3,7 @@
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 export default function CTASection() {
   const { themeName } = useTheme();
@@ -33,7 +34,7 @@ export default function CTASection() {
       >
         <motion.h4
           variants={fadeUp}
-          className="text-xl font-semibold mb-3"
+          className={`text-xl font-semibold mb-3 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
         >
           {t("h6")}
         </motion.h4>

@@ -7,12 +7,13 @@ const PurchaseContext = createContext();
 export function PurchaseProvider({ children }) {
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(false);
-const [currency, setCurrency] = useState("USD")
+  const [currency, setCurrency] = useState(""); // القيمة الافتراضية
+
   // ✅ جلب المشتريات من API
   const fetchPurchases = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("/api/purchases"); // لازم تعمل route خاص بجلب المشتريات
+      const res = await axios.get("/api/purchases");
       setPurchases(res.data);
     } catch (err) {
       console.error(err);
@@ -35,13 +36,25 @@ const [currency, setCurrency] = useState("USD")
     }
   };
 
+  // ✅ تحميل العملة من localStorage عند أول تشغيل فقط
   useEffect(() => {
+    const savedCurrency = localStorage.getItem("currency");
+    if (savedCurrency) {
+      setCurrency(savedCurrency); // يضبط العملة المخزنة بدل الافتراضية
+    }
     fetchPurchases();
-  }, []);
+  }, []); // ✅ بدون currency هنا
+
+  // ✅ حفظ العملة في localStorage عند تغييرها
+  useEffect(() => {
+    if (currency) {
+      localStorage.setItem("currency", currency);
+    }
+  }, [currency]); // ✅ هذا يشتغل كل مرة تتغير العملة
 
   return (
     <PurchaseContext.Provider
-      value={{ purchases, loading, purchaseTrip, fetchPurchases,currency ,setCurrency}}
+      value={{ purchases, loading, purchaseTrip, fetchPurchases, currency, setCurrency }}
     >
       {children}
     </PurchaseContext.Provider>

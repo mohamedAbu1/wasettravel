@@ -17,13 +17,13 @@ import {
 import Logo from "@/components/header/components/Logo";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import axios from "axios";
-
+import { usePurchase } from "@/context/PurchaseContext"; // ✅ استدعاء الكونتكست
 export default function PurchaseButton({ trip }) {
   const [open, setOpen] = useState(false);
   const { themeName } = useTheme();
   const { lang } = useLanguage();
   const { user } = useAuth();
-
+  const { currency } = usePurchase(); // ✅ جلب العملة من الكونتكست
   // ✅ ألوان حسب الثيم
   const buttonClasses =
     themeName === "dark"
@@ -76,14 +76,19 @@ export default function PurchaseButton({ trip }) {
     }
     setLoading(false);
   };
-
+      let displayedPrice = trip.price;
+        if (currency === "EUR" && trip.currency === "USD") {
+          displayedPrice = (trip.price * 0.85).toFixed(2);
+        } else if (currency === "USD" && trip.currency === "EUR") {
+          displayedPrice = (trip.price * 1.18).toFixed(2);
+        }
   return (
     <>
       {/* Fixed Purchase Button at bottom-left */}
       <button
         onClick={() => setOpen(true)}
         style={{ cursor: "pointer" }}
-        className={`fixed bottom-6 left-6 px-6 py-3 rounded-xl font-semibold shadow-lg flex items-center gap-2 transition transform hover:scale-105 hover:shadow-2xl z-40 ${buttonClasses}`}
+        className={`fixed bottom-6 left-6 px-6 py-3 rounded-xl font-semibold shadow-lg flex items-center gap-2 transition transform hover:scale-105 hover:shadow-2xl z-40 text-white ${buttonClasses}`}
       >
         <FaShoppingCart className="w-5 h-5 animate-bounce" />
         Buy Trip
@@ -112,43 +117,73 @@ export default function PurchaseButton({ trip }) {
 
             {/* User Info from Token */}
             <div className="mb-6 border-b border-gray-300/30 pb-4">
-              <h3 className="text-lg font-semibold mb-2 capitalize">
+              <h3
+                className={`text-lg font-semibold mb-2 capitalize ${themeName === "dark" ? "text-[#c9a34a]" : "text-[#11111194]"}`}
+              >
                 Traveler Information
               </h3>
-              <p className="mb-1 flex items-center gap-2 capitalize">
-                <FaUser /> {user?.name}
+              <p
+                className={`mb-1 flex items-center gap-2 capitalize ${themeName === "dark" ? "text-white" : "text-[#11111186]"}`}
+              >
+                <FaUser
+                  className={`${themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"}`}
+                />{" "}
+                {user?.name}
               </p>
-              <p className="mb-1 flex items-center gap-2">
-                <FaEnvelope /> {user?.email}
+              <p
+                className={`mb-1 flex items-center gap-2 ${themeName === "dark" ? "text-white" : "text-[#11111186]"}`}
+              >
+                <FaEnvelope
+                  className={`${themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"}`}
+                />{" "}
+                {user?.email}
               </p>
             </div>
 
             {/* Extra Options */}
             <div className="mb-6 border-b border-gray-300/30 pb-4">
-              <h3 className="text-lg font-semibold mb-3">Additional Details</h3>
+              <h3
+                className={`text-lg font-semibold mb-3 ${themeName === "dark" ? "text-[#c9a34a]" : "text-[#11111194]"}`}
+              >
+                Additional Details
+              </h3>
 
-              <label className="flex items-center gap-2 mb-2 cursor-pointer hover:text-blue-600 transition">
+              <label
+                className={`flex items-center gap-2 mb-2 cursor-pointer hover:text-[#c9a34a] transition  ${themeName === "dark" ? "text-white" : "text-[#11111186]"}`}
+              >
                 <input
                   type="checkbox"
                   checked={hasChildren}
                   onChange={() => setHasChildren(!hasChildren)}
-                  className="accent-blue-600"
+                  className="accent-[#c9a34a]"
                 />
-                <FaChild /> <span>Traveling with children</span>
+                <FaChild
+                  className={`${themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"}`}
+                />{" "}
+                <span>Traveling with children</span>
               </label>
 
-              <label className="flex items-center gap-2 mb-2 cursor-pointer hover:text-blue-600 transition">
+              <label
+                className={`flex items-center gap-2 mb-2 cursor-pointer hover:text-[#c9a34a] transition  ${themeName === "dark" ? "text-white" : "text-[#11111186]"}`}
+              >
                 <input
                   type="checkbox"
                   checked={hasPets}
                   onChange={() => setHasPets(!hasPets)}
-                  className="accent-blue-600"
+                  className="accent-[#c9a34a]"
                 />
-                <FaDog /> <span>Traveling with pets</span>
+                <FaDog
+                  className={`${themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"}`}
+                />{" "}
+                <span>Traveling with pets</span>
               </label>
 
-              <div className="mt-3 flex items-center gap-2">
-                <FaUsers />
+              <div
+                className={`mt-3 flex items-center gap-2 ${themeName === "dark" ? "text-white" : "text-[#11111186]"}`}
+              >
+                <FaUsers
+                  className={`${themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"}`}
+                />
                 <label className="block mb-1 font-medium">Group Size</label>
                 <input
                   type="number"
@@ -162,13 +197,22 @@ export default function PurchaseButton({ trip }) {
 
             {/* Trip Details */}
             <div className="mb-6">
-              <h2 className="text-[16px] font-bold mb-4 flex items-center gap-2">
-                <FaShoppingCart className="w-6 h-6 text-green-500" />
+              <h2
+                className={`text-[16px]  mb-4 flex items-center gap-2 ${themeName === "dark" ? "text-white" : "text-[#11111186]"}`}
+              >
+                <FaShoppingCart
+                  className={`w-6 h-6 ${themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"}`}
+                />
                 {getText(trip.title)}
               </h2>
-              <p className="mb-2 font-medium flex items-center gap-2">
-                <FaMoneyBillWave className="text-yellow-500" /> {trip.price}{" "}
-                {trip.currency}
+              <p
+                className={`mb-2 font-medium flex items-center gap-2 ${themeName === "dark" ? "text-white" : "text-[#11111186]"}`}
+              >
+                <FaMoneyBillWave
+                  className={`${themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"}`}
+                />
+                {displayedPrice} {currency || trip.currency}{" "}
+                {/* ✅ عرض العملة من localStorage */}
               </p>
             </div>
 
@@ -177,10 +221,10 @@ export default function PurchaseButton({ trip }) {
               style={{ cursor: "pointer" }}
               onClick={handlePurchase}
               disabled={loading}
-              className={`mt-4 w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition transform hover:scale-105 hover:shadow-xl ${
+              className={`mt-4 w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition text-white transform hover:scale-105 hover:shadow-xl ${
                 themeName === "dark"
-                  ? "bg-gradient-to-r from-yellow-500 to-yellow-600 text-black hover:from-yellow-600 hover:to-yellow-700"
-                  : "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
+                  ? "bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700"
+                  : "bg-gradient-to-r bg-[#c9a34a] hover:from-blue-600 hover:to-blue-700"
               } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <FaCheckCircle className="w-5 h-5 animate-pulse" />

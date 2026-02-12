@@ -1,7 +1,7 @@
 export default function ChatHeader({ onClose, theme }) {
   return (
     <div
-      className={`font-bold p-3 rounded-t-xl flex justify-between items-center ${theme.buttonPrimary}`}
+      className={`font-bold p-3 rounded-t-xl flex justify-between items-center text-white ${theme.buttonPrimary}`}
     >
       <span>Waset Travel Support</span>
       <button

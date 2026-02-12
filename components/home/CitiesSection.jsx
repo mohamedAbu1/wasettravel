@@ -5,6 +5,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 function CityCard({ city, themeName, theme, language }) {
   const cityName =
@@ -22,11 +23,12 @@ function CityCard({ city, themeName, theme, language }) {
       >
         <Image
           src={city.images?.[0] || "/fallback.jpg"}
-          alt={cityName}
+          alt={cityName || "City image"}
           fill
-          className="object-cover"
+          className="object-cover rounded-lg"
+          placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+          blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
         />
-
         <div
           className={`
             absolute inset-0 
@@ -39,11 +41,11 @@ function CityCard({ city, themeName, theme, language }) {
           </p>
           <button
             className={`
-              opacity-0 group-hover:opacity-100 px-4 py-2 rounded-lg text-sm font-medium transition
+              opacity-0 group-hover:opacity-100 px-4 py-2 rounded-lg text-sm font-medium transition text-white
               ${
                 themeName === "dark"
-                  ? "bg-gold text-black hover:bg-yellow-500"
-                  : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+                  ? "bg-[#c9a34a] hover:bg-yellow-500"
+                  : "bg-[#c9a34a] hover:bg-[#b5892e]"
               }
             `}
           >
@@ -91,6 +93,7 @@ const CitiesSection = () => {
         >
           {t("ExploreCities")}
         </h2>
+        <DividerWithIcon />
       </div>
 
       {/* ✅ Marquee Animation */}

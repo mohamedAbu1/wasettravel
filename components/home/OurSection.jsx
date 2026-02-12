@@ -12,6 +12,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 const OurSection = () => {
   const router = useRouter();
@@ -103,11 +104,13 @@ const OurSection = () => {
               <SwiperSlide key={index}>
                 <div className="w-full h-[85vh]">
                   <Image
-                    src={imgSrc}
-                    fill
+                    src={imgSrc || "/fallback.jpg"}
                     alt={`WasetTravel Slide ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
+                    fill
+                    className="w-full h-full object-cover rounded-lg"
+                    loading="lazy" // ✅ يفضل للصور الثانوية
+                    placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+                    blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
                   />
                 </div>
               </SwiperSlide>
@@ -130,7 +133,7 @@ const OurSection = () => {
               color: themeName === "dark" ? "#aaa" : "#6b4f1d",
             }}
           >
-           {t("AboutUs")} 
+            {t("AboutUs")}
           </p>
 
           <h2
@@ -139,8 +142,9 @@ const OurSection = () => {
               color: themeName === "dark" ? "#fff" : "#3a2c0a",
             }}
           >
-           {t("DiscoverWasetTravel")}  
+            {t("DiscoverWasetTravel")}
           </h2>
+          <DividerWithIcon />
 
           <p
             className="text-base mb-6 leading-relaxed"
@@ -148,7 +152,7 @@ const OurSection = () => {
               color: themeName === "dark" ? "#ccc" : "#5c4520",
             }}
           >
-           {t("At")}{" "}
+            {t("At")}{" "}
             <span
               style={{
                 color: "#c9a34a",
@@ -164,21 +168,21 @@ const OurSection = () => {
                 fontWeight: 600,
               }}
             >
-             {t("professionalguides")} 
+              {t("professionalguides")}
             </span>{" "}
-           {t("AtPP")} 
+            {t("AtPP")}
           </p>
 
           <button
             onClick={() => router.push("/about")}
-            style={{cursor:"pointer"}}
-            className={`hover:scale-105 px-6 py-3 rounded-lg font-semibold transition shadow-lg ${
+            style={{ cursor: "pointer" }}
+            className={`hover:scale-105 px-6 py-3 rounded-lg font-semibold transition shadow-lg  ${
               themeName === "dark"
                 ? "bg-amber-400 text-black hover:bg-yellow-500"
                 : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
             }`}
           >
-           {t("LearnMoreAboutUs")}
+            {t("LearnMoreAboutUs")}
           </button>
         </motion.div>
       </div>

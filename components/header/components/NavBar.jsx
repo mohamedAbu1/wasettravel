@@ -5,23 +5,17 @@ import { useTheme } from "@/context/ThemeContext";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
-export default function NavBar() {
+export default function NavBar({ scrolled }) {
   const { themeName } = useTheme();
   const pathname = usePathname();
   const { t } = useTranslation("header");
 
   const navItems = ["home", "trips", "about", "contact"];
 
-  // 🟢 اطبع المسار الأصلي
-  console.log("🔎 Raw pathname:", pathname);
-
   // ✅ تجاهل أول segment لو هو لغة (en, ar, fr...)
   const segments = pathname.split("/").filter(Boolean); // يقسم المسار
   const langPrefix = segments[0]; // أول جزء غالبًا لغة
   const normalizedPath = "/" + segments.slice(1).join("/"); // باقي المسار بدون اللغة
-
-  console.log("👉 Lang prefix:", langPrefix);
-  console.log("👉 Normalized path:", normalizedPath);
 
   return (
     <motion.nav
@@ -42,12 +36,6 @@ export default function NavBar() {
           (item === "home" && normalizedPath === "/") ||
           (item !== "home" && normalizedPath.startsWith(`/${item}`));
 
-        // 🟢 اطبع كل خطوة
-        console.log("👉 Item:", item);
-        console.log("👉 Path for item:", path);
-        console.log("👉 Normalized Path:", normalizedPath);
-        console.log("👉 isActive:", isActive);
-
         return (
           <motion.div
             key={item}
@@ -57,13 +45,17 @@ export default function NavBar() {
             }}
           >
             <Link
-              href={`/${langPrefix}${path}`} // ✅ أضف اللغة للرابط
+              href={`/${langPrefix}${path}`}
               className={`relative group px-4 py-2 rounded-lg transition-all duration-300 ${
                 isActive
-                  ? "bg-yellow-400 text-black font-bold shadow-md scale-105 border-b-4 border-yellow-500"
+                  ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold shadow-md scale-105 border-b-4 border-yellow-600"
                   : themeName === "dark"
-                  ? "text-amber-50 hover:text-yellow-400"
-                  : "text-gray-600 hover:text-yellow-500"
+                    ? "text-gray-200 hover:text-yellow-400"
+                    : normalizedPath !== "/" // ✅ لو مش في الهوم
+                      ? "text-gray-800 hover:text-yellow-600 font-semibold" // ستايل مختلف
+                      : scrolled
+                        ? "text-gray-800 hover:text-yellow-600"
+                        : "text-gray-200 hover:text-yellow-600"
               }`}
             >
               <span>{t(item)}</span>

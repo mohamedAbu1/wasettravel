@@ -13,7 +13,7 @@ export default function TripHeader({ trip, lang }) {
     if (!trip?.gallery_images || trip.gallery_images.length === 0) return;
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) =>
-        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1
+        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1,
       );
     }, 3000);
     return () => clearInterval(interval);
@@ -69,8 +69,12 @@ export default function TripHeader({ trip, lang }) {
             "Trip image"
           }
           fill
-          className="bg-cover object-cover w-full h-[500px] transform hover:scale-105 transition duration-500"
+          className="object-cover w-full h-[500px] transform hover:scale-105 transition duration-500 rounded-lg"
+          placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+          blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+          priority // ✅ يجعل الصورة الأساسية تتحمل فورًا
         />
+
         {trip.gallery_images[activeIndex].name && (
           <div className="absolute bottom-4 left-4 text-xl font-bold px-4 py-2 rounded bg-black/50 text-white">
             {trip.gallery_images[activeIndex].name?.[lang] ||
@@ -100,7 +104,10 @@ export default function TripHeader({ trip, lang }) {
               alt={img.name?.[lang] || img.name?.en || `Thumbnail ${index}`}
               fill
               className="object-cover rounded-lg"
+              placeholder="blur"
+              blurDataURL="/images/blur-thumb.jpg"
             />
+
             {/* اسم الصورة حسب اللغة */}
             {img.name && (
               <div className="absolute bottom-2 left-2 text-xs font-bold bg-black/50 text-white px-2 py-1 rounded">

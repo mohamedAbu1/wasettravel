@@ -7,6 +7,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 // 👇 كومبوننت فرعي لكل كاتجري
 function CategoryCard({ cat, themeName }) {
@@ -23,9 +24,11 @@ function CategoryCard({ cat, themeName }) {
     <div
       className={`relative rounded-2xl overflow-hidden group cursor-pointer h-[320px]
         transition-all duration-500 hover:scale-[1.06] hover:shadow-2xl
-        ${themeName === "dark"
-          ? "bg-[#1a1a1a] border border-gold/20 shadow-lg"
-          : "bg-[#fff8e1] border border-[#c9a34a]/30 shadow-md"}
+        ${
+          themeName === "dark"
+            ? "bg-[#1a1a1a] border border-gold/20 shadow-lg"
+            : "bg-[#fff8e1] border border-[#c9a34a]/30 shadow-md"
+        }
       `}
     >
       {/* صور متتالية مع أنيمشن crossfade */}
@@ -43,12 +46,14 @@ function CategoryCard({ cat, themeName }) {
               cat.images?.[imgIndex]?.startsWith("/")
                 ? cat.images[imgIndex]
                 : cat.images?.[imgIndex]?.startsWith("http")
-                ? cat.images[imgIndex]
-                : "/fallback.jpg"
+                  ? cat.images[imgIndex]
+                  : "/fallback.jpg"
             }
             alt={cat.name}
             fill
-            className="object-cover"
+            className="object-cover rounded-lg"
+            placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+            blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
           />
         </motion.div>
       </AnimatePresence>
@@ -94,15 +99,29 @@ const CategoriesSection = () => {
     const direction = offset > 0 ? -1 : 1; // يمين أو يسار
     const newIndex = Math.min(
       Math.max(index + direction, 0),
-      categories.length - 1
+      categories.length - 1,
     );
     setIndex(newIndex); // 👈 يبدأ الأوتوماتيك من هنا
   };
 
   // رموز فرعونية كديكور
   const symbols = [
-    "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
-    "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
+    "𓂀",
+    "𓋹",
+    "𓆣",
+    "𓇼",
+    "𓇯",
+    "𓏏",
+    "𓎛",
+    "𓊽",
+    "𓃾",
+    "𓅓",
+    "𓈇",
+    "𓉐",
+    "𓊹",
+    "𓌙",
+    "𓍿",
+    "𓎟",
   ];
 
   if (loading) {
@@ -112,9 +131,11 @@ const CategoriesSection = () => {
   return (
     <section
       className={` hidden lg:flex flex-col py-24 px-6 w-full mx-auto relative transition-colors duration-500
-        ${themeName === "dark"
-          ? "bg-[#0f0f0f] text-white"
-          : "bg-[#fdf6e3] text-[#3a2c0a]"}
+        ${
+          themeName === "dark"
+            ? "bg-[#0f0f0f] text-white"
+            : "bg-[#fdf6e3] text-[#3a2c0a]"
+        }
       `}
     >
       {/* رموز فرعونية في الخلفية */}
@@ -140,14 +161,17 @@ const CategoriesSection = () => {
       <div className="max-w-7xl mx-auto mb-10 text-start">
         <h2
           className={`text-5xl font-extrabold tracking-wide drop-shadow-md text-left
-            ${themeName === "dark"
-              ? "text-gold"
-              : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}
+            ${
+              themeName === "dark"
+                ? "text-gold"
+                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+            }
           `}
         >
           {t("ExploreCategories")}
         </h2>
         <p className="mt-4 text-lg opacity-80 text-start">{t("Discover")}</p>
+        <DividerWithIcon />
       </div>
 
       {/* Slider مع إمكانية السحب بالماوس + أوتوماتيك */}

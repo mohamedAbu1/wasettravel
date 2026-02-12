@@ -33,8 +33,10 @@ export default function HeroSection() {
               src={images[index] || "/default-hero.jpg"}
               alt="WasetTravel Slide"
               fill
-              priority
+              priority // ✅ يجعل الصورة الأساسية تتحمل فورًا
               className="object-cover"
+              placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+              blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
             />
           </motion.div>
         </AnimatePresence>
@@ -84,13 +86,10 @@ export default function HeroSection() {
           {["W", "A", "S", "E", "T", "𓂀", "T", "R", "A", "V", "E", "L"].map(
             (char, i) => (
               <LogoLetter key={i} char={char} theme={theme} />
-            )
+            ),
           )}
         </motion.div>
       </motion.div>
-      
     </section>
   );
 }
-
-

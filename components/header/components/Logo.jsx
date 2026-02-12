@@ -2,15 +2,37 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
+import { usePathname } from "next/navigation";
 
-export default function Logo() {
+export default function Logo({ scrolled }) {
   const { themeName } = useTheme();
-  const size = 250;
+  const pathname = usePathname();
 
+  const size = 250;
+  const segments = pathname.split("/").filter(Boolean);
+
+  const isHome =
+    segments.length === 0 ||
+    (segments.length === 1 &&
+      ["en", "fr", "de", "it", "es", "pt"].includes(segments[0]));
   // ألوان حسب الثيم
   const goldColor = themeName === "dark" ? "#d4af37" : "#C9A34A";
-  const textColor = themeName === "dark" ? "#FFFFFF" : "#1F2937";
-  const subTextColor = themeName === "dark" ? "#9CA3AF" : "#6B7280";
+  const textColor =
+    themeName === "dark"
+      ? "#FFFFFF"
+      : !isHome
+        ? "#1F2937"
+        : scrolled
+          ? "#1F2937"
+          : "#fff";
+  const subTextColor =
+    themeName === "dark"
+      ? "#9CA3AF"
+      : !isHome
+        ? "#6B7280"
+        : scrolled
+          ? "#6B7280"
+          : "#fff";
 
   return (
     <motion.div
@@ -38,15 +60,17 @@ export default function Logo() {
               strokeWidth="3"
               strokeLinecap="round"
             />
-            <path
-              fill={goldColor}
-              d="M300,30 l18,6 -8,2 -6,6 -4,-8 -8,-2 z"
-            />
+            <path fill={goldColor} d="M300,30 l18,6 -8,2 -6,6 -4,-8 -8,-2 z" />
           </g>
 
           {/* نص Waset Travel */}
           <g transform="translate(220,85)">
-            <text fill={textColor} fontFamily="Inter" fontWeight="700" fontSize="44">
+            <text
+              fill={textColor}
+              fontFamily="Inter"
+              fontWeight="700"
+              fontSize="44"
+            >
               Waset
             </text>
             <text

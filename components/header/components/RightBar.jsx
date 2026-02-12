@@ -1,24 +1,37 @@
 "use client";
+import React, { forwardRef } from "react";
 import { Avatar, Button, Typography, Select, MenuItem } from "@mui/material";
 import { motion } from "framer-motion";
 import ThemeToggle from "../../ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
 import { usePurchase } from "@/context/PurchaseContext";
+import { usePathname } from "next/navigation";
 
-export default function RightBar() {
+// ✅ تغليف Select بـ forwardRef لتوافق React 19
+const CustomSelect = forwardRef((props, ref) => (
+  <Select {...props} ref={ref} />
+));
+
+export default function RightBar({ scrolled }) {
   const { isLoggedIn, logout, user, handleOpen } = useAuth();
   const { themeName } = useTheme();
   const { t } = useTranslation("header");
   const { currency, setCurrency } = usePurchase();
-  // ✅ حالة العملة
+  const pathname = usePathname();
+
+  // ✅ تحديد إذا كنت في الهوم
+  const segments = pathname.split("/").filter(Boolean);
+  const isHome =
+    segments.length === 0 ||
+    (segments.length === 1 &&
+      ["en", "fr", "de", "it", "es", "pt"].includes(segments[0]));
 
   return (
     <div className="flex items-center gap-4">
       {/* Theme Toggle */}
-      <ThemeToggle />
+      <ThemeToggle scrolled={scrolled} />
 
       {/* زر تسجيل الدخول/الخروج */}
       <motion.div whileHover={{ scale: 1.1 }} className="hidden md:flex">
@@ -40,32 +53,38 @@ export default function RightBar() {
       </motion.div>
 
       {/* ✅ اختيار العملة */}
-      <Select
+      <CustomSelect
         value={currency}
         onChange={(e) => setCurrency(e.target.value)}
         size="small"
-        IconComponent={() => null} // ✅ يخفي السهم تمامًا
+        IconComponent={() => null} // ✅ يخفي السهم
         sx={{
           padding: "8px 16px",
           borderRadius: "12px",
           fontWeight: "600",
-          background: "linear-gradient(to right, #ca8a04, #eab308)", // خلفية مخصصة
-          color: "#fff",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+          background:
+            themeName === "dark"
+              ? "linear-gradient(to right, #1f2937, #111827)"
+              : "linear-gradient(to right, #ca8a04, #eab308)",
+          color: themeName === "dark" ? "#f9fafb" : "#fff",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
           "& .MuiSelect-icon": {
-            color: "#fff", // لون السهم
+            color: "#f9fafb",
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            border: "none", // إزالة البوردر الافتراضي
+            border: "none",
           },
           "&:hover": {
-            background: "linear-gradient(to right, #b45309, #d97706)",
+            background:
+              themeName === "dark"
+                ? "linear-gradient(to right, #374151, #1f2937)"
+                : "linear-gradient(to right, #b45309, #d97706)",
           },
         }}
       >
         <MenuItem value="USD">USD $</MenuItem>
         <MenuItem value="EUR">EUR €</MenuItem>
-      </Select>
+      </CustomSelect>
 
       {/* عرض المستخدم */}
       {isLoggedIn && user && (
@@ -80,7 +99,14 @@ export default function RightBar() {
             sx={{
               textTransform: "capitalize",
               fontWeight: "600",
-              color: themeName === "dark" ? "#fff" : "#333",
+              color:
+                themeName === "dark"
+                  ? "#fff"
+                  : !isHome
+                  ? "#333"
+                  : scrolled
+                  ? "#333"
+                  : "#fff",
             }}
           >
             {user.name}

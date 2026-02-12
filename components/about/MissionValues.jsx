@@ -2,6 +2,7 @@
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 export default function MissionValues() {
   const { themeName } = useTheme();
@@ -10,12 +11,16 @@ export default function MissionValues() {
   // ✨ إعدادات الأنيميشن
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
   };
 
   const staggerContainer = {
     hidden: {},
-    visible: { transition: { staggerChildren: 0.2 } }
+    visible: { transition: { staggerChildren: 0.2 } },
   };
 
   return (
@@ -38,10 +43,18 @@ export default function MissionValues() {
               : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
           }`}
         >
-          <h3 className="text-xl font-bold mb-2">{t("h3")}</h3>
-          <p className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}>
+          <h3
+            className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+          >
+            {t("h3")}
+          </h3>
+          <DividerWithIcon />
+          <p
+            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
+          >
             {t("p2")}
           </p>
+          <DividerWithIcon />
         </motion.div>
 
         <motion.div
@@ -52,10 +65,19 @@ export default function MissionValues() {
               : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
           }`}
         >
-          <h3 className="text-xl font-bold mb-2">{t("h2")}</h3>
-          <p className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}>
+          <h3
+            className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+          >
+            {t("h2")}
+          </h3>
+          <DividerWithIcon />
+
+          <p
+            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
+          >
             {t("li")}
           </p>
+          <DividerWithIcon />
         </motion.div>
 
         <motion.div
@@ -66,10 +88,19 @@ export default function MissionValues() {
               : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
           }`}
         >
-          <h3 className="text-xl font-bold mb-2">{t("h4")}</h3>
-          <p className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}>
+          <h3
+            className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+          >
+            {t("h4")}
+          </h3>
+          <DividerWithIcon />
+
+          <p
+            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
+          >
             {t("p3")}
           </p>
+          <DividerWithIcon />
         </motion.div>
       </motion.div>
     </motion.section>

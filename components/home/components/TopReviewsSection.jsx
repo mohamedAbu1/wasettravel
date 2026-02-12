@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 export default function TopReviewsSection() {
   const { allReviews, likes } = useReviews();
-  const { theme } = useTheme();
+  const { theme, themeName } = useTheme();
   const { t } = useTranslation("home");
 
   // ✅ تأكد أن reviews مصفوفة حتى لو undefined
@@ -50,7 +50,19 @@ export default function TopReviewsSection() {
       <h2 className="text-5xl font-extrabold mb-14 text-center uppercase">
         {t("h6")}
       </h2>
-
+      <div className="flex items-center gap-3 mt-4 justify-center">
+        <div
+          className={`h-[3px] w-100 ${themeName === "dark" ? "bg-[#c9a34a] opacity-10 w-100" : "bg-[#c9a34a]/50  opacity-30"}`}
+        ></div>
+        <span
+          className={`text-2xl ${themeName === "dark" ? "text-gold" : "text-[#c9a34a]"}`}
+        >
+          𓋹
+        </span>
+        <div
+          className={`h-[3px] w-100 ${themeName === "dark" ? "bg-[#c9a34a] opacity-10 w-100" : "bg-[#c9a34a]/50  opacity-30"}`}
+        ></div>
+      </div>
       {topLikedReviews.length > 0 ? (
         <Slider {...settings}>
           {topLikedReviews.map((rev, idx) => (

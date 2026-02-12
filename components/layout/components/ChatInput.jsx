@@ -78,7 +78,7 @@ export default function ChatInput({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleSend}
-        className={`${theme.buttonPrimary} flex items-center gap-1`}
+        className={`${theme.buttonPrimary} text-white flex items-center gap-1`}
       >
         <FaPaperPlane /> Send
       </motion.button>

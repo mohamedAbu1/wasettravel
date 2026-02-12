@@ -25,7 +25,7 @@ const Content = () => {
   const { cities: allCities ,categories:allCategories } = useCitiesCategories();
   return (
     <div className="hidden md:flex flex-col items-center justify-center text-center px-6 z-30">
-      <div className="w-[85%]">
+      <div className="w-[70%]">
         {/* Company Name */}
         <h1
           className={theme.title}
@@ -174,19 +174,7 @@ const Content = () => {
             label={t("SelectCategory")}
             value={tripType}
             onChange={(e) => setTripType(e.target.value)} // أو setCategory لو عندك state للكاتجري
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaDollarSign
-                    style={{
-                      paddingLeft: "12px",
-                      color: "#C9A34A",
-                      fontSize: "30px",
-                    }}
-                  />
-                </InputAdornment>
-              ),
-            }}
+           
             sx={{
               borderRadius: 3,
               "& .MuiOutlinedInput-root": {

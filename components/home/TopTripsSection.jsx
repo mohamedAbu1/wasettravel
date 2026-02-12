@@ -5,13 +5,28 @@ import React from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import DividerWithIcon from "../layout/DividerWithIcon";
 
 const TopTripsSection = () => {
   const { themeName } = useTheme();
 
   const symbols = [
-    "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
-    "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
+    "𓂀",
+    "𓋹",
+    "𓆣",
+    "𓇼",
+    "𓇯",
+    "𓏏",
+    "𓎛",
+    "𓊽",
+    "𓃾",
+    "𓅓",
+    "𓈇",
+    "𓉐",
+    "𓊹",
+    "𓌙",
+    "𓍿",
+    "𓎟",
   ];
   const { t } = useTranslation("home");
 
@@ -69,7 +84,9 @@ const TopTripsSection = () => {
   return (
     <section
       className={`hidden lg:flex w-full flex-col relative py-24 px-6 transition-colors duration-500 ${
-        themeName === "dark" ? "bg-[#0f0f0f] text-white" : "bg-[#fdf6e3] text-[#3a2c0a]"
+        themeName === "dark"
+          ? "bg-[#0f0f0f] text-white"
+          : "bg-[#fdf6e3] text-[#3a2c0a]"
       }`}
     >
       {/* خلفية الرموز الفرعونية */}
@@ -102,11 +119,7 @@ const TopTripsSection = () => {
         >
           {t("TopTrips")}
         </h2>
-        <div className="flex items-center gap-3 mt-4 justify-center">
-          <div className={`h-[3px] w-20 ${themeName === "dark" ? "bg-[#c9a34a] opacity-10 w-full" : "bg-[#c9a34a]"}`}></div>
-          <span className={`text-2xl ${themeName === "dark" ? "text-gold" : "text-[#c9a34a]"}`}>𓋹</span>
-          <div className={`h-[3px] w-20 ${themeName === "dark" ? "bg-[#c9a34a] opacity-10 w-full" : "bg-[#c9a34a]/50"}`}></div>
-        </div>
+        <DividerWithIcon />
       </div>
 
       {/* Cards باستخدام Flex */}
@@ -120,7 +133,7 @@ const TopTripsSection = () => {
             viewport={{ once: true }}
             className={`
               flex-1 basis-full sm:basis-[48%] lg:basis-[30%] xl:basis-[22%]
-              relative rounded-2xl overflow-hidden group cursor-pointer
+              relative rounded-2xl overflow-hidden group 
               transition-all duration-500
               hover:scale-[1.05] hover:shadow-2xl hover:-rotate-1
             `}
@@ -128,10 +141,12 @@ const TopTripsSection = () => {
             {/* صورة */}
             <div className="relative h-72">
               <Image
-                src={trip.img}
-                alt={trip.name}
+                src={trip.img || "/default.jpg"}
+                alt={trip.name || "Trip image"}
                 fill
-                className="object-cover group-hover:scale-110 transition duration-700"
+                className="object-cover group-hover:scale-110 transition duration-700 rounded-lg"
+                placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
+                blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-gold/20 transition duration-500"></div>
             </div>
@@ -139,8 +154,12 @@ const TopTripsSection = () => {
             {/* محتوى */}
             <div className="absolute inset-0 flex flex-col justify-end p-6">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-yellow-400 text-lg font-semibold">⭐ {trip.rating}</span>
-                <span className="text-sm opacity-80">({trip.reviews} reviews)</span>
+                <span className="text-yellow-400 text-lg font-semibold">
+                  ⭐ {trip.rating}
+                </span>
+                <span className="text-sm opacity-80">
+                  ({trip.reviews} reviews)
+                </span>
               </div>
 
               <h3
@@ -162,13 +181,15 @@ const TopTripsSection = () => {
                   {trip.price}
                 </p>
                 <button
-                  className={`px-5 py-2 rounded-lg font-medium transition ${
+                  style={{ cursor: "pointer", zIndex: "9999" }}
+                  className={`px-5 py-2 rounded-lg font-medium transition text-white ${
                     themeName === "dark"
-                      ? "bg-gold text-black hover:bg-yellow-500"
-                      : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"}
+                      ? "bg-[#c9a34a] hover:bg-yellow-500"
+                      : "bg-[#c9a34a] hover:bg-[#b5892e]"
+                  }
                   `}
                 >
-                 {t("BookNow")} 
+                  {t("BookNow")}
                 </button>
               </div>
             </div>

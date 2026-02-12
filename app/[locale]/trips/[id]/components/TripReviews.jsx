@@ -213,7 +213,7 @@ export default function TripReviews({ trip, lang }) {
               key={i}
               onClick={() => setCurrentPage(i + 1)}
               style={{ cursor: "pointer" }}
-              className={`px-3 py-1 rounded-lg font-semibold transition ${
+              className={`px-3 py-1 rounded-lg font-semibold transition text-black ${
                 currentPage === i + 1
                   ? themeName === "dark"
                     ? "bg-[#c9a34a] text-black"

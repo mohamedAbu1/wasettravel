@@ -1,5 +1,5 @@
 // app/layout.tsx
-import "./globals.css";
+import "./style/globals.css";
 
 import Providers from "./providers";
 

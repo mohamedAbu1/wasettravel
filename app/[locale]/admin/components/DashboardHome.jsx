@@ -1,57 +1,59 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
 import { ResponsiveLine } from "@nivo/line";
-import { FaUsers, FaSuitcase, FaClipboardList, FaDollarSign } from "react-icons/fa";
+import {
+  FaUsers,
+  FaSuitcase,
+  FaClipboardList,
+  FaDollarSign,
+} from "react-icons/fa";
+import EgyptianBackground from "@/components/layout/EgyptianBackground";
+
+// ✅ استدعاء الـ contexts
+import { useUsers } from "../context/UserContext";
+import { useTrip } from "../context/TripContext";
+import { usePurchase } from "../context/PurchaseContext";
 
 export default function DashboardHome() {
   const { themeName } = useTheme();
+  const { users, fetchUsers } = useUsers();
+  const { trips, fetchTrips } = useTrip();
+  const { purchases, fetchPurchases } = usePurchase();
 
-  // بيانات أساسية
+  // بيانات أساسية من الـ contexts
   const stats = [
-    { id: "Users", value: 1250 },
-    { id: "Trips", value: 120 },
-    { id: "Bookings", value: 3450 },
-    { id: "Revenue", value: 250000 },
-  ];
-
-  // بيانات للـ Line Chart (مثال شهري)
-  const lineData = [
-    {
-      id: "Bookings",
-      color: "hsl(43, 70%, 50%)",
-      data: [
-        { x: "Jan", y: 300 },
-        { x: "Feb", y: 450 },
-        { x: "Mar", y: 600 },
-        { x: "Apr", y: 800 },
-        { x: "May", y: 1200 },
-        { x: "Jun", y: 1500 },
-      ],
-    },
+    { id: "Users", value: users.length },
+    { id: "Trips", value: trips.length },
+    { id: "Bookings", value: purchases.length },
+    { id: "Revenue", value: 25 }, // هنا ممكن تربطها بكونتكست لو عندك
   ];
 
   const colors = themeName === "dark" ? { scheme: "nivo" } : { scheme: "set2" };
 
-  // ✅ ستايل موحد لكل سكشن
   const sectionStyle = `p-6 rounded-xl shadow-lg ${
     themeName === "dark"
       ? "bg-black/40 border border-gold/30 text-gold"
       : "bg-white/70 border border-[#c9a34a]/30 text-[#3a2c0a] backdrop-blur-sm"
   }`;
 
-  // ✅ كروت إحصائية سريعة
   const quickStats = [
-    { title: "Users", value: "1250", icon: <FaUsers /> },
-    { title: "Trips", value: "120", icon: <FaSuitcase /> },
-    { title: "Bookings", value: "3450", icon: <FaClipboardList /> },
+    { title: "Users", value: users.length, icon: <FaUsers /> },
+    { title: "Trips", value: trips.length, icon: <FaSuitcase /> },
+    { title: "Bookings", value: purchases.length, icon: <FaClipboardList /> },
     { title: "Revenue", value: "$250K", icon: <FaDollarSign /> },
   ];
-
+  useEffect(() => {
+    fetchTrips();
+    fetchPurchases();
+    fetchUsers(); // ✅ تحميل تلقائي عند أول فتح
+  }, []);
   return (
     <div className="flex flex-col gap-10 mt-6">
+      <EgyptianBackground />
+
       {/* ✅ Quick Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {quickStats.map((card, i) => (
@@ -86,9 +88,6 @@ export default function DashboardHome() {
             legendPosition: "middle",
             legendOffset: -50,
           }}
-          labelSkipWidth={12}
-          labelSkipHeight={12}
-          labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
         />
       </div>
 
@@ -102,13 +101,6 @@ export default function DashboardHome() {
           padAngle={0.7}
           cornerRadius={3}
           colors={colors}
-          borderWidth={1}
-          borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
-          radialLabelsSkipAngle={10}
-          radialLabelsTextColor={themeName === "dark" ? "#FFD700" : "#333"}
-          radialLabelsLinkColor={{ from: "color" }}
-          sliceLabelsSkipAngle={10}
-          sliceLabelsTextColor="#fff"
         />
       </div>
 
@@ -116,26 +108,19 @@ export default function DashboardHome() {
       <div className={sectionStyle} style={{ height: "350px" }}>
         <h3 className="text-xl font-bold mb-4">📈 Bookings Over Time</h3>
         <ResponsiveLine
-          data={lineData}
+          data={[
+            {
+              id: "Bookings",
+              data: purchases.map((p) => ({
+                x: new Date(p.created_at).toLocaleDateString(),
+                y: 1, // ممكن تجمعهم حسب التاريخ لو عايز
+              })),
+            },
+          ]}
           margin={{ top: 20, right: 20, bottom: 50, left: 60 }}
           xScale={{ type: "point" }}
-          yScale={{ type: "linear", min: "auto", max: "auto", stacked: false }}
-          axisBottom={{
-            legend: "Months",
-            legendOffset: 36,
-            legendPosition: "middle",
-          }}
-          axisLeft={{
-            legend: "Bookings",
-            legendOffset: -40,
-            legendPosition: "middle",
-          }}
+          yScale={{ type: "linear", min: "auto", max: "auto" }}
           colors={colors}
-          pointSize={10}
-          pointColor={{ theme: "background" }}
-          pointBorderWidth={2}
-          pointBorderColor={{ from: "serieColor" }}
-          enableSlices="x"
         />
       </div>
     </div>

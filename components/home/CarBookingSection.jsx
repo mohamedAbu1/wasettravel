@@ -61,7 +61,7 @@ const CarBookingSection = () => {
           fill
           className="object-cover opacity-20 rounded-lg"
           placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-          blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."
           priority // ✅ لو الصورة أساسية في الصفحة (خلفية أو Hero)
           quality={85} // ✅ يقلل حجم الصورة ويحافظ على الجودة
         />

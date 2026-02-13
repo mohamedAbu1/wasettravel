@@ -37,17 +37,16 @@ export function PurchaseProvider({ children }) {
   };
 
   // ✅ تحميل العملة من localStorage عند أول تشغيل فقط
-useEffect(() => {
-  const savedCurrency = localStorage.getItem("currency");
-  if (savedCurrency) {
-    setCurrency(savedCurrency); // يضبط العملة المخزنة
-  } else {
-    setCurrency("USD"); // يضبط الدولار كافتراضي لو ما فيش قيمة
-    localStorage.setItem("currency", "USD"); // يخزنها في الاستورج
-  }
-  fetchPurchases();
-}, []);
-
+  useEffect(() => {
+    const savedCurrency = localStorage.getItem("currency");
+    if (savedCurrency) {
+      setCurrency(savedCurrency); // يضبط العملة المخزنة
+    } else {
+      setCurrency("USD"); // يضبط الدولار كافتراضي لو ما فيش قيمة
+      localStorage.setItem("currency", "USD"); // يخزنها في الاستورج
+    }
+    fetchPurchases();
+  }, []);
 
   // ✅ حفظ العملة في localStorage عند تغييرها
   useEffect(() => {
@@ -58,7 +57,14 @@ useEffect(() => {
 
   return (
     <PurchaseContext.Provider
-      value={{ purchases, loading, purchaseTrip, fetchPurchases, currency, setCurrency }}
+      value={{
+        purchases,
+        loading,
+        purchaseTrip,
+        fetchPurchases,
+        currency,
+        setCurrency,
+      }}
     >
       {children}
     </PurchaseContext.Provider>

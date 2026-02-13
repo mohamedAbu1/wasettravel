@@ -25,9 +25,7 @@ const fetchUsers = async () => {
     setLoading(false);
   }
 };
-useEffect(() => {
-  fetchUsers(); // ✅ تحميل تلقائي عند أول فتح
-}, []);
+
 
 
 

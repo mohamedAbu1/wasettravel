@@ -242,3 +242,40 @@ export async function PUT(req, context) {
     );
   }
 }
+// ================== DELETE ==================
+export async function DELETE(req, context) {
+  try {
+    const { id } = await context.params;
+    console.log("➡️ [DELETE] Trip ID:", id);
+
+    // ✅ احذف العلاقات المرتبطة أولاً لو محتاج (مدن، فئات، أيام، أنشطة، إلخ)
+    await supabase.from("trip_cities").delete().eq("trip_id", id);
+    await supabase.from("trip_categories").delete().eq("trip_id", id);
+    await supabase.from("includes").delete().eq("trip_id", id);
+    await supabase.from("trip_days").delete().eq("trip_id", id);
+    await supabase.from("day_activities").delete().eq("day_id", id);
+
+    // ✅ احذف الرحلة نفسها
+    const { error } = await supabase.from("trips").delete().eq("id", id);
+
+    if (error) {
+      console.error("❌ [DELETE] Error:", error.message);
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: 400 }
+      );
+    }
+
+    console.log("✅ [DELETE] Trip deleted successfully");
+    return NextResponse.json(
+      { success: true, message: "Trip deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("❌ [DELETE] Exception:", error.message);
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+}

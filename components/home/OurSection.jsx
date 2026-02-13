@@ -110,7 +110,7 @@ const OurSection = () => {
                     className="w-full h-full object-cover rounded-lg"
                     loading="lazy" // ✅ يفضل للصور الثانوية
                     placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-                    blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."
                   />
                 </div>
               </SwiperSlide>

@@ -1,31 +1,15 @@
+"use client";
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaClipboardList } from "react-icons/fa";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
+import { usePurchase } from "../context/PurchaseContext";
+import { motion } from "framer-motion";
+import DividerWithIcon from "@/components/layout/DividerWithIcon";
 
 export default function BookingsList() {
   const { themeName } = useTheme();
-
-  const bookings = [
-    {
-      user: "Sara",
-      trip: "Pyramids Tour",
-      date: "2026-01-05",
-      status: "Confirmed",
-    },
-    {
-      user: "Ahmed",
-      trip: "Nile Cruise",
-      date: "2026-02-12",
-      status: "Pending",
-    },
-    {
-      user: "Omar",
-      trip: "Desert Safari",
-      date: "2026-03-20",
-      status: "Cancelled",
-    },
-  ];
+  const { purchases, loading, error, fetchPurchases } = usePurchase();
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -40,6 +24,9 @@ export default function BookingsList() {
     }
   };
 
+  if (loading) return <p className="text-center">⏳ Loading bookings...</p>;
+  if (error) return <p className="text-center text-red-500">❌ Error: {error}</p>;
+
   return (
     <div
       className={`rounded-xl shadow-lg p-6 ${
@@ -50,51 +37,107 @@ export default function BookingsList() {
     >
       <EgyptianBackground />
 
-      <h2
-        className={`text-2xl font-bold mb-4 ${
-          themeName === "dark"
-            ? "text-gold"
-            : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-        }`}
+      {/* ✅ العنوان وعدد الحجوزات */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex items-center justify-between mb-6"
       >
-        Bookings
-      </h2>
+        <h2
+          className={`text-2xl font-bold ${
+            themeName === "dark"
+              ? "text-gold"
+              : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+          }`}
+        >
+          ✨ Bookings
+        </h2>
+        <div
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md ${
+            themeName === "dark"
+              ? "bg-gold/20 text-gold"
+              : "bg-[#fdf6e3] text-[#3a2c0a]"
+          }`}
+        >
+          <FaClipboardList />
+          <span className="font-semibold">Total: {purchases.length}</span>
+        </div>
+      </motion.div>
 
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr
-            className={`${
-              themeName === "dark"
-                ? "bg-gold/20 text-gold"
-                : "bg-[#fdf6e3] text-[#3a2c0a]"
-            }`}
-          >
-            <th className="p-3">User</th>
-            <th className="p-3">Trip</th>
-            <th className="p-3">Date</th>
-            <th className="p-3">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.map((booking, i) => (
+      <button
+        onClick={fetchPurchases}
+        className="mb-4 px-4 py-2 rounded-lg bg-gradient-to-r from-[#c9a34a] to-[#eab308] text-white hover:scale-105 transition-transform shadow-md"
+      >
+        🔄 Refresh Bookings
+      </button>
+
+      {purchases.length > 0 ? (
+        <motion.table
+          className="w-full text-left border-collapse"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <thead>
             <tr
-              key={i}
-              className={`transition hover:scale-[1.01] ${
+              className={`${
                 themeName === "dark"
-                  ? "hover:bg-gold/10"
-                  : "hover:bg-[#fdf6e3]/50"
+                  ? "bg-gold/20 text-gold"
+                  : "bg-[#fdf6e3] text-[#3a2c0a]"
               }`}
             >
-              <td className="p-3">{booking.user}</td>
-              <td className="p-3">{booking.trip}</td>
-              <td className="p-3">{booking.date}</td>
-              <td className="p-3 flex items-center gap-2">
-                {getStatusIcon(booking.status)} {booking.status}
-              </td>
+              <th className="p-3">👤 User</th>
+              <th className="p-3">🗺️ Trip</th>
+              <th className="p-3">📅 Date</th>
+              <th className="p-3">📌 Status</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {purchases.map((purchase, i) => (
+              <>
+                <DividerWithIcon />
+                <motion.tr
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className={`transition hover:scale-[1.02] ${
+                    themeName === "dark"
+                      ? "hover:bg-gold/10"
+                      : "hover:bg-[#fdf6e3]/50"
+                  }`}
+                >
+                  <td className="p-3 font-semibold capitalize">
+                    {purchase.users?.name || "Unknown User"}
+                  </td>
+                  <td className="p-3">
+                    {purchase.trips?.title?.en || "Unknown Trip"}
+                  </td>
+                  <td className="p-3">
+                    {purchase.created_at
+                      ? new Date(purchase.created_at).toLocaleDateString()
+                      : "No date"}
+                  </td>
+                  <td className="p-3 flex items-center gap-2">
+                    {getStatusIcon("Confirmed")} {purchase.status || "Confirmed"}
+                  </td>
+                </motion.tr>
+                <DividerWithIcon />
+              </>
+            ))}
+          </tbody>
+        </motion.table>
+      ) : (
+        <motion.p
+          className="opacity-70 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          No bookings available.
+        </motion.p>
+      )}
     </div>
   );
 }

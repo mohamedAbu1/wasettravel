@@ -125,6 +125,18 @@ export function TripIDProvider({ children }) {
       return { success: false, error: err.message };
     }
   };
+const deleteTrip = async (id) => {
+  try {
+    const res = await axios.delete(`/api/trips/${id}`);
+    const data = res.data;
+    if (data.success) {
+      setTripsList((prev) => prev.filter((trip) => trip.id !== id));
+    }
+    return data;
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
 
   useEffect(() => {
     fetchAllTrips();
@@ -140,6 +152,7 @@ export function TripIDProvider({ children }) {
         fetchAllTrips,
         updateTripField,
         saveTrip,
+        deleteTrip,
         loading,
         error,
       }}

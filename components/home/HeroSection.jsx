@@ -36,7 +36,7 @@ export default function HeroSection() {
               priority // ✅ يجعل الصورة الأساسية تتحمل فورًا
               className="object-cover"
               placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-              blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."
             />
           </motion.div>
         </AnimatePresence>

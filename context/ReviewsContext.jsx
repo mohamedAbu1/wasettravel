@@ -26,47 +26,46 @@ export function ReviewsProvider({ children }) {
   }, []);
 
   // ✅ جلب التعليقات الخاصة برحلة معينة
-const fetchReviewsByTrip = async (tripId) => {
-  if (!tripId) {
-    console.log("⚠️ No tripId provided to fetchReviewsByTrip");
-    return;
-  }
-  setLoading(true);
-  try {
-    console.log("➡️ Fetching reviews for trip:", tripId);
-    const res = await axios.get(`/api/reviews?tripId=${tripId}`, {
-      withCredentials: true,
-    });
-    console.log("📥 Raw response from API:", res.data);
+  const fetchReviewsByTrip = async (tripId) => {
+    if (!tripId) {
+      console.log("⚠️ No tripId provided to fetchReviewsByTrip");
+      return;
+    }
+    setLoading(true);
+    try {
+      console.log("➡️ Fetching reviews for trip:", tripId);
+      const res = await axios.get(`/api/reviews?tripId=${tripId}`, {
+        withCredentials: true,
+      });
+      console.log("📥 Raw response from API:", res.data);
 
-    const data = res.data?.reviews || [];
-    console.log("📦 Extracted reviews array:", data);
+      const data = res.data?.reviews || [];
+      console.log("📦 Extracted reviews array:", data);
 
-    const filtered = data.filter((review) => review.trip_id === tripId);
-    console.log("✅ Filtered reviews for trip:", tripId, filtered);
+      const filtered = data.filter((review) => review.trip_id === tripId);
+      console.log("✅ Filtered reviews for trip:", tripId, filtered);
 
-    setReviewsByTrip((prev) => ({ ...prev, [tripId]: filtered }));
+      setReviewsByTrip((prev) => ({ ...prev, [tripId]: filtered }));
 
-    filtered.forEach((review) => {
-      if (review?.id) {
-        console.log("➡️ Fetching likes for review:", review.id);
-        fetchLikes(review.id);
-      }
-    });
-  } catch (err) {
-    console.error("❌ Error fetching reviews:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      filtered.forEach((review) => {
+        if (review?.id) {
+          console.log("➡️ Fetching likes for review:", review.id);
+          fetchLikes(review.id);
+        }
+      });
+    } catch (err) {
+      console.error("❌ Error fetching reviews:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ✅ جلب جميع التعليقات (لكل الرحلات)
   const fetchAllReviews = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`/api/reviews`, { withCredentials: true });
-      const data = res.data || [];
+      const data = res.data?.reviews || []; // ✅ خذ المصفوفة فقط
       setAllReviews(data);
 
       const grouped = {};
@@ -85,50 +84,51 @@ const fetchReviewsByTrip = async (tripId) => {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    fetchAllReviews();
+  }, []);
   // ✅ إضافة تعليق جديد
-// ✅ إضافة تعليق جديد
-const addReview = async (review) => {
-  if (!review.trip_id || !user?.id) {
-    console.log("⚠️ Missing trip_id or user.id in addReview:", review, user);
-    return { success: false, error: "No user or trip ID" };
-  }
-
-  try {
-    console.log("➡️ Sending new review to API:", review);
-    const res = await axios.post(
-      `/api/reviews`,
-      {
-        trip_id: review.trip_id,
-        user_id: user.id,
-        rating: review.rating,
-        comment: review.comment,
-        name: review.name,
-        avatar_url: review.avatar_url,
-        time: review.time,
-      },
-      { withCredentials: true },
-    );
-
-    console.log("📥 Raw response from API (addReview):", res.data);
-
-    const data = res.data;
-    if (data.success) {
-      console.log("✅ Review successfully saved in DB:", data.review);
-      setReviewsByTrip((prev) => ({
-        ...prev,
-        [review.trip_id]: [...(prev[review.trip_id] || []), data.review],
-      }));
-    } else {
-      console.log("⚠️ API returned failure:", data);
+  // ✅ إضافة تعليق جديد
+  const addReview = async (review) => {
+    if (!review.trip_id || !user?.id) {
+      console.log("⚠️ Missing trip_id or user.id in addReview:", review, user);
+      return { success: false, error: "No user or trip ID" };
     }
-    return data;
-  } catch (err) {
-    console.error("❌ Error adding review:", err);
-    return { success: false, error: err.message };
-  }
-};
 
+    try {
+      console.log("➡️ Sending new review to API:", review);
+      const res = await axios.post(
+        `/api/reviews`,
+        {
+          trip_id: review.trip_id,
+          user_id: user.id,
+          rating: review.rating,
+          comment: review.comment,
+          name: review.name,
+          avatar_url: review.avatar_url,
+          time: review.time,
+        },
+        { withCredentials: true },
+      );
+
+      console.log("📥 Raw response from API (addReview):", res.data);
+
+      const data = res.data;
+      if (data.success) {
+        console.log("✅ Review successfully saved in DB:", data.review);
+        setReviewsByTrip((prev) => ({
+          ...prev,
+          [review.trip_id]: [...(prev[review.trip_id] || []), data.review],
+        }));
+      } else {
+        console.log("⚠️ API returned failure:", data);
+      }
+      return data;
+    } catch (err) {
+      console.error("❌ Error adding review:", err);
+      return { success: false, error: err.message };
+    }
+  };
 
   // ✅ جلب اللايكات
   const fetchLikes = async (reviewId) => {
@@ -191,6 +191,25 @@ const addReview = async (review) => {
       console.error("❌ Error removing like:", err);
     }
   };
+ const getUserLikes = (userId) => {
+  if (!userId) return [];
+
+  const userReviews = allReviews.filter(
+    (review) => review.user_id === userId
+  );
+
+  return userReviews.map((review) => ({
+    reviewId: review.id,
+    tripId: review.trip_id,
+    tripTitle: review.trip?.title?.en || "Unknown Trip", // ✅ attach trip title
+    comment: review.comment,
+    rating: review.rating,
+    authorName: review.name,
+    likes: likes[review.id]?.count || 0,
+    users: likes[review.id]?.users || [],
+  }));
+};
+
 
   return (
     <ReviewsContext.Provider
@@ -206,6 +225,7 @@ const addReview = async (review) => {
         fetchLikes,
         addLike,
         removeLike,
+        getUserLikes,
       }}
     >
       {children}

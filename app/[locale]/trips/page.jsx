@@ -14,76 +14,22 @@ import { useAuth } from "@/context/AuthContext";
 import Head from "next/head";
 import { useLanguage } from "@/context/LanguageContext";
 import { tripsMetadata } from "@/lib/metadata/trips";
+
 export default function TripsPage() {
   const trips = [
-    {
-      title: "Nile Cruise",
-      city: "Cairo",
-      category: "Cruise",
-      price: 500,
-      popular: true,
-      img: "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
-    },
-    {
-      title: "Desert Safari",
-      city: "Siwa",
-      category: "Adventure",
-      price: 300,
-      popular: false,
-      img: "/HomePageImage/pexels-ozgomz-7566890.webp",
-    },
-    {
-      title: "Red Sea Diving",
-      city: "Hurghada",
-      category: "Diving",
-      price: 700,
-      popular: true,
-      img: "/HomePageImage/pexels-ozgomz-7566888.webp",
-    },
-    {
-      title: "Nile Cruise",
-      city: "Cairo",
-      category: "Cruise",
-      price: 500,
-      popular: true,
-      img: "/HomePageImage/pexels-oualid-soussi-2150533856-35050672.webp",
-    },
-    {
-      title: "Desert Safari",
-      city: "Siwa",
-      category: "Adventure",
-      price: 300,
-      popular: false,
-      img: "/HomePageImage/pexels-furknsaglam-1596977-21348185.webp",
-    },
-    {
-      title: "Red Sea Diving",
-      city: "Hurghada",
-      category: "Diving",
-      price: 700,
-      popular: true,
-      img: "/HomePageImage/pexels-yasmine-qasem-1054896-2034684.webp",
-    },
-    {
-      title: "Luxor Temples",
-      city: "Luxor",
-      category: "Historical",
-      price: 400,
-      popular: true,
-      img: "/HomePageImage/luxor-temple.webp",
-    },
-    {
-      title: "Aswan Tour",
-      city: "Aswan",
-      category: "Historical",
-      price: 350,
-      popular: false,
-      img: "/HomePageImage/aswan-tour.webp",
-    },
+    { title: "Nile Cruise", city: "Cairo", category: "Cruise", price: 500, popular: true, img: "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp" },
+    { title: "Desert Safari", city: "Siwa", category: "Adventure", price: 300, popular: false, img: "/HomePageImage/pexels-ozgomz-7566890.webp" },
+    { title: "Red Sea Diving", city: "Hurghada", category: "Diving", price: 700, popular: true, img: "/HomePageImage/pexels-ozgomz-7566888.webp" },
+    { title: "Nile Cruise", city: "Cairo", category: "Cruise", price: 500, popular: true, img: "/HomePageImage/pexels-oualid-soussi-2150533856-35050672.webp" },
+    { title: "Desert Safari", city: "Siwa", category: "Adventure", price: 300, popular: false, img: "/HomePageImage/pexels-furknsaglam-1596977-21348185.webp" },
+    { title: "Red Sea Diving", city: "Hurghada", category: "Diving", price: 700, popular: true, img: "/HomePageImage/pexels-yasmine-qasem-1054896-2034684.webp" },
+    { title: "Luxor Temples", city: "Luxor", category: "Historical", price: 400, popular: true, img: "/HomePageImage/luxor-temple.webp" },
+    { title: "Aswan Tour", city: "Aswan", category: "Historical", price: 350, popular: false, img: "/HomePageImage/aswan-tour.webp" },
   ];
+
   const { lang } = useLanguage();
   const meta = tripsMetadata[lang] || tripsMetadata.en;
-  const { user } = useAuth(); // ✅ جلب المستخدم الحالي
+  const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [cardStyle, setCardStyle] = useState("vertical");
@@ -96,42 +42,45 @@ export default function TripsPage() {
     popular: false,
   });
 
-  // فلترة الرحلات
-  const filteredTrips = trips.filter((trip) => {
-    const matchesSearch = trip.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesCity = filters.city ? trip.city === filters.city : true;
-    const matchesCategory = filters.category
-      ? trip.category === filters.category
-      : true;
-    const matchesPrice = filters.price
-      ? trip.price <= parseInt(filters.price)
-      : true;
-    const matchesPopular = filters.popular ? trip.popular : true;
-    return (
-      matchesSearch &&
-      matchesCity &&
-      matchesCategory &&
-      matchesPrice &&
-      matchesPopular
-    );
-  });
+// ✅ فلترة الرحلات
+const filteredTrips = trips.filter((trip) => {
+  const lowerSearch = search.trim().toLowerCase();
 
-  // حساب البفكيشن
+  // لو البحث فاضي → رجّع كل الرحلات
+  if (!lowerSearch) return true;
+
+  // البحث في العنوان + المدينة + الكاتجري + الوصف (لو موجود)
+  const matchesSearch =
+    (trip.title && trip.title.toLowerCase().includes(lowerSearch)) ||
+    (trip.city && trip.city.toLowerCase().includes(lowerSearch)) ||
+    (trip.category && trip.category.toLowerCase().includes(lowerSearch)) ||
+    (trip.description && trip.description.toLowerCase().includes(lowerSearch));
+
+  const matchesCity = filters.city ? trip.city === filters.city : true;
+  const matchesCategory = filters.category ? trip.category === filters.category : true;
+  const matchesPrice = filters.price ? trip.price <= parseInt(filters.price) : true;
+  const matchesPopular = filters.popular ? trip.popular : true;
+
+  return (
+    matchesSearch &&
+    matchesCity &&
+    matchesCategory &&
+    matchesPrice &&
+    matchesPopular
+  );
+});
+
+
+
+  // ✅ الباجينيشن
   const indexOfLastTrip = currentPage * tripsPerPage;
   const indexOfFirstTrip = indexOfLastTrip - tripsPerPage;
   const currentTrips = filteredTrips.slice(indexOfFirstTrip, indexOfLastTrip);
   const totalPages = Math.ceil(filteredTrips.length / tripsPerPage);
 
-  // ✨ Variants للأنيميشن
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
 
   const staggerContainer = {
@@ -172,9 +121,9 @@ export default function TripsPage() {
               cardStyle={cardStyle}
               setCardStyle={setCardStyle}
             />
-            <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
+            <TripsGrid trips={currentTrips} cardStyle={cardStyle} search={search} />
 
-            {/* البفكيشن */}
+            {/* الباجينيشن */}
             {totalPages > 1 && (
               <motion.div
                 variants={fadeUp}

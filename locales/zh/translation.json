@@ -26,6 +26,7 @@
     "Checkout": "退房",
     "SelectCity": "选择城市",
     "MaxPrice": "最高价格 (USD)",
+    "MaxPrice2": "最高价格 (EUR)",
     "TripType": "旅行类型",
     "Search": "搜索",
     "DownloadOurAppNow": "立即下载我们的应用",
@@ -111,6 +112,7 @@
   },
   "footer": {
     "p": "© 2025 — 舒适与奢华探索埃及",
+    "Home": "首页",
     "AboutUs": "关于我们",
     "Tours": "旅游",
     "Contact": "联系我们"

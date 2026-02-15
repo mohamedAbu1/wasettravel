@@ -1,51 +1,82 @@
-/* eslint-disable react-hooks/static-components */
 "use client";
 import React from "react";
-import { FaMapMarkerAlt, FaDollarSign, FaTags, FaFire } from "react-icons/fa";
+import { FaMapMarkerAlt, FaDollarSign, FaEuroSign, FaTags, FaFire } from "react-icons/fa";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
-import Divider from "@/components/layout/Divider"; // ✅ استدعاء الكومبوننت الجديد
+import Divider from "@/components/layout/Divider";
+import { useQueryFilters } from "@/context/QueryContext";
+import { usePurchase } from "@/context/PurchaseContext";
 
-
-export default function TripsFilter({ filters, setFilters }) {
+export default function TripsFilter() {
   const { cities: allCities, categories: allCategories, loading } = useCitiesCategories();
   const { i18n } = useTranslation();
   const currentLang = i18n.language || "en";
   const { t } = useTranslation("trips");
   const { themeName } = useTheme();
 
+  // ✅ القيم مباشرة من الكويري كونتكست
+  const { city, category, price, popular, updateValue } = useQueryFilters();
+
+  // ✅ العملة من PurchaseContext
+  const { currency } = usePurchase();
+
+  // ✅ تعديل الدالة بحيث تشيل كلمة "all" عند أول اختيار
   const handleCheckboxChange = (type, value) => {
-    const current = filters[type] || [];
+    let current = (type === "city" ? city : category) || [];
+
+    if (current === "all" || current.includes("all")) {
+      current = [];
+    }
+
     if (current.includes(value)) {
-      setFilters({ ...filters, [type]: current.filter((v) => v !== value) });
+      updateValue(type, current.filter((v) => v !== value));
     } else {
-      setFilters({ ...filters, [type]: [...current, value] });
+      updateValue(type, [...current, value]);
     }
   };
 
-  const priceRanges = [
-    { label: "0 - 450 $", value: "0-450" },
-    { label: "451 - 900 $", value: "451-900" },
-    { label: "901 - 1500 $", value: "901-1500" },
-    { label: "1500+ $", value: "1500+" },
+  // ✅ أسعار بالدولار كـ base
+  const rangesUSD = [
+    { label: "0 - 900", value: "Economy", min: 0, max: 900 },
+    { label: "901 - 1500", value: "Standard", min: 901, max: 1500 },
+    { label: "1500+", value: "Luxury", min: 1501, max: Infinity },
   ];
 
+  // ✅ معدل التحويل (مثال: 1 USD = 0.85 EUR)
+  const conversionRate = 0.85;
+
+  // ✅ تحويل الأسعار حسب العملة
+  const priceRanges =
+    currency === "EUR"
+      ? rangesUSD.map((r) => ({
+          ...r,
+          label:
+            r.max === Infinity
+              ? `${(r.min * conversionRate).toFixed(0)}+ €`
+              : `${(r.min * conversionRate).toFixed(0)} - ${(r.max * conversionRate).toFixed(0)} €`,
+        }))
+      : rangesUSD.map((r) => ({
+          ...r,
+          label:
+            r.max === Infinity
+              ? `${r.min}+ $`
+              : `${r.min} - ${r.max} $`,
+        }));
 
   if (loading) {
     return <p className="text-center text-gray-500">{t("Loading")}</p>;
   }
 
-  // ✨ Variants للأنيميشن
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
 
   const staggerContainer = {
     hidden: {},
-    visible: { transition: { staggerChildren: 0.2 } }
+    visible: { transition: { staggerChildren: 0.2 } },
   };
 
   return (
@@ -60,12 +91,7 @@ export default function TripsFilter({ filters, setFilters }) {
           : "bg-white/0 border border-[#c9a34a]/30  text-[#1a1a1a]"
       }`}
     >
-      <motion.h3
-        variants={fadeUp}
-        className={`text-xl font-bold mb-6 ${
-          filters.themeName === "dark" ? "text-[#c9a34a]" : "text-[#c9a34a]"
-        }`}
-      >
+      <motion.h3 variants={fadeUp} className="text-xl font-bold mb-6 text-[#c9a34a]">
         {t("Filters")}
       </motion.h3>
 
@@ -76,19 +102,21 @@ export default function TripsFilter({ filters, setFilters }) {
             <FaMapMarkerAlt /> {t("Cities")} :
           </label>
           <div className="grid grid-cols-2 gap-2 ml-6">
-            {allCities.map((city) => {
+            {allCities.map((cityObj) => {
               const cityName =
-                city.name?.[currentLang] || city.name?.["en"] || city.name;
+                cityObj.name?.[currentLang] ||
+                cityObj.name?.["en"] ||
+                cityObj.name;
               return (
                 <motion.label
                   variants={fadeUp}
-                  key={city.id ?? cityName}
+                  key={cityObj.id ?? cityName}
                   className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
                 >
                   <input
                     type="checkbox"
                     className="accent-[#c9a34a] cursor-pointer"
-                    checked={filters.city?.includes(cityName) || false}
+                    checked={city === "all" || city?.includes(cityName) || false}
                     onChange={() => handleCheckboxChange("city", cityName)}
                   />
                   {cityName}
@@ -99,6 +127,7 @@ export default function TripsFilter({ filters, setFilters }) {
         </motion.div>
 
         <Divider fadeUp={fadeUp} themeName={themeName} />
+
         {/* الكاتجري */}
         <motion.div variants={fadeUp}>
           <label className="flex items-center gap-2 font-semibold mb-3 text-[#c9a34a]">
@@ -117,7 +146,7 @@ export default function TripsFilter({ filters, setFilters }) {
                   <input
                     type="checkbox"
                     className="accent-[#c9a34a] cursor-pointer"
-                    checked={filters.category?.includes(categoryName) || false}
+                    checked={category === "all" || category?.includes(categoryName) || false}
                     onChange={() => handleCheckboxChange("category", categoryName)}
                   />
                   {categoryName}
@@ -128,10 +157,11 @@ export default function TripsFilter({ filters, setFilters }) {
         </motion.div>
 
         <Divider fadeUp={fadeUp} themeName={themeName} />
+
         {/* السعر */}
         <motion.div variants={fadeUp}>
           <label className="flex items-center gap-2 font-semibold mb-3 text-[#c9a34a]">
-            <FaDollarSign />{t("PriceRange")} :
+            {currency === "USD" ? <FaDollarSign /> : <FaEuroSign />} {t("PriceRange")} :
           </label>
           <div className="flex flex-col gap-2 ml-6">
             {priceRanges.map((range) => (
@@ -144,8 +174,8 @@ export default function TripsFilter({ filters, setFilters }) {
                   type="radio"
                   name="priceRange"
                   className="accent-[#c9a34a] cursor-pointer"
-                  checked={filters.price === range.value}
-                  onChange={() => setFilters({ ...filters, price: range.value })}
+                  checked={price === range.value}
+                  onChange={() => updateValue("price", range.value)}
                 />
                 {range.label}
               </motion.label>
@@ -154,17 +184,16 @@ export default function TripsFilter({ filters, setFilters }) {
         </motion.div>
 
         <Divider fadeUp={fadeUp} themeName={themeName} />
+
         {/* الأكثر طلباً */}
         <motion.div variants={fadeUp}>
           <label className="flex items-center gap-2 font-semibold cursor-pointer text-[#c9a34a] hover:text-[#c9a34a] transition">
-            <FaFire />{t("MostPopular")} 
+            <FaFire /> {t("MostPopular")}
             <input
               type="checkbox"
               className="ml-2 accent-[#c9a34a] cursor-pointer"
-              checked={filters.popular || false}
-              onChange={(e) =>
-                setFilters({ ...filters, popular: e.target.checked })
-              }
+              checked={popular === true}
+              onChange={(e) => updateValue("popular", e.target.checked)}
             />
           </label>
         </motion.div>

@@ -13,22 +13,22 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { usePurchase } from "@/context/PurchaseContext";
+import { useQueryFilters } from "@/context/QueryContext";
 
-export default function TripsGrid({ cardStyle = "vertical" }) {
+export default function TripsGrid({ cardStyle = "vertical", search }) {
   const { themeName } = useTheme();
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const { lang } = useLanguage();
-  const { cities: allCities, categories: allCategories } =
-    useCitiesCategories();
+  const { categories: allCategories } = useCitiesCategories();
   const { reviewsByTrip, fetchReviewsByTrip } = useReviews();
   const router = useRouter();
   const { currency } = usePurchase();
+  const { filterTrips } = useQueryFilters();
 
   useEffect(() => {
     fetchTrips();
   }, []);
 
-  // عند تحميل الرحلات، اجلب التعليقات الخاصة بكل رحلة
   useEffect(() => {
     if (trips.length > 0) {
       trips.forEach((trip) => {
@@ -44,6 +44,36 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
     return <p className="text-center text-gray-500">Loading trips...</p>;
   }
 
+  // فلترة الكويري
+  const filteredTrips = filterTrips(trips, allCategories, lang);
+
+  // فلترة البحث النصي
+  const searchedTrips =
+    search && search.trim() !== ""
+      ? filteredTrips.filter((trip) => {
+          const lowerSearch = search.toLowerCase();
+          const title = trip.title?.[lang] || trip.title?.en || "";
+          const cityNames =
+            trip.trip_cities?.map(
+              (c) =>
+                c.cities?.name?.[lang] || c.city?.name?.[lang] || c.city_name,
+            ) || [];
+          const categoryNames =
+            trip.trip_categories?.map((cat) => {
+              const catObj = allCategories.find(
+                (c) => c.id === cat.category_id,
+              );
+              return catObj?.name?.[lang] || catObj?.name?.en || catObj?.name;
+            }) || [];
+
+          return (
+            title.toLowerCase().includes(lowerSearch) ||
+            cityNames.some((c) => c.toLowerCase().includes(lowerSearch)) ||
+            categoryNames.some((c) => c.toLowerCase().includes(lowerSearch))
+          );
+        })
+      : filteredTrips;
+
   return (
     <div
       className={`flex-1 ${
@@ -52,11 +82,10 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
           : "grid grid-cols-1 md:grid-cols-2 gap-6"
       }`}
     >
-      {trips.map((trip, i) => {
+      {searchedTrips.map((trip, i) => {
         const tripReviews = reviewsByTrip[trip.id] || [];
         const reviewsCount = tripReviews.length;
 
-        // احسب متوسط النجوم من التعليقات
         const avgStars =
           reviewsCount > 0
             ? Math.round(
@@ -74,13 +103,12 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
         const tripCities =
           trip.trip_cities?.length > 0
             ? trip.trip_cities
-                .map((c) => {
-                  return (
+                .map(
+                  (c) =>
                     getLocalizedText(c.cities?.name, lang) ||
                     getLocalizedText(c.city?.name, lang) ||
-                    getLocalizedText(c.city_name, lang)
-                  );
-                })
+                    getLocalizedText(c.city_name, lang),
+                )
                 .join(" • ")
             : "Unknown";
 
@@ -101,7 +129,6 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                 .join(" • ")
             : "General";
 
-        // ✅ منطق تحويل السعر لكل رحلة
         let displayedPrice = trip.price;
         if (currency === "EUR" && trip.currency === "USD") {
           displayedPrice = (trip.price * 0.85).toFixed(2);
@@ -122,7 +149,7 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
             className={`relative rounded-xl shadow-lg overflow-hidden transform transition 
               ${
                 themeName === "dark"
-                  ? "border  border-[#c9a34a]/30"
+                  ? "border border-[#c9a34a]/30"
                   : "border border-[#c9a34a]/30"
               } 
               ${cardStyle === "horizontal" ? "h-86 flex" : "h-88"}`}
@@ -134,9 +161,9 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
               width={660}
               height={800}
               className="object-cover w-full h-full rounded-lg"
-              placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-              blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
-              priority // ✅ يجعل الصورة الأساسية تتحمل فورًا عند فتح الصفحة
+              placeholder="blur"
+              blurDataURL="/images/blur-placeholder.jpg"
+              priority
             />
             {/* Overlay */}
             <div
@@ -160,36 +187,27 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                 {trip.title?.[lang] || trip.title?.en || "Untitled"}
               </h4>
 
-              {/* المدن والكاتجري مترجمة */}
               <p className="text-sm opacity-90">
                 {tripCities} • {tripCategories}
               </p>
 
-              {/* ✅ السعر مع التحويل */}
               <p className="text-md font-semibold flex items-center gap-2">
                 <span
                   className={`px-2 py-1 rounded flex items-center gap-1 text-white ${
-                    themeName === "dark"
-                      ? "bg-[#c9a34a]"
-                      : "bg-[#c9a34a]"
+                    themeName === "dark" ? "bg-[#c9a34a]" : "bg-[#c9a34a]"
                   }`}
                 >
-                  {currency === "USD" ? (
-                    <FaDollarSign className="inline" />
-                  ) : (
-                    <FaEuroSign className="inline" />
-                  )}
+                  {currency === "USD" ? <FaDollarSign /> : <FaEuroSign />}
                   {displayedPrice} {currency}
                 </span>
               </p>
 
-              {/* النجوم وعدد التعليقات */}
               <div className="flex items-center gap-2">
                 {[...Array(5)].map((_, idx) => (
                   <FaStar
                     key={idx}
                     className={`${
-                      idx < avgStars
+                      idx < getRandomStars() // ✅ هنا بيظهر عدد عشوائي من النجوم بين 3 و 5
                         ? "text-yellow-400"
                         : "text-gray-500 opacity-50"
                     }`}
@@ -200,7 +218,6 @@ export default function TripsGrid({ cardStyle = "vertical" }) {
                 </span>
               </div>
 
-              {/* زر التفاصيل */}
               <button
                 style={{ cursor: "pointer" }}
                 onClick={() => router.push(`/trips/${trip.id}`)}

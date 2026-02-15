@@ -2,14 +2,30 @@
 import Image from "next/image";
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
+import { useRouter } from "next/navigation";
+
+// دالة لتشفير الكويري
+const encodeData = (obj) => btoa(JSON.stringify(obj));
 
 function CityCard({ city, themeName, theme, language }) {
+  const router = useRouter();
   const cityName =
     city.name?.[language] || city.name?.["en"] || city.name || "";
+
+  const handleExplore = () => {
+    const queryObj = {
+      city: [cityName],   // ✅ المدينة المختارة
+      category: "all",    // ✅ جميع الكاتجري
+      price: "Economy",   // ✅ السعر Economy
+      popular: false,     // ✅ ليس الأكثر طلباً
+    };
+    const encoded = encodeData(queryObj);
+    router.push(`/trips?data=${encoded}`);
+  };
 
   return (
     <div className="min-w-[250px] p-4">
@@ -26,8 +42,8 @@ function CityCard({ city, themeName, theme, language }) {
           alt={cityName || "City image"}
           fill
           className="object-cover rounded-lg"
-          placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-          blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+          placeholder="blur"
+          blurDataURL="/images/blur-placeholder.jpg"
         />
         <div
           className={`
@@ -40,8 +56,9 @@ function CityCard({ city, themeName, theme, language }) {
             {cityName}
           </p>
           <button
+            onClick={handleExplore} // ✅ عند الضغط يتم التحويل
             className={`
-              opacity-0 group-hover:opacity-100 px-4 py-2 rounded-lg text-sm font-medium transition text-white
+              opacity-0 group-hover:opacity-100 px-4 py-2 rounded-lg text-sm font-medium transition text-white cursor-pointer
               ${
                 themeName === "dark"
                   ? "bg-[#c9a34a] hover:bg-yellow-500"
@@ -102,7 +119,7 @@ const CitiesSection = () => {
           className="flex h-full"
           animate={{ x: ["0%", "-100%"] }}
           transition={{
-            duration: 20, // سرعة الحركة
+            duration: 20,
             ease: "linear",
             repeat: Infinity,
           }}

@@ -26,6 +26,7 @@
     "Checkout": "Check-out",
     "SelectCity": "Select City",
     "MaxPrice": "Max Price (USD)",
+    "MaxPrice2": "Max Price (EUR)",
     "TripType": "Trip Type",
     "Search": "Search",
     "DownloadOurAppNow": "Download Our App Now",
@@ -55,8 +56,8 @@
     "Luxor": "Luxor",
     "OneDayTrips": "One Day Trips",
     "SelectCategory": "SelectCategory",
-    "p6":"No 5-star reviews yet",
-    "h6":"What Our Travelers Say"
+    "p6": "No 5-star reviews yet",
+    "h6": "What Our Travelers Say"
   },
   "trips": {
     "Searchtrips": "Search trips...",
@@ -68,11 +69,12 @@
     "Categories": "Categories",
     "PriceRange": "Price Range",
     "MostPopular": "Most Popular",
-    "reviews":"reviews",
-    "btn":"Book Now"
+    "reviews": "reviews",
+    "btn": "Book Now"
   },
   "footer": {
     "p": "© 2025 — Explore Egypt with Comfort & Luxury",
+    "Home": "Home",
     "AboutUs": "About Us",
     "Tours": "Tours",
     "Contact": "Contact"

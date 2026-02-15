@@ -5,6 +5,12 @@ import { useTheme } from "@/context/ThemeContext";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
+// دالة بسيطة لتحويل النص لـ Base64
+const encodeQuery = (queryObj) => {
+  const str = JSON.stringify(queryObj);
+  return Buffer.from(str).toString("base64");
+};
+
 export default function NavBar({ scrolled }) {
   const { themeName } = useTheme();
   const pathname = usePathname();
@@ -12,10 +18,9 @@ export default function NavBar({ scrolled }) {
 
   const navItems = ["home", "trips", "about", "contact"];
 
-  // ✅ تجاهل أول segment لو هو لغة (en, ar, fr...)
-  const segments = pathname.split("/").filter(Boolean); // يقسم المسار
-  const langPrefix = segments[0]; // أول جزء غالبًا لغة
-  const normalizedPath = "/" + segments.slice(1).join("/"); // باقي المسار بدون اللغة
+  const segments = pathname.split("/").filter(Boolean);
+  const langPrefix = segments[0];
+  const normalizedPath = "/" + segments.slice(1).join("/");
 
   return (
     <motion.nav
@@ -23,15 +28,27 @@ export default function NavBar({ scrolled }) {
       animate="visible"
       variants={{
         hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: { staggerChildren: 0.15 },
-        },
+        visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
       }}
-      className={`hidden lg:flex items-center gap-10 font-medium text-lg`}
+      className="hidden lg:flex items-center gap-10 font-medium text-lg"
     >
       {navItems.map((item) => {
-        const path = item === "home" ? "/" : `/${item}`;
+        let path;
+        if (item === "home") {
+          path = "/";
+        } else if (item === "trips") {
+          // ✅ القيم الافتراضية كل مرة
+          const encoded = encodeQuery({
+            city: "all",
+            category: "all",
+            price: "Economy",
+            popular: false,
+          });
+          path = `/trips?data=${encoded}`;
+        } else {
+          path = `/${item}`;
+        }
+
         const isActive =
           (item === "home" && normalizedPath === "/") ||
           (item !== "home" && normalizedPath.startsWith(`/${item}`));
@@ -50,12 +67,12 @@ export default function NavBar({ scrolled }) {
                 isActive
                   ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold shadow-md scale-105 border-b-4 border-yellow-600"
                   : themeName === "dark"
-                    ? "text-gray-200 hover:text-yellow-400"
-                    : normalizedPath !== "/" // ✅ لو مش في الهوم
-                      ? "text-gray-800 hover:text-yellow-600 font-semibold" // ستايل مختلف
-                      : scrolled
-                        ? "text-gray-800 hover:text-yellow-600"
-                        : "text-gray-200 hover:text-yellow-600"
+                  ? "text-gray-200 hover:text-yellow-400"
+                  : normalizedPath !== "/"
+                  ? "text-gray-800 hover:text-yellow-600 font-semibold"
+                  : scrolled
+                  ? "text-gray-800 hover:text-yellow-600"
+                  : "text-gray-200 hover:text-yellow-600"
               }`}
             >
               <span>{t(item)}</span>

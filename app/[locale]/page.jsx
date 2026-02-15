@@ -15,9 +15,12 @@ import { useAuth } from "@/context/AuthContext"; // ✅ استدعاء الـ Au
 import Head from "next/head";
 import { useLanguage } from "@/context/LanguageContext";
 import { homeMetadata } from "@/lib/metadata/home";
+// import { useQueryFilters } from "@/context/QueryContext";
 export default function Home() {
   const { user } = useAuth(); // ✅ جلب المستخدم الحالي
   const { lang } = useLanguage();
+  // const { city, category, price, email, role, name, updateValue } = useQueryFilters();
+  // console.log({city, category, price, email, role, name, updateValue })
   const meta = homeMetadata[lang] || homeMetadata.en;
   return (
     <>

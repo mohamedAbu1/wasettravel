@@ -19,7 +19,7 @@ export function DataProvider({ children }) {
 
   const { themeName, theme } = useTheme(); // theme يحتوي على خصائص من lightTheme أو darkTheme
   const [city, setCity] = useState(t("Luxor"));
-  const [price, setPrice] = useState("150");
+  const [price, setPrice] = useState("Economy");
   const [tripType, setTripType] = useState(t("OneDayTrips"));
   const [arrival, setArrival] = useState(addDays(new Date(), 2));
   const [departure, setDeparture] = useState(addDays(new Date(), 9));

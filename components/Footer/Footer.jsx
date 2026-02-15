@@ -5,6 +5,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import Link from "next/link"; // ✅ استخدم Link من Next.js
 
 const Footer = () => {
   const { theme, themeName } = useTheme();
@@ -15,7 +16,6 @@ const Footer = () => {
     "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
   ];
 
-  // ✨ إعدادات الأنيميشن
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
@@ -23,11 +23,7 @@ const Footer = () => {
 
   const staggerContainer = {
     hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.2, // كل عنصر يظهر بعد الآخر بتأخير بسيط
-      },
-    },
+    visible: { transition: { staggerChildren: 0.2 } },
   };
 
   return (
@@ -43,7 +39,7 @@ const Footer = () => {
         ${theme.background} ${theme.text}
       `}
     >
-      {/* خلفية الرموز الفرعونية */}
+      {/* خلفية الرموز */}
       <div className="absolute inset-0 pointer-events-none -z-10">
         {Array.from({ length: 20 }).map((_, i) => (
           <span
@@ -61,27 +57,6 @@ const Footer = () => {
           </span>
         ))}
       </div>
-
-      {/* خط زخرفي علوي */}
-      <motion.div variants={fadeUp} className="w-full max-w-7xl flex items-center gap-3 mb-8 relative z-10">
-        <div
-          className={`h-[2px] flex-1 ${
-            themeName === "dark" ? "opacity-10 bg-[#c9a34a]" : "bg-[#c9a34a]/40"
-          }`}
-        ></div>
-        <span
-          className={`text-xl ${
-            themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
-          }`}
-        >
-          𓋹
-        </span>
-        <div
-          className={`h-[2px] flex-1 ${
-            themeName === "dark" ? "opacity-10 bg-[#c9a34a]" : "bg-[#c9a34a]/40"
-          }`}
-        ></div>
-      </motion.div>
 
       {/* اسم البراند */}
       <motion.p
@@ -101,51 +76,60 @@ const Footer = () => {
 
       {/* روابط سريعة */}
       <motion.div variants={fadeUp} className="flex gap-6 mt-6 text-sm font-medium relative z-10">
-        <a href="#" className={`hover:underline ${
+        <Link href="/" className={`hover:underline ${
+          themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
+        }`}>
+          {t("Home")}
+        </Link>
+        <Link href="/about" className={`hover:underline ${
           themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
         }`}>
           {t("AboutUs")}
-        </a>
-        <a href="#" className={`hover:underline ${
+        </Link>
+        <Link href="/trips" className={`hover:underline ${
           themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
         }`}>
           {t("Tours")}
-        </a>
-        <a href="#" className={`hover:underline ${
+        </Link>
+        <Link href="/contact" className={`hover:underline ${
           themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
         }`}>
           {t("Contact")}
-        </a>
+        </Link>
       </motion.div>
 
       {/* أيقونات السوشيال ميديا */}
       <motion.div variants={fadeUp} className="flex gap-5 mt-8 relative z-10">
-        <a href="#" className={`p-3 rounded-full transition ${
-          themeName === "dark"
-            ? "bg-gold/20 hover:bg-gold/40 text-gold"
-            : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
-        }`}>
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+          className={`p-3 rounded-full transition ${
+            themeName === "dark"
+              ? "bg-gold/20 hover:bg-gold/40 text-gold"
+              : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
+          }`}>
           <FaFacebookF />
         </a>
-        <a href="#" className={`p-3 rounded-full transition ${
-          themeName === "dark"
-            ? "bg-gold/20 hover:bg-gold/40 text-gold"
-            : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
-        }`}>
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+          className={`p-3 rounded-full transition ${
+            themeName === "dark"
+              ? "bg-gold/20 hover:bg-gold/40 text-gold"
+              : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
+          }`}>
           <FaInstagram />
         </a>
-        <a href="#" className={`p-3 rounded-full transition ${
-          themeName === "dark"
-            ? "bg-gold/20 hover:bg-gold/40 text-gold"
-            : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
-        }`}>
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+          className={`p-3 rounded-full transition ${
+            themeName === "dark"
+              ? "bg-gold/20 hover:bg-gold/40 text-gold"
+              : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
+          }`}>
           <FaTwitter />
         </a>
-        <a href="#" className={`p-3 rounded-full transition ${
-          themeName === "dark"
-            ? "bg-gold/20 hover:bg-gold/40 text-gold"
-            : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
-        }`}>
+        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+          className={`p-3 rounded-full transition ${
+            themeName === "dark"
+              ? "bg-gold/20 hover:bg-gold/40 text-gold"
+              : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
+          }`}>
           <FaYoutube />
         </a>
       </motion.div>

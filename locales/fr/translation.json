@@ -24,6 +24,7 @@
     "Checkout": "Départ",
     "SelectCity": "Sélectionner une ville",
     "MaxPrice": "Prix maximum (USD)",
+    "MaxPrice2": "Prix maximum (EUR)",
     "TripType": "Type de voyage",
     "Search": "Rechercher",
     "DownloadOurAppNow": "Téléchargez notre application maintenant",
@@ -108,6 +109,7 @@
   },
   "footer": {
     "p": "© 2025 — Explorez l'Égypte avec confort et luxe",
+    "Home": "Accueil",
     "AboutUs": "À propos de nous",
     "Tours": "Excursions",
     "Contact": "Contact"

@@ -2,27 +2,42 @@
 import { Box, Button, StyledEngineProvider } from "@mui/material";
 import { useTheme } from "@/context/ThemeContext";
 import { useData } from "@/context/DataContext";
-import { InputAdornment, MenuItem, TextField } from "@mui/material";
 import React from "react";
-import { FaCity, FaDollarSign, FaUmbrellaBeach } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import CalendarClient from "./CalendarWrapper";
+import CitySelect from "./CitySelect";
+import CategorySelect from "./CategorySelect";
+import PriceSelect from "./PriceSelect";
+import { useRouter } from "next/navigation";
+
 const Content = () => {
   const { theme } = useTheme();
-  const {
-    setCity,
-    city,
-    setPrice,
-    price,
-    tripType,
-    setTripType,
-    handleSearch,
-  } = useData();
-  const isFormValid = city && price && tripType;
+  const { setCity, city, setPrice, price, tripType, setTripType } = useData();
+
   const { i18n, t } = useTranslation("home");
   const currentLang = i18n.language || "en";
-  const { cities: allCities ,categories:allCategories } = useCitiesCategories();
+  const { cities: allCities, categories: allCategories } =
+    useCitiesCategories();
+
+  const router = useRouter();
+
+  const isFormValid = city && price && tripType;
+  const handleSearch = () => {
+    // نبني الكويري مباشرة من القيم الحالية في الانبوتات
+    const queryObj = {
+      city: [city],
+      category: [tripType],
+      price: price,
+      popular: false,
+    };
+
+    const encoded = btoa(JSON.stringify(queryObj));
+
+    // التحويل إلى صفحة الرحلات مع الكويري الجديد
+    router.push(`/trips?data=${encoded}`);
+  };
+
   return (
     <div className="hidden md:flex flex-col items-center justify-center text-center px-6 z-30">
       <div className="w-[70%]">
@@ -54,289 +69,30 @@ const Content = () => {
           }}
         >
           {/* Inputs Filter */}
-
-          {/* City */}
-          <TextField
-            select
-            label={t("SelectCity")}
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaCity
-                    className={theme.icon}
-                    style={{
-                      paddingLeft: "15px",
-                      color: "#C9A34A",
-                      fontSize: "35px",
-                    }}
-                  />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              borderRadius: 3,
-              "& .MuiOutlinedInput-root": {
-                padding: "5px",
-                color: "#2C2C2C",
-                fontWeight: "800",
-                letterSpacing: "0.5px",
-                transition: "all 0.3s ease",
-                "& fieldset": {
-                  borderColor: "#C9A34A",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#B9972F",
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#B9972F",
-                  boxShadow: "0 0 0 2px rgba(201,163,74,0.25)",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#C9A34A",
-                fontWeight: "600",
-                letterSpacing: "0.4px",
-              },
-              "& .MuiInputBase-input": {
-                color: "#C9A34A",
-                padding: "12px 14px",
-              },
-              "& .MuiMenuItem-root": {
-                fontWeight: "500",
-                color: "#2C2C2C",
-                borderRadius: "8px",
-                margin: "4px 8px",
-                padding: "10px 14px",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
-                  color: "#B9972F",
-                  transform: "scale(1.02)",
-                },
-                "&.Mui-selected": {
-                  background: "linear-gradient(to right, #C9A34A, #B9972F)",
-                  color: "#fff",
-                  fontWeight: "600",
-                },
-                "&.Mui-selected:hover": {
-                  background: "linear-gradient(to right, #B9972F, #A67C00)",
-                },
-              },
-            }}
-          >
-            {allCities.map((c) => {
-              // اختيار الاسم حسب اللغة الحالية
-              const cityName =
-                c.name?.[currentLang] || c.name?.["en"] || c.name;
-
-              return (
-                <MenuItem
-                  key={c.id}
-                  value={cityName}
-                  sx={{
-                    backgroundColor: "transparent",
-                    fontWeight: 500,
-                    color: "#2C2C2C",
-                    borderRadius: "8px",
-                    margin: "4px 8px",
-                    padding: "10px 14px",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
-                      color: "#B9972F",
-                      transform: "scale(1.02)",
-                    },
-                    "&.Mui-selected": {
-                      background: "linear-gradient(to right, #C9A34A, #B9972F)",
-                      color: "#fff",
-                      fontWeight: "600",
-                    },
-                    "&.Mui-selected:hover": {
-                      background: "linear-gradient(to right, #B9972F, #A67C00)",
-                    },
-                  }}
-                >
-                  {cityName}
-                </MenuItem>
-              );
-            })}
-          </TextField>
-
-          {/* Trip Type */}
-          {/* Categories */}
-          <TextField
-            select
-            label={t("SelectCategory")}
-            value={tripType}
-            onChange={(e) => setTripType(e.target.value)} // أو setCategory لو عندك state للكاتجري
-           
-            sx={{
-              borderRadius: 3,
-              "& .MuiOutlinedInput-root": {
-                padding: "5px",
-                color: "#2C2C2C",
-                fontWeight: "600",
-                letterSpacing: "0.5px",
-                transition: "all 0.3s ease",
-                background: "rgba(255,255,255,0.08)",
-                backdropFilter: "blur(8px)",
-                "& fieldset": {
-                  borderColor: "#C9A34A",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#B9972F",
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-                  transform: "scale(1.01)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#B9972F",
-                  boxShadow: "0 0 0 3px rgba(201,163,74,0.25)",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#C9A34A",
-                fontWeight: "800",
-                letterSpacing: "0.4px",
-                fontSize: "1rem",
-              },
-              "& .MuiInputBase-input": {
-                color: "#C9A34A",
-                padding: "12px 14px",
-                fontSize: "1rem",
-              },
-              "& .MuiMenuItem-root": {
-                fontWeight: "500",
-                color: "#2C2C2C",
-                borderRadius: "8px",
-                margin: "4px 8px",
-                padding: "10px 14px",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
-                  color: "#B9972F",
-                  transform: "scale(1.02)",
-                },
-                "&.Mui-selected": {
-                  background: "linear-gradient(to right, #C9A34A, #B9972F)",
-                  color: "#fff",
-                  fontWeight: "600",
-                },
-                "&.Mui-selected:hover": {
-                  background: "linear-gradient(to right, #B9972F, #A67C00)",
-                },
-              },
-            }}
-          >
-            {allCategories.map((cat) => {
-              // اختيار الاسم حسب اللغة الحالية من jsonb
-              const categoryName =
-                cat.name?.[currentLang] || cat.name?.["en"] || cat.name;
-
-              return (
-                <MenuItem
-                  key={cat.id}
-                  value={categoryName}
-                  sx={{
-                    backgroundColor: "transparent",
-                    fontWeight: 500,
-                    color: "#2C2C2C",
-                    borderRadius: "8px",
-                    margin: "4px 8px",
-                    padding: "10px 14px",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      background: "linear-gradient(to right, #FFF3E0, #FFE0B2)",
-                      color: "#B9972F",
-                      transform: "scale(1.02)",
-                    },
-                    "&.Mui-selected": {
-                      background: "linear-gradient(to right, #C9A34A, #B9972F)",
-                      color: "#fff",
-                      fontWeight: "600",
-                    },
-                    "&.Mui-selected:hover": {
-                      background: "linear-gradient(to right, #B9972F, #A67C00)",
-                    },
-                  }}
-                >
-                  {categoryName}
-                </MenuItem>
-              );
-            })}
-          </TextField>
-
-          {/* Price */}
-          <TextField
-            type="number"
-            label={t("MaxPrice")}
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FaDollarSign
-                    className={theme.icon}
-                    style={{
-                      paddingLeft: "0px",
-                      color: "#C9A34A",
-                      fontSize: "30px",
-                    }}
-                  />
-                </InputAdornment>
-              ),
-            }}
-            sx={{
-              borderRadius: 3,
-              "& input[type=number]::-webkit-inner-spin-button, & input[type=number]::-webkit-outer-spin-button":
-                {
-                  WebkitAppearance: "none",
-                  margin: 0,
-                },
-              "& input[type=number]": {
-                MozAppearance: "textfield", // لإخفاء الأسهم في Firefox
-              },
-              "& .MuiOutlinedInput-root": {
-                padding: "5px",
-                color: "#2C2C2C",
-                fontWeight: "800",
-                letterSpacing: "0.5px",
-                transition: "all 0.3s ease",
-                "& fieldset": {
-                  borderColor: "#C9A34A",
-                  borderRadius: "12px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.06)",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#B9972F",
-                  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#B9972F",
-                  boxShadow: "0 0 0 2px rgba(201,163,74,0.25)",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#C9A34A",
-                fontWeight: "600",
-                letterSpacing: "0.4px",
-              },
-              "& .MuiInputBase-input": {
-                color: "#C9A34A",
-                padding: "12px 14px",
-              },
-            }}
+          <CitySelect
+            allCities={allCities}
+            currentLang={currentLang}
+            city={city}
+            setCity={setCity}
+            t={t}
+            theme={theme}
           />
-          {/* CalendarSC */}
+
+          <CategorySelect
+            allCategories={allCategories}
+            currentLang={currentLang}
+            tripType={tripType}
+            setTripType={setTripType}
+            t={t}
+          />
+
+          <PriceSelect price={price} setPrice={setPrice} t={t} theme={theme} />
+
+          {/* Calendar */}
           <StyledEngineProvider injectFirst>
             <CalendarClient />
           </StyledEngineProvider>
+
           {/* Search Button */}
           <Button
             variant="contained"
@@ -357,8 +113,7 @@ const Content = () => {
               },
             }}
           >
-            {" "}
-            {t("Search")}{" "}
+            {t("Search")}
           </Button>
         </Box>
       </div>

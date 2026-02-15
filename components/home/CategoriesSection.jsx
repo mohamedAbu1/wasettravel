@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable react-hooks/purity */
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -8,20 +6,37 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
+import { useRouter } from "next/navigation";
 
-// 👇 كومبوننت فرعي لكل كاتجري
+// دالة لتشفير الكويري
+const encodeData = (obj) => btoa(JSON.stringify(obj));
+
 function CategoryCard({ cat, themeName }) {
   const [imgIndex, setImgIndex] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
       setImgIndex((prev) => (prev + 1) % (cat.images?.length || 1));
-    }, 4000); // كل 4 ثواني تتغير الصورة
+    }, 4000);
     return () => clearInterval(interval);
   }, [cat.images]);
 
+  // ✅ عند الضغط على الكارد
+  const handleClick = () => {
+    const queryObj = {
+      city: "all",
+      category: [cat.name], // الكاتجري اللي ضغطت عليه
+      price: "Economy",
+      popular: false,
+    };
+    const encoded = encodeData(queryObj);
+    router.push(`/trips?data=${encoded}`);
+  };
+
   return (
     <div
+      onClick={handleClick}
       className={`relative rounded-2xl overflow-hidden group cursor-pointer h-[320px]
         transition-all duration-500 hover:scale-[1.06] hover:shadow-2xl
         ${
@@ -31,7 +46,6 @@ function CategoryCard({ cat, themeName }) {
         }
       `}
     >
-      {/* صور متتالية مع أنيمشن crossfade */}
       <AnimatePresence mode="sync">
         <motion.div
           key={imgIndex}
@@ -46,19 +60,18 @@ function CategoryCard({ cat, themeName }) {
               cat.images?.[imgIndex]?.startsWith("/")
                 ? cat.images[imgIndex]
                 : cat.images?.[imgIndex]?.startsWith("http")
-                  ? cat.images[imgIndex]
-                  : "/fallback.jpg"
+                ? cat.images[imgIndex]
+                : "/fallback.jpg"
             }
             alt={cat.name}
             fill
             className="object-cover rounded-lg"
-            placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-            blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
+            placeholder="blur"
+            blurDataURL="/images/blur-placeholder.jpg"
           />
         </motion.div>
       </AnimatePresence>
 
-      {/* Overlay */}
       <div
         className={`absolute inset-0 bg-gradient-to-t ${
           themeName === "dark" ? "from-black/60" : "from-[#fdf6e3]/70"
@@ -83,9 +96,8 @@ const CategoriesSection = () => {
   const [index, setIndex] = useState(0);
 
   const looped = [...categories, ...categories];
-  const cardWidth = 220; // 👈 عرض الكارد الواحد (عدل حسب تصميمك)
+  const cardWidth = 220;
 
-  // Auto-play
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % categories.length);
@@ -93,36 +105,17 @@ const CategoriesSection = () => {
     return () => clearInterval(interval);
   }, [categories.length]);
 
-  // عند السحب بالماوس
   const handleDragEnd = (event, info) => {
-    const offset = info.offset.x; // المسافة اللي اتحرك بيها الماوس
-    const direction = offset > 0 ? -1 : 1; // يمين أو يسار
+    const offset = info.offset.x;
+    const direction = offset > 0 ? -1 : 1;
     const newIndex = Math.min(
       Math.max(index + direction, 0),
-      categories.length - 1,
+      categories.length - 1
     );
-    setIndex(newIndex); // 👈 يبدأ الأوتوماتيك من هنا
+    setIndex(newIndex);
   };
 
-  // رموز فرعونية كديكور
-  const symbols = [
-    "𓂀",
-    "𓋹",
-    "𓆣",
-    "𓇼",
-    "𓇯",
-    "𓏏",
-    "𓎛",
-    "𓊽",
-    "𓃾",
-    "𓅓",
-    "𓈇",
-    "𓉐",
-    "𓊹",
-    "𓌙",
-    "𓍿",
-    "𓎟",
-  ];
+  const symbols = ["𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽","𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟"];
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading categories...</p>;
@@ -138,7 +131,6 @@ const CategoriesSection = () => {
         }
       `}
     >
-      {/* رموز فرعونية في الخلفية */}
       <div className="absolute inset-0 pointer-events-none">
         {Array.from({ length: 25 }).map((_, i) => (
           <span
@@ -157,7 +149,6 @@ const CategoriesSection = () => {
         ))}
       </div>
 
-      {/* Title */}
       <div className="max-w-7xl mx-auto mb-10 text-start">
         <h2
           className={`text-5xl font-extrabold tracking-wide drop-shadow-md text-left
@@ -174,7 +165,6 @@ const CategoriesSection = () => {
         <DividerWithIcon />
       </div>
 
-      {/* Slider مع إمكانية السحب بالماوس + أوتوماتيك */}
       <div className="relative overflow-hidden w-full max-w-7xl mx-auto">
         <motion.div
           className="flex h-full"

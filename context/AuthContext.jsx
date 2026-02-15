@@ -3,30 +3,34 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { decodeJwt } from "@/lib/utils/JWToken";
 import { toast } from "react-toastify";
+import { useQueryFilters } from "./QueryContext";
+import { useRouter } from "next/navigation"; // ✅ لإدارة التنقل
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // إدارة التوكين
+  // ✅ من QueryContext
+  const { updateValue,getEncodedQuery } = useQueryFilters();
+
   const saveToken = (token) => {
     localStorage.setItem("sb_access", token);
     document.cookie = `sb_access=${token}; path=/; max-age=${2 * 24 * 60 * 60}`;
   };
 
-const removeToken = () => {
-  localStorage.removeItem("sb_access");
-  // مسح الكوكيز من الفرونت (لو مش HttpOnly)
-  document.cookie = "sb_access=; path=/; max-age=0";
-};
-
+  const removeToken = () => {
+    localStorage.removeItem("sb_access");
+    document.cookie = "sb_access=; path=/; max-age=0";
+  };
 
   const getToken = () => {
     const lsToken = localStorage.getItem("sb_access");
@@ -38,7 +42,6 @@ const removeToken = () => {
     return cookieToken || null;
   };
 
-  // عند تحميل التطبيق: تحقق من وجود التوكين وعيّن user
   useEffect(() => {
     const token = getToken();
     if (token) {
@@ -46,15 +49,25 @@ const removeToken = () => {
       if (decoded) {
         setUser(decoded);
         setIsLoggedIn(true);
+        updateValue("id", decoded.id);
+        updateValue("email", decoded.email);
+        updateValue("role", decoded.role);
+        updateValue("name", decoded.name);
+        updateValue("avatar_url", decoded.avatar_url);
+        updateValue("gender", decoded.gender);
+
+        // ✅ بمجرد تسجيل الدخول أو تحميل التوكن، ضيف الكويري للـ URL
+        const encodedQuery = getEncodedQuery();
+        router.push(`/?data=${encodedQuery}`);
       } else {
         removeToken();
         setUser(null);
         setIsLoggedIn(false);
+        setUserData(null);
       }
     }
   }, []);
 
-  // التسجيل
   const register = async (email, password, name, gender, onSuccess) => {
     setLoading(true);
     setError(null);
@@ -73,8 +86,19 @@ const removeToken = () => {
       const decoded = decodeJwt(data.token);
       setUser(decoded);
       setIsLoggedIn(true);
+      updateValue("id", decoded.id);
+        updateValue("email", decoded.email);
+        updateValue("role", decoded.role);
+        updateValue("name", decoded.name);
+        updateValue("avatar_url", decoded.avatar_url);
+        updateValue("gender", decoded.gender);
+
       toast.success("✅ Account created successfully!");
       if (onSuccess) setOpen(false);
+
+      // ✅ بعد التسجيل مباشرة ضيف الكويري للـ URL
+      const encodedQuery = getEncodedQuery();
+      router.push(`/?data=${encodedQuery}`);
 
       return decoded;
     } catch (err) {
@@ -85,7 +109,6 @@ const removeToken = () => {
     }
   };
 
-  // الدخول
   const login = async (email, password, onSuccess) => {
     setLoading(true);
     setError(null);
@@ -93,7 +116,7 @@ const removeToken = () => {
       const res = await axios.post(
         "/api/auth/login",
         { email, password },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       const data = res.data;
 
@@ -104,8 +127,18 @@ const removeToken = () => {
       const decoded = decodeJwt(data.token);
       setUser(decoded);
       setIsLoggedIn(true);
+     updateValue("id", decoded.id);
+        updateValue("email", decoded.email);
+        updateValue("role", decoded.role);
+        updateValue("name", decoded.name);
+        updateValue("avatar_url", decoded.avatar_url);
+        updateValue("gender", decoded.gender);
 
       if (onSuccess) onSuccess();
+
+      // ✅ بعد تسجيل الدخول مباشرة ضيف الكويري للـ URL
+      const encodedQuery = getEncodedQuery();
+      router.push(`/?data=${encodedQuery}`);
 
       return decoded;
     } catch (err) {
@@ -116,27 +149,20 @@ const removeToken = () => {
     }
   };
 
-  // الخروج
-// الخروج
-const logout = async () => {
-  try {
-    // استدعاء الـ API لمسح الكوكيز HttpOnly من السيرفر
-    await axios.post("/api/auth/logout", {}, { withCredentials: true });
-  } catch (err) {
-    console.error("❌ Error clearing cookies on server:", err);
-  }
+  const logout = async () => {
+    try {
+      await axios.post("/api/auth/logout", {}, { withCredentials: true });
+    } catch (err) {
+      console.error("❌ Error clearing cookies on server:", err);
+    }
 
-  // مسح بيانات المستخدم من الـ state
-  setUser(null);
-  setIsLoggedIn(false);
+    setUser(null);
+    setIsLoggedIn(false);
+    removeToken();
+    setUserData(null);
 
-  // مسح التوكن من localStorage والكوكيز العادية
-  removeToken();
-
-  // إشعار للمستخدم
-  toast.info("🚪 Logged out successfully");
-};
-
+    toast.info("🚪 Logged out successfully");
+  };
 
   return (
     <AuthContext.Provider

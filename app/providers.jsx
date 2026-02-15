@@ -11,6 +11,7 @@ import { ReviewsProvider } from "@/context/ReviewsContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { TripIDProvider } from "@/context/TripIDContext";
 import { PurchaseProvider } from "@/context/PurchaseContext";
+import { QueryProvider } from "@/context/QueryContext";
 import { MessageProvider } from "@/context/MessageContext";
 import { CitiesCategoriesProvider } from "@/context/CitiesCategoriesContext";
 import { ToastContainer } from "react-toastify";
@@ -19,32 +20,34 @@ export default function Providers({ children }) {
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider>
-        <AuthProvider>
-          <DataProvider>
-            <SecurityProvider>
-              <TripProvider>
-                <CitiesCategoriesProvider>
-                  <LanguageProvider>
-                    <ReviewsProvider>
-                      <MessageProvider>
-                        <TripIDProvider>
-                          <PurchaseProvider>
-                            <ToastContainer
-                              position="top-right"
-                              autoClose={3000}
-                              theme="colored"
-                            />
-                            {children}
-                          </PurchaseProvider>
-                        </TripIDProvider>
-                      </MessageProvider>
-                    </ReviewsProvider>
-                  </LanguageProvider>
-                </CitiesCategoriesProvider>
-              </TripProvider>
-            </SecurityProvider>
-          </DataProvider>
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <DataProvider>
+              <SecurityProvider>
+                <TripProvider>
+                  <CitiesCategoriesProvider>
+                    <LanguageProvider>
+                      <ReviewsProvider>
+                        <MessageProvider>
+                          <TripIDProvider>
+                            <PurchaseProvider>
+                              <ToastContainer
+                                position="top-right"
+                                autoClose={3000}
+                                theme="colored"
+                              />
+                              {children}
+                            </PurchaseProvider>
+                          </TripIDProvider>
+                        </MessageProvider>
+                      </ReviewsProvider>
+                    </LanguageProvider>
+                  </CitiesCategoriesProvider>
+                </TripProvider>
+              </SecurityProvider>
+            </DataProvider>
+          </AuthProvider>
+        </QueryProvider>
       </ThemeProvider>
     </I18nextProvider>
   );

@@ -42,36 +42,6 @@ export default function TripsPage() {
     popular: false,
   });
 
-// ✅ فلترة الرحلات
-const filteredTrips = trips.filter((trip) => {
-  const lowerSearch = search.trim().toLowerCase();
-
-  // لو البحث فاضي → رجّع كل الرحلات
-  if (!lowerSearch) return true;
-
-  // البحث في العنوان + المدينة + الكاتجري + الوصف (لو موجود)
-  const matchesSearch =
-    (trip.title && trip.title.toLowerCase().includes(lowerSearch)) ||
-    (trip.city && trip.city.toLowerCase().includes(lowerSearch)) ||
-    (trip.category && trip.category.toLowerCase().includes(lowerSearch)) ||
-    (trip.description && trip.description.toLowerCase().includes(lowerSearch));
-
-  const matchesCity = filters.city ? trip.city === filters.city : true;
-  const matchesCategory = filters.category ? trip.category === filters.category : true;
-  const matchesPrice = filters.price ? trip.price <= parseInt(filters.price) : true;
-  const matchesPopular = filters.popular ? trip.popular : true;
-
-  return (
-    matchesSearch &&
-    matchesCity &&
-    matchesCategory &&
-    matchesPrice &&
-    matchesPopular
-  );
-});
-
-
-
   // ✅ الباجينيشن
   const indexOfLastTrip = currentPage * tripsPerPage;
   const indexOfFirstTrip = indexOfLastTrip - tripsPerPage;

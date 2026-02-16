@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 
 function NotFoundContent() {
   const params = useSearchParams();
+  const query = params.get("q");
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center p-6">
@@ -12,10 +13,9 @@ function NotFoundContent() {
         Sorry, we couldn’t find the page you’re looking for.
       </p>
 
-      {/* مثال: لو فيه كويري في الرابط */}
-      {params.get("q") && (
+      {query && (
         <p className="text-sm text-gray-500">
-          You searched for: <strong>{params.get("q")}</strong>
+          You searched for: <strong>{query}</strong>
         </p>
       )}
 

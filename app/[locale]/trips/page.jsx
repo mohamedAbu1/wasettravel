@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/purity */
 "use client";
 import React, { useState } from "react";
 import TripsFilter from "@/components/trips/TripsFilter";
@@ -40,6 +42,31 @@ export default function TripsPage() {
     category: "",
     price: "",
     popular: false,
+  });
+
+  // ✅ فلترة الرحلات
+  const filteredTrips = trips.filter((trip) => {
+    const lowerSearch = search.trim().toLowerCase();
+
+    if (!lowerSearch) return true;
+
+    const matchesSearch =
+      (trip.title && trip.title.toLowerCase().includes(lowerSearch)) ||
+      (trip.city && trip.city.toLowerCase().includes(lowerSearch)) ||
+      (trip.category && trip.category.toLowerCase().includes(lowerSearch));
+
+    const matchesCity = filters.city ? trip.city === filters.city : true;
+    const matchesCategory = filters.category ? trip.category === filters.category : true;
+    const matchesPrice = filters.price ? trip.price <= parseInt(filters.price) : true;
+    const matchesPopular = filters.popular ? trip.popular : true;
+
+    return (
+      matchesSearch &&
+      matchesCity &&
+      matchesCategory &&
+      matchesPrice &&
+      matchesPopular
+    );
   });
 
   // ✅ الباجينيشن

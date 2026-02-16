@@ -207,7 +207,7 @@ export default function TripsGrid({ cardStyle = "vertical", search }) {
                   <FaStar
                     key={idx}
                     className={`${
-                      idx < getRandomStars() // ✅ هنا بيظهر عدد عشوائي من النجوم بين 3 و 5
+                      idx < avgStars
                         ? "text-yellow-400"
                         : "text-gray-500 opacity-50"
                     }`}

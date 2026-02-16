@@ -109,7 +109,7 @@ const TopTripsSection = () => {
 
             {/* محتوى */}
             <div className="absolute inset-0 flex flex-col justify-end p-6">
-              <h3 className={`text-xl font-bold tracking-wide mb-1 ${themeName === "dark" ? "text-white" : "text-[#3a2c0a]"}`}>
+              <h3 className={`text-xl font-bold tracking-wide mb-1 ${themeName === "dark" ? "text-white" : "text-white"}`}>
                 {trip.title?.en || "Untitled Trip"}
               </h3>
 
@@ -117,7 +117,7 @@ const TopTripsSection = () => {
                 <span className="text-yellow-400 text-lg font-semibold">
                   ⭐ {trip.rating || "4.5"}
                 </span>
-                <span className="text-sm opacity-80">
+                <span className="text-sm opacity-80 text-white">
                   ({Array.isArray(trip.reviews) ? trip.reviews.length : 0} reviews)
                 </span>
               </div>

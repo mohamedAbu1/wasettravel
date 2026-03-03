@@ -15,6 +15,7 @@ import Head from "next/head";
 import { useLanguage } from "@/context/LanguageContext";
 import { contactMetadata } from "@/lib/metadata/contact";
 import DividerWithIcon from "@/components/layout/DividerWithIcon";
+
 const symbols = [
   "𓂀",
   "𓋹",
@@ -50,9 +51,34 @@ export default function ContactPage() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    console.log("➡️ Submitting contact form:", formData);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...formData,
+          // لو فيه بيانات من المستخدم، نرسلها بدل القيم المدخلة
+          name: user?.name || formData.name,
+          email: user?.email || formData.email,
+        }),
+      });
+
+      const data = await res.json();
+      console.log("📥 Response from API:", data);
+
+      if (data.success) {
+        alert("✅ تم إرسال الرسالة بنجاح!");
+      } else {
+        alert("❌ حدث خطأ أثناء الإرسال: " + data.error);
+      }
+    } catch (err) {
+      console.error("❌ Error submitting form:", err);
+    }
   };
 
   return (
@@ -102,7 +128,6 @@ export default function ContactPage() {
             >
               <h2 className="text-3xl font-bold mb-6">{t("h1")}</h2>
               <DividerWithIcon />
-
               <p className="mb-6 opacity-80">{t("p1")}</p>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -111,7 +136,7 @@ export default function ContactPage() {
                       themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                     }
                   />
-                  <span>+20 123 456 7890</span>
+                  <span>+20 1091126069</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <FaEnvelope
@@ -119,7 +144,7 @@ export default function ContactPage() {
                       themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                     }
                   />
-                  <span>info@wasettravel.com</span>
+                  <span>wasettravel@outlook.com</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <FaMapMarkerAlt
@@ -148,22 +173,27 @@ export default function ContactPage() {
               <h2 className="text-3xl font-bold mb-6">{t("h2")}</h2>
               <DividerWithIcon />
 
+              {/* الاسم */}
               <div>
                 <label className="block mb-2 font-semibold">{t("lb")}</label>
                 <input
                   type="text"
                   name="name"
-                  value={formData.name}
+                  value={user?.user_metadata?.name || formData.name}
                   onChange={handleChange}
-                  required
+                  readOnly={!!user?.user_metadata?.name}
                   className={`w-full p-3 rounded-lg border outline-none ${
-                    themeName === "dark"
-                      ? "bg-[#0f0f0f] border-gold/30 text-white"
-                      : "bg-[#fdf6e3] border-[#c9a34a]/40 text-[#3a2c0a]"
+                    user?.user_metadata?.name
+                      ? "bg-gray-100 text-gray-600 cursor-not-allowed capitalize"
+                      : themeName === "dark"
+                        ? "bg-[#0f0f0f] border-gold/30 text-white"
+                        : "bg-[#fdf6e3] border-[#c9a34a]/40 text-[#3a2c0a]"
                   }`}
                   placeholder={t("inp")}
                 />
               </div>
+
+              {/* الهاتف */}
               <div>
                 <label className="block mb-2 font-semibold">{t("lb2")}</label>
                 <input
@@ -180,22 +210,28 @@ export default function ContactPage() {
                   placeholder={t("inp2")}
                 />
               </div>
+
+              {/* البريد */}
               <div>
                 <label className="block mb-2 font-semibold">{t("lb3")}</label>
                 <input
                   type="email"
                   name="email"
-                  value={formData.email}
+                  value={user?.email || formData.email}
                   onChange={handleChange}
-                  required
+                  readOnly={!!user?.email}
                   className={`w-full p-3 rounded-lg border outline-none ${
-                    themeName === "dark"
-                      ? "bg-[#0f0f0f] border-gold/30 text-white"
-                      : "bg-[#fdf6e3] border-[#c9a34a]/40 text-[#3a2c0a]"
+                    user?.email
+                      ? "bg-gray-100 text-gray-600 cursor-not-allowed"
+                      : themeName === "dark"
+                        ? "bg-[#0f0f0f] border-gold/30 text-white"
+                        : "bg-[#fdf6e3] border-[#c9a34a]/40 text-[#3a2c0a]"
                   }`}
                   placeholder={t("inp3")}
                 />
               </div>
+
+              {/* الرسالة */}
               <div>
                 <label className="block mb-2 font-semibold">{t("lb4")}</label>
                 <textarea
@@ -212,6 +248,8 @@ export default function ContactPage() {
                   placeholder={t("inp4")}
                 ></textarea>
               </div>
+
+              {/* زر الإرسال */}
               <button
                 type="submit"
                 className={`w-full py-3 rounded-lg font-bold transition shadow-lg ${

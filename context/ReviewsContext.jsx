@@ -1,32 +1,20 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-
+import { useAuth } from "@/context/AuthContext"; // ✅ استدعاء المستخدم من useAuth
+import { supabase } from "@/lib/supabaseClient"; // ملف تهيئة Supabase
 const ReviewsContext = createContext();
 
 export function ReviewsProvider({ children }) {
-  const [reviewsByTrip, setReviewsByTrip] = useState({}); // { tripId: [reviews] }
-  const [allReviews, setAllReviews] = useState([]); // جميع التعليقات (اختياري)
+  const { user } = useAuth(); // ✅ جلب المستخدم من AuthContext
+  const [reviewsByTrip, setReviewsByTrip] = useState({});
+  const [allReviews, setAllReviews] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
-  const [likes, setLikes] = useState({}); // { reviewId: { count, users } }
-
-  // ✅ جلب المستخدم من API
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get("/api/auth/me", { withCredentials: true });
-      setUser(res.data?.user || null);
-    } catch (err) {
-      console.error("❌ Error fetching user:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  const [likes, setLikes] = useState({});
 
   // ✅ جلب التعليقات الخاصة برحلة معينة
   const fetchReviewsByTrip = async (tripId) => {
+    console.log(tripId);
     if (!tripId) {
       console.log("⚠️ No tripId provided to fetchReviewsByTrip");
       return;
@@ -60,12 +48,12 @@ export function ReviewsProvider({ children }) {
     }
   };
 
-  // ✅ جلب جميع التعليقات (لكل الرحلات)
+  // ✅ جلب جميع التعليقات
   const fetchAllReviews = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`/api/reviews`, { withCredentials: true });
-      const data = res.data?.reviews || []; // ✅ خذ المصفوفة فقط
+      const data = res.data?.reviews || [];
       setAllReviews(data);
 
       const grouped = {};
@@ -84,10 +72,11 @@ export function ReviewsProvider({ children }) {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchAllReviews();
   }, []);
-  // ✅ إضافة تعليق جديد
+
   // ✅ إضافة تعليق جديد
   const addReview = async (review) => {
     if (!review.trip_id || !user?.id) {
@@ -96,22 +85,19 @@ export function ReviewsProvider({ children }) {
     }
 
     try {
-      console.log("➡️ Sending new review to API:", review);
       const res = await axios.post(
         `/api/reviews`,
         {
           trip_id: review.trip_id,
-          user_id: user.id,
+          user_id: user.id, // ✅ من useAuth
           rating: review.rating,
           comment: review.comment,
-          name: review.name,
+          name: review.name || user.email, // ✅ fallback على الإيميل لو الاسم مش موجود
           avatar_url: review.avatar_url,
           time: review.time,
         },
         { withCredentials: true },
       );
-
-      console.log("📥 Raw response from API (addReview):", res.data);
 
       const data = res.data;
       if (data.success) {
@@ -149,67 +135,105 @@ export function ReviewsProvider({ children }) {
   };
 
   // ✅ إضافة لايك
-  const addLike = async (reviewId) => {
-    if (!reviewId || !user?.id) return;
-    if (likes[reviewId]?.users?.includes(user.id)) return;
+ const addLike = async (reviewId) => {
+  if (!reviewId || !user?.id) {
+    console.log("⚠️ Missing reviewId or user.id");
+    return;
+  }
 
-    try {
-      const res = await axios.post(`/api/reviews/${reviewId}/like`, null, {
-        withCredentials: true,
-      });
-      if (!res.data?.error) {
-        setLikes((prev) => ({
-          ...prev,
-          [reviewId]: {
-            count: (prev[reviewId]?.count || 0) + 1,
-            users: [...(prev[reviewId]?.users || []), user.id],
-          },
-        }));
+  try {
+    // ✅ الحصول على التوكن من Supabase
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    console.log("📥 Access token fetched:", token);
+
+    // ✅ إرسال الطلب للـ API
+    console.log("➡️ Sending POST request to API:", `/api/reviews/${reviewId}/like`);
+    const res = await axios.post(
+      `/api/reviews/${reviewId}/like`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (err) {
-      console.error("❌ Error adding like:", err);
+    );
+
+    console.log("📥 Raw response from API:", res.data);
+
+    if (!res.data?.error) {
+      console.log("✅ Like added successfully in client state");
+      setLikes((prev) => ({
+        ...prev,
+        [reviewId]: {
+          count: (prev[reviewId]?.count || 0) + 1,
+          users: [...(prev[reviewId]?.users || []), user.id],
+        },
+      }));
     }
-  };
-
-  // ✅ إزالة لايك
-  const removeLike = async (reviewId) => {
-    if (!user?.id) return;
-    try {
-      const res = await axios.delete(`/api/reviews/${reviewId}/like`, {
-        withCredentials: true,
-      });
-      if (!res.data?.error) {
-        setLikes((prev) => ({
-          ...prev,
-          [reviewId]: {
-            count: Math.max((prev[reviewId]?.count || 1) - 1, 0),
-            users: (prev[reviewId]?.users || []).filter((id) => id !== user.id),
-          },
-        }));
-      }
-    } catch (err) {
-      console.error("❌ Error removing like:", err);
-    }
-  };
- const getUserLikes = (userId) => {
-  if (!userId) return [];
-
-  const userReviews = allReviews.filter(
-    (review) => review.user_id === userId
-  );
-
-  return userReviews.map((review) => ({
-    reviewId: review.id,
-    tripId: review.trip_id,
-    tripTitle: review.trip?.title?.en || "Unknown Trip", // ✅ attach trip title
-    comment: review.comment,
-    rating: review.rating,
-    authorName: review.name,
-    likes: likes[review.id]?.count || 0,
-    users: likes[review.id]?.users || [],
-  }));
+  } catch (err) {
+    console.error("❌ Error adding like:", err);
+  }
 };
 
+  // ✅ إزالة لايك
+ const removeLike = async (reviewId) => {
+  if (!user?.id) {
+    console.log("⚠️ No user found in context");
+    return;
+  }
+
+  try {
+    // ✅ الحصول على التوكن من Supabase
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    console.log("📥 Access token fetched:", token);
+
+    // ✅ إرسال الطلب للـ API مع التوكن
+    console.log("➡️ Sending DELETE request to API:", `/api/reviews/${reviewId}/like`);
+    const res = await axios.delete(`/api/reviews/${reviewId}/like`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("📥 Raw response from API:", res.data);
+
+    if (!res.data?.error) {
+      console.log("✅ Like removed successfully in client state");
+      setLikes((prev) => ({
+        ...prev,
+        [reviewId]: {
+          count: Math.max((prev[reviewId]?.count || 1) - 1, 0),
+          users: (prev[reviewId]?.users || []).filter((id) => id !== user.id),
+        },
+      }));
+    }
+  } catch (err) {
+    console.error("❌ Error removing like:", err);
+  }
+};
+
+
+  // ✅ جلب لايكات المستخدم
+  const getUserLikes = (userId) => {
+    if (!userId) return [];
+
+    const userReviews = allReviews.filter(
+      (review) => review.user_id === userId,
+    );
+
+    return userReviews.map((review) => ({
+      reviewId: review.id,
+      tripId: review.trip_id,
+      tripTitle: review.trip?.title?.en || "Unknown Trip",
+      comment: review.comment,
+      rating: review.rating,
+      authorName: review.name,
+      likes: likes[review.id]?.count || 0,
+      users: likes[review.id]?.users || [],
+    }));
+  };
 
   return (
     <ReviewsContext.Provider
@@ -221,7 +245,7 @@ export function ReviewsProvider({ children }) {
         likes,
         fetchReviewsByTrip,
         fetchAllReviews,
-        addReview, // ✅ الآن متاح
+        addReview,
         fetchLikes,
         addLike,
         removeLike,

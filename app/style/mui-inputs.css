@@ -34,7 +34,7 @@
 
 /* Input Text */
 .MuiInputBase-input {
-  color: var(--color) !important;
+  color:  #b9972f !important;
   caret-color: var(--color) !important;
   font-size: 18px !important;
   font-weight: 500 !important;

@@ -24,13 +24,11 @@ export default function TripReviews({ trip, lang }) {
   } = useReviews();
   const { user } = useAuth();
   const { t } = useTranslation("tripsId");
-
   // ✅ استدعاء التعليقات الخاصة بالرحلة عند تحميل الكومبوننت
   useEffect(() => {
     const loadReviews = async () => {
       if (trip?.id) {
         await fetchReviewsByTrip(trip.id);
-        console.log("Fetched reviews for trip:", trip.id);
       }
     };
     loadReviews();
@@ -106,8 +104,8 @@ export default function TripReviews({ trip, lang }) {
       trip_id: trip.id,
       rating,
       comment,
-      name: user.name || user.email,
-      avatar_url: user.avatar_url || null,
+      name: user?.user_metadata?.name || user.email,
+      avatar_url: user?.user_metadata?.avatar || null,
       time: new Date().toLocaleTimeString(),
     });
 
@@ -144,27 +142,31 @@ export default function TripReviews({ trip, lang }) {
         themeName={themeName}
       />
 
-      {/* تقييم النجوم */}
-      <StarRating
-        rating={rating}
-        setRating={setRating}
-        hover={hover}
-        setHover={setHover}
-        themeName={themeName}
-      />
+      {user && (
+        <>
+          {/* تقييم النجوم */}
+          <StarRating
+            rating={rating}
+            setRating={setRating}
+            hover={hover}
+            setHover={setHover}
+            themeName={themeName}
+          />
 
-      {/* نموذج إضافة تعليق */}
-      <ReviewForm
-        comment={comment}
-        setComment={setComment}
-        showEmojiPicker={showEmojiPicker}
-        setShowEmojiPicker={setShowEmojiPicker}
-        onEmojiClick={onEmojiClick}
-        onSubmit={handleSubmit}
-        placeholder={tr.placeholder}
-        submitLabel={tr.submit}
-        themeName={themeName}
-      />
+          {/* نموذج إضافة تعليق */}
+          <ReviewForm
+            comment={comment}
+            setComment={setComment}
+            showEmojiPicker={showEmojiPicker}
+            setShowEmojiPicker={setShowEmojiPicker}
+            onEmojiClick={onEmojiClick}
+            onSubmit={handleSubmit}
+            placeholder={tr.placeholder}
+            submitLabel={tr.submit}
+            themeName={themeName}
+          />
+        </>
+      )}
 
       {/* عرض التعليقات */}
       <div className="flex flex-row flex-wrap mt-6 gap-6 space-y-4">
@@ -185,7 +187,9 @@ export default function TripReviews({ trip, lang }) {
         ))}
         {tripReviews.length === 0 && (
           <p className="text-center w-full opacity-70">
-            Be the first to review this trip ✨
+            {!user
+              ? "Please log in to write your review"
+              : "Be the first to review this trip ✨"}
           </p>
         )}
       </div>

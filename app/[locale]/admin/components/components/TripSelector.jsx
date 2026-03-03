@@ -15,7 +15,6 @@ const TripSelector = () => {
   const handleSelect = (e) => {
     const selectedId = e.target.value;
     if (selectedId) {
-      console.log("Selected Trip ID:", selectedId);
       fetchTripById(selectedId)
     }
   };

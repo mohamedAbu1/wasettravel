@@ -5,23 +5,26 @@ import ThemeToggle from "../../ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
 import { usePurchase } from "@/context/PurchaseContext";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export default function RightBar({ scrolled }) {
   const { isLoggedIn, logout, user, handleOpen } = useAuth();
   const { themeName } = useTheme();
   const { t } = useTranslation("header");
+
   const { currency, setCurrency } = usePurchase();
   const pathname = usePathname();
-
   // ✅ حالة العملة
   const segments = pathname.split("/").filter(Boolean);
+
+
   const isHome =
     segments.length === 0 ||
     (segments.length === 1 &&
       ["en", "fr", "de", "it", "es", "pt"].includes(segments[0]));
+
   return (
     <div className="flex items-center gap-4">
       {/* Theme Toggle */}
@@ -89,11 +92,14 @@ export default function RightBar({ scrolled }) {
       {/* عرض المستخدم */}
       {isLoggedIn && user && (
         <div className="flex items-center gap-2">
-          <Avatar
-            alt={user.name}
-            src={user.avatar_url}
-            sx={{ width: 40, height: 40, border: "2px solid #d4af37" }}
-          />
+          {" "}
+          <img
+            alt={`${user?.user_metadata?.name}` || "User Avatar"}
+            src={`${user?.user_metadata?.avatar}` || "/default-avatar.png"}
+            width={40}
+            height={40}
+            style={{ border: "2px solid #d4af37", borderRadius: "50%" }}
+          />{" "}
           <Typography
             variant="subtitle1"
             sx={{
@@ -109,8 +115,9 @@ export default function RightBar({ scrolled }) {
                       : "#fff",
             }}
           >
-            {user.name}
-          </Typography>
+            {" "}
+            {user?.user_metadata?.name}{" "}
+          </Typography>{" "}
         </div>
       )}
     </div>

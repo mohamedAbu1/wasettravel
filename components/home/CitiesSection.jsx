@@ -42,8 +42,6 @@ function CityCard({ city, themeName, theme, language }) {
           alt={cityName || "City image"}
           fill
           className="object-cover rounded-lg"
-          placeholder="blur"
-          blurDataURL="/images/blur-placeholder.jpg"
         />
         <div
           className={`

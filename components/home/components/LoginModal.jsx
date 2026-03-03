@@ -19,6 +19,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import { useSecurity } from "@/context/SecurityContext"; // ✅ استدعاء الكونتكست
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginModal() {
   const { loginOpen, handleLoginClose, handleOpen } = useData();
@@ -54,6 +55,24 @@ export default function LoginModal() {
       toast.error("❌ Error: The email or password is incorrect.");
     }
   };
+const loginWithGoogle = async () => {
+  console.log("🚀 بدء تسجيل الدخول عبر Google...");
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: process.env.NEXT_PUBLIC_BASE_URL + "/api/auth/callback/google",
+    },
+  });
+
+  console.log("📌 نتيجة Supabase:", { data, error });
+
+  if (error) {
+    console.error("❌ خطأ أثناء تسجيل الدخول عبر Google:", error.message);
+  } else {
+    console.log("✅ تم إرسال طلب تسجيل الدخول بنجاح.");
+  }
+};
 
   return (
     <Dialog open={loginOpen} onClose={handleLoginClose} fullWidth maxWidth="sm">
@@ -138,9 +157,10 @@ export default function LoginModal() {
           <div
             style={{ display: "flex", gap: "16px", justifyContent: "center" }}
           >
-            <IconButton>
+            <IconButton onClick={loginWithGoogle}>
               <FcGoogle size={26} />
             </IconButton>
+
             <IconButton style={{ color: "#1877f2" }}>
               <FaFacebook size={26} />
             </IconButton>
@@ -182,7 +202,7 @@ export default function LoginModal() {
               textTransform: "none",
             }}
           >
-           {t("Don’thaveanaccount?SignUp")} 
+            {t("Don’thaveanaccount?SignUp")}
           </Button>
         </DialogContent>
       </motion.div>

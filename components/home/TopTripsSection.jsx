@@ -5,13 +5,13 @@ import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import DividerWithIcon from "../layout/DividerWithIcon";
-import { useTrip } from "@/context/TripContext"; 
+import { useTrip } from "@/context/TripContext";
 import { usePurchase } from "@/context/PurchaseContext"; // ✅ استدعاء PurchaseContext
-
+import { useRouter } from "next/navigation"; // ✅ استدعاء router
 const TopTripsSection = () => {
   const { themeName } = useTheme();
   const { t } = useTranslation("home");
-
+  const router = useRouter();
   // ✅ جلب الرحلات من TripContext
   const { trips, fetchTrips, loadingTrips } = useTrip();
 
@@ -22,7 +22,24 @@ const TopTripsSection = () => {
     fetchTrips();
   }, []);
 
-  const symbols = ["𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽","𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟"];
+  const symbols = [
+    "𓂀",
+    "𓋹",
+    "𓆣",
+    "𓇼",
+    "𓇯",
+    "𓏏",
+    "𓎛",
+    "𓊽",
+    "𓃾",
+    "𓅓",
+    "𓈇",
+    "𓉐",
+    "𓊹",
+    "𓌙",
+    "𓍿",
+    "𓎟",
+  ];
 
   if (loadingTrips) {
     return <p className="text-center text-gray-500">Loading top trips...</p>;
@@ -30,8 +47,12 @@ const TopTripsSection = () => {
 
   // ✅ ترتيب الرحلات حسب عدد التعليقات وأخذ أول خمس فقط
   const topTrips = [...trips]
-    .sort((a, b) => (Array.isArray(b.reviews) ? b.reviews.length : 0) - (Array.isArray(a.reviews) ? a.reviews.length : 0))
-    .slice(0, 5);
+    .sort(
+      (a, b) =>
+        (Array.isArray(b.reviews) ? b.reviews.length : 0) -
+        (Array.isArray(a.reviews) ? a.reviews.length : 0),
+    )
+    .slice(0, 6);
 
   // ✅ دالة لتحويل السعر حسب العملة الحالية
   const convertPrice = (price, tripCurrency) => {
@@ -49,7 +70,9 @@ const TopTripsSection = () => {
   return (
     <section
       className={`hidden lg:flex w-full flex-col relative py-24 px-6 transition-colors duration-500 ${
-        themeName === "dark" ? "bg-[#0f0f0f] text-white" : "bg-[#fdf6e3] text-[#3a2c0a]"
+        themeName === "dark"
+          ? "bg-[#0f0f0f] text-white"
+          : "bg-[#fdf6e3] text-[#3a2c0a]"
       }`}
     >
       {/* خلفية الرموز */}
@@ -101,15 +124,15 @@ const TopTripsSection = () => {
                 alt={trip.title?.en || "Trip image"}
                 fill
                 className="object-cover group-hover:scale-110 transition duration-700 rounded-lg"
-                placeholder="blur"
-                blurDataURL="/images/blur-placeholder.jpg"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-gold/20 transition duration-500"></div>
             </div>
 
             {/* محتوى */}
             <div className="absolute inset-0 flex flex-col justify-end p-6">
-              <h3 className={`text-xl font-bold tracking-wide mb-1 ${themeName === "dark" ? "text-white" : "text-white"}`}>
+              <h3
+                className={`text-xl font-bold tracking-wide mb-1 ${themeName === "dark" ? "text-white" : "text-white"}`}
+              >
                 {trip.title?.en || "Untitled Trip"}
               </h3>
 
@@ -118,21 +141,24 @@ const TopTripsSection = () => {
                   ⭐ {trip.rating || "4.5"}
                 </span>
                 <span className="text-sm opacity-80 text-white">
-                  ({Array.isArray(trip.reviews) ? trip.reviews.length : 0} reviews)
+                  ({Array.isArray(trip.reviews) ? trip.reviews.length : 0}{" "}
+                  reviews)
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <p className={`text-lg font-semibold ${themeName === "dark" ? "text-gold" : "text-[#c9a34a]"}`}>
+                <p
+                  className={`text-lg font-semibold ${themeName === "dark" ? "text-gold" : "text-[#c9a34a]"}`}
+                >
                   {convertPrice(trip.price, trip.currency)} {currency}
                 </p>
                 <button
+                  onClick={() => router.push(`/trips/${trip.id}`)}
                   style={{ cursor: "pointer", zIndex: "1" }}
-                  className={`px-5 py-2 rounded-lg font-medium transition text-white ${
-                    themeName === "dark" ? "bg-[#c9a34a] hover:bg-yellow-500" : "bg-[#c9a34a] hover:bg-[#b5892e]"
-                  }`}
+                  className={`px-5 py-2 rounded-lg font-medium transition text-white ${themeName === "dark" ? "bg-[#c9a34a] hover:bg-yellow-500" : "bg-[#c9a34a] hover:bg-[#b5892e]"}`}
                 >
-                  {t("BookNow")}
+                  {" "}
+                  {t("BookNow")}{" "}
                 </button>
               </div>
             </div>

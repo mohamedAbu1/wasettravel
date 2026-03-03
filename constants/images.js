@@ -20,25 +20,25 @@ export const mobileImages = [
 
 // صور للذكور
 export const maleAvatars = [
-  "/avater/blds.webp",
-  "/avater/klhasd.webp",
-  "/avater/kbj.webp",
-  "/avater/nss.webp",
-  "/avater/usa.webp",
-  "/avater/3d-avatar-cartoon-character_113255-92170.webp",
-  "/avater/3d-avatar-cartoon-character_113255-93687.webp",
-  "/avater/memoji-happy-man-white-background-emoji_826801-6839.webp",
+  "/blds.webp",
+  "/klhasd.webp",
+  "/kbj.webp",
+  "/nss.webp",
+  "/usa.webp",
+  "/3d-avatar-cartoon-character_113255-92170.webp",
+  "/3d-avatar-cartoon-character_113255-93687.webp",
+  "/memoji-happy-man-white-background-emoji_826801-6839.webp",
 ];
 
 // صور للإناث
 export const femaleAvatars = [
-  "/avater/3d-rendered-photo-woman-wearing-glasses-smiles-camera_1103059-4106.webp",
-  "/avater/3d-rendered-photo-woman-wearing-glasses-smiles-camera_1103059-4231.webp",
-  "/avater/3d-rendered-photo-woman-wearing-glasses-smiles-camera_1103059-4319.webp",
-  "/avater/3d-rendered-photo-woman-wearing-glasses-smiles-camera_1103059-4400.webp",
-  "/avater/business-woman-3d-cartoon-avatar-portrait_839035-196331.webp",
-  "/avater/woman-human-head-illustration_862994-10854.webp",
-  "/avater/young-business-woman-with-nerd-glasses-grey-background-3d-rendering_1026950-41027.webp",
-  "/avater/bjlsd.webp",
-  "/avater/young-smiling-woman-mia-avatar-3d-vector-people-character-illustration-cartoon-minimal-style_1029476-291545.webp",
+  "/3d-rendered-photo-woman-wearing-glasses-smiles-camera_1103059-4106.webp",
+  "/3d-rendered-photo-woman-wearing-glasses-smiles-camera_1103059-4231.webp",
+  "/3d-rendered-photo-woman-wearing-glasses-smiles-camera_1103059-4319.webp",
+  "/3d-rendered-photo-woman-wearing-glasses-smiles-camera_1103059-4400.webp",
+  "/business-woman-3d-cartoon-avatar-portrait_839035-196331.webp",
+  "/woman-human-head-illustration_862994-10854.webp",
+  "/young-business-woman-with-nerd-glasses-grey-background-3d-rendering_1026950-41027.webp",
+  "/bjlsd.webp",
+  "/young-smiling-woman-mia-avatar-3d-vector-people-character-illustration-cartoon-minimal-style_1029476-291545.webp",
 ];

@@ -22,7 +22,7 @@ export default function ReviewCard({
   user,
 }) {
   const isOwner = user && String(user.id) === String(rev.users?.id);
-  const isAdmin = user && user.role === "ADMIN";
+  const isAdmin = user && user?.user_metadata?.role === "ADMIN";
 
   // 🆕 حالات التعديل
   const [isEditing, setIsEditing] = useState(false);

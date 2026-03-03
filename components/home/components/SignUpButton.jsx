@@ -69,23 +69,28 @@ export default function SignUpModal() {
     },
   };
 
-  const handleSubmit = async () => {
-    const nameError = validateField("Full Name", fullName);
-    const emailError = validateField("Email", email);
-    const passwordError = validateField("Password", password);
-    if (nameError || emailError || passwordError || !gender) {
-      toast.error(
-        nameError || emailError || passwordError || "Gender is required"
-      );
-      return;
-    }
-    try {
-      await register(email, password, fullName, gender);
-      handleClose();
-    } catch (err) {
-      toast.error("❌ Error: " + err.message);
-    }
-  };
+ const handleSubmit = async () => {
+  const nameError = validateField("Full Name", fullName);
+  const emailError = validateField("Email", email);
+  const passwordError = validateField("Password", password);
+  if (nameError || emailError || passwordError || !gender) {
+    toast.error(nameError || emailError || passwordError || "Gender is required");
+    return;
+  }
+  try {
+    await register(email, password, fullName, gender);
+
+    toast.success("✅ Account created successfully!");
+
+    // ✅ أغلق نافذة التسجيل وافتح نافذة تسجيل الدخول
+    handleClose();
+    handleLoginOpen();
+
+  } catch (err) {
+    toast.error("❌ Error: " + err.message);
+  }
+};
+
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
@@ -170,7 +175,7 @@ export default function SignUpModal() {
                 "&.Mui-focused fieldset": {
                   borderColor: isDark ? "#FFD700" : "#c9a34a",
                 },
-                backgroundColor: isDark ? "rgba(0,0,0,0.6)" : "#fff",
+                backgroundColor: isDark ? "rgba(0,0,0,0.6)" : "#aaf",
               },
               "& .MuiInputLabel-root": {
                 color: isDark ? "#FFD700" : "#3a2c0a",

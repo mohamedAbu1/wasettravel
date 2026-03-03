@@ -7,10 +7,12 @@ import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import DividerWithIcon from "../layout/DividerWithIcon";
+import { useAuth } from "@/context/AuthContext";
 
 const CarBookingSection = () => {
   const { themeName } = useTheme();
   const { t } = useTranslation("home");
+  const { user } = useAuth();
 
   const symbols = [
     "𓂀",
@@ -60,8 +62,6 @@ const CarBookingSection = () => {
           alt="Luxury Car Background"
           fill
           className="object-cover opacity-20 rounded-lg"
-          placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."
           priority // ✅ لو الصورة أساسية في الصفحة (خلفية أو Hero)
           quality={85} // ✅ يقلل حجم الصورة ويحافظ على الجودة
         />
@@ -108,8 +108,6 @@ const CarBookingSection = () => {
             alt="Luxury Car"
             fill
             className="object-contain drop-shadow-2xl"
-            placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-            blurDataURL="/images/blur-placeholder.jpg" // نسخة صغيرة مضغوطة للصورة
             priority // ✅ لو الصورة أساسية في الصفحة (مثلاً Hero أو خلفية مهمة)
             quality={85} // ✅ يقلل حجم الصورة ويحافظ على جودة مناسبة
           />
@@ -134,23 +132,32 @@ const CarBookingSection = () => {
           <p className="mt-6 text-lg opacity-80 leading-relaxed max-w-xl">
             {t("Experience")}
           </p>
+{user ? (
+  // ✅ زر الحجز يظهر فقط إذا كان فيه مستخدم
+  <motion.button
+    variants={fadeInUp}
+    style={{ cursor: "pointer" }}
+    onClick={() => {
+      window.dispatchEvent(new CustomEvent("openCarBookingChat"));
+    }}
+    className={`mt-8 inline-block px-10 py-4 rounded-full font-bold text-lg shadow-xl transition-transform transform hover:scale-105 ${
+      themeName === "dark"
+        ? "bg-amber-300 text-black hover:bg-yellow-500"
+        : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+    }`}
+  >
+    {t("Book")}
+  </motion.button>
+) : (
+  // ✅ رسالة أنيقة بدل الزر لو ما فيش مستخدم
+  <motion.p
+    variants={fadeInUp}
+    className="mt-8 text-lg font-semibold opacity-80 italic text-center lg:text-left"
+  >
+    Please log in and book your car now ✨
+  </motion.p>
+)}
 
-          {/* Booking Button */}
-          <motion.button
-            variants={fadeInUp}
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              // نطلق حدث مخصص يفتحه الـ ChatWidget
-              window.dispatchEvent(new CustomEvent("openCarBookingChat"));
-            }}
-            className={`mt-8 inline-block px-10 py-4 rounded-full font-bold text-lg shadow-xl transition-transform transform hover:scale-105 ${
-              themeName === "dark"
-                ? "bg-amber-300 text-black hover:bg-yellow-500"
-                : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
-            }`}
-          >
-            {t("Book")}
-          </motion.button>
         </motion.div>
       </motion.div>
     </motion.section>

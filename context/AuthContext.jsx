@@ -5,7 +5,7 @@ import { decodeJwt } from "@/lib/utils/JWToken";
 import { toast } from "react-toastify";
 import { useQueryFilters } from "./QueryContext";
 import { useRouter } from "next/navigation"; // ✅ لإدارة التنقل
-
+import { supabase } from "@/lib/supabaseClient";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // ✅ من QueryContext
-  const { updateValue,getEncodedQuery } = useQueryFilters();
+  const { updateValue, getEncodedQuery } = useQueryFilters();
 
   const saveToken = (token) => {
     localStorage.setItem("sb_access", token);
@@ -41,66 +41,70 @@ export function AuthProvider({ children }) {
       ?.split("=")[1];
     return cookieToken || null;
   };
-
+  const loginWithGoogle = async () => {
+    console.log("🚀 بدء تسجيل الدخول عبر Google...");
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo:
+          process.env.NEXT_PUBLIC_BASE_URL + "/api/auth/callback/google",
+      },
+    });
+    console.log("📌 نتيجة Supabase:", { data, error });
+  };
   useEffect(() => {
-    const token = getToken();
-    if (token) {
-      const decoded = decodeJwt(token);
-      if (decoded) {
-        setUser(decoded);
-        setIsLoggedIn(true);
-        updateValue("id", decoded.id);
-        updateValue("email", decoded.email);
-        updateValue("role", decoded.role);
-        updateValue("name", decoded.name);
-        updateValue("avatar_url", decoded.avatar_url);
-        updateValue("gender", decoded.gender);
+    const checkUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
 
-        // ✅ بمجرد تسجيل الدخول أو تحميل التوكن، ضيف الكويري للـ URL
+      if (error) {
+        console.error("Error fetching user:", error.message);
+        setUser(null);
+        setIsLoggedIn(false);
+        return;
+      }
+
+      if (user) {
+        setUser(user);
+        setIsLoggedIn(true);
+
+        // ✅ تحديث القيم في QueryContext
+        updateValue("id", user.id);
+        updateValue("email", user.email);
+        updateValue("role", user.user_metadata?.role);
+        updateValue("name", user.user_metadata?.name);
+        updateValue("avatar", user.user_metadata?.avatar);
+        updateValue("gender", user.user_metadata?.gender);
+
         const encodedQuery = getEncodedQuery();
         router.push(`/?data=${encodedQuery}`);
       } else {
-        removeToken();
         setUser(null);
         setIsLoggedIn(false);
-        setUserData(null);
       }
-    }
+    };
+
+    checkUser();
   }, []);
 
-  const register = async (email, password, name, gender, onSuccess) => {
+  const register = async (email, password, name, gender) => {
     setLoading(true);
     setError(null);
     try {
       const res = await axios.post("/api/auth/register", {
+        name,
         email,
         password,
-        name,
         gender,
       });
       const data = res.data;
 
       if (!data.user) throw new Error(data.error || "Registration failed");
 
-      saveToken(data.token);
-      const decoded = decodeJwt(data.token);
-      setUser(decoded);
-      setIsLoggedIn(true);
-      updateValue("id", decoded.id);
-        updateValue("email", decoded.email);
-        updateValue("role", decoded.role);
-        updateValue("name", decoded.name);
-        updateValue("avatar_url", decoded.avatar_url);
-        updateValue("gender", decoded.gender);
-
       toast.success("✅ Account created successfully!");
-      if (onSuccess) setOpen(false);
-
-      // ✅ بعد التسجيل مباشرة ضيف الكويري للـ URL
-      const encodedQuery = getEncodedQuery();
-      router.push(`/?data=${encodedQuery}`);
-
-      return decoded;
+      return data.user; // فقط يرجع بيانات المستخدم الجديد بدون تسجيل دخول
     } catch (err) {
       setError(err.message);
       toast.error("❌ Error: " + err.message);
@@ -113,42 +117,31 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(
-        "/api/auth/login",
-        { email, password },
-        { withCredentials: true },
-      );
-      const data = res.data;
-
-      if (!data.user || !data.token)
-        throw new Error(data.error || "Login failed");
-
-      saveToken(data.token);
-      const decoded = decodeJwt(data.token);
-      setUser(decoded);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw new Error(error.message);
+      const user = data.user;
+      setUser(user);
       setIsLoggedIn(true);
-     updateValue("id", decoded.id);
-        updateValue("email", decoded.email);
-        updateValue("role", decoded.role);
-        updateValue("name", decoded.name);
-        updateValue("avatar_url", decoded.avatar_url);
-        updateValue("gender", decoded.gender);
-
+      updateValue("id", user.id);
+      updateValue("email", user.email);
+      updateValue("role", user.user_metadata?.role);
+      updateValue("name", user.user_metadata?.name);
+      updateValue("avatar", user.user_metadata?.avatar);
+      updateValue("gender", user.user_metadata?.gender);
       if (onSuccess) onSuccess();
-
-      // ✅ بعد تسجيل الدخول مباشرة ضيف الكويري للـ URL
       const encodedQuery = getEncodedQuery();
       router.push(`/?data=${encodedQuery}`);
-
-      return decoded;
+      return user;
     } catch (err) {
       setError(err.message);
-      throw err;
+      toast.error("❌ Error: " + err.message);
     } finally {
       setLoading(false);
     }
   };
-
   const logout = async () => {
     try {
       await axios.post("/api/auth/logout", {}, { withCredentials: true });
@@ -159,11 +152,8 @@ export function AuthProvider({ children }) {
     setUser(null);
     setIsLoggedIn(false);
     removeToken();
-    setUserData(null);
-
     toast.info("🚪 Logged out successfully");
   };
-
   return (
     <AuthContext.Provider
       value={{
@@ -178,6 +168,7 @@ export function AuthProvider({ children }) {
         setOpen,
         handleOpen,
         handleClose,
+        loginWithGoogle,
       }}
     >
       {children}

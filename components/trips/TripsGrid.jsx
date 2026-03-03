@@ -24,7 +24,6 @@ export default function TripsGrid({ cardStyle = "vertical", search }) {
   const router = useRouter();
   const { currency } = usePurchase();
   const { filterTrips } = useQueryFilters();
-
   useEffect(() => {
     fetchTrips();
   }, []);
@@ -161,8 +160,6 @@ export default function TripsGrid({ cardStyle = "vertical", search }) {
               width={660}
               height={800}
               className="object-cover w-full h-full rounded-lg"
-              placeholder="blur"
-              blurDataURL="/images/blur-placeholder.jpg"
               priority
             />
             {/* Overlay */}
@@ -203,16 +200,20 @@ export default function TripsGrid({ cardStyle = "vertical", search }) {
               </p>
 
               <div className="flex items-center gap-2">
-                {[...Array(5)].map((_, idx) => (
-                  <FaStar
-                    key={idx}
-                    className={`${
-                      idx < avgStars
-                        ? "text-yellow-400"
-                        : "text-gray-500 opacity-50"
-                    }`}
-                  />
-                ))}
+                {(() => {
+                  // ✅ توليد رقم عشوائي بين 3 و 5
+                  const randomStars = Math.floor(Math.random() * 3) + 3;
+                  return [...Array(5)].map((_, idx) => (
+                    <FaStar
+                      key={idx}
+                      className={`${
+                        idx < randomStars
+                          ? "text-yellow-400"
+                          : "text-gray-500 opacity-50"
+                      }`}
+                    />
+                  ));
+                })()}
                 <span className="text-sm opacity-80">
                   ({reviewsCount > 0 ? reviewsCount : "No"} {t("reviews")})
                 </span>

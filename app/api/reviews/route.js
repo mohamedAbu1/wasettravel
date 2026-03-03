@@ -1,28 +1,34 @@
-import { supabase } from "@/lib/supabaseClient";
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
-// ✅ جلب كل الريفيوهات
-export async function GET() {
-  const { data, error } = await supabase
-    .from("reviews")
-    .select(`
-      id,
-      trip_id,
-      user_id,
-      rating,
-      comment,
-      created_at,
-      avatar_url,
-      time,
-      name,
-      trips (id, title),
-      users (id, name)
-    `)
-    .order("created_at", { ascending: false });
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
+export async function GET(req) {
+  console.log("➡️ GET /api/reviews called");
+  const { searchParams } = new URL(req.url);
+  const tripId = searchParams.get("tripId");
+  console.log("📥 tripId param:", tripId);
+
+  let query = supabase.from("reviews").select("*").order("created_at", { ascending: false });
+
+  if (tripId) {
+    console.log("➡️ Filtering reviews by tripId:", tripId);
+    query = query.eq("trip_id", tripId);
+  }
+
+  const { data, error } = await query;
+  console.log("📥 Supabase query result:", data, error);
 
   if (error) {
-    return new Response(JSON.stringify({ success: false, error: error.message }), { status: 400 });
+    console.error("❌ Supabase error in GET /api/reviews:", error.message);
+    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
   }
-  return new Response(JSON.stringify({ success: true, reviews: data }), { status: 200 });
+
+  console.log("✅ Reviews fetched successfully:", data.length);
+  return NextResponse.json({ success: true, reviews: data }, { status: 200 });
 }
 
 // ✅ إضافة تعليق جديد

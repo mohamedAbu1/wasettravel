@@ -66,8 +66,6 @@ function CategoryCard({ cat, themeName }) {
             alt={cat.name}
             fill
             className="object-cover rounded-lg"
-            placeholder="blur"
-            blurDataURL="/images/blur-placeholder.jpg"
           />
         </motion.div>
       </AnimatePresence>

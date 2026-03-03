@@ -27,6 +27,7 @@ export default function TripsPage() {
     { title: "Red Sea Diving", city: "Hurghada", category: "Diving", price: 700, popular: true, img: "/HomePageImage/pexels-yasmine-qasem-1054896-2034684.webp" },
     { title: "Luxor Temples", city: "Luxor", category: "Historical", price: 400, popular: true, img: "/HomePageImage/luxor-temple.webp" },
     { title: "Aswan Tour", city: "Aswan", category: "Historical", price: 350, popular: false, img: "/HomePageImage/aswan-tour.webp" },
+    // 🔥 أضف المزيد من الرحلات هنا للتجربة (مثلاً 20 أو 30 رحلة)
   ];
 
   const { lang } = useLanguage();
@@ -35,7 +36,7 @@ export default function TripsPage() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [cardStyle, setCardStyle] = useState("vertical");
-  const tripsPerPage = cardStyle === "vertical" ? 6 : 4;
+  const tripsPerPage = 9; // ✅ ثابت: 9 رحلات في كل صفحة
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
     city: "",
@@ -48,9 +49,8 @@ export default function TripsPage() {
   const filteredTrips = trips.filter((trip) => {
     const lowerSearch = search.trim().toLowerCase();
 
-    if (!lowerSearch) return true;
-
     const matchesSearch =
+      !lowerSearch ||
       (trip.title && trip.title.toLowerCase().includes(lowerSearch)) ||
       (trip.city && trip.city.toLowerCase().includes(lowerSearch)) ||
       (trip.category && trip.category.toLowerCase().includes(lowerSearch));
@@ -60,13 +60,7 @@ export default function TripsPage() {
     const matchesPrice = filters.price ? trip.price <= parseInt(filters.price) : true;
     const matchesPopular = filters.popular ? trip.popular : true;
 
-    return (
-      matchesSearch &&
-      matchesCity &&
-      matchesCategory &&
-      matchesPrice &&
-      matchesPopular
-    );
+    return matchesSearch && matchesCity && matchesCategory && matchesPrice && matchesPopular;
   });
 
   // ✅ الباجينيشن
@@ -74,7 +68,7 @@ export default function TripsPage() {
   const indexOfFirstTrip = indexOfLastTrip - tripsPerPage;
   const currentTrips = filteredTrips.slice(indexOfFirstTrip, indexOfLastTrip);
   const totalPages = Math.ceil(filteredTrips.length / tripsPerPage);
-
+console.log(currentTrips)
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
@@ -121,11 +115,8 @@ export default function TripsPage() {
             <TripsGrid trips={currentTrips} cardStyle={cardStyle} search={search} />
 
             {/* الباجينيشن */}
-            {totalPages > 1 && (
-              <motion.div
-                variants={fadeUp}
-                className="flex justify-center gap-2 mt-4"
-              >
+            {totalPages && (
+              <motion.div variants={fadeUp} className="flex justify-center gap-2 mt-4">
                 {Array.from({ length: totalPages }, (_, i) => (
                   <button
                     key={i}

@@ -54,7 +54,9 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
               }`}
             >
               <img
-                src={msg.user_image || "/default-avatar.png"}
+                src={
+                  "https://dxpbyrcbklqrjlytmkum.supabase.co/storage/v1/object/public/avatars/technical-writer-digital-avatar-generative-ai_934475-9098.webp"
+                }
                 alt={msg.user_name}
                 className={`w-12 h-12 rounded-full border ${
                   msg.sender_type === "admin" ? "border-yellow-500" : ""
@@ -72,7 +74,7 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
                 }`}
               >
                 <p className="text-sm font-semibold mb-1 capitalize">
-                  {msg.sender_type === "admin" ? "👑 " : ""} {msg.user_name}
+                  {msg.sender_type === "admin" ? "👑 admin" : msg.user_name}
                 </p>
 
                 {/* عرض الصور أو الروابط أو النصوص */}

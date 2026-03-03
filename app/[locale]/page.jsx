@@ -19,8 +19,6 @@ import { homeMetadata } from "@/lib/metadata/home";
 export default function Home() {
   const { user } = useAuth(); // ✅ جلب المستخدم الحالي
   const { lang } = useLanguage();
-  // const { city, category, price, email, role, name, updateValue } = useQueryFilters();
-  // console.log({city, category, price, email, role, name, updateValue })
   const meta = homeMetadata[lang] || homeMetadata.en;
   return (
     <>

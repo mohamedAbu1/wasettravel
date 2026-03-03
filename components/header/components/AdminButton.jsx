@@ -13,7 +13,7 @@ const AdminButton = () => {
   const goToAdmin = () => {
     router.push("/admin"); // ✅ مسار لوحة التحكم
   };
-  const isAdmin = user?.role === "ADMIN"; // غيّر الإيميل لإيميل الأدمن الحقيقي
+  const isAdmin = user?.user_metadata?.role === "ADMIN"; // غيّر الإيميل لإيميل الأدمن الحقيقي
 
   return (
     <>

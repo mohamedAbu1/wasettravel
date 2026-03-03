@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
-import { supabase } from "@/lib/supabaseClient"; // ✅ تأكد أنك عامل تهيئة Supabase هنا
+import { supabase } from "@/lib/supabaseClient";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 
 const ChatSection = ({ activeUser, theme, themeName }) => {
@@ -17,14 +17,14 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
 
-  // جلب رسائل المستخدم
+  // ✅ جلب رسائل المستخدم
   useEffect(() => {
     if (activeUser) {
       fetchMessages(activeUser.id);
     }
   }, [activeUser]);
 
-  // تحديث حالة الرسائل إلى "seen"
+  // ✅ تحديث حالة الرسائل إلى "seen"
   useEffect(() => {
     if (activeUser && messages.length > 0) {
       messages.forEach((msg) => {
@@ -40,8 +40,8 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
 
     await sendMessage({
       user_id: activeUser.id,
-      user_name: user.name,
-      user_image: user.avatar_url,
+      user_name: user?.user_metadata?.name || "Admin",
+      user_image: "https://dxpbyrcbklqrjlytmkum.supabase.co/storage/v1/object/public/avatars/technical-writer-digital-avatar-generative-ai_934475-9098.webp",
       content: newMessage,
       sender_type: "admin",
       reply_to: replyTo ? replyTo.id : null,
@@ -60,7 +60,7 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
     });
   };
 
-  // استعلام حالة الكتابة للمستخدم
+  // ✅ استعلام حالة الكتابة للمستخدم
   useEffect(() => {
     if (!activeUser) return;
     const interval = setInterval(async () => {
@@ -71,35 +71,34 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
     return () => clearInterval(interval);
   }, [activeUser]);
 
-const handleSendImage = async (file) => {
-  const fileName = `${user.id}-${Date.now()}-${file.name}`;
+  const handleSendImage = async (file) => {
+    const fileName = `${user.id}-${Date.now()}-${file.name}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("chat-images")
-    .upload(fileName, file);
+    const { error: uploadError } = await supabase.storage
+      .from("chat-images")
+      .upload(fileName, file);
 
-  if (uploadError) {
-    console.error("Upload error:", uploadError.message);
-    return;
-  }
+    if (uploadError) {
+      console.error("Upload error:", uploadError.message);
+      return;
+    }
 
-  const { data: publicUrlData } = supabase.storage
-    .from("chat-images")
-    .getPublicUrl(fileName);
+    const { data: publicUrlData } = supabase.storage
+      .from("chat-images")
+      .getPublicUrl(fileName);
 
-  const uploadedUrl = publicUrlData.publicUrl;
+    const uploadedUrl = publicUrlData.publicUrl;
 
-  await sendMessage({
-    user_id: activeUser.id,       // المستخدم اللي الأدمن بيكلمه
-    user_name: user.name,         // اسم الأدمن
-    user_image: user.avatar_url,  // صورة الأدمن
-    content: uploadedUrl,         // رابط الصورة
-    sender_type: "admin",         // ✅ مهم علشان تبان من الأدمن
-    admin_id: user.id,
-    status: "sent",
-  });
-};
-
+    await sendMessage({
+      user_id: activeUser.id,
+      user_name: user?.user_metadata?.name || "Admin",
+      user_image: user?.user_metadata?.avatar || "https://dxpbyrcbklqrjlytmkum.supabase.co/storage/v1/object/public/avatars/technical-writer-digital-avatar-generative-ai_934475-9098.webp",
+      content: uploadedUrl,
+      sender_type: "admin",
+      admin_id: user.id,
+      status: "sent",
+    });
+  };
 
   return (
     <section className="flex-1 flex flex-col">

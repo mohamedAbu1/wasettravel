@@ -9,23 +9,52 @@ const EditTripGalleryUpload = () => {
   const { themeName } = useTheme();
   const { tripData, updateTripField } = useTripID();
 
-  // ✅ إضافة صور جديدة للمعرض
-  const handleGalleryImages = (e) => {
-    const files = Array.from(e.target.files);
-    const newImages = files.map((file) => ({
-      url: URL.createObjectURL(file),
-      name: file.name,
-    }));
-    updateTripField("gallery_images", [
-      ...(tripData?.gallery_images || []),
-      ...newImages,
-    ]);
-  };
+const handleGalleryImages = async (e) => {
+  const files = Array.from(e.target.files);
 
-  // ✅ تحديث اسم صورة معينة
-  const updateImageName = (index, newName) => {
+  const uploadedImages = await Promise.all(
+    files.map(async (file) => {
+      const { data, error } = await supabase.storage
+        .from("trip-gallery")
+        .upload(`images/${Date.now()}-${file.name}`, file);
+
+      if (error) {
+        console.error("Upload error:", error);
+        return null;
+      }
+
+      const publicUrl = supabase.storage
+        .from("trip-gallery")
+        .getPublicUrl(data.path).publicUrl;
+
+      return {
+        url: publicUrl,
+        name: {
+          en: file.name,
+          es: "",
+          fr: "",
+          de: "",
+          it: "",
+          zh: "",
+        },
+      };
+    })
+  );
+
+  updateTripField("gallery_images", [
+    ...(tripData?.gallery_images || []),
+    ...uploadedImages.filter(Boolean),
+  ]);
+};
+
+
+  // ✅ تحديث اسم صورة معينة بلغة محددة
+  const updateImageName = (index, lang, newName) => {
     const updatedImages = [...(tripData?.gallery_images || [])];
-    updatedImages[index] = { ...updatedImages[index], name: newName };
+    updatedImages[index] = {
+      ...updatedImages[index],
+      name: { ...updatedImages[index].name, [lang]: newName },
+    };
     updateTripField("gallery_images", updatedImages);
   };
 
@@ -77,11 +106,11 @@ const EditTripGalleryUpload = () => {
                 height={80}
                 className="w-20 h-20 object-cover rounded-lg shadow"
               />
-              {["en","es","fr","de","it","zh"].map((lang) => (
+              {["en", "es", "fr", "de", "it", "zh"].map((lang) => (
                 <input
                   key={lang}
                   type="text"
-                  value={img.name[lang] || ""}
+                  value={img.name?.[lang] || ""}
                   onChange={(e) => updateImageName(i, lang, e.target.value)}
                   placeholder={`Name (${lang.toUpperCase()})`}
                   className={`mt-1 w-full p-2 rounded-lg border text-sm outline-none ${

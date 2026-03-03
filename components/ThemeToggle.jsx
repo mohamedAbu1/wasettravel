@@ -16,7 +16,6 @@ const ThemeToggle = ({ scrolled }) => {
     (segments.length === 1 &&
       ["en", "fr", "de", "it", "es", "pt"].includes(segments[0]));
 
-  console.log(isHome);
   return (
     <motion.div whileHover={{ scale: 1.1 }}>
       <Button

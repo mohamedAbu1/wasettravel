@@ -9,22 +9,18 @@ export function PurchaseProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [currency, setCurrency] = useState("");
   const [error, setError] = useState(null);
-const fetchPurchases = async () => {
-  setLoading(true);
-  setError(null);
-  try {
-    const res = await axios.get("/api/purchases");
-    console.log(res)
-    // ✅ الـ API بيرجع مصفوفة مباشرة
-    setPurchases(res.data || []);
-        console.log(res.data)
-
-  } catch (err) {
-    setError(err.message);
-  }
-  setLoading(false);
-};
-
+  const fetchPurchases = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get("/api/purchases");
+      // ✅ الـ API بيرجع مصفوفة مباشرة
+      setPurchases(res.data || []);
+    } catch (err) {
+      setError(err.message);
+    }
+    setLoading(false);
+  };
 
   const purchaseTrip = async (tripId) => {
     try {
@@ -39,8 +35,6 @@ const fetchPurchases = async () => {
       return { error: err.response?.data?.error || "Server error" };
     }
   };
-
-
 
   return (
     <PurchaseContext.Provider

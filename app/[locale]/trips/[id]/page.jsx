@@ -33,7 +33,6 @@ export default function TripPage({ params }) {
       fetchTrips();
     }
   }, []);
-  console.log(lang);
 
   const trip = getTripById(id);
   if (!trip) {
@@ -81,7 +80,8 @@ export default function TripPage({ params }) {
         </div>
         <div className="col-span-1 lg:col-span-3">
           {" "}
-          <TripReviews trip={trip} lang={lang} /> <PurchaseButton trip={trip} />{" "}
+          <TripReviews trip={trip} lang={lang} /> 
+          {user &&<PurchaseButton trip={trip} />}{" "}
           {/* زر الشراء */}
         </div>
       </div>

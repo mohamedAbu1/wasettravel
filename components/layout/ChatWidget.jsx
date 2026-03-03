@@ -9,29 +9,28 @@ import { useAuth } from "@/context/AuthContext";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
-import { supabase } from "@/lib/supabaseClient"; // تأكد إنها موجودة
+import { supabase } from "@/lib/supabaseClient";
+
 export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const [open, setOpen] = useState(false);
   const { theme, themeName } = useTheme();
-  const { messages, sendMessage, fetchMessages, markMessageSeen } =
-    useMessages();
+  const { messages, sendMessage, fetchMessages, markMessageSeen } = useMessages();
   const [text, setText] = useState("");
   const { user } = useAuth();
   const [adminTyping, setAdminTyping] = useState(false);
 
-  // ✅ حالة جديدة للفورم
   const [bookingMode, setBookingMode] = useState(false);
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
-  // جلب رسائل المستخدم
+  // ✅ جلب رسائل المستخدم
   useEffect(() => {
     if (user?.id) {
       fetchMessages(user.id);
     }
   }, [user]);
 
-  // تحديث حالة الرسائل إلى "seen"
+  // ✅ تحديث حالة الرسائل إلى "seen"
   useEffect(() => {
     if (user?.id && messages.length > 0) {
       messages.forEach((msg) => {
@@ -42,7 +41,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     }
   }, [user, messages]);
 
-  // استعلام حالة الكتابة للأدمن
+  // ✅ استعلام حالة الكتابة للأدمن
   useEffect(() => {
     if (!user?.id) return;
     const interval = setInterval(async () => {
@@ -57,8 +56,8 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     if (text.trim() !== "") {
       await sendMessage({
         user_id: user.id,
-        user_name: user.name,
-        user_image: user.avatar_url,
+        user_name: user.user_metadata?.name,
+        user_image: user.user_metadata?.avatar,
         content: text,
         sender_type: "user",
         status: "sent",
@@ -71,14 +70,12 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   useEffect(() => {
     const handler = () => {
       setOpen(true);
-      // رسالة ترحيب من الأدمن
       sendMessage({
-        user_id: user.id, // المستخدم المستهدف
-        user_name: "Admin", // اسم الأدمن
-        user_image:
-          "/avater/technical-writer-digital-avatar-generative-ai_934475-9098.webp", // صورة افتراضية للأدمن
+        user_id: user.id,
+        user_name: "Admin",
+        user_image: "https://dxpbyrcbklqrjlytmkum.supabase.co/storage/v1/object/public/avatars/technical-writer-digital-avatar-generative-ai_934475-9098.webp", // صورة افتراضية للأدمن
         content: "Welcome to our premium transfer service ✨🚘",
-        sender_type: "admin", // ✅ هنا التغيير
+        sender_type: "admin",
         status: "sent",
       });
       setBookingMode(true);
@@ -87,7 +84,8 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     return () => window.removeEventListener("openCarBookingChat", handler);
   }, [user]);
 
-  const isAdmin = user?.role === "ADMIN";
+  const isAdmin = user?.user_metadata?.role === "ADMIN";
+
   const handleSendImage = async (file) => {
     const fileName = `${user.id}-${Date.now()}-${file.name}`;
     const { error: uploadError } = await supabase.storage
@@ -103,13 +101,14 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     const uploadedUrl = publicUrlData.publicUrl;
     await sendMessage({
       user_id: user.id,
-      user_name: user.name,
-      user_image: user.avatar_url,
+      user_name: user.user_metadata?.name,
+      user_image: user.user_metadata?.avatar,
       content: uploadedUrl,
       sender_type: "user",
       status: "sent",
     });
   };
+
   return (
     <>
       {!isAdmin && (
@@ -120,7 +119,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
           whileTap={{ scale: 0.95 }}
           className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg flex items-center justify-center ${theme.buttonPrimary}`}
         >
-          <FaComments size={22} color="#fff"/>
+          <FaComments size={22} color="#fff" />
         </motion.button>
       )}
 
@@ -140,7 +139,6 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
               themeName={themeName}
             />
 
-            {/* ✅ فورم الحجز */}
             {bookingMode && (
               <div className="p-6 border-t bg-opacity-50">
                 <p className="mb-4 text-lg font-semibold text-center">
@@ -148,9 +146,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                 </p>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">
-                      From
-                    </label>
+                    <label className="block text-sm font-medium mb-1">From</label>
                     <input
                       type="text"
                       placeholder="Enter pickup location"
@@ -174,13 +170,13 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                   onClick={async () => {
                     await sendMessage({
                       user_id: user.id,
-                      user_name: user.name,
-                      user_image: user.avatar_url,
+                      user_name: user.user_metadata?.name,
+                      user_image: user.user_metadata?.avatar,
                       content: `Car booking request: from ${from} to ${to}`,
                       sender_type: "user",
                       status: "sent",
                     });
-                    setBookingMode(false); // Hide form after sending
+                    setBookingMode(false);
                   }}
                   className="mt-6 w-full px-4 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold rounded-lg shadow-md hover:scale-105 transition-transform flex items-center justify-center gap-2"
                 >
@@ -189,13 +185,12 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
               </div>
             )}
 
-            {/* ✅ إدخال الرسائل العادي */}
             {!bookingMode && (
               <ChatInput
                 text={text}
                 setText={setText}
                 handleSend={handleSend}
-                handleSendImage={handleSendImage} // ✅ أضفها هنا
+                handleSendImage={handleSendImage}
                 theme={theme}
                 themeName={themeName}
                 user={user}

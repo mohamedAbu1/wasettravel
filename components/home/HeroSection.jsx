@@ -35,8 +35,6 @@ export default function HeroSection() {
               fill
               priority // ✅ يجعل الصورة الأساسية تتحمل فورًا
               className="object-cover"
-              placeholder="blur" // ✅ يظهر بلور قبل تحميل الصورة
-              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."
             />
           </motion.div>
         </AnimatePresence>

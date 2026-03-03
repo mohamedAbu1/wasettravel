@@ -1,58 +1,71 @@
 // src/app/api/reviews/[id]/route.js
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// استخراج المستخدم من الكوكيز
+// ✅ استخراج المستخدم من كوكيز Supabase
 async function getUserFromCookies() {
-  const cookieStore = await cookies(); // ✅ بدون await
-  const token = cookieStore.get("sb_access")?.value;
+  console.log("➡️ Reading cookies...");
+  const cookieStore = cookies();
+  const token = cookieStore.get("sb-access-token")?.value;
 
-  if (!token) return null;
+  console.log("📥 Token from cookies:", token);
 
-  try {
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    return user; // لازم يحتوي على id أو sub + role
-  } catch (err) {
-    console.error("❌ خطأ في التوكن:", err.message);
+  if (!token) {
+    console.log("⚠️ No token found in cookies");
     return null;
   }
+
+  const { data, error } = await supabase.auth.getUser(token);
+  console.log("📥 Supabase auth.getUser result:", data, error);
+
+  if (error || !data?.user) {
+    console.error("❌ Error getting user from Supabase:", error?.message);
+    return null;
+  }
+  console.log("✅ User fetched from Supabase:", data.user);
+  return data.user;
 }
 
+// ✅ GET: جلب تعليق واحد
 export async function GET(req, { params }) {
-  const tripId = params.tripId;
-  const { data: reviews, error } = await supabase
+  console.log("➡️ GET request for review id:", params.id);
+  const reviewId = params.id;
+
+  const { data: review, error } = await supabase
     .from("reviews")
     .select("*")
-    .eq("trip_id", tripId)
-    .order("created_at", { ascending: false });
+    .eq("id", reviewId)
+    .single();
+
+  console.log("📥 Supabase GET result:", review, error);
+
   if (error) {
-    return NextResponse.json(
-      { ok: false, error: error.message },
-      { status: 400 },
-    );
+    console.error("❌ Supabase error in GET:", error.message);
+    return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
   }
-  return NextResponse.json({ ok: true, reviews });
+  console.log("✅ Review fetched successfully:", review);
+  return NextResponse.json({ ok: true, review });
 }
 
-export async function DELETE(req) {
+// ✅ DELETE: حذف تعليق
+export async function DELETE(req, { params }) {
+  console.log("➡️ DELETE request for review id:", params.id);
   const user = await getUserFromCookies();
+  console.log("👤 Current user:", user);
+
   if (!user) {
-    return NextResponse.json(
-      { ok: false, error: "Unauthorized" },
-      { status: 401 },
-    );
+    console.log("⚠️ Unauthorized delete attempt");
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  // استخراج الـ id من الـ URL مباشرة
-  const { pathname } = new URL(req.url);
-  const reviewId = pathname.split("/").pop(); // آخر جزء من الـ URL
+  const reviewId = params.id;
+  console.log("➡️ Fetching review to delete:", reviewId);
 
   const { data: review, error: fetchError } = await supabase
     .from("reviews")
@@ -60,48 +73,45 @@ export async function DELETE(req) {
     .eq("id", reviewId)
     .single();
 
+  console.log("📥 Review fetched for delete:", review, fetchError);
+
   if (fetchError || !review) {
-    return NextResponse.json(
-      { ok: false, error: "Review not found" },
-      { status: 404 },
-    );
+    console.log("⚠️ Review not found");
+    return NextResponse.json({ ok: false, error: "Review not found" }, { status: 404 });
   }
 
-  const userId = user.id || user.sub;
-  if (user.role !== "ADMIN" && userId !== review.user_id) {
-    return NextResponse.json(
-      { ok: false, error: "Forbidden" },
-      { status: 403 },
-    );
+  if (user.role !== "ADMIN" && user.id !== review.user_id) {
+    console.log("⚠️ Forbidden delete attempt by user:", user.id);
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
   }
 
   const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
+  console.log("📥 Supabase delete result:", error);
+
   if (error) {
-    return NextResponse.json(
-      { ok: false, error: error.message },
-      { status: 400 },
-    );
+    console.error("❌ Supabase error in DELETE:", error.message);
+    return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
   }
 
-  return NextResponse.json({
-    ok: true,
-    message: "Review deleted successfully",
-  });
+  console.log("✅ Review deleted successfully");
+  return NextResponse.json({ ok: true, message: "Review deleted successfully" });
 }
-// ✏️ PUT: تعديل التعليق
-export async function PUT(req) {
+
+// ✅ PUT: تعديل تعليق
+export async function PUT(req, { params }) {
+  console.log("➡️ PUT request for review id:", params.id);
   const user = await getUserFromCookies();
+  console.log("👤 Current user:", user);
+
   if (!user) {
-    return NextResponse.json(
-      { ok: false, error: "Unauthorized" },
-      { status: 401 },
-    );
+    console.log("⚠️ Unauthorized update attempt");
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  const { pathname } = new URL(req.url);
-  const reviewId = pathname.split("/").pop();
-
+  const reviewId = params.id;
   const body = await req.json();
+  console.log("📥 Incoming PUT body:", body);
+
   const { comment, rating } = body;
 
   const { data: review, error: fetchError } = await supabase
@@ -110,19 +120,16 @@ export async function PUT(req) {
     .eq("id", reviewId)
     .single();
 
+  console.log("📥 Review fetched for update:", review, fetchError);
+
   if (fetchError || !review) {
-    return NextResponse.json(
-      { ok: false, error: "Review not found" },
-      { status: 404 },
-    );
+    console.log("⚠️ Review not found for update");
+    return NextResponse.json({ ok: false, error: "Review not found" }, { status: 404 });
   }
 
-  const userId = user.id || user.sub;
-  if (userId !== review.user_id) {
-    return NextResponse.json(
-      { ok: false, error: "Forbidden" },
-      { status: 403 },
-    );
+  if (user.id !== review.user_id) {
+    console.log("⚠️ Forbidden update attempt by user:", user.id);
+    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
   }
 
   const { error } = await supabase
@@ -130,15 +137,13 @@ export async function PUT(req) {
     .update({ comment, rating })
     .eq("id", reviewId);
 
+  console.log("📥 Supabase update result:", error);
+
   if (error) {
-    return NextResponse.json(
-      { ok: false, error: error.message },
-      { status: 400 },
-    );
+    console.error("❌ Supabase error in PUT:", error.message);
+    return NextResponse.json({ ok: false, error: error.message }, { status: 400 });
   }
 
-  return NextResponse.json({
-    ok: true,
-    message: "Review updated successfully",
-  });
+  console.log("✅ Review updated successfully");
+  return NextResponse.json({ ok: true, message: "Review updated successfully" });
 }

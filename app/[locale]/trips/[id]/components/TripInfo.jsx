@@ -99,7 +99,7 @@ export default function TripInfo({ trip, lang }) {
             />
           </motion.div>
           <span>
-            {t.duration}: {trip.duration} {trip.duration_unit}
+            {t.duration}: {trip.duration} {trip.duration_unit?.[lang] }
           </span>
         </motion.div>
       </div>

@@ -131,7 +131,6 @@ export function TripProvider({ children }) {
         gallery_images: galleryUrls,
       };
 
-      console.log("Final Payload:", payload);
 
       const res = await fetch("/api/trips", {
         method: "POST",

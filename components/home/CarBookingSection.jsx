@@ -132,32 +132,31 @@ const CarBookingSection = () => {
           <p className="mt-6 text-lg opacity-80 leading-relaxed max-w-xl">
             {t("Experience")}
           </p>
-{user ? (
-  // ✅ زر الحجز يظهر فقط إذا كان فيه مستخدم
-  <motion.button
-    variants={fadeInUp}
-    style={{ cursor: "pointer" }}
-    onClick={() => {
-      window.dispatchEvent(new CustomEvent("openCarBookingChat"));
-    }}
-    className={`mt-8 inline-block px-10 py-4 rounded-full font-bold text-lg shadow-xl transition-transform transform hover:scale-105 ${
-      themeName === "dark"
-        ? "bg-amber-300 text-black hover:bg-yellow-500"
-        : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
-    }`}
-  >
-    {t("Book")}
-  </motion.button>
-) : (
-  // ✅ رسالة أنيقة بدل الزر لو ما فيش مستخدم
-  <motion.p
-    variants={fadeInUp}
-    className="mt-8 text-lg font-semibold opacity-80 italic text-center lg:text-left"
-  >
-    Please log in and book your car now ✨
-  </motion.p>
-)}
-
+          {user ? (
+            // ✅ زر الحجز يظهر فقط إذا كان فيه مستخدم
+            <motion.button
+              variants={fadeInUp}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("openCarBookingChat"));
+              }}
+              className={`mt-8 inline-block px-10 py-4 rounded-full font-bold text-lg shadow-xl transition-transform transform hover:scale-105 ${
+                themeName === "dark"
+                  ? "bg-amber-300 text-black hover:bg-yellow-500"
+                  : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+              }`}
+            >
+              {t("Book")}
+            </motion.button>
+          ) : (
+            // ✅ رسالة أنيقة بدل الزر لو ما فيش مستخدم
+            <motion.p
+              variants={fadeInUp}
+              className="mt-8 text-lg font-semibold opacity-80 italic text-center lg:text-left"
+            >
+              Please log in and book your car now ✨
+            </motion.p>
+          )}
         </motion.div>
       </motion.div>
     </motion.section>

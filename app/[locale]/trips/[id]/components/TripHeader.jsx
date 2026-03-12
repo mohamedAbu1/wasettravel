@@ -4,17 +4,18 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
+import { sites } from "@/constants/images";
+import reactStringReplace from "react-string-replace"; // ✅ المكتبة الجديدة
 
 export default function TripHeader({ trip, lang }) {
   const { themeName } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
-
   // ✅ تغيير تلقائي كل 3 ثواني
   useEffect(() => {
     if (!trip?.gallery_images || trip.gallery_images.length === 0) return;
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) =>
-        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1,
+        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1
       );
     }, 3000);
     return () => clearInterval(interval);
@@ -28,43 +29,22 @@ export default function TripHeader({ trip, lang }) {
     );
   }
 
-  // ✅ قائمة المعابد والمقابر مع روابط ويكيبيديا
-  const sites = [
-    { name: "Karnak Temple", url: "https://en.wikipedia.org/wiki/Karnak" },
-    { name: "Luxor Temple", url: "https://en.wikipedia.org/wiki/Luxor_Temple" },
-    { name: "Hatshepsut", url: "https://en.wikipedia.org/wiki/Mortuary_Temple_of_Hatshepsut" },
-    { name: "Medinet Habu", url: "https://en.wikipedia.org/wiki/Medinet_Habu_(temple)" },
-    { name: "Seti I", url: "https://en.wikipedia.org/wiki/Temple_of_Seti_I" },
-    { name: "Dendera", url: "https://en.wikipedia.org/wiki/Dendera_Temple_complex" },
-    { name: "Kom Ombo", url: "https://en.wikipedia.org/wiki/Temple_of_Kom_Ombo" },
-    { name: "Edfu", url: "https://en.wikipedia.org/wiki/Temple_of_Edfu" },
-    { name: "Philae Temple", url: "https://en.wikipedia.org/wiki/Philae" },
-    { name: "Valley of the Kings", url: "https://en.wikipedia.org/wiki/Valley_of_the_Kings" },
-    { name: "Valley of the Queens", url: "https://en.wikipedia.org/wiki/Valley_of_the_Queens" },
-    { name: "Tomb of Tutankhamun", url: "https://en.wikipedia.org/wiki/Tutankhamun%27s_tomb" },
-    { name: "Tomb of Seti I", url: "https://en.wikipedia.org/wiki/Tomb_of_Seti_I" },
-    { name: "Tomb of Ramses VI", url: "https://en.wikipedia.org/wiki/Tomb_of_Ramesses_VI" },
-    { name: "Tomb of Nefertari", url: "https://en.wikipedia.org/wiki/Tomb_of_Nefertari" },
-    { name: "Temple of Horus", url: "https://en.wikipedia.org/wiki/Temple_of_Horus" },
-    { name: "Abydos", url: "https://en.wikipedia.org/wiki/Abydos" },
-  ];
+  // ✅ الكلمات المراد تمييزها
+  const searchWords = sites.map((site) => site.name);
 
-  // ✅ دالة لتحديد الأسماء وتحويلها لرابط
-  const highlightSites = (text) => {
-    if (!text) return "";
-    let updatedText = text;
-    sites.forEach((site) => {
-      const regex = new RegExp(site.name, "gi");
-      updatedText = updatedText.replace(
-        regex,
-        `<a href="${site.url}" target="_blank" rel="noopener noreferrer"
-          style="color:#c9a34a; font-weight:bold; text-decoration:none;">
-          ${site.name}
-        </a>`
-      );
-    });
-    return updatedText;
-  };
+const tripDescription =
+    typeof trip?.description?.[lang] === "string"
+      ? trip.description[lang]
+      : trip?.description?.en || "";
+
+  // ✅ بناء Regex لكل الكلمات مرة واحدة
+  const regex = new RegExp(`(${searchWords.join("|")})`, "gi");
+
+  const highlightedText = reactStringReplace(tripDescription, regex, (match, i) => (
+    <span key={i} className="highlighted-text">
+      {match}
+    </span>
+  ));
 
   return (
     <motion.section
@@ -152,20 +132,24 @@ export default function TripHeader({ trip, lang }) {
         ))}
       </div>
 
-      {/* ✅ الوصف مع تمييز المعابد والمقابر */}
-      <motion.p
+      {/* ✅ الوصف مع تمييز الكلمات */}
+      <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7, delay: 0.3 }}
         className="leading-relaxed text-lg mt-6"
-        dangerouslySetInnerHTML={{
-          __html: highlightSites(trip.description?.[lang] || trip.description?.en),
-        }}
-      />
+      >
+        {highlightedText}
+      </motion.div>
 
       <style jsx>{`
-        a:hover {
+        .highlighted-text {
+          color: #c9a34a;
+          font-weight: bold;
+          text-decoration: none;
+        }
+        .highlighted-text:hover {
           text-decoration: underline;
           color: #eab308;
         }

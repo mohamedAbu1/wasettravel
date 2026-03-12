@@ -14,26 +14,29 @@ const encodeData = (obj) => btoa(JSON.stringify(obj));
 function CategoryCard({ cat, themeName }) {
   const [imgIndex, setImgIndex] = useState(0);
   const router = useRouter();
-
+  const { i18n } = useTranslation();
+  let lang = i18n.language;
+  if (lang.startsWith("zh")) {
+    lang = "zh";
+  }
   useEffect(() => {
     const interval = setInterval(() => {
       setImgIndex((prev) => (prev + 1) % (cat.images?.length || 1));
     }, 4000);
     return () => clearInterval(interval);
   }, [cat.images]);
-
-  // ✅ عند الضغط على الكارد
+  const displayName =
+    typeof cat.name === "object" ? cat.name?.[lang] || cat.name?.en : cat.name;
   const handleClick = () => {
     const queryObj = {
       city: "all",
-      category: [cat.name], // الكاتجري اللي ضغطت عليه
+      category: [displayName],
       price: "Economy",
       popular: false,
     };
     const encoded = encodeData(queryObj);
     router.push(`/trips?data=${encoded}`);
   };
-
   return (
     <div
       onClick={handleClick}
@@ -60,10 +63,10 @@ function CategoryCard({ cat, themeName }) {
               cat.images?.[imgIndex]?.startsWith("/")
                 ? cat.images[imgIndex]
                 : cat.images?.[imgIndex]?.startsWith("http")
-                ? cat.images[imgIndex]
-                : "/fallback.jpg"
+                  ? cat.images[imgIndex]
+                  : "/fallback.jpg"
             }
-            alt={cat.name}
+            alt={displayName}
             fill
             className="object-cover rounded-lg"
           />
@@ -80,7 +83,7 @@ function CategoryCard({ cat, themeName }) {
             themeName === "dark" ? "text-white" : "text-[#3a2c0a]"
           }`}
         >
-          {cat.name}
+          {displayName}
         </p>
       </div>
     </div>
@@ -108,12 +111,29 @@ const CategoriesSection = () => {
     const direction = offset > 0 ? -1 : 1;
     const newIndex = Math.min(
       Math.max(index + direction, 0),
-      categories.length - 1
+      categories.length - 1,
     );
     setIndex(newIndex);
   };
 
-  const symbols = ["𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽","𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟"];
+  const symbols = [
+    "𓂀",
+    "𓋹",
+    "𓆣",
+    "𓇼",
+    "𓇯",
+    "𓏏",
+    "𓎛",
+    "𓊽",
+    "𓃾",
+    "𓅓",
+    "𓈇",
+    "𓉐",
+    "𓊹",
+    "𓌙",
+    "𓍿",
+    "𓎟",
+  ];
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading categories...</p>;

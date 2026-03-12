@@ -25,7 +25,7 @@ export default function TripIncludes({ trip, lang }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className={`w-full p-6 rounded-xl shadow-lg transition ${
+      className={`w-1/2 p-6 rounded-xl shadow-lg transition ${
         themeName === "dark"
           ? "bg-black/40 text-gold"
           : "bg-white/80 text-[#3a2c0a]"

@@ -183,6 +183,49 @@ const OurSection = () => {
             {t("LearnMoreAboutUs")}
           </button>
         </motion.div>
+          <motion.div
+          initial={{ opacity: 0, x: -100 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full lg:w-1/2 rounded-3xl overflow-hidden shadow-xl"
+          style={{
+            boxShadow:
+              themeName === "dark"
+                ? "0 6px 20px rgba(201,163,74,0.4)"
+                : "0 6px 20px rgba(58,44,10,0.2)",
+          }}
+        >
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            navigation
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 4000, disableOnInteraction: false }}
+            spaceBetween={30}
+            slidesPerView={1}
+            className="w-full h-full"
+          >
+            {[
+              "/HomePageImage/pexels-furknsaglam-1596977-21348185.webp",
+              "/HomePageImage/pexels-oualid-soussi-2150533856-35050672.webp",
+              "/HomePageImage/pexels-ozgomz-7566890.webp",
+              "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
+              "/HomePageImage/pexels-yasmine-qasem-1054896-2034684.webp",
+            ].map((imgSrc, index) => (
+              <SwiperSlide key={index}>
+                <div className="w-full h-[85vh]">
+                  <Image
+                    src={imgSrc || "/fallback.jpg"}
+                    alt={`WasetTravel Slide ${index + 1}`}
+                    fill
+                    className="w-full h-full object-cover rounded-lg"
+                    loading="lazy" // ✅ يفضل للصور الثانوية
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </motion.div>
       </div>
     </section>
   );

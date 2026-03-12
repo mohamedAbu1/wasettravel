@@ -20,6 +20,7 @@ import TripReviews from "./components/TripReviews";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
 import PurchaseButton from "./components/PurchaseButton";
+import TripVideo from "./components/TripVideo";
 
 export default function TripPage({ params }) {
   const { id } = use(params);
@@ -53,7 +54,7 @@ export default function TripPage({ params }) {
       <div
         style={{ paddingTop: "110px" }}
         className="max-w-7xl mx-auto p-6 relative z-10 grid gap-8 
-             grid-cols-1 lg:grid-cols-3 auto-rows-min"
+             grid-cols-1 lg:grid-cols-2 auto-rows-min"
       >
         <EgyptianBackground />
 
@@ -61,16 +62,20 @@ export default function TripPage({ params }) {
         <div className="col-span-1 lg:col-span-3">
           <TripHeader trip={trip} lang={lang} />
         </div>
-        <TripInfo trip={trip} lang={lang} />
         {/* المدن + الكاتجريز في عمود واحد */}
-        <div className="flex flex-col gap-8">
-          <TripCities trip={trip} lang={lang} />
-          <TripCategories trip={trip} lang={lang} />
+        <div className="col-span-3 flex flex-row gap-8">
+          <div className="col-span-3 ">
+            <TripInfo trip={trip} lang={lang} />
+            <TripCities trip={trip} lang={lang} />
+            <TripCategories trip={trip} lang={lang} />
+          </div>
+          <TripVideo trip={trip} lang={lang} />{" "}
         </div>
 
         {/* الإنكلودز في العمود الثاني */}
-        <div className="">
+        <div className="col-span-3 flex flex-row gap-8">
           <TripIncludes trip={trip} lang={lang} />
+          {/* ✅ الفيديو بجانب الإنكلود */}
         </div>
         {/* الجاليري */}
 
@@ -80,9 +85,8 @@ export default function TripPage({ params }) {
         </div>
         <div className="col-span-1 lg:col-span-3">
           {" "}
-          <TripReviews trip={trip} lang={lang} /> 
-          {user &&<PurchaseButton trip={trip} />}{" "}
-          {/* زر الشراء */}
+          <TripReviews trip={trip} lang={lang} />
+          {user && <PurchaseButton trip={trip} />} {/* زر الشراء */}
         </div>
       </div>
 

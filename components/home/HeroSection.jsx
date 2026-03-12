@@ -5,8 +5,8 @@ import { useTheme } from "@/context/ThemeContext";
 import Content from "./components/Content";
 import DownloadAppSection from "./components/DownloadAppSection";
 import { useData } from "@/context/DataContext";
-import SocialMediaIcons from "../SocialMediaIcons";
-import LeftSocialIcons from "../LeftSocialIcons";
+import SocialMediaIcons from "./components/SocialMediaIcons";
+import LeftSocialIcons from "./components/LeftSocialIcons";
 import LogoLetter from "../LogoLetter";
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 export default function HeroSection() {

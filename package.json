@@ -21,6 +21,7 @@
     "@nivo/core": "^0.99.0",
     "@nivo/line": "^0.99.0",
     "@nivo/pie": "^0.99.0",
+    "@sendgrid/mail": "^8.1.6",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/postcss": "^4.1.18",

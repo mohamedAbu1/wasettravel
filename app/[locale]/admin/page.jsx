@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/purity */
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import Sidebar from "./components/Sidebar";
 import DashboardHome from "./components/DashboardHome";
@@ -12,13 +12,26 @@ import MessagesList from "./components/MessagesList";
 import EditTrip from "./components/EditTrip"; // ✅ استدعاء مكون التعديل
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import UsersSection from "./components/UsersSection";
-
+import { useRouter } from "next/navigation";
+import { useAuth } from "./context/AuthContext";
 const symbols = ["𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽","𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟"];
 
 export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const { theme, themeName } = useTheme();
+   const { user } = useAuth();
+  const router = useRouter();
+  // ✅ تحقق من المستخدم وصلاحيته داخل useEffect
+  useEffect(() => {
+    if (!user || user.user_metadata?.role !== "admin") {
+      router.replace("/"); // رجعه للصفحة الرئيسية
+    }
+  }, [user, router]);
 
+  // لو المستخدم مش Admin، ما تعرضش أي محتوى
+  if (!user || user.user_metadata?.role !== "admin") {
+    return null;
+  }
   return (
     <main className={`relative flex min-h-screen ${theme.background} ${theme.text} overflow-hidden`}>
       <EgyptianBackground />

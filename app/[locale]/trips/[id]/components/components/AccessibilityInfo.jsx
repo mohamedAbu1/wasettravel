@@ -4,7 +4,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useLanguage } from "@/context/LanguageContext";
 import translations from "@/constants/images";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
-
+import { motion } from "framer-motion";
 export default function AccessibilityInfo() {
   const { themeName } = useTheme();
   const { lang } = useLanguage(); // ✅ جلب اللغة من الكونتكست
@@ -33,7 +33,12 @@ export default function AccessibilityInfo() {
             isDark ? " bg-white/10 dark:bg-black/20" : ""
           }`}
         >
-          <FaWheelchair className="text-blue-500 text-4xl" />
+          <motion.div
+            animate={{ x: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+          >
+            <FaWheelchair className="text-blue-500 text-4xl" />
+          </motion.div>
           <span className="text-xs font-semibold">{t.accessible}</span>
         </div>
 
@@ -42,7 +47,12 @@ export default function AccessibilityInfo() {
             isDark ? " bg-white/10 dark:bg-black/20" : ""
           }`}
         >
-          <FaHandsHelping className="text-green-500 text-4xl" />
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+          >
+            <FaHandsHelping className="text-green-500 text-4xl" />
+          </motion.div>
           <span className="text-xs font-semibold">{t.support}</span>
         </div>
 
@@ -51,7 +61,13 @@ export default function AccessibilityInfo() {
             isDark ? " bg-white/10 dark:bg-black/20" : ""
           }`}
         >
-          <FaHeart className="text-red-500 text-4xl" />
+          <motion.div
+            animate={{ scale: [1, 1.3, 1] }}
+            transition={{ repeat: Infinity, duration: 1 }}
+          >
+            <FaHeart className="text-red-500 text-4xl" />
+          </motion.div>
+
           <span className="text-xs font-semibold">{t.care}</span>
         </div>
       </div>

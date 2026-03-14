@@ -113,35 +113,43 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const login = async (email, password, onSuccess) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw new Error(error.message);
-      const user = data.user;
-      setUser(user);
-      setIsLoggedIn(true);
-      updateValue("id", user.id);
-      updateValue("email", user.email);
-      updateValue("role", user.user_metadata?.role);
-      updateValue("name", user.user_metadata?.name);
-      updateValue("avatar", user.user_metadata?.avatar);
-      updateValue("gender", user.user_metadata?.gender);
-      if (onSuccess) onSuccess();
-      const encodedQuery = getEncodedQuery();
-      router.push(`/?data=${encodedQuery}`);
-      return user;
-    } catch (err) {
-      setError(err.message);
-      toast.error("❌ Error: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const login = async (email, password, onSuccess) => {
+  setLoading(true);
+  setError(null);
+  try {
+    // ✅ استدعاء الـ API بدل Supabase مباشرة
+    const res = await axios.post("/api/auth/login", { email, password }, { withCredentials: true });
+    const data = res.data;
+
+    if (res.status !== 200) throw new Error(data.error || "Login failed");
+
+    // ✅ المستخدم من الاستجابة
+    const user = data.user;
+    setUser(user);
+    setIsLoggedIn(true);
+
+    // تحديث QueryContext
+    updateValue("id", user.id);
+    updateValue("email", user.email);
+    updateValue("role", user.user_metadata?.role);
+    updateValue("name", user.user_metadata?.name);
+    updateValue("avatar", user.user_metadata?.avatar);
+    updateValue("gender", user.user_metadata?.gender);
+
+    if (onSuccess) onSuccess();
+    const encodedQuery = getEncodedQuery();
+    router.push(`/?data=${encodedQuery}`);
+
+    toast.success("✅ Logged in successfully!");
+    return user;
+  } catch (err) {
+    setError(err.message);
+    toast.error("❌ Error: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
   const logout = async () => {
     try {
       await axios.post("/api/auth/logout", {}, { withCredentials: true });

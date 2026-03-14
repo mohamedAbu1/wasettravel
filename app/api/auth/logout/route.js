@@ -1,13 +1,16 @@
-// src/app/api/auth/logout/route.js
+// app/api/auth/logout/route.js
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
 export async function POST() {
-  const cookieStore = await cookies(); // ✅ لازم await هنا
+  const response = NextResponse.json({ message: "تم تسجيل الخروج بنجاح" });
 
-  // امسح التوكنات
-  cookieStore.set("sb_access", "", { path: "/", httpOnly: true, maxAge: 0 });
-  cookieStore.set("sb_refresh", "", { path: "/", httpOnly: true, maxAge: 0 });
+  // ✅ حذف الكوكيز
+  response.cookies.set("sb_access", "", {
+    httpOnly: true,
+    secure: true,
+    path: "/",
+    maxAge: 0, // ينتهي فورًا
+  });
 
-  return NextResponse.json({ ok: true, message: "Logged out successfully" });
+  return response;
 }

@@ -354,3 +354,58 @@ export const sites = [
     },
   },
 ];
+
+
+
+const translations = {
+  en: {
+    title: "Inclusive Travel for Everyone",
+    description:
+      "Our trips are thoughtfully designed to welcome and support travelers with special needs, ensuring accessibility, comfort, and unforgettable experiences.",
+    accessible: "Accessible",
+    support: "Support",
+    care: "Care",
+  },
+  ar: {
+    title: "رحلات شاملة للجميع",
+    description:
+      "تم تصميم رحلاتنا بعناية لتشمل وتدعم أصحاب الهمم، مع ضمان الراحة وسهولة الوصول وتجارب لا تُنسى.",
+    accessible: "سهولة الوصول",
+    support: "دعم",
+    care: "رعاية",
+  },
+  fr: {
+    title: "Voyages inclusifs pour tous",
+    description:
+      "Nos voyages sont conçus pour accueillir et soutenir les voyageurs ayant des besoins particuliers, en garantissant confort, accessibilité et expériences inoubliables.",
+    accessible: "Accessible",
+    support: "Soutien",
+    care: "Soin",
+  },
+  es: {
+    title: "Viajes inclusivos para todos",
+    description:
+      "Nuestros viajes están diseñados para acoger y apoyar a los viajeros con necesidades especiales, garantizando comodidad, accesibilidad y experiencias inolvidables.",
+    accessible: "Accesible",
+    support: "Apoyo",
+    care: "Cuidado",
+  },
+  de: {
+    title: "Inklusive Reisen für alle",
+    description:
+      "Unsere Reisen sind sorgfältig gestaltet, um Reisende mit besonderen Bedürfnissen willkommen zu heißen und zu unterstützen, mit Komfort, Barrierefreiheit und unvergesslichen Erlebnissen.",
+    accessible: "Barrierefrei",
+    support: "Unterstützung",
+    care: "Pflege",
+  },
+  it: {
+    title: "Viaggi inclusivi per tutti",
+    description:
+      "I nostri viaggi sono pensati per accogliere e supportare i viaggiatori con esigenze speciali, garantendo comfort, accessibilità ed esperienze indimenticabili.",
+    accessible: "Accessibile",
+    support: "Supporto",
+    care: "Cura",
+  },
+};
+
+export default translations;

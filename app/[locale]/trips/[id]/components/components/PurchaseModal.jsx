@@ -26,18 +26,18 @@ export default function PurchaseModal({ trip, onClose }) {
 
   const modalClasses =
     themeName === "dark"
-      ? "bg-gradient-to-b from-gray-800 via-gray-900 to-black text-yellow-300"
-      : "bg-gradient-to-b from-white via-gray-100 to-white text-gray-900";
+      ? "bg-gradient-to-b from-gray-800 via-gray-900 to-black text-yellow-300 z-55"
+      : "bg-gradient-to-b from-white via-gray-100 to-white text-gray-900 z-55";
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-50 transition-opacity animate-fadeIn overflow-y-scroll">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-54 transition-opacity animate-fadeIn overflow-y-scroll">
       <div
-        className={`rounded-2xl shadow-2xl p-8 w-[100%] max-w-lg mt-25 relative transform animate-slideUp ${modalClasses}`}
+        className={`rounded-2xl shadow-2xl p-8 w-[100%] max-w-[1000px] mt-25 relative transform animate-slideUp ${modalClasses}`}
       >
         {/* زر الإغلاق */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
+          className="absolute top-4 right-4 text-gray-400 hover:text-red-500 cursor-pointer transition"
         >
           <FaTimes className="w-6 h-6" />
         </button>
@@ -69,10 +69,17 @@ export default function PurchaseModal({ trip, onClose }) {
 
         <TripDetails trip={trip} groupSize={groupSize} />
         <ConfirmButton
-          trip={trip}
+          trip={trip.id}
           onClose={onClose}
           arrivalDate={arrivalDate}
           departureDate={departureDate}
+          hasChildren={hasChildren}
+          childrenCount={childrenCount}
+          hasPets={hasPets}
+          pets={pets}
+          groupSize={groupSize}
+          hasGuide={hasGuide}
+          guideLanguages={guideLanguages}
         />
       </div>
     </div>

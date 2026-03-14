@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useQueryFilters } from "@/context/QueryContext";
-
+import { useAuth } from "@/context/AuthContext";
 export default function TripsGrid({ cardStyle = "vertical", search }) {
   const { themeName } = useTheme();
   const { trips, fetchTrips, loadingTrips } = useTrip();
@@ -22,8 +22,10 @@ export default function TripsGrid({ cardStyle = "vertical", search }) {
   const { categories: allCategories } = useCitiesCategories();
   const { reviewsByTrip, fetchReviewsByTrip } = useReviews();
   const router = useRouter();
-  const { currency } = usePurchase();
   const { filterTrips } = useQueryFilters();
+  const { user } = useAuth(); // ✅ المستخدم الحالي// ✅ جلب المستخدم الحالي
+  const { currency, purchases } = usePurchase(); // ✅ جلب العملة والحجوزات
+
   useEffect(() => {
     fetchTrips();
   }, []);
@@ -72,6 +74,7 @@ export default function TripsGrid({ cardStyle = "vertical", search }) {
           );
         })
       : filteredTrips;
+  // ✅ تحقق إذا كان المستخدم الحالي اشترى هذه الرحلة
 
   return (
     <div
@@ -134,7 +137,12 @@ export default function TripsGrid({ cardStyle = "vertical", search }) {
         } else if (currency === "USD" && trip.currency === "EUR") {
           displayedPrice = (trip.price * 1.18).toFixed(2);
         }
-
+ const hasPurchased = purchases.some(
+            (p) =>
+              p.trip_id === trip.id &&
+              p.user_id === user?.id &&
+              p.status !== "Cancelled",
+          );
         return (
           <motion.div
             key={trip.id || i}
@@ -224,11 +232,15 @@ export default function TripsGrid({ cardStyle = "vertical", search }) {
                 onClick={() => router.push(`/trips/${trip.id}`)}
                 className={`mt-2 px-4 py-2 rounded-lg font-bold transition text-white ${
                   themeName === "dark"
-                    ? "bg-[#c9a34a] hover:bg-yellow-500"
-                    : "bg-[#c9a34a] hover:bg-[#b5892e]"
+                    ? hasPurchased
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-[#c9a34a] hover:bg-yellow-500"
+                    : hasPurchased
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-[#c9a34a] hover:bg-yellow-500"
                 }`}
               >
-                {t("btn")}
+                {hasPurchased ? t("Tripdetails") : t("btn")}
               </button>
             </div>
           </motion.div>

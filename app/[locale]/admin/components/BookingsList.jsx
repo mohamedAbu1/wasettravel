@@ -9,7 +9,8 @@ import DividerWithIcon from "@/components/layout/DividerWithIcon";
 
 export default function BookingsList() {
   const { themeName } = useTheme();
-  const { purchases, loading, error, fetchPurchases } = usePurchase();
+  const { purchases, loading, error, fetchPurchases, handleStatusChange } =
+    usePurchase();
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -25,7 +26,8 @@ export default function BookingsList() {
   };
 
   if (loading) return <p className="text-center">⏳ Loading bookings...</p>;
-  if (error) return <p className="text-center text-red-500">❌ Error: {error}</p>;
+  if (error)
+    return <p className="text-center text-red-500">❌ Error: {error}</p>;
 
   return (
     <div
@@ -89,7 +91,11 @@ export default function BookingsList() {
             >
               <th className="p-3">👤 User</th>
               <th className="p-3">🗺️ Trip</th>
-              <th className="p-3">📅 Date</th>
+              <th className="p-3">👥 Persons</th>
+              <th className="p-3">👶 Children</th>
+              <th className="p-3">📅 Arrival</th>
+              <th className="p-3">📅 Departure</th>
+              <th className="p-3">📱 Platform</th>
               <th className="p-3">📌 Status</th>
             </tr>
           </thead>
@@ -109,18 +115,59 @@ export default function BookingsList() {
                   }`}
                 >
                   <td className="p-3 font-semibold capitalize">
-                    {purchase.users?.name || "Unknown User"}
+                    {purchase.userName || "Unknown User"}
                   </td>
                   <td className="p-3">
-                    {purchase.trips?.title?.en || "Unknown Trip"}
+                    {purchase.tripTitle || "Unknown Trip"}
+                  </td>
+                  <td className="p-3">{purchase.num_persons}</td>
+                  <td className="p-3">{purchase.num_children}</td>
+                  <td className="p-3">
+                    {purchase.arrival_date
+                      ? new Date(purchase.arrival_date).toLocaleDateString()
+                      : "N/A"}
                   </td>
                   <td className="p-3">
-                    {purchase.created_at
-                      ? new Date(purchase.created_at).toLocaleDateString()
-                      : "No date"}
+                    {purchase.departure_date
+                      ? new Date(purchase.departure_date).toLocaleDateString()
+                      : "N/A"}
                   </td>
-                  <td className="p-3 flex items-center gap-2">
-                    {getStatusIcon("Confirmed")} {purchase.status || "Confirmed"}
+                  <td className="p-3">{purchase.platform}</td>
+                  <td className="p-3">
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(purchase.status)}
+                      <select
+                        value={purchase.status}
+                        onChange={(e) =>
+                          handleStatusChange(purchase.id, e.target.value)
+                        }
+                        className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 
+                 text-sm font-medium text-gray-700 dark:text-gray-200 
+                 border border-gray-300 dark:border-gray-600 
+                 rounded-lg px-3 py-2 shadow-sm 
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                 transition duration-200 ease-in-out"
+                      >
+                        <option
+                          value="Pending"
+                          className="text-yellow-600 font-semibold"
+                        >
+                          ⏳ Pending
+                        </option>
+                        <option
+                          value="Confirmed"
+                          className="text-green-600 font-semibold"
+                        >
+                          ✅ Confirmed
+                        </option>
+                        <option
+                          value="Cancelled"
+                          className="text-red-600 font-semibold"
+                        >
+                          ❌ Cancelled
+                        </option>
+                      </select>
+                    </div>
                   </td>
                 </motion.tr>
                 <DividerWithIcon />

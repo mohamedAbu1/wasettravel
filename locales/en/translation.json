@@ -57,7 +57,8 @@
     "OneDayTrips": "One Day Trips",
     "SelectCategory": "SelectCategory",
     "p6": "No 5-star reviews yet",
-    "h6": "What Our Travelers Say"
+    "h6": "What Our Travelers Say",
+    "Tripdetails": "Trip Details"
   },
   "trips": {
     "Searchtrips": "Search trips...",
@@ -70,7 +71,8 @@
     "PriceRange": "Price Range",
     "MostPopular": "Most Popular",
     "reviews": "reviews",
-    "btn": "Book Now"
+    "btn": "Book Now",
+    "Tripdetails": "Trip Details"
   },
   "footer": {
     "p": "© 2025 — Explore Egypt with Comfort & Luxury",

@@ -57,7 +57,8 @@
     "OneDayTrips": "一日游",
     "SelectCategory": "选择类别",
     "p6": "还没有五星评价",
-    "h6": "我们的旅客怎么说"
+    "h6": "我们的旅客怎么说",
+    "Tripdetails": "行程详情"
   },
   "trips": {
     "Searchtrips": "搜索旅行...",
@@ -70,7 +71,8 @@
     "PriceRange": "价格范围",
     "MostPopular": "最受欢迎",
     "reviews": "评论",
-    "btn": "立即预订"
+    "btn": "立即预订",
+    "Tripdetails": "行程详情"
   },
 
   "about": {

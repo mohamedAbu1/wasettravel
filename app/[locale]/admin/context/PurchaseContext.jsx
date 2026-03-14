@@ -10,31 +10,47 @@ export function PurchaseProvider({ children }) {
   const [currency, setCurrency] = useState("");
   const [error, setError] = useState(null);
   const fetchPurchases = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await axios.get("/api/purchases");
-      // ✅ الـ API بيرجع مصفوفة مباشرة
-      setPurchases(res.data || []);
-    } catch (err) {
-      setError(err.message);
-    }
-    setLoading(false);
-  };
+  setLoading(true);
+  setError(null);
+  try {
+    const res = await axios.get("/api/purchases", { withCredentials: true }); // ✅ مهم
+    setPurchases(res.data || []);
+  } catch (err) {
+    setError(err.message);
+  }
+  setLoading(false);
+};
 
-  const purchaseTrip = async (tripId) => {
-    try {
-      const res = await axios.post("/api/purchase", { tripId });
-      if (res.status === 200) {
-        await fetchPurchases();
-        return { success: true };
-      } else {
-        return { error: res.data.error };
-      }
-    } catch (err) {
-      return { error: err.response?.data?.error || "Server error" };
+const purchaseTrip = async (tripId) => {
+  try {
+    const res = await axios.post("/api/purchase", { tripId }, { withCredentials: true }); // ✅ مهم
+    if (res.status === 200) {
+      await fetchPurchases();
+      return { success: true };
+    } else {
+      return { error: res.data.error };
     }
-  };
+  } catch (err) {
+    return { error: err.response?.data?.error || "Server error" };
+  }
+};
+const handleStatusChange = async (purchaseId, newStatus) => {
+  try {
+    const res = await axios.post("/api/update-status", {
+      purchaseId,
+      status: newStatus,
+    });
+
+    if (res.status === 200) {
+      // تحديث القائمة بعد التغيير
+      await fetchPurchases();
+    } else {
+      alert("❌ Error updating status");
+    }
+  } catch (err) {
+    alert("❌ " + (err.response?.data?.error || "Server error"));
+  }
+};
 
   return (
     <PurchaseContext.Provider
@@ -46,6 +62,7 @@ export function PurchaseProvider({ children }) {
         fetchPurchases,
         currency,
         setCurrency,
+        handleStatusChange,
       }}
     >
       {children}

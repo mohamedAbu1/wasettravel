@@ -16,7 +16,8 @@ export default function TravelerInfo() {
       >
         Traveler Information
       </h3>
-      <p
+    <div className="flex flex-row p-2.5 gap-4.5">
+        <p
         className={`mb-1 flex items-center gap-2 capitalize ${
           themeName === "dark" ? "text-white" : "text-[#11111186]"
         }`}
@@ -40,6 +41,7 @@ export default function TravelerInfo() {
         />{" "}
         {user?.email}
       </p>
+    </div>
     </div>
   );
 }

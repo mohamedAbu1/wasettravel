@@ -55,7 +55,8 @@
     "OneDayTrips": "Tagesausflüge",
     "SelectCategory": "Kategorie auswählen",
     "p6": "Noch keine 5-Sterne-Bewertungen",
-    "h6": "Was unsere Reisenden sagen"
+    "h6": "Was unsere Reisenden sagen",
+    "Tripdetails": "Reisedetails"
   },
   "trips": {
     "Searchtrips": "Reisen suchen...",
@@ -68,7 +69,8 @@
     "PriceRange": "Preisspanne",
     "MostPopular": "Am beliebtesten",
     "reviews": "Bewertungen",
-    "btn": "Jetzt buchen"
+    "btn": "Jetzt buchen",
+    "Tripdetails": "Reisedetails"
   },
   "about": {
     "AboutWasetTravel": "Über WasetTravel",

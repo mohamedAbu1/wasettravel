@@ -55,7 +55,8 @@
     "OneDayTrips": "Gite di un giorno",
     "SelectCategory": "SelezionaCategoria",
     "p6": "Nessuna recensione a 5 stelle ancora",
-    "h6": "Cosa dicono i nostri viaggiatori"
+    "h6": "Cosa dicono i nostri viaggiatori",
+    "Tripdetails": "Dettagli del viaggio"
   },
   "trips": {
     "Searchtrips": "Cerca viaggi...",
@@ -68,7 +69,8 @@
     "PriceRange": "Fascia di prezzo",
     "MostPopular": "I più popolari",
     "reviews": "Recensioni",
-    "btn": "Prenota ora"
+    "btn": "Prenota ora",
+    "Tripdetails": "Dettagli del viaggio"
   },
   "about": {
     "AboutWasetTravel": "Informazioni su WasetTravel",

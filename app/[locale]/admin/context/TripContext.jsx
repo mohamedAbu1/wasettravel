@@ -96,7 +96,8 @@ export function TripProvider({ children }) {
 
   // ✅ رفع ملف إلى Supabase Storage
   const uploadFileToSupabase = async (file, folder = "gallery") => {
-    const fileName = `${folder}_${Date.now()}_${file.name}`;
+const safeName = file.name.replace(/\s+/g, "_");
+const fileName = `${folder}_${Date.now()}_${safeName}`;
     const { error } = await supabase.storage
       .from("trips-bucket")
       .upload(fileName, file, { contentType: file.type });

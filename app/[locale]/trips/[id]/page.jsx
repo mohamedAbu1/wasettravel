@@ -9,7 +9,6 @@ import Header from "@/components/header/Header";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import LoginModal from "@/components/home/components/LoginModal";
 import SignUpButton from "@/components/home/components/SignUpButton";
-// الكومبوننتات الجديدة
 import TripHeader from "./components/TripHeader";
 import TripCities from "./components/TripCities";
 import TripCategories from "./components/TripCategories";
@@ -20,14 +19,18 @@ import TripReviews from "./components/TripReviews";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
 import PurchaseButton from "./components/PurchaseButton";
+import CancelButton from "./components/CancelButton"; // ✅ زر جديد للإلغاء
 import TripVideo from "./components/TripVideo";
+import { usePurchase } from "@/context/PurchaseContext"; // ✅ جلب الحجوزات
+import AccessibilityInfo from "./components/components/AccessibilityInfo";
 
 export default function TripPage({ params }) {
   const { id } = use(params);
   const { trips, fetchTrips, getTripById, loadingTrips } = useTrip();
   const { lang } = useLanguage();
   const { themeName } = useTheme();
-  const { user } = useAuth(); // ✅ جلب المستخدم الحالي
+  const { user } = useAuth();
+  const { purchases } = usePurchase(); // ✅ جلب الحجوزات
 
   useEffect(() => {
     if (!trips.length) {
@@ -39,6 +42,11 @@ export default function TripPage({ params }) {
   if (!trip) {
     return <p>Trip not found</p>;
   }
+
+// تحقق إذا كان المستخدم اشترى الرحلة ولم يقم بإلغائها
+const hasActivePurchase = purchases.some(
+  (p) => p.trip_id === trip.id && p.user_id === user.id && p.status !== "Cancelled"
+);
 
   return (
     <main
@@ -58,35 +66,36 @@ export default function TripPage({ params }) {
       >
         <EgyptianBackground />
 
-        {/* العنوان ياخد العرض بالكامل */}
         <div className="col-span-1 lg:col-span-3">
           <TripHeader trip={trip} lang={lang} />
         </div>
-        {/* المدن + الكاتجريز في عمود واحد */}
+
         <div className="col-span-3 flex flex-row gap-8">
           <div className="col-span-3 ">
             <TripInfo trip={trip} lang={lang} />
             <TripCities trip={trip} lang={lang} />
             <TripCategories trip={trip} lang={lang} />
           </div>
-          <TripVideo trip={trip} lang={lang} />{" "}
+          <TripVideo trip={trip} lang={lang} />
+              <AccessibilityInfo theme="dark" />
         </div>
 
-        {/* الإنكلودز في العمود الثاني */}
         <div className="col-span-3 flex flex-row gap-8">
           <TripIncludes trip={trip} lang={lang} />
-          {/* ✅ الفيديو بجانب الإنكلود */}
         </div>
-        {/* الجاليري */}
 
-        {/* الـ Itinerary في الصف الأخير بعرض كامل */}
         <div className="col-span-1 lg:col-span-3">
           <TripItinerary trip={trip} lang={lang} />
         </div>
+
         <div className="col-span-1 lg:col-span-3">
-          {" "}
           <TripReviews trip={trip} lang={lang} />
-          {user && <PurchaseButton trip={trip} />} {/* زر الشراء */}
+          {user &&
+            (hasActivePurchase ? (
+              <CancelButton trip={trip} /> // ✅ زر إلغاء الحجز
+            ) : (
+              <PurchaseButton trip={trip} /> // ✅ زر شراء الرحلة
+            ))}
         </div>
       </div>
 

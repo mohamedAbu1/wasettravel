@@ -45,7 +45,7 @@ export default function TripPage({ params }) {
 
 // تحقق إذا كان المستخدم اشترى الرحلة ولم يقم بإلغائها
 const hasActivePurchase = purchases.some(
-  (p) => p.trip_id === trip.id && p.user_id === user.id && p.status !== "Cancelled"
+  (p) => p.trip_id === trip.id && p.user_id === user?.id && p.status !== "Cancelled"
 );
 
   return (
@@ -71,7 +71,7 @@ const hasActivePurchase = purchases.some(
         </div>
 
         <div className="col-span-3 flex flex-row gap-8">
-          <div className="col-span-3 ">
+          <div className="col-span-3 flex flex-col gap-2.5">
             <TripInfo trip={trip} lang={lang} />
             <TripCities trip={trip} lang={lang} />
             <TripCategories trip={trip} lang={lang} />

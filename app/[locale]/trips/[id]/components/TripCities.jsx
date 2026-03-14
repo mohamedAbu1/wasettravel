@@ -36,7 +36,7 @@ export default function TripCities({ trip, lang }) {
       transition={{ duration: 0.8, ease: "easeOut" }}
       className={`p-6 rounded-xl shadow-lg transition ${
         themeName === "dark"
-          ? "bg-black/40 text-gold"
+          ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
           : "bg-white/90 text-[#3a2c0a]"
       }`}
     >

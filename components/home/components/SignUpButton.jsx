@@ -80,11 +80,10 @@ export default function SignUpModal() {
   try {
     await register(email, password, fullName, gender);
 
-    toast.success("✅ Account created successfully!");
+    toast.success("✅ A confirmation message has been sent to your account.");
 
     // ✅ أغلق نافذة التسجيل وافتح نافذة تسجيل الدخول
     handleClose();
-    handleLoginOpen();
 
   } catch (err) {
     toast.error("❌ Error: " + err.message);

@@ -22,16 +22,16 @@ export default function DashboardPage() {
    const { user } = useAuth();
   const router = useRouter();
   // ✅ تحقق من المستخدم وصلاحيته داخل useEffect
-  useEffect(() => {
-    if (!user || user.user_metadata?.role !== "admin") {
-      router.replace("/"); // رجعه للصفحة الرئيسية
-    }
-  }, [user, router]);
+  // useEffect(() => {
+  //   if (!user || user?.user_metadata?.role !== "ADMIN") {
+  //     router.replace("/"); // رجعه للصفحة الرئيسية
+  //   }
+  // }, [user, router]);
 
-  // لو المستخدم مش Admin، ما تعرضش أي محتوى
-  if (!user || user.user_metadata?.role !== "admin") {
-    return null;
-  }
+  // // لو المستخدم مش Admin، ما تعرضش أي محتوى
+  // if (!user || user?.user_metadata?.role !== "ADMIN") {
+  //   return null;
+  // }
   return (
     <main className={`relative flex min-h-screen ${theme.background} ${theme.text} overflow-hidden`}>
       <EgyptianBackground />

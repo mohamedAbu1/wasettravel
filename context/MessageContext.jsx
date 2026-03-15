@@ -18,37 +18,53 @@ export function MessageProvider({ children }) {
     setMessages(Array.isArray(data) ? data : []);
   };
 
-  // ✅ إرسال رسالة جديدة (لا نضيفها يدويًا هنا، ننتظر Realtime)
-  const sendMessage = async ({
+const sendMessage = async ({ user_id, content, sender_type, status = "sent" }) => {
+  const payload = {
     user_id,
+    user_name: user?.user_metadata?.name || "Unknown User",
+    user_image: user?.user_metadata?.avatar || "/default-avatar.png",
     content,
     sender_type,
-    status = "sent",
-  }) => {
-    const payload = {
-      user_id,
-      user_name: user?.user_metadata?.name || "Unknown User",
-      user_image: user?.user_metadata?.avatar || "/default-avatar.png",
-      content,
-      sender_type,
-      status,
-    };
-
-
-    const res = await fetch("/api/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-
-    if (data.error) {
-      console.error("❌ Error sending message:", data.error);
-    }
-
-    return data;
+    status,
   };
+
+  // أضف الرسالة مباشرة للـ state علشان تظهر فورًا
+  const tempMessage = {
+    ...payload,
+    id: Date.now(), // ID مؤقت لتمييز الرسالة
+    status: "pending", // حالة مؤقتة
+  };
+  setMessages((prev) => [...prev, tempMessage]);
+
+  // أرسل الرسالة للسيرفر
+  const res = await fetch("/api/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json();
+
+  if (data.error) {
+    console.error("❌ Error sending message:", data.error);
+    // تحديث الحالة إلى فشل
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === tempMessage.id ? { ...msg, status: "error" } : msg
+      )
+    );
+  } else {
+    // تحديث الرسالة المؤقتة بالـ ID الحقيقي من السيرفر
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === tempMessage.id ? { ...msg, ...data, status: "sent" } : msg
+      )
+    );
+  }
+
+  return data;
+};
+
 
   // ✅ تحديث حالة الرسالة إلى "seen"
   const markMessageSeen = async (messageId) => {

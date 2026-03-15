@@ -103,28 +103,33 @@ export function AuthProvider({ children }) {
 
       if (!data.user) throw new Error(data.error || "Registration failed");
 
-      toast.success("✅ Account created successfully!");
       return data.user; // فقط يرجع بيانات المستخدم الجديد بدون تسجيل دخول
     } catch (err) {
       setError(err.message);
-      toast.error("❌ Error: " + err.message);
+      // toast.error("❌ Error: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
- const login = async (email, password, onSuccess) => {
+const login = async (email, password, onSuccess) => {
   setLoading(true);
   setError(null);
   try {
-    // ✅ استدعاء الـ API بدل Supabase مباشرة
     const res = await axios.post("/api/auth/login", { email, password }, { withCredentials: true });
     const data = res.data;
 
     if (res.status !== 200) throw new Error(data.error || "Login failed");
 
-    // ✅ المستخدم من الاستجابة
     const user = data.user;
+    const session = data.session;
+
+    // ✅ تهيئة الجلسة داخل Supabase
+    await supabase.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+    });
+
     setUser(user);
     setIsLoggedIn(true);
 

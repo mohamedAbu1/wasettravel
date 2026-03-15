@@ -26,7 +26,7 @@ export default function ConfirmButton({
     setLoading(true);
 
     const bookingData = {
-      tripId: trip.id, // ✅ مهم
+      tripId: trip, // ✅ مهم
       numPersons: groupSize,
       hasChildren,
       numChildren: childrenCount,
@@ -40,7 +40,7 @@ export default function ConfirmButton({
       status: "Pending",
       platform: "web",
     };
-
+console.log(bookingData)
     const result = await purchaseTrip(bookingData);
 
     if (result.success) {

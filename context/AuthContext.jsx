@@ -89,28 +89,40 @@ export function AuthProvider({ children }) {
     checkUser();
   }, []);
 
-  const register = async (email, password, name, gender) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await axios.post("/api/auth/register", {
-        name,
-        email,
-        password,
-        gender,
-      });
-      const data = res.data;
 
-      if (!data.user) throw new Error(data.error || "Registration failed");
+const register = async (email, password, name, gender) => {
+  setLoading(true);
+  setError(null);
 
-      return data.user; // فقط يرجع بيانات المستخدم الجديد بدون تسجيل دخول
-    } catch (err) {
-      setError(err.message);
-      // toast.error("❌ Error: " + err.message);
-    } finally {
-      setLoading(false);
-    }
+  // ✅ تحويل الـ gender إلى الإنجليزية قبل الإرسال
+  const normalizeGender = (g) => {
+    if (!g) return "other";
+    const val = g.toLowerCase();
+    if (["male", "hombre","männlich", "男","uomo","homme"].includes(g)) return "male";
+  if (["female", "mujer","weiblich","女","donna","femme"].includes(g)) return "female";
+    return "other";
   };
+
+  try {
+    const res = await axios.post("/api/auth/register", {
+      name,
+      email,
+      password,
+      gender: normalizeGender(gender),
+    });
+
+    const data = res.data;
+    if (!data.user) throw new Error(data.error || "Registration failed");
+
+    toast.success("✅ Account created successfully!");
+    return data.user;
+  } catch (err) {
+    setError(err.message);
+    toast.error("❌ Error: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
 const login = async (email, password, onSuccess) => {
   setLoading(true);

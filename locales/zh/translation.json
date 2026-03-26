@@ -58,7 +58,8 @@
     "SelectCategory": "选择类别",
     "p6": "还没有五星评价",
     "h6": "我们的旅客怎么说",
-    "Tripdetails": "行程详情"
+    "Tripdetails": "行程详情",
+    "reviews": "评论"
   },
   "trips": {
     "Searchtrips": "搜索旅行...",
@@ -120,6 +121,7 @@
     "Contact": "联系我们"
   },
   "tripsId": {
-    "submitReview": "提交评论"
+    "submitReview": "提交评价",
+    "average": "平均"
   }
 }

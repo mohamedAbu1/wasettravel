@@ -10,7 +10,8 @@ export function CitiesCategoriesProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const { i18n } = useTranslation(); // اللغة الحالية للموقع
-  const language = i18n.language || "en"; // افتراضي إنجليزي لو مش محدد
+  const getLangKey = (lang) => lang.split("-")[0];
+const normalizedLang = getLangKey(i18n.language);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,17 +35,16 @@ export function CitiesCategoriesProvider({ children }) {
 
     fetchData();
   }, []);
-
   // فلترة أسماء المدن حسب لغة الموقع الحالي
   const localizedCities = cities.map(city => ({
     ...city,
-    name: city.translations?.[language] || city.translations?.["en"] || city.name,
+    name: city.translations?.[normalizedLang] || city.translations?.["en"] || city.name,
   }));
 
   // فلترة الكاتجري حسب لغة الموقع الحالي
   const localizedCategories = categories.map(cat => ({
     ...cat,
-    name: cat.name?.[language] || cat.name?.["en"] || cat.name,
+    name: cat.name?.[normalizedLang] || cat.name?.["en"] || cat.name,
   }));
 
   return (

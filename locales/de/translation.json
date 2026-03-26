@@ -56,7 +56,9 @@
     "SelectCategory": "Kategorie auswählen",
     "p6": "Noch keine 5-Sterne-Bewertungen",
     "h6": "Was unsere Reisenden sagen",
-    "Tripdetails": "Reisedetails"
+    "Tripdetails": "Reisedetails",
+        "reviews": "Bewertungen"
+
   },
   "trips": {
     "Searchtrips": "Reisen suchen...",
@@ -115,5 +117,9 @@
     "AboutUs": "Über uns",
     "Tours": "Touren",
     "Contact": "Kontakt"
+  },
+    "tripsId": {
+    "submitReview": "Bewertung abgeben",
+  "Average": "Durchschnitt"
   }
 }

@@ -1,13 +1,13 @@
 "use client";
 import { FaStar } from "react-icons/fa";
 
-export default function ReviewsHeader({ title, averageRating, reviewsCount, themeName }) {
+export default function ReviewsHeader({ title, averageRating, reviewsCount, themeName,t }) {
   return (
     <div className="flex items-center justify-between mb-6 border-b pb-2">
       <h2 className="text-2xl font-bold flex items-center gap-2">{title}</h2>
       {reviewsCount > 0 && (
         <div className="flex items-center gap-2">
-          <span className="font-semibold">Average</span>
+          <span className="font-semibold">{t("average")}</span>
           <div className="flex">
             {[...Array(5)].map((_, i) => (
               <FaStar

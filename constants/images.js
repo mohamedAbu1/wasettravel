@@ -355,8 +355,6 @@ export const sites = [
   },
 ];
 
-
-
 const translations = {
   en: {
     title: "Inclusive Travel for Everyone",
@@ -366,14 +364,15 @@ const translations = {
     support: "Support",
     care: "Care",
   },
-  ar: {
-    title: "رحلات شاملة للجميع",
+  zh: {
+    title: "适合所有人的旅行",
     description:
-      "تم تصميم رحلاتنا بعناية لتشمل وتدعم أصحاب الهمم، مع ضمان الراحة وسهولة الوصول وتجارب لا تُنسى.",
-    accessible: "سهولة الوصول",
-    support: "دعم",
-    care: "رعاية",
+      "我们的旅行经过精心设计，旨在包容和支持残障人士，确保舒适、便利和难忘的体验。",
+    accessible: "无障碍",
+    support: "支持",
+    care: "关怀",
   },
+
   fr: {
     title: "Voyages inclusifs pour tous",
     description:

@@ -58,7 +58,9 @@
     "SelectCategory": "SelectCategory",
     "p6": "No 5-star reviews yet",
     "h6": "What Our Travelers Say",
-    "Tripdetails": "Trip Details"
+    "Tripdetails": "Trip Details",
+    "reviews": "reviews"
+
   },
   "trips": {
     "Searchtrips": "Search trips...",
@@ -119,6 +121,7 @@
     "btn": "Send Message"
   },
   "tripsId": {
-    "submitReview": "Submit Review"
+    "submitReview": "Submit Review",
+    "average":"Average"
   }
 }

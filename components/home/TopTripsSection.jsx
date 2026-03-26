@@ -12,9 +12,10 @@ import { useAuth } from "@/context/AuthContext";
 
 const TopTripsSection = () => {
   const { themeName } = useTheme();
-  const { t } = useTranslation("home");
+  const { t ,i18n} = useTranslation("home");
   const router = useRouter();
   const { user } = useAuth();
+const normalizedLang = i18n.language.split("-")[0];
 
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const { currency, purchases } = usePurchase(); // ✅ جلب العملة والحجوزات
@@ -132,7 +133,7 @@ const TopTripsSection = () => {
 
               <div className="absolute inset-0 flex flex-col justify-end p-6">
                 <h3 className="text-xl font-bold tracking-wide mb-1 text-white">
-                  {trip.title?.en || "Untitled Trip"}
+                  {trip.title?.[normalizedLang] || "Untitled Trip"}
                 </h3>
 
                 <div className="flex items-center gap-2 mb-2">
@@ -141,7 +142,7 @@ const TopTripsSection = () => {
                   </span>
                   <span className="text-sm opacity-80 text-white">
                     ({Array.isArray(trip.reviews) ? trip.reviews.length : 0}{" "}
-                    reviews)
+                    {t("reviews")})
                   </span>
                 </div>
 

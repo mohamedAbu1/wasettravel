@@ -18,7 +18,7 @@ export default function TripReviews({ trip, lang }) {
     deleteReview,
     updateReview,
     likes,
-    addLike,
+    addLike,                           
     fetchReviewsByTrip,
     removeLike,
   } = useReviews();
@@ -137,6 +137,7 @@ export default function TripReviews({ trip, lang }) {
       {/* العنوان + المتوسط */}
       <ReviewsHeader
         title={tr.title}
+        t={t}
         averageRating={averageRating}
         reviewsCount={tripReviews.length}
         themeName={themeName}

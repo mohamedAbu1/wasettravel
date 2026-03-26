@@ -43,10 +43,13 @@ export default function TripPage({ params }) {
     return <p>Trip not found</p>;
   }
 
-// تحقق إذا كان المستخدم اشترى الرحلة ولم يقم بإلغائها
-const hasActivePurchase = purchases.some(
-  (p) => p.trip_id === trip.id && p.user_id === user?.id && p.status !== "Cancelled"
-);
+  // تحقق إذا كان المستخدم اشترى الرحلة ولم يقم بإلغائها
+  const hasActivePurchase = purchases.some(
+    (p) =>
+      p.trip_id === trip.id &&
+      p.user_id === user?.id &&
+      p.status !== "Cancelled",
+  );
 
   return (
     <main
@@ -77,7 +80,7 @@ const hasActivePurchase = purchases.some(
             <TripCategories trip={trip} lang={lang} />
           </div>
           <TripVideo trip={trip} lang={lang} />
-              <AccessibilityInfo theme="dark" />
+          <AccessibilityInfo theme="dark" />
         </div>
 
         <div className="col-span-3 flex flex-row gap-8">

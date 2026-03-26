@@ -12,7 +12,7 @@ import { usePurchase } from "@/context/PurchaseContext";
 export default function TripsFilter() {
   const { cities: allCities, categories: allCategories, loading } = useCitiesCategories();
   const { i18n } = useTranslation();
-  const currentLang = i18n.language || "en";
+const normalizedLang = i18n.language.split("-")[0];
   const { t } = useTranslation("trips");
   const { themeName } = useTheme();
 
@@ -104,7 +104,7 @@ export default function TripsFilter() {
           <div className="grid grid-cols-2 gap-2 ml-6">
             {allCities.map((cityObj) => {
               const cityName =
-                cityObj.name?.[currentLang] ||
+                cityObj.name?.[normalizedLang] ||
                 cityObj.name?.["en"] ||
                 cityObj.name;
               return (
@@ -136,7 +136,7 @@ export default function TripsFilter() {
           <div className="grid grid-cols-2 gap-2 ml-6">
             {allCategories.map((cat) => {
               const categoryName =
-                cat.name?.[currentLang] || cat.name?.["en"] || cat.name;
+                cat.name?.[normalizedLang] || cat.name?.["en"] || cat.name;
               return (
                 <motion.label
                   variants={fadeUp}

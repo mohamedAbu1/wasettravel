@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -11,23 +11,39 @@ import { useRouter } from "next/navigation";
 // دالة لتشفير الكويري
 const encodeData = (obj) => btoa(JSON.stringify(obj));
 
-function CityCard({ city, themeName, theme, language ,t}) {
+function CityCard({ city, themeName, theme, language, t }) {
   const router = useRouter();
   const cityName =
-    city.name?.[language] || city.name?.["en"] || city.name || "";
+    city?.name?.[language] || city?.name?.["en"] || city?.name || "";
+
+  const cardRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  // ✅ Lazy Loading عبر Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setVisible(true);
+      },
+      { threshold: 0.2 }
+    );
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const handleExplore = () => {
     const queryObj = {
-      city: [cityName],   // ✅ المدينة المختارة
-      category: "all",    // ✅ جميع الكاتجري
-      price: "Economy",   // ✅ السعر Economy
-      popular: false,     // ✅ ليس الأكثر طلباً
+      city: [cityName],
+      category: "all",
+      price: "Economy",
+      popular: false,
     };
     const encoded = encodeData(queryObj);
     router.push(`/trips?data=${encoded}`);
   };
 
   return (
-    <div className="min-w-[250px] p-4">
+    <div ref={cardRef} className="min-w-[250px] p-4">
       <div
         className={`
           relative h-72 rounded-2xl overflow-hidden group cursor-pointer
@@ -36,12 +52,16 @@ function CityCard({ city, themeName, theme, language ,t}) {
           hover:scale-[1.05] hover:shadow-2xl hover:-rotate-1
         `}
       >
-        <Image
-          src={city.images?.[0] || "/fallback.jpg"}
-          alt={cityName || "City image"}
-          fill
-          className="object-cover rounded-lg"
-        />
+        {visible && (
+          <Image
+            src={city?.images?.[0] || "/fallback.jpg"}
+            alt={cityName || "City image"}
+            fill
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            className="object-cover rounded-lg"
+          />
+        )}
         <div
           className={`
             absolute inset-0 
@@ -53,7 +73,7 @@ function CityCard({ city, themeName, theme, language ,t}) {
             {cityName}
           </p>
           <button
-            onClick={handleExplore} // ✅ عند الضغط يتم التحويل
+            onClick={handleExplore}
             className={`
               opacity-0 group-hover:opacity-100 px-4 py-2 rounded-lg text-sm font-medium transition text-white cursor-pointer
               ${
@@ -74,8 +94,9 @@ function CityCard({ city, themeName, theme, language ,t}) {
 const CitiesSection = () => {
   const { theme, themeName } = useTheme();
   const { t, i18n } = useTranslation("home");
-  const { cities, loading } = useCitiesCategories();
-const normalizedLang = i18n.language.split("-")[0];
+  const { cities = [], loading } = useCitiesCategories();
+  const normalizedLang = i18n.language.split("-")[0];
+
   if (loading) {
     return <p className="text-center text-gray-500">Loading cities...</p>;
   }

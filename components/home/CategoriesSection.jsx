@@ -11,6 +11,12 @@ import { useRouter } from "next/navigation";
 // دالة لتشفير الكويري
 const encodeData = (obj) => btoa(JSON.stringify(obj));
 
+// ✅ دالة تحسين الصور
+const optimize = (url) => {
+  if (!url) return "/fallback.jpg";
+  return `${url}?width=800&quality=70&format=webp`;
+};
+
 function CategoryCard({ cat, themeName, language }) {
   const [imgIndex, setImgIndex] = useState(0);
   const router = useRouter();
@@ -77,7 +83,7 @@ function CategoryCard({ cat, themeName, language }) {
             className="absolute inset-0"
           >
             <Image
-              src={cat?.images?.[imgIndex] || "/fallback.jpg"}
+              src={optimize(cat?.images?.[imgIndex])}
               alt={displayName || "Category image"}
               fill
               loading="lazy"

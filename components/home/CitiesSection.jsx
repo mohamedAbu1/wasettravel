@@ -11,6 +11,12 @@ import { useRouter } from "next/navigation";
 // دالة لتشفير الكويري
 const encodeData = (obj) => btoa(JSON.stringify(obj));
 
+// ✅ دالة تحسين الصور من Supabase
+const optimize = (url) => {
+  if (!url) return "/fallback.jpg";
+  return `${url}?width=800&quality=70&format=webp`;
+};
+
 function CityCard({ city, themeName, theme, language, t }) {
   const router = useRouter();
   const cityName =
@@ -54,7 +60,7 @@ function CityCard({ city, themeName, theme, language, t }) {
       >
         {visible && (
           <Image
-            src={city?.images?.[0] || "/fallback.jpg"}
+            src={optimize(city?.images?.[0])}
             alt={cityName || "City image"}
             fill
             loading="lazy"

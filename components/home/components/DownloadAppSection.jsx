@@ -6,7 +6,7 @@ export default function DownloadAppSection() {
     const { t } = useTranslation("home");
   
   return (
-    <section className="w-full flex md:hidden flex-col items-center justify-center gap-6 py-12 backdrop-blur-[2px] rounded-xl shadow-lg">
+    <section className="w-full flex lg:hidden flex-col items-center justify-center gap-6 py-12 backdrop-blur-[2px] rounded-xl shadow-lg">
       {/* Title */}
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 tracking-wide">
         {t("DownloadOurAppNow")}

@@ -15,7 +15,7 @@ const SocialMediaIcons = () => {
       initial={{ x: 100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 1, delay: 0.5 }}
-      className="hidden absolute right-10 top-1/2 -translate-y-1/2 md:flex flex-col gap-6 z-30"
+      className="hidden absolute right-10 top-1/2 -translate-y-1/2 lg:flex flex-col gap-6 z-30"
     >
       {[
         { Icon: FaGooglePlay, link: "https://play.google.com" },

@@ -19,7 +19,6 @@ export default function RightBar({ scrolled }) {
   // ✅ حالة العملة
   const segments = pathname.split("/").filter(Boolean);
 
-
   const isHome =
     segments.length === 0 ||
     (segments.length === 1 &&
@@ -31,7 +30,7 @@ export default function RightBar({ scrolled }) {
       <ThemeToggle scrolled={scrolled} />
 
       {/* زر تسجيل الدخول/الخروج */}
-      <motion.div whileHover={{ scale: 1.1 }} className="hidden md:flex">
+      <motion.div whileHover={{ scale: 1.1 }} className="hidden lg:flex">
         <Button
           onClick={isLoggedIn ? logout : handleOpen}
           style={{
@@ -59,6 +58,8 @@ export default function RightBar({ scrolled }) {
           padding: "8px 16px",
           borderRadius: "12px",
           fontWeight: "600",
+          display: { xs: "none", lg: "flex" }, // يخفي الزر على الهواتف (xs) ويظهر من md فما فوق
+
           background: "linear-gradient(to right, #1f2937, #111827)",
           boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
 
@@ -80,6 +81,7 @@ export default function RightBar({ scrolled }) {
             background: "linear-gradient(to right, #374151, #1f2937)",
           },
         }}
+        className="hidden md:flex"
       >
         <MenuItem value="USD" sx={{ color: "#c9a34a" }}>
           USD $
@@ -91,7 +93,7 @@ export default function RightBar({ scrolled }) {
 
       {/* عرض المستخدم */}
       {isLoggedIn && user && (
-        <div className="flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           {" "}
           <img
             alt={`${user?.user_metadata?.name}` || "User Avatar"}

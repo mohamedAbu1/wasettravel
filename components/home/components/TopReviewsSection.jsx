@@ -72,12 +72,19 @@ export default function TopReviewsSection() {
 
             return (
               <motion.div
-                key={rev.id || idx}
+                 key={rev.id || idx}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className={`flex flex-col gap-6 p-8 mx-4 ${theme.card} ${theme.shadow} rounded-2xl min-h-[220px]`}
+                className="flex flex-col gap-6 p-8 mx-4 rounded-2xl min-h-[220px]"
+                style={{
+                  background: "rgba(255, 255, 255, 0.15)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+                }}
               >
                 {/* Header */}
                 <div className="flex items-center gap-4 border-b pb-3">

@@ -48,16 +48,25 @@ function CategoryCard({ cat, themeName, language }) {
       ? cat.name?.[language] || cat.name?.en || cat.name
       : cat.name;
 
-  const handleClick = () => {
-    const queryObj = {
-      city: "all",
-      category: [displayName],
-      price: "Economy",
-      popular: false,
-    };
-    const encoded = encodeData(queryObj);
-    router.push(`/trips?data=${encoded}`);
+const luxuryNames = [
+  "Luxusreisen",
+  "Luxury Tours",
+  "Tours de lujo",
+  "Voyages de luxe",
+  "Tour di lusso",
+  "豪华旅游"
+];
+
+const handleClick = () => {
+  const queryObj = {
+    city: "all",
+    category: [displayName],
+    price: luxuryNames.includes(displayName) ? "Luxury" : "Economy",
+    popular: false,
   };
+  const encoded = encodeData(queryObj);
+  router.push(`/trips?data=${encoded}`);
+};
 
   return (
     <div

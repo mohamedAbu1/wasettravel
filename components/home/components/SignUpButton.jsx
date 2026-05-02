@@ -105,7 +105,7 @@ export default function SignUpModal() {
           borderRadius: "24px",
           border: "1px solid rgba(201,163,74,0.3)",
           boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
-          overflow: "hidden",
+          overflow: "scroll",
         }}
       >
         {/* Header */}

@@ -115,7 +115,7 @@ export function DataProvider({ children }) {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
+      if (window.innerWidth < 1024) {
         setImages(mobileImages);
       } else {
         setImages(desktopImages);

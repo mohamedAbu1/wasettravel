@@ -39,7 +39,7 @@ const Content = () => {
   };
 
   return (
-    <div className="hidden md:flex flex-col items-center justify-center text-center px-6 z-30">
+    <div className="hidden lg:flex flex-col items-center justify-center text-center px-6 z-30">
       <div className="w-[70%]">
         {/* Company Name */}
         <h1
@@ -50,7 +50,7 @@ const Content = () => {
         </h1>
 
         <p
-          className={`text-xl md:text-2xl mt-6 leading-relaxed ${theme.subText} animate-slideUp`}
+          className={`text-xl lg:text-2xl mt-6 leading-relaxed ${theme.subText} animate-slideUp`}
         ></p>
 
         {/* Trip Filter Form */}

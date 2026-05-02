@@ -68,7 +68,7 @@ const CarBookingSection = () => {
         <div
           className={`absolute inset-0 bg-gradient-to-br ${
             themeName === "dark"
-              ? "from-black/70 via-transparent to-black/10"
+              ? "from-black/30 via-transparent to-black/10"
               : "from-[#fdf6e3]/80 via-transparent to-[#c9a34a]/20"
           }`}
         ></div>

@@ -76,9 +76,9 @@ export function QueryProvider({ children }) {
         if (!tripCategories.some((c) => queryState.category.includes(c))) return false;
       }
 
-      if (queryState.price === "Economy" && !(trip.price <= 900)) return false;
-      if (queryState.price === "Standard" && !(trip.price > 900 && trip.price <= 1500)) return false;
-      if (queryState.price === "Luxury" && !(trip.price > 1500)) return false;
+      if (queryState.price === "Economy" && !(trip.price <= 199)) return false;
+      if (queryState.price === "Standard" && !(trip.price > 199 && trip.price <= 599)) return false;
+      if (queryState.price === "Luxury" && !(trip.price > 600)) return false;
 
       if (queryState.popular === true && !trip.isPopular) return false;
 

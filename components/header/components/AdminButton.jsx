@@ -22,6 +22,7 @@ const AdminButton = () => {
           variant="contained"
           onClick={goToAdmin}
           sx={{
+            display: { xs: "none", lg: "flex" }, // يخفي الزر على الهواتف (xs) ويظهر من md فما فوق
             fontWeight: "600",
             textTransform: "capitalize",
             borderRadius: "8px",

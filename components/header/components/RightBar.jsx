@@ -29,51 +29,6 @@ export default function RightBar({ scrolled }) {
       {/* Theme Toggle */}
       <ThemeToggle scrolled={scrolled} />
 
-      
-
-      {/* ✅ اختيار العملة */}
-      <Select
-        value={currency}
-        onChange={(e) => setCurrency(e.target.value)}
-        size="small"
-        IconComponent={() => null}
-        sx={{
-          padding: "8px 16px",
-          borderRadius: "12px",
-          fontWeight: "600",
-          display: { xs: "none", lg: "flex" }, // يخفي الزر على الهواتف (xs) ويظهر من md فما فوق
-
-          background: "linear-gradient(to right, #1f2937, #111827)",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.5)",
-
-          // ✅ النص داخل الـ Select
-          "& .MuiSelect-select": {
-            color: "#f9fafb", // لون النص الأساسي
-          },
-
-          // ✅ السهم
-          "& .MuiSelect-icon": {
-            color: "#999",
-          },
-
-          "& .MuiOutlinedInput-notchedOutline": {
-            border: "none",
-          },
-
-          "&:hover": {
-            background: "linear-gradient(to right, #374151, #1f2937)",
-          },
-        }}
-        className="hidden md:flex"
-      >
-        <MenuItem value="USD" sx={{ color: "#c9a34a" }}>
-          USD $
-        </MenuItem>
-        <MenuItem value="EUR" sx={{ color: "#e6e6e6" }}>
-          EUR €
-        </MenuItem>
-      </Select>
-
       {/* عرض المستخدم */}
       {isLoggedIn && user && (
         <div className="hidden lg:flex items-center gap-2">

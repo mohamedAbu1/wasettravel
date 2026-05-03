@@ -18,6 +18,8 @@ import { useTrip } from "@/context/TripContext";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { useQueryFilters } from "@/context/QueryContext";
 import { useRouter } from "next/navigation";
+import CurrencySelector from "../../../components/layout/CurrencySelector";
+import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 
 export default function TripsPage() {
   const { trips, fetchTrips, loadingTrips } = useTrip();
@@ -202,7 +204,8 @@ export default function TripsPage() {
         <SignUpButton />
         <LoginModal />
         {user && <ChatWidget />}
-      
+        {user && <AdminDashboardButton />}
+        <CurrencySelector />
       </main>
     </>
   );

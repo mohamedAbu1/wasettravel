@@ -15,12 +15,14 @@ import { useAuth } from "@/context/AuthContext"; // ✅ استدعاء الـ Au
 import Head from "next/head";
 import { useLanguage } from "@/context/LanguageContext";
 import { homeMetadata } from "@/lib/metadata/home";
+import CurrencySelector from "@/components/layout/CurrencySelector";
+import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 // import { useQueryFilters } from "@/context/QueryContext";
 export default function Home() {
   const { user } = useAuth(); // ✅ جلب المستخدم الحالي
   const { lang } = useLanguage();
   const meta = homeMetadata[lang] || homeMetadata.en;
-    console.log(user?.user_metadata?.role)
+  console.log(user?.user_metadata?.role);
 
   return (
     <>
@@ -31,14 +33,8 @@ export default function Home() {
       </Head>
       <main
         className={`
-        w-full
-        flex
-        flex-col
-        items-center
-        justify-center
-        min-h-screen font-sans
-        bg-white
-        transition-colors duration-300
+        w-full flex flex-col items-center justify-center
+        min-h-screen font-sans bg-white transition-colors duration-300
         overflow-hidden
       `}
       >
@@ -69,6 +65,8 @@ export default function Home() {
 
         {/* نافذة الدردشة تظهر فقط لو المستخدم مسجل دخول */}
         {user && <ChatWidget />}
+        {user && <AdminDashboardButton />}
+        <CurrencySelector />
       </main>
     </>
   );

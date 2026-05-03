@@ -18,6 +18,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { aboutMetadata } from "@/lib/metadata/about";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
+import CurrencySelector from "@/components/layout/CurrencySelector";
 
 export default function AboutPage() {
   const { theme } = useTheme();
@@ -84,6 +86,8 @@ export default function AboutPage() {
         <SignUpButton />
         <LoginModal />
         {user && <ChatWidget />}
+        {user && <AdminDashboardButton />}
+        <CurrencySelector />
       </main>
     </>
   );

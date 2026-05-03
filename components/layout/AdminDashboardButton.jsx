@@ -4,13 +4,15 @@ import { FaTachometerAlt } from "react-icons/fa"; // أيقونة الداش ب�
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function AdminDashboardButton() {
   const { user } = useAuth();
   const router = useRouter();
-
+  const { theme } = useTheme();
+  console.log("Role:", user?.user_metadata?.role);
   // ✅ تحقق من أن المستخدم أدمن
-  const isAdmin = user?.user_metadata?.role === "ADMIN";
+  const isAdmin = user?.user_metadata?.role?.includes("ADMIN");
 
   const goToDashboard = () => {
     router.push("/admin"); // المسار الخاص بلوحة التحكم
@@ -24,10 +26,9 @@ export default function AdminDashboardButton() {
       onClick={goToDashboard}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold"
+      className={`fixed bottom-8 right-6 p-4 rounded-full shadow-lg flex items-center justify-center ${theme.buttonPrimary}`}
     >
       <FaTachometerAlt size={20} />
-      <span>Dashboard</span>
     </motion.button>
   );
 }

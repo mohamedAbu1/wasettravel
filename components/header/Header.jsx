@@ -7,11 +7,13 @@ import NavBar from "./components/NavBar";
 import RightBar from "./components/RightBar";
 import { Button } from "@mui/material";
 import { useAuth } from "@/context/AuthContext";
+import { FaSignOutAlt, FaUserPlus } from "react-icons/fa";
+import AdminDashboardButton from "../layout/AdminDashboardButton";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { theme } = useTheme();
-  const { isLoggedIn, logout, handleOpen } = useAuth();
+  const { user, isLoggedIn, logout, handleOpen } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -40,18 +42,26 @@ export default function Header() {
             onClick={isLoggedIn ? logout : handleOpen}
             style={{
               padding: "12px 24px",
-              background: "linear-gradient(to right, #ca8a04, #eab308)",
+              background: "linear-gradient(to right, #c9a34a, #eab308)",
               color: "#fff",
               fontWeight: "600",
               letterSpacing: "0.05em",
               borderRadius: "0.5rem",
               boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
               transition: "all 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
             }}
           >
-            {isLoggedIn ? t("Logout") : t("SignUp")}
+            {isLoggedIn ? (
+              <FaSignOutAlt size={20} /> // أيقونة خروج
+            ) : (
+              <FaUserPlus size={20} /> // أيقونة تسجيل
+            )}
           </Button>
         </motion.div>
+          {user && ( <AdminDashboardButton /> )}
       </div>
     </motion.header>
   );

@@ -25,6 +25,7 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
 
   if (loading)
     return <p className="text-center text-gray-500">{t("Loading")}</p>;
+
   // ✅ أسعار بالدولار كـ base
   const rangesUSD = [
     { label: "0 - 199", value: "Economy" },
@@ -129,18 +130,19 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
                   key={cat.id ?? categoryName}
                   className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
                 >
-                  <input
-                    type="checkbox"
-                    className="accent-[#c9a34a] cursor-pointer"
-                    checked={
-                      category === "all"
-                        ? true
-                        : Array.isArray(category)
-                          ? category.includes(categoryName)
-                          : category === categoryName
-                    }
-                    onChange={() => updateValue("category", categoryName)}
-                  />
+                <input
+  type="checkbox"
+  className="accent-[#c9a34a] cursor-pointer"
+  checked={
+    category === "all"
+      ? true
+      : Array.isArray(category)
+        ? category.includes(categoryName)
+        : category === categoryName
+  }
+  onChange={() => updateValue("category", categoryName)}
+/>
+
 
                   {categoryName}
                 </label>

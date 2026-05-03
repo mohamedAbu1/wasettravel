@@ -29,24 +29,7 @@ export default function RightBar({ scrolled }) {
       {/* Theme Toggle */}
       <ThemeToggle scrolled={scrolled} />
 
-      {/* زر تسجيل الدخول/الخروج */}
-      <motion.div whileHover={{ scale: 1.1 }} className="hidden lg:flex">
-        <Button
-          onClick={isLoggedIn ? logout : handleOpen}
-          style={{
-            padding: "12px 24px",
-            background: "linear-gradient(to right, #ca8a04, #eab308)",
-            color: "#fff",
-            fontWeight: "600",
-            letterSpacing: "0.05em",
-            borderRadius: "0.5rem",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-            transition: "all 0.3s ease",
-          }}
-        >
-          {isLoggedIn ? t("Logout") : t("SignUp")}
-        </Button>
-      </motion.div>
+      
 
       {/* ✅ اختيار العملة */}
       <Select

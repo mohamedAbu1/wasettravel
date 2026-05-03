@@ -18,10 +18,15 @@ import { useTrip } from "@/context/TripContext";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { useQueryFilters } from "@/context/QueryContext";
 import { useRouter } from "next/navigation";
+import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 
 export default function TripsPage() {
   const { trips, fetchTrips, loadingTrips } = useTrip();
-  const { cities: allCities, categories: allCategories, loading } = useCitiesCategories();
+  const {
+    cities: allCities,
+    categories: allCategories,
+    loading,
+  } = useCitiesCategories();
   const { lang } = useLanguage();
   const meta = tripsMetadata[lang] || tripsMetadata.en;
   const { user } = useAuth();
@@ -48,25 +53,30 @@ export default function TripsPage() {
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
-  if (loadingTrips) return <p className="text-center text-gray-500">Loading trips...</p>;
+  if (loadingTrips)
+    return <p className="text-center text-gray-500">Loading trips...</p>;
 
   // ✅ فلترة الرحلات
   const filteredTrips = trips.filter((trip) => {
     const lowerSearch = search.trim().toLowerCase();
     const matchesSearch =
       !lowerSearch ||
-      (trip.title?.[lang] && trip.title[lang].toLowerCase().includes(lowerSearch));
+      (trip.title?.[lang] &&
+        trip.title[lang].toLowerCase().includes(lowerSearch));
 
     const tripCities =
-      trip.trip_cities?.map(
-        (c) => c.city?.name?.[lang] || c.city?.name?.en || c.city_name
-      ) || [];
+      trip.trip_cities
+        ?.map((c) => c?.cities?.name?.[lang] || c?.cities?.name?.en || "")
+        .filter((n) => n !== "") || [];
+
     const matchesCity =
       city === "all"
         ? true
         : Array.isArray(city)
-        ? tripCities.some((c) => city.includes(c))
-        : tripCities.includes(city);
+          ? tripCities.some((c) =>
+              city.map((x) => x.toLowerCase()).includes(c.toLowerCase()),
+            )
+          : tripCities.some((c) => c.toLowerCase() === city.toLowerCase());
 
     const tripCategories =
       trip.trip_categories?.map((cat) => {
@@ -77,8 +87,8 @@ export default function TripsPage() {
       category === "all"
         ? true
         : Array.isArray(category)
-        ? tripCategories.some((c) => category.includes(c))
-        : tripCategories.includes(category);
+          ? tripCategories.some((c) => category.includes(c))
+          : tripCategories.includes(category);
 
     const ranges = {
       Economy: { min: 0, max: 199 },
@@ -90,12 +100,18 @@ export default function TripsPage() {
       price === "All" || !price
         ? true
         : selectedRange
-        ? trip.price >= selectedRange.min && trip.price <= selectedRange.max
-        : true;
+          ? trip.price >= selectedRange.min && trip.price <= selectedRange.max
+          : true;
 
     const matchesPopular = popular ? trip.isPopular : true;
 
-    return matchesSearch && matchesCity && matchesCategory && matchesPrice && matchesPopular;
+    return (
+      matchesSearch &&
+      matchesCity &&
+      matchesCategory &&
+      matchesPrice &&
+      matchesPopular
+    );
   });
 
   const indexOfLastTrip = currentPage * tripsPerPage;
@@ -124,16 +140,16 @@ export default function TripsPage() {
             className="flex flex-col items-center justify-center h-[70vh] text-center gap-6"
           >
             <h2 className="text-4xl font-extrabold text-[#c9a34a] drop-shadow-lg">
-              🚫 This page is not available on phones.🚫 
+              🚫 This page is not available on phones.
             </h2>
             <p className="text-lg text-gray-600">
-             You should go to the homepage to follow your trips
+              You should go to the homepage to follow your trips
             </p>
             <button
               onClick={() => router.push("/")}
               className="px-6 py-3 rounded-lg bg-[#c9a34a] text-white font-bold shadow-lg hover:bg-yellow-600 transition"
             >
-            Return to home page
+              Return to home page
             </button>
           </motion.div>
         ) : (
@@ -164,7 +180,10 @@ export default function TripsPage() {
                   {Array.from({ length: totalPages }, (_, i) => (
                     <button
                       key={i}
-                      onClick={() => setCurrentPage(i + 1)}
+                      onClick={() => {
+                        setCurrentPage(i + 1);
+                        window.scrollTo({ top: 30, behavior: "smooth" }); // ✅ يرجع الاسكرول عند 30
+                      }}
                       className={`px-3 py-1 rounded-lg font-bold cursor-pointer transition ${
                         currentPage === i + 1
                           ? "bg-[#c9a34a] text-white"
@@ -183,7 +202,7 @@ export default function TripsPage() {
         <Footer />
         <SignUpButton />
         <LoginModal />
-        {user && <ChatWidget />}
+        {user && <ChatWidget /> && <AdminDashboardButton/>}
       </main>
     </>
   );

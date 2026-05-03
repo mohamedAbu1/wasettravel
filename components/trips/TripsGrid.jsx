@@ -18,7 +18,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const getRandomStars = () => Math.floor(Math.random() * 3) + 3;
   return (
     <div
-      className={`flex-1 ${
+      className={`flex-1 z-[0] ${
         cardStyle === "vertical"
           ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           : "grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -49,7 +49,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               scale: 1.05,
               boxShadow: "0px 8px 20px rgba(0,0,0,0.3)",
             }}
-            className={`relative rounded-xl shadow-lg overflow-hidden transform transition border border-[#c9a34a]/30 ${cardStyle === "vertical" ? "h-[400px]" : " h-[300px]"}`}
+            className={`relative rounded-xl shadow-lg overflow-hidden  transform transition border border-[#c9a34a]/30 ${cardStyle === "vertical" ? "h-[400px]" : " h-[300px]"}`}
           >
             <Image
               src={trip.cover_image || "/default.jpg"}

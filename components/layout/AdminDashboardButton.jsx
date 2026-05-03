@@ -22,7 +22,7 @@ export default function AdminDashboardButton() {
 
   return (
      <motion.button
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer" ,zIndex:"999"}}
       onClick={goToDashboard}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}

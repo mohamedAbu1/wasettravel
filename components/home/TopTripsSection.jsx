@@ -154,7 +154,7 @@ const normalizedLang = i18n.language.split("-")[0];
                   </p>
                   <button
                     onClick={() => router.push(`/trips/${trip.id}`)}
-                    style={{ cursor: "pointer", zIndex: "1" }}
+                    style={{ cursor: "pointer", zIndex: "0" }}
                     className={`px-5 py-2 rounded-lg font-medium transition text-white ${
                       themeName === "dark"
                         ? hasPurchased ? "bg-green-500 hover:bg-green-600": "bg-[#c9a34a] hover:bg-yellow-500"

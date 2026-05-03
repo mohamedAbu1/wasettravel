@@ -97,7 +97,7 @@ export default function ContactPage() {
         <meta name="keywords" content={meta.keywords} />
       </Head>
       <main
-        className={`relative w-full min-h-screen ${theme.background} ${theme.text} overflow-hidden pt-7`}
+       className="relative flex flex-col min-h-screen justify-center items-center"
       >
         <Header />
 
@@ -126,7 +126,7 @@ export default function ContactPage() {
           // ✅ التصميم العادي لصفحة التواصل
           <>
             {/* خلفية الرموز الفرعونية */}
-            <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 pointer-events-none mt-9">
               {Array.from({ length: 25 }).map((_, i) => (
                 <span
                   key={i}
@@ -143,7 +143,7 @@ export default function ContactPage() {
             </div>
 
             {/* المحتوى */}
-            <section className="relative z-10 pt-20 px-6">
+            <section className="relative z-10 pt-20 px-6 mt-9">
               <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                 {/* معلومات التواصل */}
                 <motion.div

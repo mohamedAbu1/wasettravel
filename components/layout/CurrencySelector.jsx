@@ -7,7 +7,7 @@ export default function CurrencySelector() {
   const { currency, setCurrency } = usePurchase();
 
   return (
-    <div className="fixed bottom-6 left-6 z-50">
+    <div className="fixed bottom-6 left-6 z-[99]">
       <Select
         value={currency}
         onChange={(e) => setCurrency(e.target.value)}

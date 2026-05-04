@@ -61,7 +61,7 @@ const handleClick = () => {
   const queryObj = {
     city: "all",
     category: [displayName],
-    price: luxuryNames.includes(displayName) ? "Luxury" : "Economy",
+    price: luxuryNames.includes(displayName) ? "Luxury" : "All",
     popular: false,
   };
   const encoded = encodeData(queryObj);

@@ -101,12 +101,11 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
                       city === "all"
                         ? true
                         : Array.isArray(city)
-                          ? city.includes(cityName)
-                          : city === cityName
+                        ? city.includes(cityName)
+                        : city === cityName
                     }
                     onChange={() => updateValue("city", cityName)}
                   />
-
                   {cityName}
                 </label>
               );
@@ -130,20 +129,18 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
                   key={cat.id ?? categoryName}
                   className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
                 >
-                <input
-  type="checkbox"
-  className="accent-[#c9a34a] cursor-pointer"
-  checked={
-    category === "all"
-      ? true
-      : Array.isArray(category)
-        ? category.includes(categoryName)
-        : category === categoryName
-  }
-  onChange={() => updateValue("category", categoryName)}
-/>
-
-
+                  <input
+                    type="checkbox"
+                    className="accent-[#c9a34a] cursor-pointer"
+                    checked={
+                      category === "all"
+                        ? true
+                        : Array.isArray(category)
+                        ? category.includes(categoryName)
+                        : category === categoryName
+                    }
+                    onChange={() => updateValue("category", categoryName)}
+                  />
                   {categoryName}
                 </label>
               );
@@ -169,7 +166,7 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
                   type="radio"
                   name="priceRange"
                   className="accent-[#c9a34a] cursor-pointer"
-                  checked={price === range.value}
+                  checked={price === range.value} // ✅ هنا لو price = "All" يتحدد تلقائيًا
                   onChange={() => updateValue("price", range.value)}
                 />
                 {range.label}

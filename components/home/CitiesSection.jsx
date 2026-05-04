@@ -41,7 +41,7 @@ function CityCard({ city, themeName, theme, language, t }) {
     const queryObj = {
       city: [cityName],
       category: "all",
-      price: "Economy",
+      price: "All",
       popular: false,
     };
     const encoded = encodeData(queryObj);

@@ -1,21 +1,19 @@
-import { defineConfig } from "eslint/config";
-import pluginNext from "@next/eslint-plugin-next";
+// eslint.config.js
+import js from "@eslint/js";
 
-export default defineConfig([
+export default [
+  js.configs.recommended,
   {
-    extends: ["next/core-web-vitals"],
-    plugins: {
-      next: pluginNext,
-    },
-    ignorePatterns: [
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts"
+    ignores: [
+      "node_modules",
+      ".next",
+      "dist",
+      "build",
     ],
     rules: {
+      // أمثلة على قواعد إضافية
+      "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
-      "react-hooks/rules-of-hooks": "error"
-    }
-  }
-]);
+    },
+  },
+];

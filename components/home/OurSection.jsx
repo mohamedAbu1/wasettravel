@@ -95,11 +95,11 @@ const OurSection = () => {
             className="w-full h-full"
           >
             {[
-              "/HomePageImage/pexels-furknsaglam-1596977-21348185.webp",
-              "/HomePageImage/pexels-oualid-soussi-2150533856-35050672.webp",
-              "/HomePageImage/pexels-ozgomz-7566890.webp",
+              "/Aswan/pexels-furknsaglam-1596977-21348185.webp",
+              "/Luxor/pexels-oualid-soussi-2150533856-35050672.webp",
+              "/Cairo/pexels-ozgomz-7566890.webp",
               "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
-              "/HomePageImage/pexels-yasmine-qasem-1054896-2034684.webp",
+              "/Luxor/pexels-yasmine-qasem-1054896-2034684.webp",
             ].map((imgSrc, index) => (
               <SwiperSlide key={index}>
                 <div className="w-full h-[85vh]">
@@ -206,11 +206,11 @@ const OurSection = () => {
             className="w-full h-full"
           >
             {[
-              "/HomePageImage/pexels-furknsaglam-1596977-21348185.webp",
-              "/HomePageImage/pexels-oualid-soussi-2150533856-35050672.webp",
-              "/HomePageImage/pexels-ozgomz-7566890.webp",
+              "/Aswan/pexels-furknsaglam-1596977-21348185.webp",
+              "/Luxor/pexels-oualid-soussi-2150533856-35050672.webp",
+              "/Cairo/pexels-ozgomz-7566890.webp",
               "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
-              "/HomePageImage/pexels-yasmine-qasem-1054896-2034684.webp",
+              "/Luxor/pexels-yasmine-qasem-1054896-2034684.webp",
             ].map((imgSrc, index) => (
               <SwiperSlide key={index}>
                 <div className="w-full h-[85vh]">

@@ -1,3 +1,4 @@
+// file: app/api/auth/login/route.js
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -12,18 +13,30 @@ export async function POST(request) {
     });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 401 });
+      return NextResponse.json(
+        { error: error.message },
+        {
+          status: 401,
+          headers: { "Cache-Control": "no-store" }, // ✅ لا تخزن الأخطاء
+        }
+      );
     }
 
     const user = data.user;
     const session = data.session;
 
     // حفظ التوكينات في الكوكيز
-    const response = NextResponse.json({
-      message: "تم تسجيل الدخول بنجاح",
-      user,
-      session, // نرجع الـ session للـ client
-    });
+    const response = NextResponse.json(
+      {
+        message: "تم تسجيل الدخول بنجاح",
+        user,
+        session,
+      },
+      {
+        status: 200,
+        headers: { "Cache-Control": "no-store" }, // ✅ لا تخزن الرد
+      }
+    );
 
     response.cookies.set("sb_access", session.access_token, {
       httpOnly: true,
@@ -43,6 +56,12 @@ export async function POST(request) {
 
     return response;
   } catch (e) {
-    return NextResponse.json({ error: "خطأ داخلي" }, { status: 500 });
+    return NextResponse.json(
+      { error: "خطأ داخلي" },
+      {
+        status: 500,
+        headers: { "Cache-Control": "no-store" }, // ✅ لا تخزن الأخطاء
+      }
+    );
   }
 }

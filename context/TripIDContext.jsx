@@ -4,31 +4,37 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 const TripIDContext = createContext();
 
 export function TripIDProvider({ children }) {
-  const [tripData, setTripData] = useState(null); // رحلة واحدة
-  const [tripsList, setTripsList] = useState([]); // جميع الرحلات
+  const [tripData, setTripData] = useState(null);
+  const [tripsList, setTripsList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ استدعاء جميع الرحلات مع فلترة العناوين فقط
+  // ✅ استدعاء جميع الرحلات مع Cache-Control + تخزين محلي
   const fetchAllTrips = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/trips");
-      let data = {};
-      try {
-        data = await res.json(); // نحاول قراءة JSON
-      } catch {
-        data = { trips: [] }; // لو الرد مش JSON أو فاضي
+      const cached = localStorage.getItem("tripsList");
+      if (cached) {
+        setTripsList(JSON.parse(cached));
       }
 
+      const res = await fetch("/api/trips", {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
+        }
+      });
+
+      const data = await res.json();
+
       if (res.ok) {
-        // نخزن id + العنوان
         const titles = (data.trips || []).map((trip) => ({
           id: trip.id,
           title: trip.title?.en ?? "Untitled",
         }));
         setTripsList(titles);
+        localStorage.setItem("tripsList", JSON.stringify(titles));
       } else {
         setError(data.error || "Failed to fetch trips");
       }
@@ -39,7 +45,7 @@ export function TripIDProvider({ children }) {
     }
   };
 
-  // ✅ استدعاء رحلة واحدة بالـ ID
+  // ✅ استدعاء رحلة واحدة بالـ ID مع Cache-Control
   const fetchTripById = async (id) => {
     if (!id) {
       setError("No trip ID provided");
@@ -50,16 +56,17 @@ export function TripIDProvider({ children }) {
     setError(null);
 
     try {
-      const res = await fetch(`/api/trips/${id}`);
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {
-        data = {}; // لو الرد مش JSON أو فاضي
-      }
+      const res = await fetch(`/api/trips/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
+        }
+      });
+
+      const data = await res.json();
 
       if (res.ok) {
-        setTripData(data.trip); // لاحظ إن الـ API بيرجع { success, trip }
+        setTripData(data.trip);
       } else {
         setError(data.error || "Failed to fetch trip");
       }
@@ -70,7 +77,6 @@ export function TripIDProvider({ children }) {
     }
   };
 
-  // ✅ تحديث حقل معين داخل الرحلة
   const updateTripField = (field, value) => {
     setTripData((prev) => ({
       ...prev,
@@ -78,7 +84,6 @@ export function TripIDProvider({ children }) {
     }));
   };
 
-  // ✅ حفظ التعديلات
   const saveTrip = async () => {
     if (!tripData?.id) return { success: false, error: "No trip ID" };
 
@@ -101,7 +106,6 @@ export function TripIDProvider({ children }) {
       const data = await res.json();
 
       if (data.success) {
-        // ✅ بعد نجاح التعديل نفرغ الحقول
         setTripData(null);
       }
 
@@ -134,5 +138,4 @@ export function TripIDProvider({ children }) {
   );
 }
 
-// ✅ التصحيح هنا: استخدام TripIDContext بدل TripContext
 export const useTripID = () => useContext(TripIDContext);

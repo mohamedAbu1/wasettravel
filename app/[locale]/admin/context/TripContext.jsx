@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 const TripContext = createContext();
@@ -25,11 +25,14 @@ export function TripProvider({ children }) {
   const [tripData, setTripData] = useState(emptyTrip);
   const [trips, setTrips] = useState([]);
   const [loadingTrips, setLoadingTrips] = useState(false);
+  const [error, setError] = useState(null);
 
+  // ✅ تحديث أي حقل
   const updateTripField = (field, value) => {
     setTripData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // ✅ إضافة Include
   const addInclude = (include) => {
     setTripData((prev) => ({
       ...prev,
@@ -37,6 +40,7 @@ export function TripProvider({ children }) {
     }));
   };
 
+  // ✅ إضافة يوم جديد
   const addDay = (day) => {
     setTripData((prev) => ({
       ...prev,
@@ -66,7 +70,7 @@ export function TripProvider({ children }) {
     });
   };
 
-  // ✅ تحديث نشاط معين داخل يوم
+  // ✅ تحديث نشاط معين
   const updateActivity = (dayIndex, activityIndex, updatedActivity) => {
     setTripData((prev) => {
       const updatedItinerary = [...prev.itinerary];
@@ -78,7 +82,7 @@ export function TripProvider({ children }) {
     });
   };
 
-  // ✅ إضافة مدينة (ID)
+  // ✅ إضافة مدينة
   const addCity = (cityId) => {
     setTripData((prev) => ({
       ...prev,
@@ -86,7 +90,7 @@ export function TripProvider({ children }) {
     }));
   };
 
-  // ✅ إضافة فئة (ID)
+  // ✅ إضافة فئة
   const addCategory = (categoryId) => {
     setTripData((prev) => ({
       ...prev,
@@ -94,13 +98,16 @@ export function TripProvider({ children }) {
     }));
   };
 
-  // ✅ رفع ملف إلى Supabase Storage
+  // ✅ رفع ملف إلى Supabase Storage مع Cache-Control
   const uploadFileToSupabase = async (file, folder = "gallery") => {
-const safeName = file.name.replace(/\s+/g, "_");
-const fileName = `${folder}_${Date.now()}_${safeName}`;
+    const safeName = file.name.replace(/\s+/g, "_");
+    const fileName = `${folder}_${Date.now()}_${safeName}`;
     const { error } = await supabase.storage
       .from("trips-bucket")
-      .upload(fileName, file, { contentType: file.type });
+      .upload(fileName, file, {
+        contentType: file.type,
+        cacheControl: "31536000", // سنة كاملة
+      });
 
     if (error) throw error;
 
@@ -110,15 +117,18 @@ const fileName = `${folder}_${Date.now()}_${safeName}`;
     return data.publicUrl;
   };
 
+  // ✅ حفظ الرحلة
   const saveTrip = async () => {
     try {
-      // ✅ رفع صورة الغلاف
+      setError(null);
+
+      // رفع صورة الغلاف
       let coverImageUrl = "";
       if (tripData.cover_file) {
         coverImageUrl = await uploadFileToSupabase(tripData.cover_file, "cover");
       }
 
-      // ✅ رفع صور المعرض
+      // رفع صور المعرض
       const galleryUrls = await Promise.all(
         tripData.gallery_images.map(async (img, i) => {
           const url = await uploadFileToSupabase(img.file, `gallery_${i}`);
@@ -132,7 +142,6 @@ const fileName = `${folder}_${Date.now()}_${safeName}`;
         gallery_images: galleryUrls,
       };
 
-
       const res = await fetch("/api/trips", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -142,18 +151,21 @@ const fileName = `${folder}_${Date.now()}_${safeName}`;
       const data = await res.json();
 
       if (data.success) {
-        setTripData(emptyTrip);
+        setTripData(emptyTrip); // ✅ Reset بعد الحفظ
       }
 
       return data;
     } catch (err) {
       console.error("Error saving trip:", err);
+      setError(err.message);
       return { success: false, error: err.message };
     }
   };
 
-  const fetchTrips = async () => {
+  // ✅ جلب الرحلات (useCallback لمنع loop)
+  const fetchTrips = useCallback(async () => {
     setLoadingTrips(true);
+    setError(null);
     try {
       const res = await fetch("/api/trips", {
         method: "GET",
@@ -162,13 +174,16 @@ const fileName = `${folder}_${Date.now()}_${safeName}`;
       const result = await res.json();
       if (result.success) {
         setTrips(result.trips);
+      } else {
+        setError("Failed to fetch trips");
       }
     } catch (err) {
       console.error("Error fetching trips:", err);
+      setError(err.message);
     } finally {
       setLoadingTrips(false);
     }
-  };
+  }, []);
 
   return (
     <TripContext.Provider
@@ -179,13 +194,14 @@ const fileName = `${folder}_${Date.now()}_${safeName}`;
         addDay,
         addActivity,
         updateActivity,
-        addCity,        // ✅ متاح الآن
-        addCategory,    // ✅ متاح الآن
+        addCity,
+        addCategory,
         saveTrip,
         setTripData,
         trips,
         fetchTrips,
         loadingTrips,
+        error, // ✅ متاح الآن
       }}
     >
       {children}

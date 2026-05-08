@@ -1,4 +1,4 @@
-// app/api/auth/register/route.js
+// file: app/api/auth/register/route.js
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import { UserSchema } from "@/lib/schemas/userSchema";
@@ -30,7 +30,10 @@ export async function POST(request) {
       console.error("❌ UserSchema validation error:", parsed.error);
       return NextResponse.json(
         { error: "البيانات غير صالحة" },
-        { status: 400 },
+        {
+          status: 400,
+          headers: { "Cache-Control": "no-store" }, // ✅ لا تخزن الأخطاء
+        }
       );
     }
 
@@ -56,17 +59,35 @@ export async function POST(request) {
 
     if (error) {
       console.error("❌ Supabase signUp error:", error.message);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json(
+        { error: error.message },
+        {
+          status: 400,
+          headers: { "Cache-Control": "no-store" }, // ✅ لا تخزن الأخطاء
+        }
+      );
     }
 
     // ✅ الاستجابة النهائية
-    return NextResponse.json({
-      message: "تم إنشاء الحساب بنجاح",
-      user: data.user,
-      session: data.session,
-    });
+    return NextResponse.json(
+      {
+        message: "تم إنشاء الحساب بنجاح",
+        user: data.user,
+        session: data.session,
+      },
+      {
+        status: 201,
+        headers: { "Cache-Control": "no-store" }, // ✅ لا تخزن الرد
+      }
+    );
   } catch (e) {
     console.error("❌ خطأ داخلي:", e);
-    return NextResponse.json({ error: "خطأ داخلي" }, { status: 500 });
+    return NextResponse.json(
+      { error: "خطأ داخلي" },
+      {
+        status: 500,
+        headers: { "Cache-Control": "no-store" }, // ✅ لا تخزن الأخطاء
+      }
+    );
   }
 }

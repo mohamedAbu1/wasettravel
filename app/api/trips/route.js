@@ -184,8 +184,10 @@ export async function GET() {
     }
 
     return new Response(JSON.stringify({ success: true, trips }), {
-      status: 200,
-    });
+  status: 200,
+  headers: { "Cache-Control": "public, max-age=3600" } // ساعة
+});
+
   } catch (err) {
     console.error("GET /api/trips error:", err);
     return new Response(

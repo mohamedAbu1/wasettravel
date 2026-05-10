@@ -92,7 +92,6 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
       .from("chat-images")
       .upload(fileName, file);
     if (uploadError) {
-      console.error("Upload error:", uploadError.message);
       return;
     }
     const { data: publicUrlData } = supabase.storage

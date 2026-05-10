@@ -56,7 +56,6 @@ export default function LoginModal() {
     }
   };
 const loginWithGoogle = async () => {
-  console.log("🚀 بدء تسجيل الدخول عبر Google...");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -65,12 +64,9 @@ const loginWithGoogle = async () => {
     },
   });
 
-  console.log("📌 نتيجة Supabase:", { data, error });
 
   if (error) {
-    console.error("❌ خطأ أثناء تسجيل الدخول عبر Google:", error.message);
   } else {
-    console.log("✅ تم إرسال طلب تسجيل الدخول بنجاح.");
   }
 };
 

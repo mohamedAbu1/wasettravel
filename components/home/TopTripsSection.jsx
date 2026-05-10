@@ -12,10 +12,10 @@ import { useAuth } from "@/context/AuthContext";
 
 const TopTripsSection = () => {
   const { themeName } = useTheme();
-  const { t ,i18n} = useTranslation("home");
+  const { t, i18n } = useTranslation("home");
   const router = useRouter();
   const { user } = useAuth();
-const normalizedLang = i18n.language.split("-")[0];
+  const normalizedLang = i18n.language.split("-")[0];
 
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const { currency, purchases } = usePurchase(); // ✅ جلب العملة والحجوزات
@@ -105,12 +105,15 @@ const normalizedLang = i18n.language.split("-")[0];
       <div className="flex flex-wrap justify-center gap-8 max-w-7xl w-full mx-auto">
         {topTrips.map((trip, i) => {
           // ✅ تحقق إذا كان المستخدم اشترى هذه الرحلة
-          const hasPurchased = purchases.some(
-            (p) =>
-              p.trip_id === trip.id &&
-              p.user_id === user?.id &&
-              p.status !== "Cancelled",
-          );
+          const hasPurchased =
+            user &&
+            purchases.some((p) => {
+              return (
+                p.user_id?.toString() === user.id?.toString() &&
+                p.trip_id?.toString() === trip.id?.toString() &&
+                p.status !== "Cancelled"
+              );
+            });
 
           return (
             <motion.div
@@ -157,8 +160,12 @@ const normalizedLang = i18n.language.split("-")[0];
                     style={{ cursor: "pointer", zIndex: "1" }}
                     className={`px-5 py-2 rounded-lg font-medium transition text-white ${
                       themeName === "dark"
-                        ? hasPurchased ? "bg-green-500 hover:bg-green-600": "bg-[#c9a34a] hover:bg-yellow-500"
-                        :  hasPurchased ? "bg-green-500 hover:bg-green-600": "bg-[#c9a34a] hover:bg-yellow-500"
+                        ? hasPurchased
+                          ? "bg-green-500 hover:bg-green-600"
+                          : "bg-[#c9a34a] hover:bg-yellow-500"
+                        : hasPurchased
+                          ? "bg-green-500 hover:bg-green-600"
+                          : "bg-[#c9a34a] hover:bg-yellow-500"
                     }`}
                   >
                     {hasPurchased ? t("Tripdetails") : t("BookNow")}

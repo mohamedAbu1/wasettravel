@@ -67,7 +67,6 @@ export default function ContactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("➡️ Submitting contact form:", formData);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",

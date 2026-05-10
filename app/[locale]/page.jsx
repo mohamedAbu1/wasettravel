@@ -22,7 +22,6 @@ export default function Home() {
   const { user } = useAuth(); // ✅ جلب المستخدم الحالي
   const { lang } = useLanguage();
   const meta = homeMetadata[lang] || homeMetadata.en;
-  console.log(user?.user_metadata?.role);
 
   return (
     <>

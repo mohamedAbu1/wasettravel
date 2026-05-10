@@ -51,7 +51,7 @@ export async function POST(request) {
         data: {
           name,
           gender,
-          role: "USER",
+          role: "ADMIN",
           avatar: avatarUrl,
         },
       },

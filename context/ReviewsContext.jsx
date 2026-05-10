@@ -21,23 +21,18 @@ export function ReviewsProvider({ children }) {
     }
     setLoading(true);
     try {
-      console.log("➡️ Fetching reviews for trip:", tripId);
       const res = await axios.get(`/api/reviews?tripId=${tripId}`, {
         withCredentials: true,
       });
-      console.log("📥 Raw response from API:", res.data);
 
       const data = res.data?.reviews || [];
-      console.log("📦 Extracted reviews array:", data);
 
       const filtered = data.filter((review) => review.trip_id === tripId);
-      console.log("✅ Filtered reviews for trip:", tripId, filtered);
 
       setReviewsByTrip((prev) => ({ ...prev, [tripId]: filtered }));
 
       filtered.forEach((review) => {
         if (review?.id) {
-          console.log("➡️ Fetching likes for review:", review.id);
           fetchLikes(review.id);
         }
       });
@@ -101,7 +96,6 @@ export function ReviewsProvider({ children }) {
 
       const data = res.data;
       if (data.success) {
-        console.log("✅ Review successfully saved in DB:", data.review);
         setReviewsByTrip((prev) => ({
           ...prev,
           [review.trip_id]: [...(prev[review.trip_id] || []), data.review],
@@ -145,10 +139,8 @@ export function ReviewsProvider({ children }) {
     // ✅ الحصول على التوكن من Supabase
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token;
-    console.log("📥 Access token fetched:", token);
 
     // ✅ إرسال الطلب للـ API
-    console.log("➡️ Sending POST request to API:", `/api/reviews/${reviewId}/like`);
     const res = await axios.post(
       `/api/reviews/${reviewId}/like`,
       null,
@@ -159,10 +151,8 @@ export function ReviewsProvider({ children }) {
       }
     );
 
-    console.log("📥 Raw response from API:", res.data);
 
     if (!res.data?.error) {
-      console.log("✅ Like added successfully in client state");
       setLikes((prev) => ({
         ...prev,
         [reviewId]: {
@@ -187,20 +177,16 @@ export function ReviewsProvider({ children }) {
     // ✅ الحصول على التوكن من Supabase
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token;
-    console.log("📥 Access token fetched:", token);
 
     // ✅ إرسال الطلب للـ API مع التوكن
-    console.log("➡️ Sending DELETE request to API:", `/api/reviews/${reviewId}/like`);
     const res = await axios.delete(`/api/reviews/${reviewId}/like`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    console.log("📥 Raw response from API:", res.data);
 
     if (!res.data?.error) {
-      console.log("✅ Like removed successfully in client state");
       setLikes((prev) => ({
         ...prev,
         [reviewId]: {

@@ -14,7 +14,6 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const { currency, purchases } = usePurchase();
   const { t } = useTranslation("trips");
   const { lang } = useLanguage();
-
   const getRandomStars = () => Math.floor(Math.random() * 3) + 3;
   return (
     <div
@@ -31,14 +30,15 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
         if (currency === "EUR") {
           displayedPrice = (trip.price * 0.85).toFixed(2);
         }
-
-        const hasPurchased = purchases.some(
-          (p) =>
-            p.trip_id === trip.id &&
-            p.user_id === user?.id &&
-            p.status !== "Cancelled",
-        );
-
+         const hasPurchased =
+            user &&
+            purchases.some((p) => {
+              return (
+                p.user_id?.toString() === user.id?.toString() &&
+                p.trip_id?.toString() === trip.id?.toString() &&
+                p.status !== "Cancelled"
+              );
+            });
         return (
           <motion.div
             key={trip.id || i}

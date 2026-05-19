@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { MdEmail, MdLock } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
 import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
@@ -56,17 +55,24 @@ export default function LoginModal() {
     }
   };
 const loginWithGoogle = async () => {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        // ✅ استخدام popup بدلاً من redirect
+        queryParams: {
+          access_type: "offline",
+          prompt: "select_account consent",
+        },
+      },
+    });
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: process.env.NEXT_PUBLIC_BASE_URL + "/api/auth/callback/google",
-    },
-  });
-
-
-  if (error) {
-  } else {
+    if (error) {
+      toast.error(`❌ خطأ في الاتصال بجوجل: ${error.message}`);
+    }
+  } catch (err) {
+    console.error("OAuth Error:", err);
+    toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول.");
   }
 };
 
@@ -157,9 +163,9 @@ const loginWithGoogle = async () => {
               <FcGoogle size={26} />
             </IconButton>
 
-            <IconButton style={{ color: "#1877f2" }}>
+            {/* <IconButton style={{ color: "#1877f2" }}>
               <FaFacebook size={26} />
-            </IconButton>
+            </IconButton> */}
           </div>
 
           {/* Login Button */}

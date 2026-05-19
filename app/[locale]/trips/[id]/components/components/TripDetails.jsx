@@ -15,9 +15,9 @@ export default function TripDetails({ trip, groupSize }) {
     pricePerPerson = (trip.price * 1.18).toFixed(2);
   }
 
+
   // ✅ السعر النهائي = السعر للفرد × عدد الأشخاص
   const totalPrice = (pricePerPerson * groupSize).toFixed(2);
-
   return (
     <div className="mb-6">
       <h2

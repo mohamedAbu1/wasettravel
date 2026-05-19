@@ -88,7 +88,12 @@ export function ReviewsProvider({ children }) {
           rating: review.rating,
           comment: review.comment,
           name: review.name || user.email, // ✅ fallback على الإيميل لو الاسم مش موجود
-          avatar_url: review.avatar_url,
+          avatar_url:
+            user?.user_metadata?.picture ||
+            user?.user_metadata?.avatar_url ||
+            user?.user_metadata?.avatar ||
+            "/default-avatar.png",
+
           time: review.time,
         },
         { withCredentials: true },
@@ -129,77 +134,70 @@ export function ReviewsProvider({ children }) {
   };
 
   // ✅ إضافة لايك
- const addLike = async (reviewId) => {
-  if (!reviewId || !user?.id) {
-    console.log("⚠️ Missing reviewId or user.id");
-    return;
-  }
+  const addLike = async (reviewId) => {
+    if (!reviewId || !user?.id) {
+      console.log("⚠️ Missing reviewId or user.id");
+      return;
+    }
 
-  try {
-    // ✅ الحصول على التوكن من Supabase
-    const { data } = await supabase.auth.getSession();
-    const token = data.session?.access_token;
+    try {
+      // ✅ الحصول على التوكن من Supabase
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
 
-    // ✅ إرسال الطلب للـ API
-    const res = await axios.post(
-      `/api/reviews/${reviewId}/like`,
-      null,
-      {
+      // ✅ إرسال الطلب للـ API
+      const res = await axios.post(`/api/reviews/${reviewId}/like`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+      });
+
+      if (!res.data?.error) {
+        setLikes((prev) => ({
+          ...prev,
+          [reviewId]: {
+            count: (prev[reviewId]?.count || 0) + 1,
+            users: [...(prev[reviewId]?.users || []), user.id],
+          },
+        }));
       }
-    );
-
-
-    if (!res.data?.error) {
-      setLikes((prev) => ({
-        ...prev,
-        [reviewId]: {
-          count: (prev[reviewId]?.count || 0) + 1,
-          users: [...(prev[reviewId]?.users || []), user.id],
-        },
-      }));
+    } catch (err) {
+      console.error("❌ Error adding like:", err);
     }
-  } catch (err) {
-    console.error("❌ Error adding like:", err);
-  }
-};
+  };
 
   // ✅ إزالة لايك
- const removeLike = async (reviewId) => {
-  if (!user?.id) {
-    console.log("⚠️ No user found in context");
-    return;
-  }
-
-  try {
-    // ✅ الحصول على التوكن من Supabase
-    const { data } = await supabase.auth.getSession();
-    const token = data.session?.access_token;
-
-    // ✅ إرسال الطلب للـ API مع التوكن
-    const res = await axios.delete(`/api/reviews/${reviewId}/like`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-
-    if (!res.data?.error) {
-      setLikes((prev) => ({
-        ...prev,
-        [reviewId]: {
-          count: Math.max((prev[reviewId]?.count || 1) - 1, 0),
-          users: (prev[reviewId]?.users || []).filter((id) => id !== user.id),
-        },
-      }));
+  const removeLike = async (reviewId) => {
+    if (!user?.id) {
+      console.log("⚠️ No user found in context");
+      return;
     }
-  } catch (err) {
-    console.error("❌ Error removing like:", err);
-  }
-};
 
+    try {
+      // ✅ الحصول على التوكن من Supabase
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+
+      // ✅ إرسال الطلب للـ API مع التوكن
+      const res = await axios.delete(`/api/reviews/${reviewId}/like`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.data?.error) {
+        setLikes((prev) => ({
+          ...prev,
+          [reviewId]: {
+            count: Math.max((prev[reviewId]?.count || 1) - 1, 0),
+            users: (prev[reviewId]?.users || []).filter((id) => id !== user.id),
+          },
+        }));
+      }
+    } catch (err) {
+      console.error("❌ Error removing like:", err);
+    }
+  };
 
   // ✅ جلب لايكات المستخدم
   const getUserLikes = (userId) => {

@@ -186,6 +186,7 @@ export default function TripReviews({ trip, lang }) {
             removeLike={removeLike}
           />
         ))}
+
         {tripReviews.length === 0 && (
           <p className="text-center w-full opacity-70">
             {!user

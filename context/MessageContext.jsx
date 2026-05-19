@@ -18,57 +18,65 @@ export function MessageProvider({ children }) {
     setMessages(Array.isArray(data) ? data : []);
   };
 
-const sendMessage = async ({ user_id, content, sender_type, status = "sent" }) => {
-  const payload = {
+  const sendMessage = async ({
     user_id,
-    user_name: user?.user_metadata?.name || "Unknown User",
-    user_image: user?.user_metadata?.avatar || "/default-avatar.png",
     content,
     sender_type,
-    status,
+    status = "sent",
+  }) => {
+    const payload = {
+      user_id,
+      user_name: user?.user_metadata?.name || "Unknown User",
+      user_image:
+        user?.user_metadata?.picture || // صورة جوجل
+        user?.user_metadata?.avatar_url || // صورة من Supabase
+        user?.user_metadata?.avatar || // صورة من التسجيل العادي
+        "/default-avatar.png", // صورة افتراضية
+
+      content,
+      sender_type,
+      status,
+    };
+
+    // أضف الرسالة مباشرة للـ state علشان تظهر فورًا
+    const tempMessage = {
+      ...payload,
+      id: Date.now(), // ID مؤقت لتمييز الرسالة
+      status: "pending", // حالة مؤقتة
+    };
+    setMessages((prev) => [...prev, tempMessage]);
+
+    // أرسل الرسالة للسيرفر
+    const res = await fetch("/api/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      console.error("❌ Error sending message:", data.error);
+      // تحديث الحالة إلى فشل
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === tempMessage.id ? { ...msg, status: "error" } : msg,
+        ),
+      );
+    } else {
+      // تحديث الرسالة المؤقتة بالـ ID الحقيقي من السيرفر
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === tempMessage.id ? { ...msg, ...data, status: "sent" } : msg,
+        ),
+      );
+    }
+
+    return data;
   };
-
-  // أضف الرسالة مباشرة للـ state علشان تظهر فورًا
-  const tempMessage = {
-    ...payload,
-    id: Date.now(), // ID مؤقت لتمييز الرسالة
-    status: "pending", // حالة مؤقتة
-  };
-  setMessages((prev) => [...prev, tempMessage]);
-
-  // أرسل الرسالة للسيرفر
-  const res = await fetch("/api/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  const data = await res.json();
-
-  if (data.error) {
-    console.error("❌ Error sending message:", data.error);
-    // تحديث الحالة إلى فشل
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === tempMessage.id ? { ...msg, status: "error" } : msg
-      )
-    );
-  } else {
-    // تحديث الرسالة المؤقتة بالـ ID الحقيقي من السيرفر
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === tempMessage.id ? { ...msg, ...data, status: "sent" } : msg
-      )
-    );
-  }
-
-  return data;
-};
-
 
   // ✅ تحديث حالة الرسالة إلى "seen"
   const markMessageSeen = async (messageId) => {
-
     const res = await fetch("/api/messages", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -80,8 +88,8 @@ const sendMessage = async ({ user_id, content, sender_type, status = "sent" }) =
     if (!data.error) {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === messageId ? { ...msg, status: "seen" } : msg
-        )
+          msg.id === messageId ? { ...msg, status: "seen" } : msg,
+        ),
       );
     } else {
       console.error("❌ Error marking message seen:", data.error);
@@ -112,18 +120,16 @@ const sendMessage = async ({ user_id, content, sender_type, status = "sent" }) =
             }
             return [...prev, payload.new];
           });
-        }
+        },
       )
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "messages" },
         (payload) => {
           setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === payload.new.id ? payload.new : msg
-            )
+            prev.map((msg) => (msg.id === payload.new.id ? payload.new : msg)),
           );
-        }
+        },
       )
       .subscribe();
 

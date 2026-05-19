@@ -14,7 +14,8 @@ import { supabase } from "@/lib/supabaseClient";
 export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const [open, setOpen] = useState(false);
   const { theme, themeName } = useTheme();
-  const { messages, sendMessage, fetchMessages, markMessageSeen } = useMessages();
+  const { messages, sendMessage, fetchMessages, markMessageSeen } =
+    useMessages();
   const [text, setText] = useState("");
   const { user } = useAuth();
   const [adminTyping, setAdminTyping] = useState(false);
@@ -73,7 +74,8 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
       sendMessage({
         user_id: user.id,
         user_name: "Admin",
-        user_image: "https://dxpbyrcbklqrjlytmkum.supabase.co/storage/v1/object/public/avatars/technical-writer-digital-avatar-generative-ai_934475-9098.webp", // صورة افتراضية للأدمن
+        user_image:
+          "https://dxpbyrcbklqrjlytmkum.supabase.co/storage/v1/object/public/avatars/technical-writer-digital-avatar-generative-ai_934475-9098.webp", // صورة افتراضية للأدمن
         content: "Welcome to our premium transfer service ✨🚘",
         sender_type: "admin",
         status: "sent",
@@ -101,7 +103,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     await sendMessage({
       user_id: user.id,
       user_name: user.user_metadata?.name,
-      user_image: user.user_metadata?.avatar,
+      user_image: user.user_metadata?.avatar_url || user.user_metadata?.avatar,
       content: uploadedUrl,
       sender_type: "user",
       status: "sent",
@@ -145,7 +147,9 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                 </p>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">From</label>
+                    <label className="block text-sm font-medium mb-1">
+                      From
+                    </label>
                     <input
                       type="text"
                       placeholder="Enter pickup location"
@@ -170,7 +174,12 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                     await sendMessage({
                       user_id: user.id,
                       user_name: user.user_metadata?.name,
-                      user_image: user.user_metadata?.avatar,
+                      user_image:
+                        user?.user_metadata?.picture || // صورة جوجل
+                        user?.user_metadata?.avatar_url || // صورة من Supabase
+                        user?.user_metadata?.avatar || // صورة من التسجيل العادي
+                        "/default-avatar.png", // صورة افتراضية
+
                       content: `Car booking request: from ${from} to ${to}`,
                       sender_type: "user",
                       status: "sent",

@@ -52,15 +52,21 @@ export default function ReviewCard({
     >
       {/* رأس البطاقة */}
       <div className="flex items-center gap-4 mb-3">
-        {rev.avatar_url ? (
+        {rev.picture || rev.avatar_url || rev.avatar ? (
           <img
-            src={rev.avatar_url}
+            src={
+              rev.picture ||
+              rev.avatar_url ||
+              rev.avatar ||
+              "/default-avatar.png"
+            }
             alt={rev.name}
             className="w-16 h-16 rounded-full object-cover border-2 border-yellow-500"
           />
         ) : (
           <FaUserCircle size={64} className="text-gray-400" />
         )}
+
         <div className="flex flex-col">
           <span className="font-bold text-lg capitalize">{rev.name}</span>
           <span className="text-xs opacity-70">{rev.date || rev.time}</span>

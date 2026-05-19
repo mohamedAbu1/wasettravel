@@ -12,7 +12,7 @@ import { FaSignOutAlt, FaUserPlus } from "react-icons/fa";
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { theme } = useTheme();
-  const { user, isLoggedIn, logout, handleOpen } = useAuth();
+  const { isLoggedIn, logout, handleOpen } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);

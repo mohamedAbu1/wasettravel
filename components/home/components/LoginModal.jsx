@@ -54,27 +54,27 @@ export default function LoginModal() {
       toast.error("❌ Error: The email or password is incorrect.");
     }
   };
-const loginWithGoogle = async () => {
-  try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        // ✅ استخدام popup بدلاً من redirect
-        queryParams: {
-          access_type: "offline",
-          prompt: "select_account consent",
+  const loginWithGoogle = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          // ✅ استخدام popup بدلاً من redirect
+          queryParams: {
+            access_type: "offline",
+            prompt: "select_account consent",
+          },
         },
-      },
-    });
+      });
 
-    if (error) {
-      toast.error(`❌ خطأ في الاتصال بجوجل: ${error.message}`);
+      if (error) {
+        toast.error(`❌ خطأ في الاتصال بجوجل: ${error.message}`);
+      }
+    } catch (err) {
+      console.error("OAuth Error:", err);
+      toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول.");
     }
-  } catch (err) {
-    console.error("OAuth Error:", err);
-    toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول.");
-  }
-};
+  };
 
   return (
     <Dialog open={loginOpen} onClose={handleLoginClose} fullWidth maxWidth="sm">
@@ -157,15 +157,38 @@ const loginWithGoogle = async () => {
 
           {/* Social Buttons */}
           <div
-            style={{ display: "flex", gap: "16px", justifyContent: "center" }}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "20px",
+            }}
           >
-            <IconButton onClick={loginWithGoogle}>
-              <FcGoogle size={26} />
+            <IconButton
+              onClick={loginWithGoogle}
+              style={{
+                width: "280px", // عرض كبير
+                height: "56px", // ارتفاع مناسب
+                borderRadius: "12px", // زوايا ناعمة
+                background:
+                  "linear-gradient(to right, #4285F4, #34A853, #FBBC05, #EA4335)", // ألوان جوجل
+                color: "#fff",
+                fontWeight: "700",
+                fontSize: "16px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "12px",
+                boxShadow: "0 6px 16px rgba(0,0,0,0.2)", // ظل احترافي
+                transition: "all 0.3s ease",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.transform = "scale(1.05)")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              <FcGoogle size={28} /> {/* أيقونة أكبر */}
+              <span style={{ color: "#fff" }}>Sign in with Google</span>
             </IconButton>
-
-            {/* <IconButton style={{ color: "#1877f2" }}>
-              <FaFacebook size={26} />
-            </IconButton> */}
           </div>
 
           {/* Login Button */}

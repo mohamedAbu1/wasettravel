@@ -12,9 +12,32 @@ export default function ActionsComponent({
 }) {
   return (
     <>
-      <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
-        <IconButton onClick={loginWithGoogle}>
-          <FcGoogle size={26} />
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+      >
+        <IconButton
+          onClick={loginWithGoogle}
+          style={{
+            width: "280px", // عرض كبير
+            height: "56px", // ارتفاع مناسب
+            borderRadius: "12px", // زوايا ناعمة
+            background:
+              "linear-gradient(to right, #4285F4, #34A853, #FBBC05, #EA4335)", // ألوان جوجل
+            color: "#fff",
+            fontWeight: "700",
+            fontSize: "16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "12px",
+            boxShadow: "0 6px 16px rgba(0,0,0,0.2)", // ظل احترافي
+            transition: "all 0.3s ease",
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+          onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        >
+          <FcGoogle size={28} /> {/* أيقونة أكبر */}
+          <span style={{ color: "#fff" }}>Sign in with Google</span>
         </IconButton>
       </div>
 

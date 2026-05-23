@@ -17,6 +17,7 @@ import DividerWithIcon from "@/components/layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import CurrencySelector from "@/components/layout/CurrencySelector";
+import SignUpModal from "@/components/home/components/SignUpButton";
 
 const symbols = [
   "𓂀",
@@ -305,6 +306,8 @@ export default function ContactPage() {
         )}
 
         <Footer />
+                <SignUpModal />
+        
         <LoginModal />
         {user && <ChatWidget />}
         {user && <AdminDashboardButton />}

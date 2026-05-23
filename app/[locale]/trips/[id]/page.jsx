@@ -23,6 +23,7 @@ import { usePurchase } from "@/context/PurchaseContext";
 import AccessibilityInfo from "./components/components/AccessibilityInfo";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import SignUpModal from "@/components/home/components/SignUpButton";
 
 export default function TripPage({ params }) {
   const { id } = params; // ✅ استخدم params مباشرة بدل use()
@@ -135,6 +136,8 @@ export default function TripPage({ params }) {
       )}
 
       <Footer />
+              <SignUpModal />
+      
       <LoginModal />
       {user && <ChatWidget />}
     </main>

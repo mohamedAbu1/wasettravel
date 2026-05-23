@@ -19,6 +19,7 @@ import { useQueryFilters } from "@/context/QueryContext";
 import { useRouter } from "next/navigation";
 import CurrencySelector from "../../../components/layout/CurrencySelector";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
+import SignUpModal from "@/components/home/components/SignUpButton";
 
 export default function TripsPage() {
   const { trips, fetchTrips, loadingTrips } = useTrip();
@@ -200,6 +201,8 @@ export default function TripsPage() {
         )}
 
         <Footer />
+                <SignUpModal />
+        
         <LoginModal />
         {user && <ChatWidget />}
         {user && <AdminDashboardButton />}

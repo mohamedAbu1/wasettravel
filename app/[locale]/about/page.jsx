@@ -19,6 +19,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import CurrencySelector from "@/components/layout/CurrencySelector";
+import SignUpModal from "@/components/home/components/SignUpButton";
 
 export default function AboutPage() {
   const { theme } = useTheme();
@@ -43,9 +44,7 @@ export default function AboutPage() {
         <meta name="description" content={meta.description} />
         <meta name="keywords" content={meta.keywords} />
       </Head>
-      <main
-       className="relative flex flex-col min-h-screen justify-center items-center"
-      >
+      <main className="relative flex flex-col min-h-screen justify-center items-center">
         <Header />
         <EgyptianBackground />
 
@@ -82,6 +81,8 @@ export default function AboutPage() {
         )}
 
         <Footer />
+        <SignUpModal />
+
         <LoginModal />
         {user && <ChatWidget />}
         {user && <AdminDashboardButton />}

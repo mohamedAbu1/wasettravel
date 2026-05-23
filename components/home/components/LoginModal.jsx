@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -16,7 +16,7 @@ import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
-import { useSecurity } from "@/context/SecurityContext"; // ✅ استدعاء الكونتكست
+import { useSecurity } from "@/context/SecurityContext";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -29,16 +29,13 @@ export default function LoginModal() {
   const [password, setPassword] = useState("");
   const { t } = useTranslation("home");
 
-  // من الـ AuthContext
-  const { login, loading, error, handleClose } = useAuth();
-
-  // من SecurityContext
+  const { login, loading, handleClose } = useAuth();
   const { validateField } = useSecurity();
 
-  const handleSubmit = async () => {
-    // ✅ تحقق من الحقول قبل تسجيل الدخول
-    const emailError = validateField("Email", email);
-    const passwordError = validateField("Password", password);
+  // ✅ استخدم مفاتيح ثابتة بدل النصوص المترجمة
+  const handleSubmit = useCallback(async () => {
+    const emailError = validateField("email", email);
+    const passwordError = validateField("password", password);
 
     if (emailError || passwordError) {
       toast.error(emailError || passwordError);
@@ -53,13 +50,13 @@ export default function LoginModal() {
     } catch (err) {
       toast.error("❌ Error: The email or password is incorrect.");
     }
-  };
+  }, [email, password, validateField, login, handleLoginClose, handleClose]);
+
   const loginWithGoogle = async () => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          // ✅ استخدام popup بدلاً من redirect
           queryParams: {
             access_type: "offline",
             prompt: "select_account consent",
@@ -156,21 +153,15 @@ export default function LoginModal() {
           </Divider>
 
           {/* Social Buttons */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-            }}
-          >
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
             <IconButton
               onClick={loginWithGoogle}
               style={{
-                width: "280px", // عرض كبير
-                height: "56px", // ارتفاع مناسب
-                borderRadius: "12px", // زوايا ناعمة
+                width: "280px",
+                height: "56px",
+                borderRadius: "12px",
                 background:
-                  "linear-gradient(to right, #4285F4, #34A853, #FBBC05, #EA4335)", // ألوان جوجل
+                  "linear-gradient(to right, #4285F4, #34A853, #FBBC05, #EA4335)",
                 color: "#fff",
                 fontWeight: "700",
                 fontSize: "16px",
@@ -178,15 +169,11 @@ export default function LoginModal() {
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "12px",
-                boxShadow: "0 6px 16px rgba(0,0,0,0.2)", // ظل احترافي
+                boxShadow: "0 6px 16px rgba(0,0,0,0.2)",
                 transition: "all 0.3s ease",
               }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.05)")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              <FcGoogle size={28} /> {/* أيقونة أكبر */}
+              <FcGoogle size={28} />
               <span style={{ color: "#fff" }}>Sign in with Google</span>
             </IconButton>
           </div>

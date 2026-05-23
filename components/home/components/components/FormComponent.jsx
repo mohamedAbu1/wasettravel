@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   TextField,
@@ -100,13 +101,14 @@ export default function FormComponent({
         onChange={(e) => setGender(e.target.value)}
         style={{ justifyContent: "center", gap: "20px" }}
       >
+        {/* القيمة الداخلية ثابتة بالإنجليزية */}
         <FormControlLabel
-          value={t("male")}
+          value="male"
           control={<Radio />}
           label={<><FaMale color="#1e40af" /> {t("male")}</>}
         />
         <FormControlLabel
-          value={t("female")}
+          value="female"
           control={<Radio />}
           label={<><FaFemale color="#db2777" /> {t("female")}</>}
         />

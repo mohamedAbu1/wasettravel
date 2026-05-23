@@ -8,11 +8,13 @@ import RightBar from "./components/RightBar";
 import { Button } from "@mui/material";
 import { useAuth } from "@/context/AuthContext";
 import { FaSignOutAlt, FaUserPlus } from "react-icons/fa";
+import { useData } from "@/context/DataContext";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { theme } = useTheme();
   const { isLoggedIn, logout, handleOpen } = useAuth();
+  const {  handleLoginOpen } = useData();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -35,10 +37,10 @@ export default function Header() {
         <Logo scrolled={scrolled} />
         <NavBar scrolled={scrolled} />
         <RightBar scrolled={scrolled} />
-        {/* زر تسجيل الدخول/الخروج */}
-        <motion.div whileHover={{ scale: 1.1 }} className="hidden lg:flex">
+
+          <motion.div whileHover={{ scale: 1.1 }} className="flex">
           <Button
-            onClick={isLoggedIn ? logout : handleOpen}
+           onClick={isLoggedIn ? logout : handleOpen}
             style={{
               padding: "12px 24px",
               background: "linear-gradient(to right, #c9a34a, #eab308)",

@@ -8,7 +8,6 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
 import { useTranslation } from "react-i18next";
 import LoginModal from "@/components/home/components/LoginModal";
-import SignUpButton from "@/components/home/components/SignUpButton";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
 import Head from "next/head";
@@ -306,7 +305,6 @@ export default function ContactPage() {
         )}
 
         <Footer />
-        <SignUpButton />
         <LoginModal />
         {user && <ChatWidget />}
         {user && <AdminDashboardButton />}

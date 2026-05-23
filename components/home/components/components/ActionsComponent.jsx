@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Button, IconButton } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";

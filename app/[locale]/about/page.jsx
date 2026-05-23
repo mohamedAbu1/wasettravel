@@ -5,7 +5,6 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import LoginModal from "@/components/home/components/LoginModal";
-import SignUpButton from "@/components/home/components/SignUpButton";
 import AboutHero from "@/components/about/AboutHero";
 import MissionValues from "@/components/about/MissionValues";
 import StatsSection from "@/components/about/StatsSection";
@@ -83,7 +82,6 @@ export default function AboutPage() {
         )}
 
         <Footer />
-        <SignUpButton />
         <LoginModal />
         {user && <ChatWidget />}
         {user && <AdminDashboardButton />}

@@ -8,7 +8,6 @@ import HeroSection from "@/components/home/HeroSection";
 import OurSection from "@/components/home/OurSection";
 import TopTripsSection from "@/components/home/TopTripsSection";
 import LoginModal from "@/components/home/components/LoginModal";
-import SignUpButton from "@/components/home/components/SignUpButton";
 import TopReviewsSection from "@/components/home/components/TopReviewsSection";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext"; // ✅ استدعاء الـ Auth
@@ -17,6 +16,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { homeMetadata } from "@/lib/metadata/home";
 import CurrencySelector from "@/components/layout/CurrencySelector";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
+import SignUpModal from "@/components/home/components/SignUpButton";
 // import { useQueryFilters } from "@/context/QueryContext";
 export default function Home() {
   const { user } = useAuth(); // ✅ جلب المستخدم الحالي
@@ -58,8 +58,7 @@ export default function Home() {
 
         {/* ================= FOOTER ================= */}
         <Footer />
-
-        <SignUpButton />
+        <SignUpModal />
         <LoginModal />
 
         {/* نافذة الدردشة تظهر فقط لو المستخدم مسجل دخول */}

@@ -7,7 +7,6 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import LoginModal from "@/components/home/components/LoginModal";
-import SignUpButton from "@/components/home/components/SignUpButton";
 import { motion } from "framer-motion";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
@@ -201,7 +200,6 @@ export default function TripsPage() {
         )}
 
         <Footer />
-        <SignUpButton />
         <LoginModal />
         {user && <ChatWidget />}
         {user && <AdminDashboardButton />}

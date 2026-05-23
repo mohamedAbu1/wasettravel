@@ -102,7 +102,7 @@ export default function ConfirmButton({
         className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition cursor-pointer text-white ${loadingPay ? "opacity-50 cursor-not-allowed" : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"}`}
       >
         <FaCreditCard className="w-5 h-5" />
-        {loadingPay ? "جاري تحضير الدفع..." : "ادفع الآن أونلاين"}
+                {loadingPay ? "Payment is being processed..." : "Pay online now"}}
       </button>
     </div>
   );

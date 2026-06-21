@@ -95,9 +95,7 @@ export default function ContactPage() {
         <meta name="description" content={meta.description} />
         <meta name="keywords" content={meta.keywords} />
       </Head>
-      <main
-       className="relative flex flex-col min-h-screen justify-center items-center"
-      >
+      <main className="relative flex flex-col min-h-screen justify-center items-center">
         <Header />
 
         {isSmallScreen ? (
@@ -109,7 +107,7 @@ export default function ContactPage() {
             className="flex flex-col items-center justify-center h-[70vh] text-center gap-6"
           >
             <h2 className="text-4xl font-extrabold text-[#c9a34a] drop-shadow-lg">
-              🚫 This page is not available on phones.🚫 
+              🚫 This page is not available on phones.🚫
             </h2>
             <p className="text-lg text-gray-600">
               You should go to the homepage to follow your trips
@@ -174,7 +172,7 @@ export default function ContactPage() {
                           themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                         }
                       />
-                      <span>wasettravel@outlook.com</span>
+                      <span>wasettraveleg@gmail.com</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <FaMapMarkerAlt
@@ -306,12 +304,12 @@ export default function ContactPage() {
         )}
 
         <Footer />
-                <SignUpModal />
-        
+        <SignUpModal />
+
         <LoginModal />
         {user && <ChatWidget />}
         {user && <AdminDashboardButton />}
-                <CurrencySelector />
+        <CurrencySelector />
       </main>
     </>
   );

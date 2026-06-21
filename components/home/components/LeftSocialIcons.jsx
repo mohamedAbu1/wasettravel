@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import React from "react";
-import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaWhatsapp, Fatiktok } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { MdEmail } from "react-icons/md";
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -10,11 +10,17 @@ const LeftSocialIcons = () => {
   const { theme } = useTheme();
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   const socialLinks = [
-    { Icon: FaFacebookF, url: "https://facebook.com/YourPage" },
-    { Icon: FaInstagram, url: "https://instagram.com/YourPage" },
-    { Icon: FaTiktok, url: "https://tiktok.com/@YourPage" },
-    { Icon: FaWhatsapp, url: "https://wa.me/201234567890" }, // رقم واتساب
-    { Icon: MdEmail, url: "mailto:yourmail@example.com" }, // فتح البريد
+    { Icon: FaFacebookF, url: "https://www.facebook.com/share/1BTkjPD5Sd/" },
+    {
+      Icon: FaInstagram,
+      url: "https://www.instagram.com/kader.mohameda?igsh=MXZkd3VvOTNhanJoZA==",
+    },
+    { Icon: FaWhatsapp, url: "https://wa.me/qr/WIFIQJUBO2PJH1" },
+    { Icon: MdEmail, url: "mailto:yourmail@example.com" },
+    {
+      Icon: Fatiktok,
+      url: "https://www.tiktok.com/@mohamedakader25?_r=1&_t=ZS-97OkNILIAZm",
+    },
   ];
 
   return (

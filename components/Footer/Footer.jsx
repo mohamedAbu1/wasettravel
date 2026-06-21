@@ -2,7 +2,8 @@
 "use client";
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
-import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaWhatsapp,Fatiktok } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import Link from "next/link"; // ✅ استخدم Link من Next.js
@@ -12,13 +13,31 @@ const Footer = () => {
   const { t } = useTranslation("footer");
 
   const symbols = [
-    "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
-    "𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
+    "𓂀",
+    "𓋹",
+    "𓆣",
+    "𓇼",
+    "𓇯",
+    "𓏏",
+    "𓎛",
+    "𓊽",
+    "𓃾",
+    "𓅓",
+    "𓈇",
+    "𓉐",
+    "𓊹",
+    "𓌙",
+    "𓍿",
+    "𓎟",
   ];
 
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" },
+    },
   };
 
   const staggerContainer = {
@@ -70,67 +89,121 @@ const Footer = () => {
       </motion.p>
 
       {/* الوصف */}
-      <motion.p variants={fadeUp} className="mt-2 text-sm opacity-80 text-center max-w-xl relative z-10">
+      <motion.p
+        variants={fadeUp}
+        className="mt-2 text-sm opacity-80 text-center max-w-xl relative z-10"
+      >
         {t("p")}
       </motion.p>
 
       {/* روابط سريعة */}
-      <motion.div variants={fadeUp} className="flex gap-6 mt-6 text-sm font-medium relative z-10">
-        <Link href="/" className={`hover:underline ${
-          themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
-        }`}>
+      <motion.div
+        variants={fadeUp}
+        className="flex gap-6 mt-6 text-sm font-medium relative z-10"
+      >
+        <Link
+          href="/"
+          className={`hover:underline ${
+            themeName === "dark"
+              ? "text-white/80 hover:text-gold"
+              : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
+          }`}
+        >
           {t("Home")}
         </Link>
-        <Link href="/about" className={`hover:underline ${
-          themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
-        }`}>
+        <Link
+          href="/about"
+          className={`hover:underline ${
+            themeName === "dark"
+              ? "text-white/80 hover:text-gold"
+              : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
+          }`}
+        >
           {t("AboutUs")}
         </Link>
-        <Link href="/trips" className={`hover:underline ${
-          themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
-        }`}>
+        <Link
+          href="/trips"
+          className={`hover:underline ${
+            themeName === "dark"
+              ? "text-white/80 hover:text-gold"
+              : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
+          }`}
+        >
           {t("Tours")}
         </Link>
-        <Link href="/contact" className={`hover:underline ${
-          themeName === "dark" ? "text-white/80 hover:text-gold" : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
-        }`}>
+        <Link
+          href="/contact"
+          className={`hover:underline ${
+            themeName === "dark"
+              ? "text-white/80 hover:text-gold"
+              : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
+          }`}
+        >
           {t("Contact")}
         </Link>
       </motion.div>
 
       {/* أيقونات السوشيال ميديا */}
       <motion.div variants={fadeUp} className="flex gap-5 mt-8 relative z-10">
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+        <a
+          href="https://www.facebook.com/share/1BTkjPD5Sd/"
+          target="_blank"
+          rel="noopener noreferrer"
           className={`p-3 rounded-full transition ${
             themeName === "dark"
               ? "bg-gold/20 hover:bg-gold/40 text-gold"
               : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
-          }`}>
+          }`}
+        >
           <FaFacebookF />
         </a>
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+        <a
+          href="https://www.instagram.com/kader.mohameda?igsh=MXZkd3VvOTNhanJoZA=="
+          target="_blank"
+          rel="noopener noreferrer"
           className={`p-3 rounded-full transition ${
             themeName === "dark"
               ? "bg-gold/20 hover:bg-gold/40 text-gold"
               : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
-          }`}>
+          }`}
+        >
           <FaInstagram />
         </a>
-        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+        <a
+          href="https://wa.me/qr/WIFIQJUBO2PJH1"
+          target="_blank"
+          rel="noopener noreferrer"
           className={`p-3 rounded-full transition ${
             themeName === "dark"
               ? "bg-gold/20 hover:bg-gold/40 text-gold"
               : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
-          }`}>
-          <FaTwitter />
+          }`}
+        >
+          <FaWhatsapp />
         </a>
-        <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+        <a
+          href="https://youtube.com"
+          target="_blank"
+          rel="noopener noreferrer"
           className={`p-3 rounded-full transition ${
             themeName === "dark"
               ? "bg-gold/20 hover:bg-gold/40 text-gold"
               : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
-          }`}>
-          <FaYoutube />
+          }`}
+        >
+          <MdEmail />
+        </a>
+        <a
+          href="https://www.tiktok.com/@mohamedakader25?_r=1&_t=ZS-97OkNILIAZm"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`p-3 rounded-full transition ${
+            themeName === "dark"
+              ? "bg-gold/20 hover:bg-gold/40 text-gold"
+              : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
+          }`}
+        >
+          <Fatiktok />
         </a>
       </motion.div>
     </motion.footer>

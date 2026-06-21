@@ -14,7 +14,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { theme } = useTheme();
   const { isLoggedIn, logout, handleOpen } = useAuth();
-  const {  handleLoginOpen } = useData();
+  const { handleLoginOpen } = useData();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -38,9 +38,9 @@ export default function Header() {
         <NavBar scrolled={scrolled} />
         <RightBar scrolled={scrolled} />
 
-          <motion.div whileHover={{ scale: 1.1 }} className="flex">
+        <motion.div whileHover={{ scale: 1.1 }} className="hidden lg:flex">
           <Button
-           onClick={isLoggedIn ? logout : handleOpen}
+            onClick={isLoggedIn ? logout : handleOpen}
             style={{
               padding: "12px 24px",
               background: "linear-gradient(to right, #c9a34a, #eab308)",

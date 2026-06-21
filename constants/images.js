@@ -11,7 +11,7 @@ export const mobileImages = [
   "/Luxor/pexels-oualid-soussi-2150533856-35050672.webp",
   "/Cairo/pexels-ozgomz-7566890.webp",
   "/Aswan/pexels-furknsaglam-1596977-21348185.webp",
-  "/Luxor/pexels-yasmine-qasem-1054896-2034684.webp",
+  "/Aswan/pexels-yasmine-qasem-1054896-2034684.webp",
   "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
   "/Hurghada/pexels-ozgomz-7566888.webp",
 ];

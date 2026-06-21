@@ -3,9 +3,6 @@ import { useReviews } from "@/context/ReviewsContext";
 import { useTheme } from "@/context/ThemeContext";
 import { FaStar, FaUserCircle, FaQuoteLeft, FaHeart } from "react-icons/fa";
 import { motion } from "framer-motion";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
@@ -16,10 +13,8 @@ export default function TopReviewsSection() {
   const { theme } = useTheme();
   const { t } = useTranslation("home");
 
-  // ✅ تأكد أن المصفوفة صحيحة
   const safeReviews = Array.isArray(allReviews) ? allReviews : [];
 
-  // ✅ جلب أكثر 5 تعليقات لهم لايكات
   const topLikedReviews = safeReviews
     .map((rev) => ({
       ...rev,
@@ -29,7 +24,6 @@ export default function TopReviewsSection() {
     .sort((a, b) => b.likesCount - a.likesCount)
     .slice(0, 5);
 
-  // ✅ إدارة حالة "اقرأ المزيد" بشكل صحيح
   const [expandedIds, setExpandedIds] = useState([]);
   const toggleExpand = (id) => {
     setExpandedIds((prev) =>
@@ -37,32 +31,17 @@ export default function TopReviewsSection() {
     );
   };
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 700,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    arrows: false,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 640, settings: { slidesToShow: 1 } },
-    ],
-  };
-
   return (
     <section
-      className={`py-20 px-8 ${theme.background} ${theme.text} w-screen max-w-full`}
+      className={`py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-full mx-auto`}
     >
       <EgyptianBackground />
-      <h2 className="text-5xl font-extrabold mb-14 text-center uppercase">
+      <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-10 text-center uppercase">
         {t("h6")}
       </h2>
 
       {topLikedReviews.length > 0 ? (
-        <Slider {...settings}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {topLikedReviews.map((rev, idx) => {
             const expanded = expandedIds.includes(rev.id);
             const comment =
@@ -72,12 +51,12 @@ export default function TopReviewsSection() {
 
             return (
               <motion.div
-                 key={rev.id || idx}
+                key={rev.id || idx}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="flex flex-col gap-6 p-8 mx-4 rounded-2xl min-h-[220px]"
+                className="flex flex-col gap-6 p-6 md:p-8 rounded-2xl min-h-[220px]"
                 style={{
                   background: "rgba(255, 255, 255, 0.15)",
                   backdropFilter: "blur(12px)",
@@ -133,7 +112,6 @@ export default function TopReviewsSection() {
 
                 {/* Footer */}
                 <div className="flex justify-between items-center mt-6 border-t pt-4">
-                  {/* التاريخ */}
                   <div className="flex items-center gap-2 text-gray-500 text-sm">
                     <span>
                       {rev.created_at
@@ -142,7 +120,6 @@ export default function TopReviewsSection() {
                     </span>
                   </div>
 
-                  {/* اللايكات */}
                   <div className="flex items-center gap-2 text-red-600 font-semibold text-sm bg-red-50 px-3 py-1 rounded-full shadow-sm">
                     <FaHeart />
                     <span>{rev.likesCount}</span>
@@ -151,7 +128,7 @@ export default function TopReviewsSection() {
               </motion.div>
             );
           })}
-        </Slider>
+        </div>
       ) : (
         <p className={`text-center opacity-70 ${theme.subText}`}>{t("p6")}</p>
       )}

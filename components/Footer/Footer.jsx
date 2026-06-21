@@ -2,7 +2,7 @@
 "use client";
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
-import { FaFacebookF, FaInstagram, FaWhatsapp,Fatiktok } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaWhatsapp,FaTiktok  } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -203,7 +203,7 @@ const Footer = () => {
               : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"
           }`}
         >
-          <Fatiktok />
+          <FaTiktok  />
         </a>
       </motion.div>
     </motion.footer>

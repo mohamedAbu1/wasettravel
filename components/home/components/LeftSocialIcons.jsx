@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import React from "react";
-import { FaFacebookF, FaInstagram, FaWhatsapp, Fatiktok } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaWhatsapp, FaTiktok  } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { MdEmail } from "react-icons/md";
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -18,7 +18,7 @@ const LeftSocialIcons = () => {
     { Icon: FaWhatsapp, url: "https://wa.me/qr/WIFIQJUBO2PJH1" },
     { Icon: MdEmail, url: "mailto:yourmail@example.com" },
     {
-      Icon: Fatiktok,
+      Icon: FaTiktok,
       url: "https://www.tiktok.com/@mohamedakader25?_r=1&_t=ZS-97OkNILIAZm",
     },
   ];

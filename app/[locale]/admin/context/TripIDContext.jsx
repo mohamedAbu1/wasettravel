@@ -7,17 +7,18 @@ const TripIDContext = createContext();
 const emptyTrip = {
   title: { en: "", ar: "" },
   description: { en: "", ar: "" },
-  price: 0,
   currency: "USD",
   duration: 0,
   duration_unit: "days",
   priceLevel: "",
   cover_image: "",
   gallery_images: [],
-  cities: [],       // ✅ IDs للمدن
-  categories: [],   // ✅ IDs للفئات
+  cities: [], // ✅ IDs للمدن
+  categories: [], // ✅ IDs للفئات
   includes: [],
   itinerary: [],
+  solo_price: 0,
+  group_price: 0,
 };
 
 export function TripIDProvider({ children }) {
@@ -68,7 +69,7 @@ export function TripIDProvider({ children }) {
 
         // ✅ تحويل المدن والفئات إلى IDs فقط
         const categoriesIds = (trip.trip_categories || []).map(
-          (c) => c.category_id
+          (c) => c.category_id,
         );
         const citiesIds = (trip.trip_cities || []).map((c) => c.city_id);
 
@@ -101,15 +102,16 @@ export function TripIDProvider({ children }) {
     const tripPayload = {
       title: tripData.title,
       description: tripData.description,
-      price: tripData.price,
       duration: tripData.duration,
       priceLevel: tripData.priceLevel,
       cover_image: tripData.cover_image,
       gallery_images: tripData.gallery_images,
       includes: tripData.includes || [],
       itinerary: tripData.itinerary || [],
-      cities: tripData.cities || [],         // ✅ IDs مباشرة
+      cities: tripData.cities || [], // ✅ IDs مباشرة
       categories: tripData.categories || [], // ✅ IDs مباشرة
+      solo_price: tripData.solo_price || 0,
+      group_price  :tripData.group_price ||0,
     };
 
     try {
@@ -125,18 +127,18 @@ export function TripIDProvider({ children }) {
       return { success: false, error: err.message };
     }
   };
-const deleteTrip = async (id) => {
-  try {
-    const res = await axios.delete(`/api/trips/${id}`);
-    const data = res.data;
-    if (data.success) {
-      setTripsList((prev) => prev.filter((trip) => trip.id !== id));
+  const deleteTrip = async (id) => {
+    try {
+      const res = await axios.delete(`/api/trips/${id}`);
+      const data = res.data;
+      if (data.success) {
+        setTripsList((prev) => prev.filter((trip) => trip.id !== id));
+      }
+      return data;
+    } catch (err) {
+      return { success: false, error: err.message };
     }
-    return data;
-  } catch (err) {
-    return { success: false, error: err.message };
-  }
-};
+  };
 
   useEffect(() => {
     fetchAllTrips();

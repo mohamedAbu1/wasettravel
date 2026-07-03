@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { Select, MenuItem } from "@mui/material";
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { usePurchase } from "@/context/PurchaseContext";
 
 export default function CurrencySelector() {
@@ -38,6 +39,9 @@ export default function CurrencySelector() {
         </MenuItem>
         <MenuItem value="EUR" sx={{ color: "#e6e6e6" }}>
           EUR €
+        </MenuItem>
+        <MenuItem value="EGP" sx={{ color: "#4caf50" }}>
+          EGP £
         </MenuItem>
       </Select>
     </div>

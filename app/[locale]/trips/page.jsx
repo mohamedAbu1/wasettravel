@@ -40,7 +40,7 @@ export default function TripsPage() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   // ✅ القيم من الكويري كونتكست
-  const { city, category, price, popular } = useQueryFilters();
+  const { city, category, group_price, popular } = useQueryFilters();
 
   useEffect(() => {
     fetchTrips();
@@ -96,12 +96,12 @@ export default function TripsPage() {
       Standard: { min: 200, max: 599 },
       Luxury: { min: 600, max: Infinity },
     };
-    const selectedRange = ranges[price];
+    const selectedRange = ranges[group_price];
     const matchesPrice =
-      price === "All" || !price
+      group_price === "All" || !group_price
         ? true
         : selectedRange
-          ? trip.price >= selectedRange.min && trip.price <= selectedRange.max
+          ? trip.group_price >= selectedRange.min && trip.group_price <= selectedRange.max
           : true;
 
     const matchesPopular = popular ? trip.isPopular : true;

@@ -28,6 +28,7 @@ export default function AddTrip() {
   const [city, setCity] = useState("");
   const [priceLevel, setPriceLevel] = useState("");
 
+
   return (
     <motion.form
       initial={{ opacity: 0, y: 40 }}

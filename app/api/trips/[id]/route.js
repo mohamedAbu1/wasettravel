@@ -19,12 +19,13 @@ export async function GET(req, context) {
         id,
         title,
         description,
-        price,
         currency,
         duration,
         duration_unit,
         priceLevel,
         cover_image,
+         solo_price,
+      group_price,
         gallery_images,
         trip_cities (
           id,
@@ -117,8 +118,8 @@ export async function PUT(req, context) {
     const tripPayload = {
       title: body.title,
       description: body.description,
-      price: Number(body.price),
-      duration: body.duration,
+      solo_price: Number(body.solo_price), // 👈 السعر للفرد الخاص
+      group_price: Number(body.group_price), // 👈 السعر للفرد في مجموعة      duration: body.duration,
       priceLevel: body.priceLevel,
       cover_image: body.cover_image,
       gallery_images: body.gallery_images,
@@ -262,20 +263,20 @@ export async function DELETE(req, context) {
       console.error("❌ [DELETE] Error:", error.message);
       return NextResponse.json(
         { success: false, error: error.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.log("✅ [DELETE] Trip deleted successfully");
     return NextResponse.json(
       { success: true, message: "Trip deleted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("❌ [DELETE] Exception:", error.message);
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

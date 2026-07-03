@@ -12,13 +12,14 @@ export async function POST(req) {
       .insert({
         title: body.title,
         description: body.description,
-        price: body.price,
         currency: body.currency,
         duration: body.duration,
         duration_unit: body.duration_unit,
         cover_image: body.cover_image,
         gallery_images: body.gallery_images,
         priceLevel: body.priceLevel,
+        group_price: body.group_price,
+        solo_price:body.solo_price,
       })
       .select()
       .single();
@@ -140,11 +141,12 @@ export async function GET() {
       id,
       title,
       description,
-      price,
       currency,
       duration,
       duration_unit,
       priceLevel,
+      solo_price,
+      group_price,
       cover_image,
       gallery_images,
       trip_cities (
@@ -177,7 +179,7 @@ export async function GET() {
           created_at
         )
     `);
-
+console.log("sadsdasd",trips)
     if (error) {
       console.error("Trips fetch error:", error);
       throw error;

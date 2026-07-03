@@ -21,7 +21,7 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
   const { currency } = usePurchase();
 
   // ✅ القيم من الكويري كونتكست
-  const { city, category, price, popular, updateValue } = useQueryFilters();
+  const { city, category, group_price, popular, updateValue } = useQueryFilters();
 
   if (loading)
     return <p className="text-center text-gray-500">{t("Loading")}</p>;
@@ -166,7 +166,7 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
                   type="radio"
                   name="priceRange"
                   className="accent-[#c9a34a] cursor-pointer"
-                  checked={price === range.value} // ✅ هنا لو price = "All" يتحدد تلقائيًا
+                  checked={group_price === range.value} // ✅ هنا لو price = "All" يتحدد تلقائيًا
                   onChange={() => updateValue("price", range.value)}
                 />
                 {range.label}

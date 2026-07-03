@@ -20,7 +20,7 @@ export function QueryProvider({ children }) {
   const [queryState, setQueryState] = useState({
     city: "all",
     category: "all",
-    price: "All",
+    group_price: "All",
     popular: false,
   });
 
@@ -32,7 +32,7 @@ export function QueryProvider({ children }) {
     setQueryState({
       city: "all",
       category: "all",
-      price: "All",
+      group_price: "All",
       popular: false,
     });
   };
@@ -76,9 +76,9 @@ export function QueryProvider({ children }) {
         if (!tripCategories.some((c) => queryState.category.includes(c))) return false;
       }
 
-      if (queryState.price === "Economy" && !(trip.price <= 199)) return false;
-      if (queryState.price === "Standard" && !(trip.price > 199 && trip.price <= 599)) return false;
-      if (queryState.price === "Luxury" && !(trip.price > 600)) return false;
+      if (queryState.group_price === "Economy" && !(trip.group_price <= 199)) return false;
+      if (queryState.group_price === "Standard" && !(trip.group_price > 199 && trip.group_price <= 599)) return false;
+      if (queryState.group_price === "Luxury" && !(trip.group_price > 600)) return false;
 
       if (queryState.popular === true && !trip.isPopular) return false;
 

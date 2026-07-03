@@ -44,34 +44,38 @@ export function AuthProvider({ children }) {
   };
 
   // ✅ متابعة الجلسة بشكل مباشر
-  useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          const u = session.user;
-          setUser(u);
-          setIsLoggedIn(true);
+ useEffect(() => {
+  const { data: listener } = supabase.auth.onAuthStateChange(
+    async (event, session) => {
+      if (session?.user) {
+        const u = session.user;
 
-          updateValue("id", u.id);
-          updateValue("email", u.email);
-          updateValue("role", u.user_metadata?.role);
-          updateValue("name", u.user_metadata?.name);
-          updateValue("avatar", u.user_metadata?.avatar);
-          updateValue("gender", u.user_metadata?.gender);
+        // ✅ جلب الدور من جدول users
+        const { data: userData, error } = await supabase
+          .from("users")
+          .select("role")
+          .eq("id", u.id)
+          .single();
 
-          const encodedQuery = getEncodedQuery();
-          router.push(`/?data=${encodedQuery}`);
-        } else {
-          setUser(null);
-          setIsLoggedIn(false);
-        }
+        const role = userData?.role || "admin";
+
+        // ✅ دمج الدور مع بيانات المستخدم
+        const mergedUser = { ...u, role };
+
+        setUser(mergedUser);
+        setIsLoggedIn(true);
+      } else {
+        setUser(null);
+        setIsLoggedIn(false);
       }
-    );
+    }
+  );
 
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
+  return () => {
+    listener.subscription.unsubscribe();
+  };
+}, []);
+
 
   const register = async (email, password, name, gender) => {
     setLoading(true);

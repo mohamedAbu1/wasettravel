@@ -182,6 +182,14 @@ export default function ContactPage() {
                       />
                       <span>{t("sp")}</span>
                     </div>
+                    <div className="flex items-center gap-3">
+                      <FaMapMarkerAlt
+                        className={
+                          themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
+                        }
+                      />
+                      <span>owner : Mohamed Ahmed Abdelkader Ali </span>
+                    </div>
                   </div>
                 </motion.div>
 

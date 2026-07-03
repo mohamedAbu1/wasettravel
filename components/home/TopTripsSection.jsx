@@ -55,15 +55,22 @@ const TopTripsSection = () => {
     )
     .slice(0, 6);
 
-  const convertPrice = (price, tripCurrency) => {
-    let converted = price;
-    if (currency === "EUR" && tripCurrency === "USD") {
-      converted = (price * 0.85).toFixed(2);
-    } else if (currency === "USD" && tripCurrency === "EUR") {
-      converted = (price * 1.18).toFixed(2);
-    }
-    return converted;
-  };
+const convertPrice = (group_price, tripCurrency) => {
+  let converted = group_price;
+
+  if (currency === "EUR" && tripCurrency === "USD") {
+    converted = (group_price * 0.85).toFixed(2);
+  } else if (currency === "USD" && tripCurrency === "EUR") {
+    converted = (group_price * 1.18).toFixed(2);
+  } else if (currency === "EGP" && tripCurrency === "USD") {
+    converted = (group_price * 49.1).toFixed(2); // USD → EGP
+  } else if (currency === "USD" && tripCurrency === "EGP") {
+    converted = (group_price / 49.1).toFixed(2); // EGP → USD
+  }
+
+  return converted;
+};
+
 
   return (
     <section
@@ -153,7 +160,7 @@ const TopTripsSection = () => {
                   <p
                     className={`text-lg font-semibold ${themeName === "dark" ? "text-gold" : "text-[#c9a34a]"}`}
                   >
-                    {convertPrice(trip.price, trip.currency)} {currency}
+                    {convertPrice(trip.group_price, trip.currency)} {currency}
                   </p>
                   <button
                     onClick={() => router.push(`/trips/${trip.id}`)}

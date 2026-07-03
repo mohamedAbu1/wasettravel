@@ -22,8 +22,8 @@ export function TripIDProvider({ children }) {
       const res = await fetch("/api/trips", {
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "no-cache"
-        }
+          "Cache-Control": "no-cache",
+        },
       });
 
       const data = await res.json();
@@ -59,8 +59,8 @@ export function TripIDProvider({ children }) {
       const res = await fetch(`/api/trips/${id}`, {
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "no-cache"
-        }
+          "Cache-Control": "no-cache",
+        },
       });
 
       const data = await res.json();
@@ -90,11 +90,12 @@ export function TripIDProvider({ children }) {
     const tripPayload = {
       title: tripData.title,
       description: tripData.description,
-      price: tripData.price,
       duration: tripData.duration,
       priceLevel: tripData.priceLevel,
       cover_image: tripData.cover_image,
       gallery_images: tripData.gallery_images,
+      solo_price: tripData.solo_price,
+      group_price: tripData.group_price,
     };
 
     try {

@@ -42,6 +42,13 @@ export async function GET(req) {
 
     const finalAvatar = googleAvatar || getDefaultAvatar(user.user_metadata?.gender);
 
+    // ✅ تحديد الدور بناءً على البريد
+    const role =
+      user.email === "wasettraveleg@gmail.com" ||
+      user.email === "m95325862@gmail.com"
+        ? "admin"
+        : "user";
+
     // ✅ upsert المستخدم في قاعدة البيانات
     const { error: upsertError } = await supabaseAdmin
       .from("users")
@@ -51,6 +58,7 @@ export async function GET(req) {
         name: user.user_metadata?.name || user.email.split("@")[0],
         avatar: finalAvatar,
         gender: user.user_metadata?.gender || "other",
+        role: role, // 👈 هنا الدور ديناميكي
         created_at: new Date().toISOString(),
       });
 

@@ -1,8 +1,8 @@
 "use client";
+import React, { use, useEffect, useState } from "react";
 import { useTrip } from "@/context/TripContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
-import { useEffect, useState } from "react";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/header/Header";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
@@ -26,23 +26,23 @@ import { useRouter } from "next/navigation";
 import SignUpModal from "@/components/home/components/SignUpButton";
 
 export default function TripPage({ params }) {
-  const { id } = params; // ✅ استخدم params مباشرة بدل use()
   const { trips, fetchTrips, getTripById } = useTrip();
   const { lang } = useLanguage();
   const { themeName } = useTheme();
   const { user } = useAuth();
   const { purchases } = usePurchase();
   const router = useRouter();
-
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  // ✅ فك الـ params بشكل صحيح
+  const { id } = use(params);
 
   useEffect(() => {
     if (!trips.length) {
       fetchTrips();
     }
-  }, []);
+  }, [trips, fetchTrips]);
 
-  // ✅ مراقبة حجم الشاشة
   useEffect(() => {
     const checkScreen = () => setIsSmallScreen(window.innerWidth <= 1024);
     checkScreen();
@@ -54,6 +54,36 @@ export default function TripPage({ params }) {
   if (!trip) {
     return <p>Trip not found</p>;
   }
+
+const localizedTrip = {
+  ...trip,
+  title: trip.title?.[lang] || trip.title?.en,
+  description: trip.description?.[lang] || trip.description?.en,
+  cities: Array.isArray(trip.cities)
+    ? trip.cities.map(c => (typeof c === "object" ? c?.[lang] || c?.en : c))
+    : typeof trip.cities === "object"
+      ? trip.cities?.[lang] || trip.cities?.en
+      : trip.cities,
+  categories: Array.isArray(trip.categories)
+    ? trip.categories.map(cat => (typeof cat === "object" ? cat?.[lang] || cat?.en : cat))
+    : typeof trip.categories === "object"
+      ? trip.categories?.[lang] || trip.categories?.en
+      : trip.categories,
+  includes: Array.isArray(trip.includes)
+    ? trip.includes.map(i => (typeof i === "object" ? i?.[lang] || i?.en : i))
+    : typeof trip.includes === "object"
+      ? trip.includes?.[lang] || trip.includes?.en
+      : trip.includes,
+  itinerary: Array.isArray(trip.itinerary)
+    ? trip.itinerary.map(it => (typeof it === "object" ? it?.[lang] || it?.en : it))
+    : typeof trip.itinerary === "object"
+      ? trip.itinerary?.[lang] || trip.itinerary?.en
+      : trip.itinerary,
+};
+
+
+
+
 
   const hasActivePurchase = purchases.some(
     (p) =>
@@ -74,7 +104,6 @@ export default function TripPage({ params }) {
       <EgyptianBackground />
 
       {isSmallScreen ? (
-        // ✅ واجهة بديلة للهواتف والشاشات الصغيرة
         <motion.div
           initial={{ opacity: 0, scale: 0.8, rotateY: 90 }}
           animate={{ opacity: 1, scale: 1, rotateY: 0 }}
@@ -82,7 +111,7 @@ export default function TripPage({ params }) {
           className="flex flex-col items-center justify-center h-[70vh] text-center gap-6"
         >
           <h2 className="text-4xl font-extrabold text-[#c9a34a] drop-shadow-lg">
-            🚫 This page is not available on phones.🚫 
+            🚫 This page is not available on phones. 🚫
           </h2>
           <p className="text-lg text-gray-600">
             You should go to the homepage to follow your trips
@@ -95,7 +124,6 @@ export default function TripPage({ params }) {
           </button>
         </motion.div>
       ) : (
-        // ✅ التصميم العادي لصفحة الرحلة
         <div
           style={{ paddingTop: "110px" }}
           className="max-w-7xl mx-auto p-6 relative z-10 grid gap-8 
@@ -108,10 +136,10 @@ export default function TripPage({ params }) {
           <div className="col-span-3 flex flex-row gap-8">
             <div className="col-span-3 flex flex-col gap-2.5">
               <TripInfo trip={trip} lang={lang} />
-              <TripCities trip={trip} lang={lang} />
-              <TripCategories trip={trip} lang={lang} />
+              <TripCities trip={localizedTrip} lang={lang} />
+              <TripCategories trip={localizedTrip} lang={lang} />
             </div>
-            <TripVideo trip={trip} lang={lang} />
+            <TripVideo trip={localizedTrip} lang={lang} />
             <AccessibilityInfo theme="dark" />
           </div>
 
@@ -120,24 +148,23 @@ export default function TripPage({ params }) {
           </div>
 
           <div className="col-span-1 lg:col-span-3">
-            <TripItinerary trip={trip} lang={lang} />
+            <TripItinerary trip={localizedTrip} lang={lang} />
           </div>
 
           <div className="col-span-1 lg:col-span-3">
-            <TripReviews trip={trip} lang={lang} />
+            <TripReviews trip={localizedTrip} lang={lang} />
             {user &&
               (hasActivePurchase ? (
-                <CancelButton trip={trip} />
+                <CancelButton trip={localizedTrip} />
               ) : (
-                <PurchaseButton trip={trip} />
+                <PurchaseButton trip={localizedTrip} />
               ))}
           </div>
         </div>
       )}
 
       <Footer />
-              <SignUpModal />
-      
+      <SignUpModal />
       <LoginModal />
       {user && <ChatWidget />}
     </main>

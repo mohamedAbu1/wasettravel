@@ -11,7 +11,7 @@ export default function AdminDashboardButton() {
   const router = useRouter();
   const { theme } = useTheme();
   // ✅ تحقق من أن المستخدم أدمن
-  const isAdmin = user?.user_metadata?.role?.includes("ADMIN");
+  const isAdmin = user?.role?.includes("admin");
 
   const goToDashboard = () => {
     router.push("/admin"); // المسار الخاص بلوحة التحكم

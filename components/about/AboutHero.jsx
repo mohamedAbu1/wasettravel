@@ -34,32 +34,31 @@ export default function AboutHero() {
           <p
             className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"} text-lg`}
           >
-            About Waset Travel Welcome to Waset Travel, your trusted gateway to
-            discovering the timeless wonders of Egypt. Our name, Waset, is the
-            authentic ancient Egyptian name for the glorious city of Thebes
-            (modern-day Luxor)—the historic heart of Egypt’s golden empire,
-            majesty, and pharaonic heritage. Inspired by this profound legacy,
-            our digitally-driven travel platform is founded and operated
-            directly by officially licensed Egyptian tour guides and
-            Egyptologists. Unlike traditional commercial agencies, we operate
-            directly on the ground without the overhead costs of physical
-            offices. This allows us to channel all our resources into what truly
-            matters: providing you with top-tier, personalized, and
-            budget-friendly private tours. Why Choose Waset Travel? Licensed &
-            Certified Guides: Every tour is curated and led by certified
-            Egyptologists holding official permits from the Egyptian Ministry of
-            Tourism. You will experience history from the experts who live it.
-            Fully Legal & Transparent: We operate with full financial
-            transparency, backed by official tax registration, ensuring your
-            peace of mind from booking to departure. Tailormade Experiences:
-            Inspired by the grandeur of ancient Waset, we specialize in private,
-            customizable itineraries—from the majestic Pyramids of Giza to the
-            hidden gems of Luxor and Cairo. Best Value on the Ground: By cutting
-            out the middleman and physical office costs, we offer exceptional
-            quality tours at fair, direct-to-expert prices. At Waset Travel, we
-            don't just show you Egypt; we connect you to the true majesty and
-            history of the cradle of civilization. Let us craft an unforgettable
-            journey tailored just for you.
+            Welcome to Waset Travel, your trusted gateway to discovering the
+            timeless wonders of Egypt. Our name, Waset, is the authentic ancient
+            Egyptian name for the glorious city of Thebes (modern-day Luxor)—the
+            historic heart of Egypt’s golden empire, majesty, and pharaonic
+            heritage. Inspired by this profound legacy, our digitally-driven
+            travel platform is founded and operated directly by officially
+            licensed Egyptian tour guides and Egyptologists. Unlike traditional
+            commercial agencies, we operate directly on the ground without the
+            overhead costs of physical offices. This allows us to channel all
+            our resources into what truly matters: providing you with top-tier,
+            personalized, and budget-friendly private tours. Why Choose Waset
+            Travel? Licensed & Certified Guides: Every tour is curated and led
+            by certified Egyptologists holding official permits from the
+            Egyptian Ministry of Tourism. You will experience history from the
+            experts who live it. Fully Legal & Transparent: We operate with full
+            financial transparency, backed by official tax registration,
+            ensuring your peace of mind from booking to departure. Tailormade
+            Experiences: Inspired by the grandeur of ancient Waset, we
+            specialize in private, customizable itineraries—from the majestic
+            Pyramids of Giza to the hidden gems of Luxor and Cairo. Best Value
+            on the Ground: By cutting out the middleman and physical office
+            costs, we offer exceptional quality tours at fair, direct-to-expert
+            prices. At Waset Travel, we don't just show you Egypt; we connect
+            you to the true majesty and history of the cradle of civilization.
+            Let us craft an unforgettable journey tailored just for you.
           </p>
         </motion.div>
 

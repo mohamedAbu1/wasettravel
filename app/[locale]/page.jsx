@@ -10,18 +10,31 @@ import TopTripsSection from "@/components/home/TopTripsSection";
 import LoginModal from "@/components/home/components/LoginModal";
 import TopReviewsSection from "@/components/home/components/TopReviewsSection";
 import ChatWidget from "@/components/layout/ChatWidget";
-import { useAuth } from "@/context/AuthContext"; // ✅ استدعاء الـ Auth
+import { useAuth } from "@/context/AuthContext"; 
 import Head from "next/head";
 import { useLanguage } from "@/context/LanguageContext";
 import { homeMetadata } from "@/lib/metadata/home";
 import CurrencySelector from "@/components/layout/CurrencySelector";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import SignUpModal from "@/components/home/components/SignUpButton";
-// import { useQueryFilters } from "@/context/QueryContext";
+import { useEffect, useState } from "react";
+
 export default function Home() {
-  const { user } = useAuth(); // ✅ جلب المستخدم الحالي
+  const { userData } = useAuth(); // ✅ جلب المستخدم الحالي من الـ API
   const { lang } = useLanguage();
   const meta = homeMetadata[lang] || homeMetadata.en;
+  const [dbStatus, setDbStatus] = useState(null);
+
+  useEffect(() => {
+    async function checkConnection() {
+      const res = await fetch("/api/testConnection");
+      const data = await res.json();
+      setDbStatus(data);
+    }
+    checkConnection();
+  }, []);
+
+  // ✅ دمج بيانات المستخدم من AuthContext و NextAuth
 
   return (
     <>
@@ -44,7 +57,7 @@ export default function Home() {
 
         {/* ================= CATEGORIES SECTION ================= */}
         <CategoriesSection />
-
+       
         {/* ================= TOP TRIPS SECTION ================= */}
         <TopTripsSection />
 
@@ -62,8 +75,8 @@ export default function Home() {
         <LoginModal />
 
         {/* نافذة الدردشة تظهر فقط لو المستخدم مسجل دخول */}
-        {user && <ChatWidget />}
-        {user && <AdminDashboardButton />}
+        {userData && <ChatWidget />}
+        {userData && <AdminDashboardButton />}
         <CurrencySelector />
       </main>
     </>

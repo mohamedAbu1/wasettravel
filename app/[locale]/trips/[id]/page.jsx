@@ -11,7 +11,7 @@ import TripHeader from "./components/TripHeader";
 import TripCities from "./components/TripCities";
 import TripCategories from "./components/TripCategories";
 import TripIncludes from "./components/TripIncludes";
-import TripItinerary from "./components/TripItinerary";
+// import TripItinerary from "./components/TripItinerary";
 import TripInfo from "./components/TripInfo";
 import TripReviews from "./components/TripReviews";
 import ChatWidget from "@/components/layout/ChatWidget";
@@ -29,7 +29,7 @@ export default function TripPage({ params }) {
   const { trips, fetchTrips, getTripById } = useTrip();
   const { lang } = useLanguage();
   const { themeName } = useTheme();
-  const { user } = useAuth();
+  const { userData } = useAuth();
   const { purchases } = usePurchase();
   const router = useRouter();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -42,7 +42,7 @@ export default function TripPage({ params }) {
       fetchTrips();
     }
   }, [trips, fetchTrips]);
-
+console.log("object",trips)
   useEffect(() => {
     const checkScreen = () => setIsSmallScreen(window.innerWidth <= 1024);
     checkScreen();
@@ -59,27 +59,39 @@ const localizedTrip = {
   ...trip,
   title: trip.title?.[lang] || trip.title?.en,
   description: trip.description?.[lang] || trip.description?.en,
+
+  // ✅ المدن
   cities: Array.isArray(trip.cities)
-    ? trip.cities.map(c => (typeof c === "object" ? c?.[lang] || c?.en : c))
-    : typeof trip.cities === "object"
-      ? trip.cities?.[lang] || trip.cities?.en
-      : trip.cities,
+    ? trip.cities.map(c =>
+        typeof c?.name === "object"
+          ? c.name[lang] || c.name.en || Object.values(c.name)[0]
+          : c?.name || c
+      )
+    : trip.cities,
+
+  // ✅ التصنيفات
   categories: Array.isArray(trip.categories)
-    ? trip.categories.map(cat => (typeof cat === "object" ? cat?.[lang] || cat?.en : cat))
-    : typeof trip.categories === "object"
-      ? trip.categories?.[lang] || trip.categories?.en
-      : trip.categories,
+    ? trip.categories.map(cat =>
+        typeof cat?.name === "object"
+          ? cat.name[lang] || cat.name.en || Object.values(cat.name)[0]
+          : cat?.name || cat
+      )
+    : trip.categories,
+
+  // ✅ الباقي زي ما هو
   includes: Array.isArray(trip.includes)
-    ? trip.includes.map(i => (typeof i === "object" ? i?.[lang] || i?.en : i))
-    : typeof trip.includes === "object"
-      ? trip.includes?.[lang] || trip.includes?.en
-      : trip.includes,
-  itinerary: Array.isArray(trip.itinerary)
-    ? trip.itinerary.map(it => (typeof it === "object" ? it?.[lang] || it?.en : it))
-    : typeof trip.itinerary === "object"
-      ? trip.itinerary?.[lang] || trip.itinerary?.en
-      : trip.itinerary,
+    ? trip.includes.map(i =>
+        typeof i === "object" ? i?.[lang] || i?.en : i
+      )
+    : trip.includes,
+
+  // days: Array.isArray(trip.days)
+  //   ? trip.day_activities.map(it =>
+  //       typeof it === "object" ? it?.[lang] || it?.en : it
+  //     )
+  //   : trip.days,
 };
+
 
 
 
@@ -88,7 +100,7 @@ const localizedTrip = {
   const hasActivePurchase = purchases.some(
     (p) =>
       p.trip_id === trip.id &&
-      p.user_id === user?.id &&
+      p.user_id === userData?.id &&
       p.status !== "Cancelled",
   );
 
@@ -147,13 +159,13 @@ const localizedTrip = {
             <TripIncludes trip={trip} lang={lang} />
           </div>
 
-          <div className="col-span-1 lg:col-span-3">
+          {/* <div className="col-span-1 lg:col-span-3">
             <TripItinerary trip={localizedTrip} lang={lang} />
-          </div>
+          </div> */}
 
           <div className="col-span-1 lg:col-span-3">
             <TripReviews trip={localizedTrip} lang={lang} />
-            {user &&
+            {userData &&
               (hasActivePurchase ? (
                 <CancelButton trip={localizedTrip} />
               ) : (
@@ -166,7 +178,7 @@ const localizedTrip = {
       <Footer />
       <SignUpModal />
       <LoginModal />
-      {user && <ChatWidget />}
+      {userData && <ChatWidget />}
     </main>
   );
 }

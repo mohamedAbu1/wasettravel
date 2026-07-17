@@ -1,27 +1,28 @@
 "use client";
 import React from "react";
-import { FaTachometerAlt } from "react-icons/fa"; // أيقونة الداش بورد
+import { FaTachometerAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 
 export default function AdminDashboardButton() {
-  const { user } = useAuth();
+  const { userData } = useAuth(); // ✅ بيانات من الـ API الخاص بك
   const router = useRouter();
   const { theme } = useTheme();
-  // ✅ تحقق من أن المستخدم أدمن
-  const isAdmin = user?.role?.includes("admin");
 
+  // تحقق من أن المستخدم أدمن (مع تحويل الأحرف لـ lowercase)
+  const isAdmin = userData?.role?.toLowerCase() === "admin";
+  console.log(isAdmin);
   const goToDashboard = () => {
-    router.push("/admin"); // المسار الخاص بلوحة التحكم
+    router.push("/admin");
   };
 
-  if (!isAdmin) return null; // الزر يظهر فقط للأدمن
+  if (!isAdmin) return null;
 
   return (
-     <motion.button
-      style={{ cursor: "pointer" ,zIndex:"999"}}
+    <motion.button
+      style={{ cursor: "pointer", zIndex: "999" }}
       onClick={goToDashboard}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}

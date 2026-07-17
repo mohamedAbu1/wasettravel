@@ -21,11 +21,12 @@ export default function TripCategories({ trip, lang }) {
   // لو اللغة مش موجودة، نرجع للإنجليزية
   const t = translations[lang] || translations.en;
 
-  // دالة ترجمة النصوص من jsonb
+  // ✅ دالة ترجمة النصوص
   const getLocalizedText = (obj) => {
     if (!obj) return "Unknown";
     if (typeof obj === "string") return obj;
-    return obj?.[lang] || obj?.en || "Unknown";
+    if (typeof obj === "object") return obj?.[lang] || obj?.en || Object.values(obj)[0];
+    return "Unknown";
   };
 
   return (
@@ -56,22 +57,22 @@ export default function TripCategories({ trip, lang }) {
         {t.title}
       </motion.h2>
 
-      {/* الكاتجريز */}
+      {/* التصنيفات */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {trip.trip_categories?.map((cat, idx) => {
-          // نجيب الكاتجري من allCategories بالـ id
-          const catObj = allCategories.find(
-            (category) => category.id === cat.category_id
-          );
+        {trip.categories?.filter(Boolean).map((cat, idx) => {
+          // ✅ لو العنصر مجرد ID → نبحث عنه في allCategories
+          const catId = typeof cat === "number" ? cat : cat?.id || cat?.category_id;
+          // const catObj = allCategories.find((category) => category.id === catId);
 
-          const categoryName =
-            getLocalizedText(catObj?.name) ||
-            getLocalizedText(cat.categories?.name) ||
-            "Unknown";
+          // // ✅ الاسم النهائي
+          // const categoryName =
+          //   getLocalizedText(catObj?.name) ||
+          //   getLocalizedText(cat?.name) ||
+          //   "Unknown";
 
           return (
             <motion.div
-              key={cat.category_id}
+              key={catId || idx}
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
@@ -89,7 +90,7 @@ export default function TripCategories({ trip, lang }) {
                 }`}
               />
               <span className="text-sm md:text-base font-medium">
-                {categoryName}
+                {cat}
               </span>
             </motion.div>
           );

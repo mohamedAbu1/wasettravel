@@ -1,34 +1,16 @@
-import { supabase } from "@/lib/supabaseClient";
+import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/db";
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from("categories")
-      .select("*")
-      .order("name", { ascending: true });
 
-    if (error) throw error;
+    const db = await connectDB();
 
-    return new Response(
-      JSON.stringify({ success: true, categories: data }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "public, max-age=3600" // ✅ تخزين لمدة ساعة
-        }
-      }
-    );
-  } catch (err) {
-    return new Response(
-      JSON.stringify({ success: false, error: err.message }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-store" // ✅ لا تخزن الأخطاء
-        }
-      }
-    );
+    const [rows] = await db.execute("SELECT * FROM categories ORDER BY name ASC");
+
+    return NextResponse.json({ success: true, categories: rows });
+  } catch (error) {
+    console.error("❌ Database error:", error.message);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

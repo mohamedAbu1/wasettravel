@@ -1,27 +1,21 @@
+// file: app/api/auth/logout/route.js
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
 
 export async function POST() {
   try {
-    // إنهاء الجلسة في Supabase
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error("Error signing out:", error.message);
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
-    // مسح الكوكيز
+    // ✅ مسح الكوكيز الخاصة بالجلسة
     const response = NextResponse.json({ message: "Logged out successfully" });
-    response.cookies.set("sb-access-token", "", {
+
+    response.cookies.set("access-token", "", {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       path: "/",
       maxAge: 0,
     });
-    response.cookies.set("sb-refresh-token", "", {
+
+    response.cookies.set("refresh-token", "", {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       path: "/",
       maxAge: 0,
     });

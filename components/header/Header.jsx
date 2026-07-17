@@ -5,15 +5,16 @@ import { useTheme } from "@/context/ThemeContext";
 import Logo from "./components/Logo";
 import NavBar from "./components/NavBar";
 import RightBar from "./components/RightBar";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 import { useAuth } from "@/context/AuthContext";
 import { FaSignOutAlt, FaUserPlus } from "react-icons/fa";
 import { useData } from "@/context/DataContext";
+import { signOut, signIn } from "next-auth/react"; // ✅ إضافة
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { theme } = useTheme();
-  const { isLoggedIn, logout, handleOpen } = useAuth();
+  const { logout, handleOpen, userData } = useAuth();
   const { handleLoginOpen } = useData();
 
   useEffect(() => {
@@ -38,9 +39,10 @@ export default function Header() {
         <NavBar scrolled={scrolled} />
         <RightBar scrolled={scrolled} />
 
+        {/* ✅ Show button depending on userData */}
         <motion.div whileHover={{ scale: 1.1 }} className="hidden lg:flex">
           <Button
-            onClick={isLoggedIn ? logout : handleOpen}
+            onClick={userData ? () => signOut() : () => handleLoginOpen()}
             style={{
               padding: "12px 24px",
               background: "linear-gradient(to right, #c9a34a, #eab308)",
@@ -55,10 +57,16 @@ export default function Header() {
               gap: "8px",
             }}
           >
-            {isLoggedIn ? (
-              <FaSignOutAlt size={20} /> // أيقونة خروج
+            {userData ? (
+              <>
+                <FaSignOutAlt size={20} />
+                <span>Logout</span>
+              </>
             ) : (
-              <FaUserPlus size={20} /> // أيقونة تسجيل
+              <>
+                <FaUserPlus size={20} />
+                <span>Login</span>
+              </>
             )}
           </Button>
         </motion.div>

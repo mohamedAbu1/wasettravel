@@ -4,7 +4,6 @@ import { useTheme } from "@/context/ThemeContext";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { motion } from "framer-motion";
 
-// كائن الترجمات للعناوين
 const translations = {
   en: { title: "Cities" },
   de: { title: "Städte" },
@@ -17,16 +16,35 @@ const translations = {
 export default function TripCities({ trip, lang }) {
   const { themeName } = useTheme();
   const { cities: allCities } = useCitiesCategories();
-
-  // لو اللغة مش موجودة، نرجع للإنجليزية
+console.log("object",trip)
   const t = translations[lang] || translations.en;
 
-  // دالة ترجمة النصوص من jsonb
+  // ✅ دالة ترجمة النصوص
   const getLocalizedText = (obj) => {
     if (!obj) return "Unknown";
     if (typeof obj === "string") return obj;
-    return obj?.[lang] || obj?.en || "Unknown";
+    if (typeof obj === "object") return obj?.[lang] || obj?.en || Object.values(obj)[0];
+    return "Unknown";
   };
+
+  // ✅ تأكد إن المدن Array حتى لو جاية كـ string أو object
+  let cities = [];
+  try {
+    if (Array.isArray(trip.cities)) {
+      cities = trip.cities;
+    } else if (typeof trip.cities === "string") {
+      const parsed = JSON.parse(trip.cities);
+      cities = Array.isArray(parsed) ? parsed : [parsed];
+    } else if (typeof trip.cities === "object" && trip.cities !== null) {
+      cities = [trip.cities];
+    }
+  } catch {
+    cities = [];
+  }
+
+  console.log("Trip.cities raw:", trip.cities);
+  console.log("Parsed cities:", cities);
+  console.log("All cities from context:", allCities);
 
   return (
     <motion.section
@@ -58,18 +76,24 @@ export default function TripCities({ trip, lang }) {
 
       {/* المدن */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {trip.trip_cities?.map((c, idx) => {
-          // نجيب المدينة من allCities بالـ id
-          const cityObj = allCities.find((city) => city.id === c.city_id);
+        {cities.filter(Boolean).map((c, idx) => {
+          console.log("City item:", c);
 
-          const cityName =
-            getLocalizedText(cityObj?.name) ||
-            getLocalizedText(c.cities?.name) ||
-            "Unknown";
+          // // ✅ لو العنصر مجرد ID → نبحث عنه في allCities
+          const cityId = typeof c === "number" ? c : c?.id || c?.city_id || c?.cityId;
+          // const cityObj = allCities.find((city) => city.id === cityId);
+
+          // // ✅ الاسم النهائي
+          // const cityName =
+          //   getLocalizedText(cityObj?.name) ||
+          //   getLocalizedText(c?.name) ||
+          //   "Unknown";
+
+          // console.log("Final cityName:", cityName);
 
           return (
             <motion.div
-              key={c.city_id}
+              key={cityId || idx}
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
@@ -87,7 +111,7 @@ export default function TripCities({ trip, lang }) {
                 }`}
               />
               <span className="text-sm md:text-base font-medium">
-                {cityName}
+                {c}
               </span>
             </motion.div>
           );

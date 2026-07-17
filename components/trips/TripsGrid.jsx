@@ -9,6 +9,30 @@ import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/context/LanguageContext";
 import { useEffect, useState } from "react";
 
+// 🟢 دالة تحسين الصور مع fallback
+const optimize = (url) => {
+  if (!url || typeof url !== "string" || url.trim() === "") {
+    return "/fallback.jpg"; // صورة افتراضية
+  }
+
+  // إزالة اللغة من المسار (en, fr, de, es, it, zh)
+  let cleanUrl = url.replace(/\/(en|fr|de|es|it|zh)\//, "/");
+
+  // إزالة أي query قديمة
+  cleanUrl = cleanUrl.split("?")[0];
+
+  // لو الرابط يبدأ بـ http → أضف الكويري
+  if (cleanUrl.startsWith("http")) {
+    return `${cleanUrl}?width=800&quality=70&format=webp`;
+  }
+
+  // لو مجرد اسم ملف → ضيف "/" في البداية لو مش موجود وأضف الكويري
+  const finalUrl = cleanUrl.startsWith("/") ? cleanUrl : `/${cleanUrl}`;
+  return `${finalUrl}?width=800&quality=70&format=webp`;
+};
+
+
+
 export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const router = useRouter();
   const { user } = useAuth();
@@ -17,30 +41,31 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const { lang } = useLanguage();
   const getRandomStars = () => Math.floor(Math.random() * 3) + 3;
 
-  // 🟢 state لتخزين سعر الصرف
-  const [exchangeRate, setExchangeRate] = useState({ USD_EGP: 49.1, EUR_USD: 1.18, USD_EUR: 0.85 });
+  const [exchangeRate, setExchangeRate] = useState({
+    USD_EGP: 49.1,
+    EUR_USD: 1.18,
+    USD_EUR: 0.85,
+  });
 
-useEffect(() => {
-  const fetchRate = async () => {
-    try {
-      const res = await fetch("https://api.exchangerate.host/latest?base=USD&symbols=EGP");
-      const data = await res.json();
-
-      // تحقق إن البيانات موجودة قبل التعيين
-      if (data && data.rates && data.rates.EGP) {
-        setExchangeRate((prev) => ({ ...prev, USD_EGP: data.rates.EGP }));
-      } else {
-        console.warn("EGP rate not found in API response:", data);
+  useEffect(() => {
+    const fetchRate = async () => {
+      try {
+        const res = await fetch(
+          "https://api.exchangerate.host/latest?base=USD&symbols=EGP"
+        );
+        const data = await res.json();
+        if (data && data.rates && data.rates.EGP) {
+          setExchangeRate((prev) => ({ ...prev, USD_EGP: data.rates.EGP }));
+        } else {
+          console.warn("EGP rate not found in API response:", data);
+        }
+      } catch (err) {
+        console.error("Error fetching EGP rate:", err);
       }
-    } catch (err) {
-      console.error("Error fetching EGP rate:", err);
-    }
-  };
-  fetchRate();
-}, []);
+    };
+    fetchRate();
+  }, []);
 
-
-  // 🟢 دالة التحويل
   const convertPrice = (price, tripCurrency) => {
     let converted = price;
     if (currency === "EUR" && tripCurrency === "USD") {
@@ -52,7 +77,6 @@ useEffect(() => {
     }
     return converted;
   };
-
   return (
     <div
       className={`flex-1 z-[0] ${
@@ -63,7 +87,7 @@ useEffect(() => {
     >
       {trips.map((trip, i) => {
         const avgStars = getRandomStars();
-        const displayedPrice = convertPrice(trip.group_price, "USD"); // نفترض أن السعر الأساسي بالدولار
+        const displayedPrice = convertPrice(trip.group_price, trip.currency || "USD");
 
         const hasPurchased =
           user &&
@@ -71,9 +95,34 @@ useEffect(() => {
             (p) =>
               p.user_id?.toString() === user.id?.toString() &&
               p.trip_id?.toString() === trip.id?.toString() &&
-              p.status !== "Cancelled",
+              p.status !== "Cancelled"
           );
 
+        // ✅ معالجة العنوان سواء كان نص أو JSON
+        const tripTitle =
+          typeof trip.title === "object"
+            ? trip.title[lang] || trip.title.en || Object.values(trip.title)[0]
+            : trip.title || "Untitled";
+
+   // ✅ معالجة المدن
+const tripCities =
+  trip.cities?.map((c) => {
+    const name = c?.name;
+    return typeof name === "object"
+      ? name[lang] || name.en || Object.values(name)[0]
+      : name;
+  }) || [];
+
+// ✅ معالجة التصنيفات
+const tripCategories =
+  trip.categories?.map((cat) => {
+    const name = cat?.name;
+    return typeof name === "object"
+      ? name[lang] || name.en || Object.values(name)[0]
+      : name;
+  }) || [];
+
+ 
         return (
           <motion.div
             key={trip.id || i}
@@ -89,8 +138,8 @@ useEffect(() => {
             }`}
           >
             <Image
-              src={trip.cover_image || "/default.jpg"}
-              alt={trip.title?.[lang] || trip.title?.en || "Trip image"}
+              src={optimize(trip.cover_image)}
+              alt={tripTitle}
               width={660}
               height={400}
               className="object-cover w-full h-full rounded-lg"
@@ -98,20 +147,22 @@ useEffect(() => {
             />
 
             <div className="absolute bottom-0 p-4 w-full flex flex-col gap-2 text-white bg-gradient-to-t from-black/70 to-transparent">
-              <h4 className="text-lg font-bold">
-                {trip.title?.[lang] || trip.title?.en || "Untitled"}
-              </h4>
+              <h4 className="text-lg font-bold">{tripTitle}</h4>
               <p className="text-sm opacity-90">
-                {trip.trip_cities?.map((c) => c.cities?.name?.[lang] || c.cities?.name?.en || c.city_name).join(", ") ||
-                  t("NoCity")}
+                {tripCities.join(", ") || t("NoCity")}
               </p>
               <p className="text-sm opacity-90">
-                {trip.trip_categories?.map((cat) => cat.categories?.name?.[lang] || cat.categories?.name?.en).join(", ") ||
-                  t("NoCategory")}
+                {tripCategories.join(", ") || t("NoCategory")}
               </p>
               <p className="text-md font-semibold flex items-center gap-2">
                 <span className="px-2 py-1 rounded flex items-center gap-1 bg-[#c9a34a] text-white">
-                  {currency === "USD" ? <FaDollarSign /> : currency === "EUR" ? <FaEuroSign /> : "£"}
+                  {currency === "USD" ? (
+                    <FaDollarSign />
+                  ) : currency === "EUR" ? (
+                    <FaEuroSign />
+                  ) : (
+                    "£"
+                  )}
                   {displayedPrice} {currency}
                 </span>
               </p>
@@ -120,7 +171,11 @@ useEffect(() => {
                 {[...Array(5)].map((_, idx) => (
                   <FaStar
                     key={idx}
-                    className={idx < avgStars ? "text-yellow-400" : "text-gray-500 opacity-50"}
+                    className={
+                      idx < avgStars
+                        ? "text-yellow-400"
+                        : "text-gray-500 opacity-50"
+                    }
                   />
                 ))}
                 <span className="text-sm opacity-80">({t("reviews")})</span>
@@ -129,7 +184,9 @@ useEffect(() => {
               <button
                 onClick={() => router.push(`/trips/${trip.id}`)}
                 className={`mt-2 px-4 py-2 rounded-lg font-bold transition text-white ${
-                  hasPurchased ? "bg-green-500 hover:bg-green-600" : "bg-[#c9a34a] hover:bg-yellow-500"
+                  hasPurchased
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "bg-[#c9a34a] hover:bg-yellow-500"
                 }`}
               >
                 {hasPurchased ? t("Tripdetails") : t("btn")}

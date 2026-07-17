@@ -1,142 +1,145 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
-import { supabase } from "@/lib/supabaseClient";
 
 const MessageContext = createContext();
 
 export function MessageProvider({ children }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { userData } = useAuth();
 
   // ✅ جلب رسائل المستخدم الحالي
   const fetchMessages = async (userId) => {
-    const res = await fetch(`/api/messages?userId=${userId}`);
-    const data = await res.json();
-    setMessages(Array.isArray(data) ? data : []);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/messages?userId=${userId}`);
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("❌ Error fetching messages:", text);
+        return;
+      }
+
+      const data = await res.json();
+      setMessages(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("❌ Error fetching messages:", err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // ✅ إرسال رسالة جديدة
   const sendMessage = async ({
     user_id,
     content,
     sender_type,
     status = "sent",
+    reply_to = null,
+    admin_id = null,
   }) => {
     const payload = {
       user_id,
-      user_name: user?.user_metadata?.name || "Unknown User",
-      user_image:
-        user?.user_metadata?.picture || // صورة جوجل
-        user?.user_metadata?.avatar_url || // صورة من Supabase
-        user?.user_metadata?.avatar || // صورة من التسجيل العادي
-        "/default-avatar.png", // صورة افتراضية
-
+      user_name: userData?.name || "Unknown User",
+      user_image: userData?.avatar_url || userData?.image ,
       content,
       sender_type,
       status,
+      reply_to,
+      admin_id,
     };
 
     // أضف الرسالة مباشرة للـ state علشان تظهر فورًا
     const tempMessage = {
       ...payload,
-      id: Date.now(), // ID مؤقت لتمييز الرسالة
-      status: "pending", // حالة مؤقتة
+      id: Date.now(), // ID مؤقت
+      status: "pending",
     };
     setMessages((prev) => [...prev, tempMessage]);
 
-    // أرسل الرسالة للسيرفر
-    const res = await fetch("/api/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await res.json();
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("❌ Server error:", text);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === tempMessage.id ? { ...msg, status: "error" } : msg
+          )
+        );
+        return { error: text };
+      }
 
-    if (data.error) {
-      console.error("❌ Error sending message:", data.error);
-      // تحديث الحالة إلى فشل
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === tempMessage.id ? { ...msg, status: "error" } : msg,
-        ),
-      );
-    } else {
-      // تحديث الرسالة المؤقتة بالـ ID الحقيقي من السيرفر
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === tempMessage.id ? { ...msg, ...data, status: "sent" } : msg,
-        ),
-      );
+      const data = await res.json();
+
+      if (data.error) {
+        console.error("❌ Error sending message:", data.error);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === tempMessage.id ? { ...msg, status: "error" } : msg
+          )
+        );
+      } else {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === tempMessage.id ? { ...msg, ...data, status: "sent" } : msg
+          )
+        );
+      }
+
+      return data;
+    } catch (err) {
+      console.error("❌ Error sending message:", err.message);
+      return { error: err.message };
     }
-
-    return data;
   };
 
   // ✅ تحديث حالة الرسالة إلى "seen"
   const markMessageSeen = async (messageId) => {
-    const res = await fetch("/api/messages", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messageId }),
-    });
+    try {
+      const res = await fetch("/api/messages", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messageId }),
+      });
 
-    const data = await res.json();
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("❌ Server error:", text);
+        return { error: text };
+      }
 
-    if (!data.error) {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId ? { ...msg, status: "seen" } : msg,
-        ),
-      );
-    } else {
-      console.error("❌ Error marking message seen:", data.error);
+      const data = await res.json();
+
+      if (!data.error) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId ? { ...msg, status: "seen" } : msg
+          )
+        );
+      } else {
+        console.error("❌ Error marking message seen:", data.error);
+      }
+
+      return data;
+    } catch (err) {
+      console.error("❌ Error marking message seen:", err.message);
+      return { error: err.message };
     }
-
-    return data;
   };
 
   // ✅ يجلب الرسائل مرة واحدة عند تحميل المستخدم
   useEffect(() => {
-    if (user?.id) {
-      fetchMessages(user.id);
+    if (userData?.id) {
+      fetchMessages(userData.id);
     }
-  }, [user?.id]);
-
-  // ✅ Realtime Subscriptions
-  useEffect(() => {
-    const channel = supabase
-      .channel("messages-channel")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => {
-          setMessages((prev) => {
-            // فلترة لمنع التكرار
-            if (prev.find((msg) => msg.id === payload.new.id)) {
-              return prev;
-            }
-            return [...prev, payload.new];
-          });
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "messages" },
-        (payload) => {
-          setMessages((prev) =>
-            prev.map((msg) => (msg.id === payload.new.id ? payload.new : msg)),
-          );
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  }, [userData?.id]);
 
   return (
     <MessageContext.Provider

@@ -1,25 +1,7 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
 
 const TripIDContext = createContext();
-
-const emptyTrip = {
-  title: { en: "", ar: "" },
-  description: { en: "", ar: "" },
-  currency: "USD",
-  duration: 0,
-  duration_unit: "days",
-  priceLevel: "",
-  cover_image: "",
-  gallery_images: [],
-  cities: [], // ✅ IDs للمدن
-  categories: [], // ✅ IDs للفئات
-  includes: [],
-  itinerary: [],
-  solo_price: 0,
-  group_price: 0,
-};
 
 export function TripIDProvider({ children }) {
   const [tripData, setTripData] = useState(null);
@@ -27,20 +9,35 @@ export function TripIDProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // ✅ جلب جميع الرحلات
+  // ✅ استدعاء جميع الرحلات مع Cache-Control + تخزين محلي
   const fetchAllTrips = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get("/api/trips");
-      const data = res.data;
+      const cached = localStorage.getItem("tripsList");
+      if (cached) {
+        setTripsList(JSON.parse(cached));
+      }
 
-      if (res.status === 200 && data.success) {
+      const res = await fetch("/api/trips", {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
         const titles = (data.trips || []).map((trip) => ({
           id: trip.id,
-          title: trip.title,
+          title:
+            typeof trip.title === "object"
+              ? trip.title.en || Object.values(trip.title)[0]
+              : trip.title || "Untitled",
         }));
         setTripsList(titles);
+        localStorage.setItem("tripsList", JSON.stringify(titles));
       } else {
         setError(data.error || "Failed to fetch trips");
       }
@@ -51,32 +48,49 @@ export function TripIDProvider({ children }) {
     }
   };
 
-  // ✅ جلب رحلة واحدة بالـ ID مع تحويل المدن والفئات إلى IDs
+  // ✅ استدعاء رحلة واحدة بالـ ID مع Cache-Control
   const fetchTripById = async (id) => {
     if (!id) {
       setError("No trip ID provided");
       return;
     }
+
     setLoading(true);
     setError(null);
 
     try {
-      const res = await axios.get(`/api/trips/${id}`);
-      const data = res.data;
+      const res = await fetch(`/api/trips/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+        },
+      });
 
-      if (res.status === 200 && data.success) {
-        const trip = data.trip;
+      const data = await res.json();
 
-        // ✅ تحويل المدن والفئات إلى IDs فقط
-        const categoriesIds = (trip.trip_categories || []).map(
-          (c) => c.category_id,
-        );
-        const citiesIds = (trip.trip_cities || []).map((c) => c.city_id);
-
+      if (res.ok) {
         setTripData({
-          ...trip,
-          categories: categoriesIds,
-          cities: citiesIds,
+          ...data.trip,
+          title:
+            typeof data.trip.title === "string"
+              ? JSON.parse(data.trip.title)
+              : data.trip.title,
+          description:
+            typeof data.trip.description === "string"
+              ? JSON.parse(data.trip.description)
+              : data.trip.description,
+          gallery_images: Array.isArray(data.trip.gallery_images)
+            ? data.trip.gallery_images
+            : JSON.parse(data.trip.gallery_images || "[]"),
+          includes: Array.isArray(data.trip.includes)
+            ? data.trip.includes.map((inc) => ({
+                ...inc,
+                include_translations:
+                  typeof inc.include_translations === "string"
+                    ? JSON.parse(inc.include_translations)
+                    : inc.include_translations,
+              }))
+            : [],
         });
       } else {
         setError(data.error || "Failed to fetch trip");
@@ -87,17 +101,37 @@ export function TripIDProvider({ children }) {
       setLoading(false);
     }
   };
+  const deleteTrip = async (id) => {
+    try {
+      const res = await fetch(`/api/trips/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
 
-  // ✅ تحديث حقل معين
-  const updateTripField = (field, value) => {
-    setTripData((prev) => ({ ...prev, [field]: value }));
+      if (data.success) {
+        // تحديث القائمة بعد الحذف
+        setTripsList((prev) => prev.filter((trip) => trip.id !== id));
+        localStorage.setItem(
+          "tripsList",
+          JSON.stringify(tripsList.filter((trip) => trip.id !== id)),
+        );
+      }
+
+      return data;
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
   };
 
-  // ✅ حفظ التعديلات
+  const updateTripField = (field, value) => {
+    setTripData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   const saveTrip = async () => {
-    if (!tripData?.id) {
-      return { success: false, error: "No trip ID" };
-    }
+    if (!tripData?.id) return { success: false, error: "No trip ID" };
 
     const tripPayload = {
       title: tripData.title,
@@ -106,34 +140,33 @@ export function TripIDProvider({ children }) {
       priceLevel: tripData.priceLevel,
       cover_image: tripData.cover_image,
       gallery_images: tripData.gallery_images,
+      solo_price: tripData.solo_price,
+      group_price: tripData.group_price,
+
+      categories: (tripData.categories || [])
+        .map((c) => (typeof c === "string" ? c : c?.category_id || c?.id))
+        .filter(Boolean),
+
+      cities: (tripData.cities || [])
+        .map((c) => (typeof c === "string" ? c : c?.city_id || c?.id))
+        .filter(Boolean),
+
       includes: tripData.includes || [],
       itinerary: tripData.itinerary || [],
-      cities: tripData.cities || [], // ✅ IDs مباشرة
-      categories: tripData.categories || [], // ✅ IDs مباشرة
-      solo_price: tripData.solo_price || 0,
-      group_price  :tripData.group_price ||0,
     };
 
     try {
-      const res = await axios.put(`/api/trips/${tripData.id}`, tripPayload);
-      const data = res.data;
+      const res = await fetch(`/api/trips/${tripData.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tripPayload),
+      });
+      const data = await res.json();
 
       if (data.success) {
-        // ✅ بعد الحفظ، فرّغ جميع الحقول
-        setTripData(emptyTrip);
+        setTripData(null);
       }
-      return data;
-    } catch (err) {
-      return { success: false, error: err.message };
-    }
-  };
-  const deleteTrip = async (id) => {
-    try {
-      const res = await axios.delete(`/api/trips/${id}`);
-      const data = res.data;
-      if (data.success) {
-        setTripsList((prev) => prev.filter((trip) => trip.id !== id));
-      }
+
       return data;
     } catch (err) {
       return { success: false, error: err.message };

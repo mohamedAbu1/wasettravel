@@ -23,7 +23,7 @@ import SignUpModal from "@/components/home/components/SignUpButton";
 
 export default function AboutPage() {
   const { theme } = useTheme();
-  const { user } = useAuth();
+  const { userData } = useAuth();
   const { lang } = useLanguage();
   const meta = aboutMetadata[lang] || aboutMetadata.en;
   const router = useRouter();
@@ -84,8 +84,8 @@ export default function AboutPage() {
         <SignUpModal />
 
         <LoginModal />
-        {user && <ChatWidget />}
-        {user && <AdminDashboardButton />}
+        {userData && <ChatWidget />}
+        {userData && <AdminDashboardButton />}
         <CurrencySelector />
       </main>
     </>

@@ -8,13 +8,23 @@ import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
 
-// دالة لتشفير الكويري
+// ✅ دالة لتشفير الكويري
 const encodeData = (obj) => btoa(JSON.stringify(obj));
 
 // ✅ دالة تحسين الصور
 const optimize = (url) => {
-  if (!url) return "/fallback.jpg";
-  return `${url}?width=800&quality=70&format=webp`;
+  if (!url || typeof url !== "string" || url.trim() === "") {
+    return "/fallback.jpg"; // صورة افتراضية
+  }
+
+  // لو الرابط يبدأ بـ http أو https → أضف الـ query
+  if (url.startsWith("http")) {
+    return `${url}?width=800&quality=70&format=webp`;
+  }
+
+  // لو مجرد اسم ملف → ضيف "/" في البداية فقط لو مش موجود
+  const cleanUrl = url.startsWith("/") ? url : `/${url}`;
+  return `${cleanUrl}?width=800&quality=70&format=webp`;
 };
 
 function CategoryCard({ cat, themeName, language }) {
@@ -23,50 +33,49 @@ function CategoryCard({ cat, themeName, language }) {
   const cardRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
-  // Lazy Loading عبر Intersection Observer
+  // ✅ Lazy Loading
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) setVisible(true);
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
     if (cardRef.current) observer.observe(cardRef.current);
     return () => observer.disconnect();
   }, []);
 
+  // ✅ أنيمشن تبديل الصور
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || !cat.images?.length) return;
     const interval = setInterval(() => {
-      setImgIndex((prev) => (prev + 1) % (cat.images?.length || 1));
+      setImgIndex((prev) => (prev + 1) % cat.images.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, [cat.images, visible]);
+  }, [visible, cat.images]);
 
+  // ✅ عرض الاسم الصحيح حسب اللغة
   const displayName =
     typeof cat.name === "object"
-      ? cat.name?.[language] || cat.name?.en || cat.name
+      ? cat.name?.[language] || cat.name?.en || Object.values(cat.name)[0]
       : cat.name;
 
-const luxuryNames = [
-  "Luxusreisen",
-  "Luxury Tours",
-  "Tours de lujo",
-  "Voyages de luxe",
-  "Tour di lusso",
-  "豪华旅游"
-];
-
-const handleClick = () => {
-  const queryObj = {
-    city: "all",
-    category: [displayName],
-    price: luxuryNames.includes(displayName) ? "Luxury" : "All",
-    popular: false,
+  // ✅ عند الضغط على البطاقة → الانتقال لصفحة الرحلات
+  const handleClick = () => {
+    const queryObj = {
+      city: "all",
+      category: [displayName],
+      price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(
+        displayName,
+      )
+        ? "Luxury"
+        : "All",
+      popular: false,
+    };
+    const encoded = encodeData(queryObj);
+    router.push(`/trips?data=${encoded}`);
   };
-  const encoded = encodeData(queryObj);
-  router.push(`/trips?data=${encoded}`);
-};
+  console.log(optimize(cat.images[imgIndex]));
 
   return (
     <div
@@ -78,8 +87,7 @@ const handleClick = () => {
           themeName === "dark"
             ? "bg-[#1a1a1a] border border-gold/20 shadow-lg"
             : "bg-[#fff8e1] border border-[#c9a34a]/30 shadow-md"
-        }
-      `}
+        }`}
     >
       <AnimatePresence mode="sync">
         {visible && (
@@ -92,29 +100,32 @@ const handleClick = () => {
             className="absolute inset-0"
           >
             <Image
-              src={optimize(cat?.images?.[imgIndex])}
-              alt={displayName || "Category image"}
+              src={optimize(cat.images[imgIndex])}
+              alt={displayName}
               fill
               loading="lazy"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 20vw"
               className="object-cover rounded-lg"
             />
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* ✅ تدرج لوني أنيق مع الاسم */}
       <div
         className={`absolute inset-0 bg-gradient-to-t ${
           themeName === "dark" ? "from-black/60" : "from-[#fdf6e3]/70"
         } via-transparent to-transparent flex items-end justify-center pb-4`}
       >
-        <p
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
           className={`text-lg font-bold tracking-wide drop-shadow-lg ${
             themeName === "dark" ? "text-white" : "text-[#3a2c0a]"
           }`}
         >
           {displayName}
-        </p>
+        </motion.p>
       </div>
     </div>
   );
@@ -142,7 +153,7 @@ const CategoriesSection = () => {
     const direction = offset > 0 ? -1 : 1;
     const newIndex = Math.min(
       Math.max(index + direction, 0),
-      categories.length - 1
+      categories.length - 1,
     );
     setIndex(newIndex);
   };

@@ -8,11 +8,12 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useAuth } from "@/context/AuthContext";
+import {  } from "next-auth/react"; // ✅ إضافة NextAuth
 
 const CarBookingSection = () => {
   const { themeName } = useTheme();
   const { t } = useTranslation("home");
-  const { user } = useAuth();
+  const { userData } = useAuth();
 
   const symbols = [
     "𓂀",
@@ -132,7 +133,7 @@ const CarBookingSection = () => {
           <p className="mt-6 text-lg opacity-80 leading-relaxed max-w-xl">
             {t("Experience")}
           </p>
-          {user ? (
+          {userData ? (
             // ✅ زر الحجز يظهر فقط إذا كان فيه مستخدم
             <motion.button
               variants={fadeInUp}

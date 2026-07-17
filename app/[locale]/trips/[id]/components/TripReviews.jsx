@@ -9,6 +9,7 @@ import ReviewsHeader from "./components/ReviewsHeader";
 import StarRating from "./components/StarRating";
 import ReviewForm from "./components/ReviewForm";
 import ReviewCard from "./components/ReviewCard";
+import { useSearchParams } from "next/navigation";
 
 export default function TripReviews({ trip, lang }) {
   const { themeName } = useTheme();
@@ -18,12 +19,13 @@ export default function TripReviews({ trip, lang }) {
     deleteReview,
     updateReview,
     likes,
-    addLike,                           
+    addLike,
     fetchReviewsByTrip,
     removeLike,
   } = useReviews();
-  const { user } = useAuth();
+  const { userData } = useAuth();
   const { t } = useTranslation("tripsId");
+
   // ✅ استدعاء التعليقات الخاصة بالرحلة عند تحميل الكومبوننت
   useEffect(() => {
     const loadReviews = async () => {
@@ -98,14 +100,14 @@ export default function TripReviews({ trip, lang }) {
   // ✅ دالة إضافة تعليق
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!comment.trim() || rating === 0 || !user) return;
+    if (!comment.trim() || rating === 0 || !userData) return;
 
     await addReview({
       trip_id: trip.id,
       rating,
       comment,
-      name: user?.user_metadata?.name || user.email,
-      avatar_url: user?.user_metadata?.avatar || null,
+      name: userData?.name || userData.email,
+      avatar_url: userData?.avatar_url || userData?.image,
       time: new Date().toLocaleTimeString(),
     });
 
@@ -123,6 +125,27 @@ export default function TripReviews({ trip, lang }) {
   const onEmojiClick = (emojiData) => {
     setComment(comment + emojiData.emoji);
   };
+
+  // ✅ قراءة باراميتر highlightReview من الـ URL
+  const searchParams = useSearchParams();
+  const highlightReviewId = searchParams.get("highlightReview");
+  const [highlighted, setHighlighted] = useState(null);
+
+  useEffect(() => {
+    if (highlightReviewId) {
+      setHighlighted(highlightReviewId);
+
+      // ✅ Scroll إلى التعليق الجديد
+      const element = document.getElementById(`review-${highlightReviewId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      // ✅ إزالة التمييز بعد 4 ثواني
+      const timer = setTimeout(() => setHighlighted(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightReviewId]);
 
   return (
     <section
@@ -143,7 +166,7 @@ export default function TripReviews({ trip, lang }) {
         themeName={themeName}
       />
 
-      {user && (
+      {userData && (
         <>
           {/* تقييم النجوم */}
           <StarRating
@@ -173,23 +196,30 @@ export default function TripReviews({ trip, lang }) {
       <div className="flex flex-row flex-wrap mt-6 gap-6 space-y-4">
         <EgyptianBackground />
         {currentComments.map((rev, idx) => (
-          <ReviewCard
+          <div
             key={rev.id || idx}
-            rev={rev}
-            idx={idx}
-            user={user}
-            deleteReview={deleteReview}
-            updateReview={updateReview}
-            themeName={themeName}
-            likes={likes}
-            addLike={addLike}
-            removeLike={removeLike}
-          />
+            id={`review-${rev.id}`}
+            className={`w-full transition ${
+              highlighted === rev.id ? "bg-green-200" : ""
+            }`}
+          >
+            <ReviewCard
+              rev={rev}
+              idx={idx}
+              user={userData}
+              deleteReview={deleteReview}
+              updateReview={updateReview}
+              themeName={themeName}
+              likes={likes}
+              addLike={addLike}
+              removeLike={removeLike}
+            />
+          </div>
         ))}
 
         {tripReviews.length === 0 && (
           <p className="text-center w-full opacity-70">
-            {!user
+            {!userData
               ? "Please log in to write your review"
               : "Be the first to review this trip ✨"}
           </p>

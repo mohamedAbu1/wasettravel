@@ -21,7 +21,7 @@ export default function ConfirmButton({
   const { purchaseTrip } = usePurchase();
   const [loading, setLoading] = useState(false);
   const [loadingPay, setLoadingPay] = useState(false);
-  const { user } = useAuth();
+  const { userData } = useAuth();
 
   const handlePayment = async () => {
     if (!user) {
@@ -57,7 +57,7 @@ export default function ConfirmButton({
       setLoadingPay(false);
     }
   };
-
+console.log("object",userData)
   const handlePurchase = async () => {
     setLoading(true);
     const bookingData = {
@@ -71,7 +71,7 @@ export default function ConfirmButton({
       selectedLanguages: guideLanguages,
       arrivalDate,
       departureDate,
-      userId: user?.id,
+      userId: userData?.id,
       status: "Pending",
       platform: "web",
     };

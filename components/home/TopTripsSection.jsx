@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useTrip } from "@/context/TripContext";
-import { usePurchase } from "@/context/PurchaseContext"; // ✅ استدعاء PurchaseContext
+import { usePurchase } from "@/context/PurchaseContext";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
@@ -18,30 +18,11 @@ const TopTripsSection = () => {
   const normalizedLang = i18n.language.split("-")[0];
 
   const { trips, fetchTrips, loadingTrips } = useTrip();
-  const { currency, purchases } = usePurchase(); // ✅ جلب العملة والحجوزات
+  const { currency, purchases } = usePurchase();
 
   useEffect(() => {
-    fetchTrips();
+    fetchTrips(); // ✅ يجلب الرحلات من MySQL عبر /api/trips
   }, []);
-
-  const symbols = [
-    "𓂀",
-    "𓋹",
-    "𓆣",
-    "𓇼",
-    "𓇯",
-    "𓏏",
-    "𓎛",
-    "𓊽",
-    "𓃾",
-    "𓅓",
-    "𓈇",
-    "𓉐",
-    "𓊹",
-    "𓌙",
-    "𓍿",
-    "𓎟",
-  ];
 
   if (loadingTrips) {
     return <p className="text-center text-gray-500">Loading top trips...</p>;
@@ -55,22 +36,19 @@ const TopTripsSection = () => {
     )
     .slice(0, 6);
 
-const convertPrice = (group_price, tripCurrency) => {
-  let converted = group_price;
-
-  if (currency === "EUR" && tripCurrency === "USD") {
-    converted = (group_price * 0.85).toFixed(2);
-  } else if (currency === "USD" && tripCurrency === "EUR") {
-    converted = (group_price * 1.18).toFixed(2);
-  } else if (currency === "EGP" && tripCurrency === "USD") {
-    converted = (group_price * 49.1).toFixed(2); // USD → EGP
-  } else if (currency === "USD" && tripCurrency === "EGP") {
-    converted = (group_price / 49.1).toFixed(2); // EGP → USD
-  }
-
-  return converted;
-};
-
+  const convertPrice = (group_price, tripCurrency) => {
+    let converted = group_price;
+    if (currency === "EUR" && tripCurrency === "USD") {
+      converted = (group_price * 0.85).toFixed(2);
+    } else if (currency === "USD" && tripCurrency === "EUR") {
+      converted = (group_price * 1.18).toFixed(2);
+    } else if (currency === "EGP" && tripCurrency === "USD") {
+      converted = (group_price * 49.1).toFixed(2);
+    } else if (currency === "USD" && tripCurrency === "EGP") {
+      converted = (group_price / 49.1).toFixed(2);
+    }
+    return converted;
+  };
 
   return (
     <section
@@ -80,22 +58,6 @@ const convertPrice = (group_price, tripCurrency) => {
           : "bg-[#fdf6e3] text-[#3a2c0a]"
       }`}
     >
-      <div className="absolute inset-0 pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <span
-            key={i}
-            className={`absolute ${themeName === "dark" ? "text-gray-700" : "text-[#c9a34a]"} opacity-40 text-6xl animate-pulse`}
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              transform: `rotate(${Math.random() * 360}deg)`,
-            }}
-          >
-            {symbols[Math.floor(Math.random() * symbols.length)]}
-          </span>
-        ))}
-      </div>
-
       <div className="max-w-7xl mx-auto mb-12 text-center">
         <h2
           className={`text-5xl font-extrabold tracking-wide drop-shadow-md ${
@@ -111,16 +73,14 @@ const convertPrice = (group_price, tripCurrency) => {
 
       <div className="flex flex-wrap justify-center gap-8 max-w-7xl w-full mx-auto">
         {topTrips.map((trip, i) => {
-          // ✅ تحقق إذا كان المستخدم اشترى هذه الرحلة
           const hasPurchased =
             user &&
-            purchases.some((p) => {
-              return (
+            purchases.some(
+              (p) =>
                 p.user_id?.toString() === user.id?.toString() &&
                 p.trip_id?.toString() === trip.id?.toString() &&
-                p.status !== "Cancelled"
-              );
-            });
+                p.status !== "Cancelled",
+            );
 
           return (
             <motion.div
@@ -134,7 +94,7 @@ const convertPrice = (group_price, tripCurrency) => {
               <div className="relative h-72">
                 <Image
                   src={trip.cover_image || "/default.jpg"}
-                  alt={trip.title?.en || "Trip image"}
+                  alt={trip.title?.[normalizedLang] || "Trip image"}
                   fill
                   className="object-cover group-hover:scale-110 transition duration-700 rounded-lg"
                 />
@@ -158,35 +118,24 @@ const convertPrice = (group_price, tripCurrency) => {
 
                 <div className="flex items-center justify-between">
                   <p
-                    className={`text-lg font-semibold ${themeName === "dark" ? "text-gold" : "text-[#c9a34a]"}`}
+                    className={`text-lg font-semibold ${
+                      themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
+                    }`}
                   >
                     {convertPrice(trip.group_price, trip.currency)} {currency}
                   </p>
                   <button
                     onClick={() => router.push(`/trips/${trip.id}`)}
-                    style={{ cursor: "pointer", zIndex: "1" }}
                     className={`px-5 py-2 rounded-lg font-medium transition text-white ${
-                      themeName === "dark"
-                        ? hasPurchased
-                          ? "bg-green-500 hover:bg-green-600"
-                          : "bg-[#c9a34a] hover:bg-yellow-500"
-                        : hasPurchased
-                          ? "bg-green-500 hover:bg-green-600"
-                          : "bg-[#c9a34a] hover:bg-yellow-500"
+                      hasPurchased
+                        ? "bg-green-500 hover:bg-green-600"
+                        : "bg-[#c9a34a] hover:bg-yellow-500"
                     }`}
                   >
                     {hasPurchased ? t("Tripdetails") : t("BookNow")}
                   </button>
                 </div>
               </div>
-
-              <div
-                className={`absolute inset-0 rounded-2xl border ${
-                  themeName === "dark"
-                    ? "border-gold/20 group-hover:border-gold/40"
-                    : "border-[#c9a34a]/30 group-hover:border-[#c9a34a]/60"
-                } transition-all duration-500`}
-              ></div>
             </motion.div>
           );
         })}

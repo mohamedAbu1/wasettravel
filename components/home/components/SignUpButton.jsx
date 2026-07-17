@@ -1,10 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import {
-  Dialog,
-  DialogContent,
-} from "@mui/material";
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 import { motion } from "framer-motion";
 import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -14,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import HeaderComponent from "./components/HeaderComponent";
 import FormComponent from "./components/FormComponent";
 import ActionsComponent from "./components/ActionsComponent";
-import { supabase } from "@/lib/supabaseClient";
 export default function SignUpModal() {
   const { handleLoginOpen } = useData();
   const { themeName } = useTheme();
@@ -81,27 +78,27 @@ export default function SignUpModal() {
       toast.error("❌ Error: " + err.message);
     }
   };
-  const loginWithGoogle = async () => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          // ✅ استخدام popup بدلاً من redirect
-          queryParams: {
-            access_type: "offline",
-            prompt: "select_account consent",
-          },
-        },
-      });
+  // const loginWithGoogle = async () => {
+  //   try {
+  //     const { data, error } = await supabase.auth.signInWithOAuth({
+  //       provider: "google",
+  //       options: {
+  //         // ✅ استخدام popup بدلاً من redirect
+  //         queryParams: {
+  //           access_type: "offline",
+  //           prompt: "select_account consent",
+  //         },
+  //       },
+  //     });
 
-      if (error) {
-        toast.error(`❌ خطأ في الاتصال بجوجل: ${error.message}`);
-      }
-    } catch (err) {
-      console.error("OAuth Error:", err);
-      toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول.");
-    }
-  };
+  //     if (error) {
+  //       toast.error(`❌ خطأ في الاتصال بجوجل: ${error.message}`);
+  //     }
+  //   } catch (err) {
+  //     console.error("OAuth Error:", err);
+  //     toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول.");
+  //   }
+  // };
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
@@ -129,13 +126,13 @@ export default function SignUpModal() {
             borderColor={borderColor}
             textFieldStyle={textFieldStyle}
           />
-          <ActionsComponent
+          {/* <ActionsComponent
             t={t}
             loginWithGoogle={loginWithGoogle}
             handleSubmit={handleSubmit}
             loading={loading}
             handleLoginOpen={handleLoginOpen}
-          />
+          /> */}
         </DialogContent>
       </motion.div>
     </Dialog>

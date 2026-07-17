@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 
 export default function TravelerInfo() {
-  const { user } = useAuth();
+  const { userData } = useAuth();
   const { themeName } = useTheme();
 
   return (
@@ -27,7 +27,7 @@ export default function TravelerInfo() {
             themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"
           }`}
         />{" "}
-        {user?.user_metadata?.name}
+        {userData?.name}
       </p>
       <p
         className={`mb-1 flex items-center gap-2 ${
@@ -39,7 +39,7 @@ export default function TravelerInfo() {
             themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"
           }`}
         />{" "}
-        {user?.email}
+        {userData?.email}
       </p>
     </div>
     </div>

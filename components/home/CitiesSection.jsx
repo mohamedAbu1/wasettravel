@@ -8,19 +8,31 @@ import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
 
-// دالة لتشفير الكويري
+// ✅ دالة لتشفير الكويري
 const encodeData = (obj) => btoa(JSON.stringify(obj));
 
-// ✅ دالة تحسين الصور من Supabase
+// ✅ دالة تحسين الصور مع fallback
 const optimize = (url) => {
-  if (!url) return "/fallback.jpg";
-  return `${url}?width=800&quality=70&format=webp`;
+  if (!url || typeof url !== "string" || url.trim() === "") {
+    return "/fallback.jpg"; // صورة افتراضية
+  }
+
+  // لو الرابط يبدأ بـ http أو https → أضف الـ query
+  if (url.startsWith("http")) {
+    return `${url}?width=800&quality=70&format=webp`;
+  }
+
+  // لو مجرد اسم ملف → ضيف "/" في البداية فقط لو مش موجود
+  const cleanUrl = url.startsWith("/") ? url : `/${url}`;
+  return `${cleanUrl}?width=800&quality=70&format=webp`;
 };
 
 function CityCard({ city, themeName, theme, language, t }) {
   const router = useRouter();
   const cityName =
-    city?.name?.[language] || city?.name?.["en"] || city?.name || "";
+    typeof city.name === "object"
+      ? city.name?.[language] || city.name?.["en"] || Object.values(city.name)[0]
+      : city.name;
 
   const cardRef = useRef(null);
   const [visible, setVisible] = useState(false);

@@ -3,10 +3,17 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: [
-      "dxpbyrcbklqrjlytmkum.supabase.co", // أضف دومين Supabase هنا
-      "lkwlrezhuxercfvtjiiw.supabase.co", // لو عندك أكثر من مشروع أو bucket
+      "dxpbyrcbklqrjlytmkum.supabase.co", // دومين Supabase
+      "lkwlrezhuxercfvtjiiw.supabase.co", // دومين Supabase إضافي
+      "wasettravel.com", // موقعك
     ],
-    qualities: [75, 85, 100], // ✅ لتفادي التحذير في Next.js 16
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "wasettravel.com",
+        pathname: "/images/**",
+      },
+    ],
   },
 };
 

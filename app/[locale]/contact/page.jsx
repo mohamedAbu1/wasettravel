@@ -40,7 +40,7 @@ const symbols = [
 
 export default function ContactPage() {
   const { theme, themeName } = useTheme();
-  const { user } = useAuth();
+  const { userData } = useAuth();
   const { lang } = useLanguage();
   const meta = contactMetadata[lang] || contactMetadata.en;
   const { t } = useTranslation("contact");
@@ -218,11 +218,11 @@ export default function ContactPage() {
                     <input
                       type="text"
                       name="name"
-                      value={user?.user_metadata?.name || formData.name}
+                      value={userData?.name || formData.name}
                       onChange={handleChange}
-                      readOnly={!!user?.user_metadata?.name}
+                      readOnly={!!userData?.name}
                       className={`w-full p-3 rounded-lg border outline-none ${
-                        user?.user_metadata?.name
+                        userData?.name
                           ? "bg-gray-100 text-gray-600 cursor-not-allowed capitalize"
                           : themeName === "dark"
                             ? "bg-[#0f0f0f] border-gold/30 text-white"
@@ -260,11 +260,11 @@ export default function ContactPage() {
                     <input
                       type="email"
                       name="email"
-                      value={user?.email || formData.email}
+                      value={userData?.email || formData.email}
                       onChange={handleChange}
-                      readOnly={!!user?.email}
+                      readOnly={!!userData?.email}
                       className={`w-full p-3 rounded-lg border outline-none ${
-                        user?.email
+                        userData?.email
                           ? "bg-gray-100 text-gray-600 cursor-not-allowed"
                           : themeName === "dark"
                             ? "bg-[#0f0f0f] border-gold/30 text-white"
@@ -315,8 +315,8 @@ export default function ContactPage() {
         <SignUpModal />
 
         <LoginModal />
-        {user && <ChatWidget />}
-        {user && <AdminDashboardButton />}
+        {userData && <ChatWidget />}
+        {userData && <AdminDashboardButton />}
         <CurrencySelector />
       </main>
     </>

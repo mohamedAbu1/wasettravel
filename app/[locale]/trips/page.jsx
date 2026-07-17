@@ -30,7 +30,7 @@ export default function TripsPage() {
   } = useCitiesCategories();
   const { lang } = useLanguage();
   const meta = tripsMetadata[lang] || tripsMetadata.en;
-  const { user } = useAuth();
+  const { userData } = useAuth();
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,14 +39,12 @@ export default function TripsPage() {
   const [search, setSearch] = useState("");
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
-  // ✅ القيم من الكويري كونتكست
   const { city, category, group_price, popular } = useQueryFilters();
 
   useEffect(() => {
     fetchTrips();
   }, []);
-
-  // ✅ مراقبة حجم الشاشة
+console.log("object", trips);
   useEffect(() => {
     const checkScreen = () => setIsSmallScreen(window.innerWidth <= 1024);
     checkScreen();
@@ -57,40 +55,55 @@ export default function TripsPage() {
   if (loadingTrips)
     return <p className="text-center text-gray-500">Loading trips...</p>;
 
-  // ✅ فلترة الرحلات
+  // ✅ فلترة الرحلات مع fallback للبيانات النصية أو JSON
   const filteredTrips = trips.filter((trip) => {
     const lowerSearch = search.trim().toLowerCase();
-    const matchesSearch =
-      !lowerSearch ||
-      (trip.title?.[lang] &&
-        trip.title[lang].toLowerCase().includes(lowerSearch));
 
+    // معالجة العنوان سواء كان نص أو JSON
+    const tripTitle =
+      typeof trip.title === "object"
+        ? trip.title[lang] || trip.title.en || Object.values(trip.title)[0]
+        : trip.title;
+
+    const matchesSearch =
+      !lowerSearch || tripTitle?.toLowerCase().includes(lowerSearch);
+
+    // معالجة المدن
     const tripCities =
-      trip.trip_cities
-        ?.map((c) => c?.cities?.name?.[lang] || c?.cities?.name?.en || "")
-        .filter((n) => n !== "") || [];
+      trip.trip_cities?.map((c) => {
+        const name = c?.cities?.name;
+        return typeof name === "object"
+          ? name[lang] || name.en || Object.values(name)[0]
+          : name;
+      }) || [];
 
     const matchesCity =
       city === "all"
         ? true
         : Array.isArray(city)
-          ? tripCities.some((c) =>
-              city.map((x) => x.toLowerCase()).includes(c.toLowerCase()),
-            )
-          : tripCities.some((c) => c.toLowerCase() === city.toLowerCase());
+        ? tripCities.some((c) =>
+            city.map((x) => x.toLowerCase()).includes(c?.toLowerCase()),
+          )
+        : tripCities.some((c) => c?.toLowerCase() === city?.toLowerCase());
 
+    // معالجة التصنيفات
     const tripCategories =
       trip.trip_categories?.map((cat) => {
         const catObj = allCategories.find((c) => c.id === cat.category_id);
-        return catObj?.name?.[lang] || catObj?.name?.en || catObj?.name;
+        const name = catObj?.name;
+        return typeof name === "object"
+          ? name[lang] || name.en || Object.values(name)[0]
+          : name;
       }) || [];
+
     const matchesCategory =
       category === "all"
         ? true
         : Array.isArray(category)
-          ? tripCategories.some((c) => category.includes(c))
-          : tripCategories.includes(category);
+        ? tripCategories.some((c) => category.includes(c))
+        : tripCategories.includes(category);
 
+    // فلترة السعر
     const ranges = {
       Economy: { min: 0, max: 199 },
       Standard: { min: 200, max: 599 },
@@ -101,8 +114,9 @@ export default function TripsPage() {
       group_price === "All" || !group_price
         ? true
         : selectedRange
-          ? trip.group_price >= selectedRange.min && trip.group_price <= selectedRange.max
-          : true;
+        ? trip.group_price >= selectedRange.min &&
+          trip.group_price <= selectedRange.max
+        : true;
 
     const matchesPopular = popular ? trip.isPopular : true;
 
@@ -133,7 +147,6 @@ export default function TripsPage() {
         <Header />
 
         {isSmallScreen ? (
-          // ✅ واجهة بديلة 3D للهواتف والشاشات الصغيرة
           <motion.div
             initial={{ opacity: 0, scale: 0.8, rotateY: 90 }}
             animate={{ opacity: 1, scale: 1, rotateY: 0 }}
@@ -154,7 +167,6 @@ export default function TripsPage() {
             </button>
           </motion.div>
         ) : (
-          // ✅ التصميم العادي للرحلات
           <motion.section
             style={{ marginTop: "105px", paddingBottom: "20px" }}
             className="container flex flex-1 gap-6 px-6 relative z-10"
@@ -183,7 +195,7 @@ export default function TripsPage() {
                       key={i}
                       onClick={() => {
                         setCurrentPage(i + 1);
-                        window.scrollTo({ top: 30, behavior: "smooth" }); // ✅ يرجع الاسكرول عند 30
+                        window.scrollTo({ top: 30, behavior: "smooth" });
                       }}
                       className={`px-3 py-1 rounded-lg font-bold cursor-pointer transition ${
                         currentPage === i + 1
@@ -201,11 +213,10 @@ export default function TripsPage() {
         )}
 
         <Footer />
-                <SignUpModal />
-        
+        <SignUpModal />
         <LoginModal />
-        {user && <ChatWidget />}
-        {user && <AdminDashboardButton />}
+        {userData && <ChatWidget />}
+        {userData && <AdminDashboardButton />}
         <CurrencySelector />
       </main>
     </>

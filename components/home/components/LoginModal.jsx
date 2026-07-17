@@ -1,27 +1,24 @@
 "use client";
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import {
-  Dialog,
-  DialogContent,
-  TextField,
-  Button,
-  InputAdornment,
-  IconButton,
-  Divider,
-} from "@mui/material";
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
 import { MdEmail, MdLock } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext"; // ✅ استخدام AuthContext
 import { toast } from "react-toastify";
 import { useSecurity } from "@/context/SecurityContext";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginModal() {
-  const { loginOpen, handleLoginClose, handleOpen } = useData();
+  const { loginOpen, handleLoginClose, handleSignUpOpen } = useData();
   const { themeName } = useTheme();
   const isDark = themeName === "dark";
 
@@ -29,10 +26,11 @@ export default function LoginModal() {
   const [password, setPassword] = useState("");
   const { t } = useTranslation("home");
 
-  const { login, loading, handleClose } = useAuth();
+  // ✅ جلب الدوال من AuthContext
+  const { login, loginWithGoogle, loading, handleClose } = useAuth();
   const { validateField } = useSecurity();
 
-  // ✅ استخدم مفاتيح ثابتة بدل النصوص المترجمة
+  // ✅ تسجيل الدخول بالبريد وكلمة المرور
   const handleSubmit = useCallback(async () => {
     const emailError = validateField("email", email);
     const passwordError = validateField("password", password);
@@ -44,34 +42,13 @@ export default function LoginModal() {
 
     try {
       await login(email, password);
-      toast.success("Logged in successfully!");
+      toast.success("✅ Logged in successfully!");
       handleLoginClose();
       handleClose();
     } catch (err) {
       toast.error("❌ Error: The email or password is incorrect.");
     }
   }, [email, password, validateField, login, handleLoginClose, handleClose]);
-
-  const loginWithGoogle = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          queryParams: {
-            access_type: "offline",
-            prompt: "select_account consent",
-          },
-        },
-      });
-
-      if (error) {
-        toast.error(`❌ خطأ في الاتصال بجوجل: ${error.message}`);
-      }
-    } catch (err) {
-      console.error("OAuth Error:", err);
-      toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول.");
-    }
-  };
 
   return (
     <Dialog open={loginOpen} onClose={handleLoginClose} fullWidth maxWidth="sm">
@@ -155,7 +132,7 @@ export default function LoginModal() {
           {/* Social Buttons */}
           <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
             <IconButton
-              onClick={loginWithGoogle}
+              onClick={loginWithGoogle} // ✅ استدعاء الدالة من AuthContext
               style={{
                 width: "280px",
                 height: "56px",
@@ -205,7 +182,7 @@ export default function LoginModal() {
             fullWidth
             onClick={() => {
               handleLoginClose();
-              handleOpen();
+              handleSignUpOpen();
             }}
             style={{
               marginTop: "8px",

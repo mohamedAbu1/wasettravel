@@ -25,7 +25,7 @@ export default function TripItinerary({ trip, lang }) {
   const { themeName } = useTheme();
   const t = translations[lang] || translations.en;
 
-  // ✅ تقسيم الأيام إلى مجموعات كل مجموعة فيها يومين
+  // ✅ تقسيم الأيام إلى مجموعات (كل مجموعة فيها يومين)
   const chunkDays = (days, size = 2) => {
     const result = [];
     for (let i = 0; i < days.length; i += size) {
@@ -34,7 +34,14 @@ export default function TripItinerary({ trip, lang }) {
     return result;
   };
 
-  const dayGroups = chunkDays(trip.trip_days || []);
+  // ✅ تأكد إن الأيام جاية بشكل صحيح
+  const tripDays = Array.isArray(trip.days)
+    ? trip.days
+    : Array.isArray(trip.trip_days)
+    ? trip.trip_days
+    : [];
+
+  const dayGroups = chunkDays(tripDays);
   const [currentPage, setCurrentPage] = useState(0);
 
   return (
@@ -80,7 +87,7 @@ export default function TripItinerary({ trip, lang }) {
       >
         {dayGroups[currentPage]?.map((day, dayIdx) => (
           <motion.div
-            key={day.id}
+            key={day.id || day.day_number || dayIdx}
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
@@ -96,38 +103,41 @@ export default function TripItinerary({ trip, lang }) {
                 themeName === "dark" ? "text-gold" : "text-[#3a2c0a]"
               }`}
             >
-              Day {day.day_number}
+              Day {day.day_number || dayIdx + 1}
             </h3>
             <ul className="space-y-3">
-              {day.day_activities?.map((act, actIdx) => (
-                <motion.li
-                  key={act.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: actIdx * 0.1 }}
-                  className="flex items-center gap-3 text-sm md:text-base"
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.2, rotate: 15 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="flex items-center gap-2 font-bold"
-                  >
-                    <FaClock
-                      className={
-                        themeName === "dark"
-                          ? "text-yellow-300"
-                          : "text-[#c9a34a]"
-                      }
-                    />
-                    <span>{formatTime(act.time)}</span>
-                  </motion.div>
-                  <span>
-                    {act.activity_translations?.[lang] ||
-                      act.activity_translations?.en}
-                  </span>
-                </motion.li>
-              ))}
+              {day.activities || day.day_activities
+                ? (day.activities || day.day_activities).map((act, actIdx) => (
+                    <motion.li
+                      key={act.id || actIdx}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: actIdx * 0.1 }}
+                      className="flex items-center gap-3 text-sm md:text-base"
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.2, rotate: 15 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="flex items-center gap-2 font-bold"
+                      >
+                        <FaClock
+                          className={
+                            themeName === "dark"
+                              ? "text-yellow-300"
+                              : "text-[#c9a34a]"
+                          }
+                        />
+                        <span>{formatTime(act.time)}</span>
+                      </motion.div>
+                      <span>
+                        {act.activity_translations?.[lang] ||
+                          act.activity_translations?.en ||
+                          act.activity}
+                      </span>
+                    </motion.li>
+                  ))
+                : null}
             </ul>
           </motion.div>
         ))}
@@ -146,8 +156,8 @@ export default function TripItinerary({ trip, lang }) {
                   ? "bg-[#c9a34a] text-black"
                   : "bg-[#c9a34a] text-white"
                 : themeName === "dark"
-                  ? "bg-gray-700 text-gold hover:bg-gray-600"
-                  : "bg-gray-200 text-[#3a2c0a] hover:bg-gray-300"
+                ? "bg-gray-700 text-gold hover:bg-gray-600"
+                : "bg-gray-200 text-[#3a2c0a] hover:bg-gray-300"
             }`}
           >
             {idx + 1}

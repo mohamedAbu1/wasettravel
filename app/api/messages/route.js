@@ -22,13 +22,13 @@ export async function POST(req) {
       }
 
       const fileName = `${Date.now()}-${file.name}`;
-      const baseUrl = `https://wasettravel.com/iamges/${fileName}`; // ✅ رابط الصورة النهائي
+      const baseUrl = `https://wasettravel.com/images/${fileName}`; // ✅ رابط الصورة النهائي
 
       let uploadPath;
       if (process.env.NODE_ENV === "development") {
-        uploadPath = path.join(process.cwd(), "public/iamges", fileName); // ✅ فولدر محلي
+        uploadPath = path.join(process.cwd(), "public/images", fileName); // ✅ فولدر محلي
       } else {
-        uploadPath = `/home/u984684626/public_html/iamges/${fileName}`; // ✅ فولدر السيرفر
+        uploadPath = `/home/u984684626/public_html/images/${fileName}`; // ✅ فولدر السيرفر
       }
 
       console.log("📥 Uploading file to:", uploadPath);
@@ -146,7 +146,6 @@ export async function POST(req) {
   }
 }
 
-// ✅ جلب جميع الرسائل أو رسائل مستخدم محدد
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);

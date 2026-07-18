@@ -25,7 +25,7 @@ export async function POST(req) {
       const baseUrl = `https://wasettravel.com/images/${fileName}`; // ✅ رابط الصورة النهائي
 
       let uploadPath;
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV === "production") {
         uploadPath = path.join(process.cwd(), "public/images", fileName); // ✅ فولدر محلي
       } else {
         uploadPath = `/home/u984684626/public_html/images/${fileName}`; // ✅ فولدر السيرفر

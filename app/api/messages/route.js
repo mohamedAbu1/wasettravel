@@ -1,57 +1,110 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
+import { connectDB } from "@/lib/db"; 
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 
+// ✅ إضافة رسالة جديدة (نص أو صورة)
 export async function POST(req) {
   try {
-    const formData = await req.formData();
-    const file = formData.get("file");
+    const contentType = req.headers.get("content-type") || "";
 
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    // 📌 لو الرسالة صورة (multipart/form-data)
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      const file = formData.get("file");
+
+      if (!file) {
+        return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      }
+
+      const fileName = `${Date.now()}-${file.name}`;
+      const baseUrl = `https://wasettravel.com/images/${fileName}`; // ✅ رابط الصورة النهائي
+
+      let uploadPath;
+      if (process.env.NODE_ENV === "development") {
+        uploadPath = path.join(process.cwd(), "public/images", fileName); // ✅ فولدر محلي
+      } else {
+        uploadPath = `/home/u984684626/public_html/images/${fileName}`; // ✅ فولدر السيرفر
+      }
+
+      console.log("📥 Uploading file to:", uploadPath);
+
+      // تأكد أن الفولدر موجود
+      await fs.promises.mkdir(path.dirname(uploadPath), { recursive: true });
+
+      const buffer = Buffer.from(await file.arrayBuffer());
+      await fs.promises.writeFile(uploadPath, buffer);
+
+      // ✅ باقي البيانات من الـ formData
+      const user_id = formData.get("user_id");
+      if (!user_id) {
+        return NextResponse.json({ error: "user_id is required" }, { status: 400 });
+      }
+
+      const sender_type = formData.get("sender_type") || "admin";
+      const user_name = formData.get("user_name") || "Admin";
+      const user_image = formData.get("user_image") || "/default-avatar.png";
+      const reply_to = formData.get("reply_to");
+      const admin_id = formData.get("admin_id") || null;
+
+      const db = await connectDB();
+      const messagesId = uuidv4();
+
+      await db.query(
+        `INSERT INTO messages 
+         (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
+        [messagesId, user_id, baseUrl, sender_type, user_name, user_image, reply_to ?? null, admin_id]
+      );
+
+      return NextResponse.json(
+        { id: messagesId, message: "Image message inserted successfully!", url: baseUrl },
+        { status: 201 }
+      );
     }
 
-    const fileName = `${Date.now()}-${file.name}`;
-    const baseUrl = `https://wasettravel.com/iamges/${fileName}`; // ✅ رابط الصورة النهائي
+    // 📌 لو الرسالة نصية (application/json)
+    let body = {};
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid or empty JSON body" }, { status: 400 });
+    }
 
-    // مسار الحفظ على السيرفر
-    const uploadPath = `/home/u984684626/public_html/iamges/${fileName}`;
+    const {
+      user_id,
+      content,
+      sender_type = "user",
+      user_name = "Unknown User",
+      user_image = "/default-avatar.png",
+      reply_to = null,
+      admin_id = null,
+    } = body;
 
-    // تأكد أن الفولدر موجود
-    await fs.promises.mkdir(path.dirname(uploadPath), { recursive: true });
-
-    // حفظ الملف فعليًا
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.promises.writeFile(uploadPath, buffer);
-
-    // باقي البيانات
-    const user_id = formData.get("user_id");
     if (!user_id) {
       return NextResponse.json({ error: "user_id is required" }, { status: 400 });
     }
-
-    const sender_type = formData.get("sender_type") || "user";
-    const user_name = formData.get("user_name") || "Unknown User";
-    const user_image = formData.get("user_image") || "/default-avatar.png";
+    if (!content) {
+      return NextResponse.json({ error: "Content cannot be null" }, { status: 400 });
+    }
 
     const db = await connectDB();
     const messagesId = uuidv4();
 
-    // تخزين الرابط في قاعدة البيانات
     await db.query(
-      `INSERT INTO messages (id, user_id, content, sender_type, user_name, user_image, status, created_at) 
-       VALUES (?, ?, ?, ?, ?, ?, 'sent', NOW())`,
-      [messagesId, user_id, baseUrl, sender_type, user_name, user_image]
+      `INSERT INTO messages 
+       (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
+      [messagesId, user_id, content, sender_type, user_name, user_image, reply_to, admin_id]
     );
 
     return NextResponse.json(
-      { id: messagesId, url: baseUrl, message: "Image uploaded successfully!" },
+      { id: messagesId, message: "Text message inserted successfully!" },
       { status: 201 }
     );
   } catch (err) {
-    console.error("❌ Error uploading image:", err.message);
+    console.error("❌ Error inserting message:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

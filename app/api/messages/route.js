@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db"; 
+import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
@@ -15,17 +15,20 @@ export async function POST(req) {
       const file = formData.get("file");
 
       if (!file) {
-        return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+        return NextResponse.json(
+          { error: "No file uploaded" },
+          { status: 400 },
+        );
       }
 
       const fileName = `${Date.now()}-${file.name}`;
-      const baseUrl = `https://wasettravel.com/images/${fileName}`; // ✅ رابط الصورة النهائي
+      const baseUrl = `https://wasettravel.com/iamges/${fileName}`; // ✅ رابط الصورة النهائي
 
       let uploadPath;
       if (process.env.NODE_ENV === "development") {
-        uploadPath = path.join(process.cwd(), "public/images", fileName); // ✅ فولدر محلي
+        uploadPath = path.join(process.cwd(), "public/iamges", fileName); // ✅ فولدر محلي
       } else {
-        uploadPath = `/home/u984684626/public_html/images/${fileName}`; // ✅ فولدر السيرفر
+        uploadPath = `/home/u984684626/public_html/iamges/${fileName}`; // ✅ فولدر السيرفر
       }
 
       console.log("📥 Uploading file to:", uploadPath);
@@ -39,7 +42,10 @@ export async function POST(req) {
       // ✅ باقي البيانات من الـ formData
       const user_id = formData.get("user_id");
       if (!user_id) {
-        return NextResponse.json({ error: "user_id is required" }, { status: 400 });
+        return NextResponse.json(
+          { error: "user_id is required" },
+          { status: 400 },
+        );
       }
 
       const sender_type = formData.get("sender_type") || "admin";
@@ -55,12 +61,25 @@ export async function POST(req) {
         `INSERT INTO messages 
          (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
-        [messagesId, user_id, baseUrl, sender_type, user_name, user_image, reply_to ?? null, admin_id]
+        [
+          messagesId,
+          user_id,
+          baseUrl,
+          sender_type,
+          user_name,
+          user_image,
+          reply_to ?? null,
+          admin_id,
+        ],
       );
 
       return NextResponse.json(
-        { id: messagesId, message: "Image message inserted successfully!", url: baseUrl },
-        { status: 201 }
+        {
+          id: messagesId,
+          message: "Image message inserted successfully!",
+          url: baseUrl,
+        },
+        { status: 201 },
       );
     }
 
@@ -69,7 +88,10 @@ export async function POST(req) {
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json({ error: "Invalid or empty JSON body" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid or empty JSON body" },
+        { status: 400 },
+      );
     }
 
     const {
@@ -83,10 +105,16 @@ export async function POST(req) {
     } = body;
 
     if (!user_id) {
-      return NextResponse.json({ error: "user_id is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "user_id is required" },
+        { status: 400 },
+      );
     }
     if (!content) {
-      return NextResponse.json({ error: "Content cannot be null" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Content cannot be null" },
+        { status: 400 },
+      );
     }
 
     const db = await connectDB();
@@ -96,12 +124,21 @@ export async function POST(req) {
       `INSERT INTO messages 
        (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
-      [messagesId, user_id, content, sender_type, user_name, user_image, reply_to, admin_id]
+      [
+        messagesId,
+        user_id,
+        content,
+        sender_type,
+        user_name,
+        user_image,
+        reply_to,
+        admin_id,
+      ],
     );
 
     return NextResponse.json(
       { id: messagesId, message: "Text message inserted successfully!" },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err) {
     console.error("❌ Error inserting message:", err.message);
@@ -147,7 +184,10 @@ export async function PUT(req) {
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json({ error: "Invalid or empty JSON body" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid or empty JSON body" },
+        { status: 400 },
+      );
     }
 
     const { messageId, status = "seen" } = body;
@@ -155,7 +195,7 @@ export async function PUT(req) {
     const db = await connectDB();
     const [result] = await db.query(
       `UPDATE messages SET status = ?, updated_at = NOW() WHERE id = ?`,
-      [status, messageId]
+      [status, messageId],
     );
 
     if (result.affectedRows === 0) {
@@ -164,7 +204,7 @@ export async function PUT(req) {
 
     return NextResponse.json(
       { message: "Message updated successfully!" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     console.error("❌ Error updating message:", err.message);
@@ -179,13 +219,18 @@ export async function DELETE(req) {
     try {
       body = await req.json();
     } catch {
-      return NextResponse.json({ error: "Invalid or empty JSON body" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid or empty JSON body" },
+        { status: 400 },
+      );
     }
 
     const { messageId } = body;
 
     const db = await connectDB();
-    const [result] = await db.query(`DELETE FROM messages WHERE id = ?`, [messageId]);
+    const [result] = await db.query(`DELETE FROM messages WHERE id = ?`, [
+      messageId,
+    ]);
 
     if (result.affectedRows === 0) {
       return NextResponse.json({ error: "Message not found" }, { status: 404 });
@@ -193,7 +238,7 @@ export async function DELETE(req) {
 
     return NextResponse.json(
       { message: "Message deleted successfully!" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     console.error("❌ Error deleting message:", err.message);

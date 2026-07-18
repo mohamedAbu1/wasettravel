@@ -3,6 +3,8 @@ import GoogleProvider from "next-auth/providers/google";
 import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 
+const pool = await connectDB();
+
 export const authOptions = {
   providers: [
     GoogleProvider({
@@ -10,16 +12,19 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async signIn({ user }) {
-      const pool = await connectDB();
+      // ✅ قائمة الإيميلات اللي تعتبر Admin
+      const adminEmails = [
+        "wasettraveleg@gmail.com",
+        "mohamedahmed33m11@gmail.com",
+      ];
 
-      const adminEmails = process.env.ADMIN_EMAILS?.split(",") || [];
-
+      // تحقق من وجود المستخدم أو أنشئه
       const [rows] = await pool.query("SELECT id FROM users WHERE email = ?", [user.email]);
       const userId = rows.length > 0 ? rows[0].id : uuidv4();
 
+      // ✅ تحديد الدور بناءً على الإيميل
       const role = adminEmails.includes(user.email) ? "ADMIN" : "USER";
 
       await pool.query(
@@ -33,7 +38,7 @@ export const authOptions = {
           userId,
           user.email,
           user.name || user.email.split("@")[0],
-          user.image || "default.webp",
+          user.image || "default.webp", // ✅ الصورة من جوجل
           "other",
           role,
           new Date(),
@@ -45,7 +50,7 @@ export const authOptions = {
 
     async jwt({ token, user }) {
       if (user) {
-        const pool = await connectDB();
+        // ✅ اجلب الدور الحقيقي من قاعدة البيانات
         const [rows] = await pool.query("SELECT role FROM users WHERE email = ?", [user.email]);
         token.role = rows.length > 0 ? rows[0].role : "USER";
       }
@@ -53,11 +58,16 @@ export const authOptions = {
     },
 
     async session({ session, token }) {
-      const pool = await connectDB();
+      // ✅ اجلب الـ id من قاعدة البيانات
       const [rows] = await pool.query("SELECT id FROM users WHERE email = ?", [session.user.email]);
 
-      session.user.id = rows.length > 0 ? rows[0].id : token.sub;
-      session.user.role = token.role;
+      if (rows.length > 0) {
+        session.user.id = rows[0].id; // UUID من قاعدة البيانات
+      } else {
+        session.user.id = token.sub; // fallback
+      }
+
+      session.user.role = token.role; // ✅ الدور من الـ JWT
       return session;
     },
   },

@@ -167,7 +167,7 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
                   name="priceRange"
                   className="accent-[#c9a34a] cursor-pointer"
                   checked={group_price === range.value} // ✅ هنا لو price = "All" يتحدد تلقائيًا
-                  onChange={() => updateValue("price", range.value)}
+                  onChange={() => updateValue("group_price", range.value)}
                 />
                 {range.label}
               </label>

@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
-import { TextField, MenuItem, InputAdornment } from "@mui/material";
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import InputAdornment from '@mui/material/InputAdornment';
 import { FaDollarSign, FaEuroSign } from "react-icons/fa";
 import { usePurchase } from "@/context/PurchaseContext";
 
@@ -9,9 +11,9 @@ export default function PriceSelect({ price, setPrice, t, theme }) {
 
   // ✅ أسعار بالدولار كـ base
   const rangesUSD = [
-    { label: "0 - 900", value: "Economy", min: 0, max: 900 },
-    { label: "901 - 1500", value: "Standard", min: 901, max: 1500 },
-    { label: "1500+", value: "Luxury", min: 1501, max: Infinity },
+    { label: "0 - 199", value: "Economy", min: 0, max: 199 },
+    { label: "200 - 599", value: "Standard", min: 200, max: 599 },
+    { label: "600+", value: "Luxury", min: 600, max: Infinity },
   ];
 
   // ✅ معدل التحويل (مثال: 1 USD = 0.85 EUR)

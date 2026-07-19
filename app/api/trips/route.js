@@ -183,7 +183,7 @@ export async function GET() {
       cities: safeParse(trip.cities),
       categories: safeParse(trip.categories),
       includes: safeParse(trip.includes),
-      days: safeParse(trip.days),
+      itinerary: safeParse(trip.days),
     }));
 
     return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {

@@ -81,24 +81,25 @@ const saveTrip = async () => {
   try {
     setError(null);
 
-    // لو فيه صورة غلاف مرفوعة
     let coverUrl = tripData.cover_image;
     if (tripData.cover_file) {
       coverUrl = await uploadCover(tripData.cover_file);
     }
 
-    // لو فيه صور معرض مرفوعة
     let galleryData = tripData.gallery_images;
     if (tripData.gallery_files?.length > 0) {
-      // ✅ uploadGallery دلوقتي بيرجع مصفوفة الصور مع الأسماء
       galleryData = await uploadGallery();
     }
 
     const payload = {
       ...tripData,
       cover_image: coverUrl,
-      gallery_images: galleryData, // ✅ مصفوفة فيها url + name باللغات
+      gallery_images: galleryData,
     };
+
+    // ✅ تتبع قبل الإرسال
+    console.log("➡️ Saving trip with payload:", payload);
+    console.log("➡️ Itinerary being sent:", payload.itinerary);
 
     const res = await fetch("/api/trips", {
       method: "POST",
@@ -108,7 +109,6 @@ const saveTrip = async () => {
 
     const result = await res.json();
 
-    // ✅ لو الحفظ نجح، رجّع الحقول إلى الفارغ
     if (result.success) {
       setTripData(emptyTrip);
     }
@@ -119,6 +119,7 @@ const saveTrip = async () => {
     return { success: false, error: err.message };
   }
 };
+
 
 
 
@@ -143,7 +144,7 @@ const saveTrip = async () => {
   const getTripById = (id) => {
     return trips.find((trip) => String(trip.id) === String(id));
   };
-
+console.log("object12346",tripData)
   return (
     <TripContext.Provider
       value={{

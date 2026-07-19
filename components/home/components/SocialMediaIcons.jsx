@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { FaGooglePlay, FaApple, FaTripadvisor } from "react-icons/fa";
+import { FaGooglePlay, FaApple, FaTripadvisor,FaBlogger} from "react-icons/fa";
 import { MdTravelExplore } from "react-icons/md";
 import { useTheme } from "@/context/ThemeContext";
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -25,6 +25,10 @@ const SocialMediaIcons = () => {
           link: "https://www.tripadvisor.com/Profile/YourPage",
         },
         { Icon: MdTravelExplore, link: "https://supplier.viator.com" },
+        {
+      Icon: FaBlogger ,
+      url: "https://wasettravel.blogspot.com",
+    },
       ].map(({ Icon, link }, i) => (
         <motion.a
           whileHover={{ scale: 1.2, rotate: 5 }}

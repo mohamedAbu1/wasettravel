@@ -11,7 +11,7 @@ import TripHeader from "./components/TripHeader";
 import TripCities from "./components/TripCities";
 import TripCategories from "./components/TripCategories";
 import TripIncludes from "./components/TripIncludes";
-// import TripItinerary from "./components/TripItinerary";
+import TripItinerary from "./components/TripItinerary";
 import TripInfo from "./components/TripInfo";
 import TripReviews from "./components/TripReviews";
 import ChatWidget from "@/components/layout/ChatWidget";
@@ -85,11 +85,16 @@ const localizedTrip = {
       )
     : trip.includes,
 
-  // days: Array.isArray(trip.days)
-  //   ? trip.day_activities.map(it =>
-  //       typeof it === "object" ? it?.[lang] || it?.en : it
-  //     )
-  //   : trip.days,
+  itinerary: Array.isArray(trip.itinerary)
+    ? trip.itinerary.map((day) => ({
+        ...day,
+        activities: Array.isArray(day.activities)
+          ? day.activities.map((act) =>
+              typeof act === "object" ? act?.[lang] || act?.en : act
+            )
+          : day.activities,
+      }))
+    : trip.itinerary,
 };
 
 
@@ -103,7 +108,7 @@ const localizedTrip = {
       p.user_id === userData?.id &&
       p.status !== "Cancelled",
   );
-
+console.log("mohamed ahmed 123",localizedTrip)
   return (
     <main
       className={`min-h-screen ${
@@ -159,9 +164,9 @@ const localizedTrip = {
             <TripIncludes trip={trip} lang={lang} />
           </div>
 
-          {/* <div className="col-span-1 lg:col-span-3">
+          <div className="col-span-1 lg:col-span-3">
             <TripItinerary trip={localizedTrip} lang={lang} />
-          </div> */}
+          </div>
 
           <div className="col-span-1 lg:col-span-3">
             <TripReviews trip={localizedTrip} lang={lang} />

@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid"; // ✅ استدعاء مكتبة UUID
 
 const TripIDContext = createContext();
 
@@ -84,7 +85,7 @@ export function TripIDProvider({ children }) {
             : JSON.parse(data.trip.gallery_images || "[]"),
           includes: Array.isArray(data.trip.includes)
             ? data.trip.includes.map((inc) => ({
-                ...inc,
+                id: inc.id, // ✅ لازم نحافظ على الـ id القادم من الـ backend
                 include_translations:
                   typeof inc.include_translations === "string"
                     ? JSON.parse(inc.include_translations)
@@ -101,6 +102,7 @@ export function TripIDProvider({ children }) {
       setLoading(false);
     }
   };
+
   const deleteTrip = async (id) => {
     try {
       const res = await fetch(`/api/trips/${id}`, {
@@ -109,7 +111,6 @@ export function TripIDProvider({ children }) {
       const data = await res.json();
 
       if (data.success) {
-        // تحديث القائمة بعد الحذف
         setTripsList((prev) => prev.filter((trip) => trip.id !== id));
         localStorage.setItem(
           "tripsList",
@@ -127,6 +128,20 @@ export function TripIDProvider({ children }) {
     setTripData((prev) => ({
       ...prev,
       [field]: value,
+    }));
+  };
+
+  // ✅ إضافة include جديد مع UUID
+  const addInclude = (translationObj) => {
+    setTripData((prev) => ({
+      ...prev,
+      includes: [
+        ...(prev.includes || []),
+        {
+          id: uuidv4(), // توليد UUID صالح
+          include_translations: translationObj,
+        },
+      ],
     }));
   };
 
@@ -151,7 +166,12 @@ export function TripIDProvider({ children }) {
         .map((c) => (typeof c === "string" ? c : c?.city_id || c?.id))
         .filter(Boolean),
 
-      includes: tripData.includes || [],
+      // ✅ إرسال includes مع UUID
+      includes: (tripData.includes || []).map((inc) => ({
+        id: inc.id,
+        include_translations: inc.include_translations,
+      })),
+
       itinerary: tripData.itinerary || [],
     };
 
@@ -186,6 +206,7 @@ export function TripIDProvider({ children }) {
         fetchTripById,
         fetchAllTrips,
         updateTripField,
+        addInclude, // ✅ متاح للاستخدام في أي كومبوننت
         saveTrip,
         deleteTrip,
         loading,

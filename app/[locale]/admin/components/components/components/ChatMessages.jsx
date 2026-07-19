@@ -77,15 +77,24 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
                 </p>
 
                 {/* ✅ عرض الصور أو النصوص */}
-{typeof msg.content === "string" &&
- (msg.content.startsWith("http") && msg.content.match(/\.(jpeg|jpg|gif|png|webp)$/)) ? (
-   <img src={msg.content} alt="message image" className="rounded-lg shadow-md" />
- ) : typeof msg.content === "string" && msg.content.startsWith("data:image/") ? (
-   <img src={msg.content} alt="message image" className="rounded-lg shadow-md" />
- ) : (
-   <p className="text-sm">{msg.content || ""}</p>
-)}
-
+                {typeof msg.content === "string" &&
+                msg.content.startsWith("http") &&
+                msg.content.match(/\.(jpeg|jpg|gif|png|webp)$/) ? (
+                  <img
+                    src={msg.content}
+                    alt="message image"
+                    className="rounded-lg shadow-md"
+                  />
+                ) : typeof msg.content === "string" &&
+                  msg.content.startsWith("data:image/") ? (
+                  <img
+                    src={msg.content}
+                    alt="message image"
+                    className="rounded-lg shadow-md"
+                  />
+                ) : (
+                  <p className="text-sm">{msg.content || ""}</p>
+                )}
 
                 {/* ✅ وقت الإرسال وحالة الرسالة */}
                 <div className="flex items-center gap-1 mt-1">

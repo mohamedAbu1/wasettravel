@@ -93,7 +93,6 @@ const handleNotificationClick = (notification) => {
           style={{
             width: 400,
             padding: "16px",
-            // backgroundColor: themeName === "dark" ? "#1e1e1e" : "#fafafa",
             color: themeName === "dark" ? "#fff" : "#333",
           }}
         >
@@ -196,7 +195,7 @@ const handleNotificationClick = (notification) => {
                   : "#fff",
             }}
           >
-            {userData?.name} ({userData?.role})
+            {userData?.name}
           </Typography>
         </div>
       )}

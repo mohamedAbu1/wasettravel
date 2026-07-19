@@ -1,5 +1,7 @@
 "use client";
-import { Box, Button, StyledEngineProvider } from "@mui/material";
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import StyledEngineProvider from '@mui/material/StyledEngineProvider';
 import { useTheme } from "@/context/ThemeContext";
 import { useData } from "@/context/DataContext";
 import React from "react";
@@ -13,7 +15,7 @@ import { useRouter } from "next/navigation";
 
 const Content = () => {
   const { theme } = useTheme();
-  const { setCity, city, setPrice, price, tripType, setTripType } = useData();
+  const { setCity, city, setPrice, group_price , tripType, setTripType } = useData();
 
   const { i18n, t } = useTranslation("home");
   const currentLang = i18n.language || "en";
@@ -22,13 +24,13 @@ const Content = () => {
 
   const router = useRouter();
 
-  const isFormValid = city && price && tripType;
+  const isFormValid = city && group_price  && tripType;
   const handleSearch = () => {
     // نبني الكويري مباشرة من القيم الحالية في الانبوتات
     const queryObj = {
       city: [city],
       category: [tripType],
-      price: price,
+      group_price : group_price ,
       popular: false,
     };
 
@@ -86,7 +88,7 @@ const Content = () => {
             t={t}
           />
 
-          <PriceSelect price={price} setPrice={setPrice} t={t} theme={theme} />
+          <PriceSelect group_price={group_price} setPrice={setPrice} t={t} theme={theme} />
 
           {/* Calendar */}
           <StyledEngineProvider injectFirst>

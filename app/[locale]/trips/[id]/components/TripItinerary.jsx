@@ -2,8 +2,9 @@
 import { FaCalendarAlt, FaClock } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
+// ✅ تنسيق الوقت
 function formatTime(time) {
   if (!time) return "";
   const [hours, minutes] = time.split(":").map(Number);
@@ -34,16 +35,39 @@ export default function TripItinerary({ trip, lang }) {
     return result;
   };
 
-  // ✅ تأكد إن الأيام جاية بشكل صحيح
+  // ✅ تأكد إن الأيام جاية بشكل صحيح (Array أو JSON string)
   const tripDays = Array.isArray(trip.days)
     ? trip.days
     : Array.isArray(trip.trip_days)
     ? trip.trip_days
+    : typeof trip.days === "string"
+    ? JSON.parse(trip.days)
     : [];
 
   const dayGroups = chunkDays(tripDays);
   const [currentPage, setCurrentPage] = useState(0);
 
+  // ✅ جلب الأنشطة من API إذا كانت null
+  const [activitiesMap, setActivitiesMap] = useState({});
+
+  useEffect(() => {
+    async function fetchActivities(dayId) {
+      try {
+        const res = await fetch(`/api/day_activities?day_id=${dayId}`);
+        const data = await res.json();
+        setActivitiesMap((prev) => ({ ...prev, [dayId]: data }));
+      } catch (err) {
+        console.error("Error fetching activities:", err);
+      }
+    }
+
+    tripDays.forEach((day) => {
+      if (!day.activities && day.id) {
+        fetchActivities(day.id);
+      }
+    });
+  }, [tripDays]);
+console.log("object",activitiesMap)
   return (
     <motion.section
       initial={{ opacity: 0, y: 40 }}
@@ -85,29 +109,36 @@ export default function TripItinerary({ trip, lang }) {
         transition={{ duration: 0.6 }}
         className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        {dayGroups[currentPage]?.map((day, dayIdx) => (
-          <motion.div
-            key={day.id || day.day_number || dayIdx}
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: dayIdx * 0.2 }}
-            className={`rounded-lg p-4 shadow-md transition ${
-              themeName === "dark"
-                ? "bg-black/60 hover:bg-black/80"
-                : "bg-[#fdf6e3] hover:bg-[#f5deb3]"
-            }`}
-          >
-            <h3
-              className={`text-lg font-semibold mb-3 ${
-                themeName === "dark" ? "text-gold" : "text-[#3a2c0a]"
+        {dayGroups[currentPage]?.map((day, dayIdx) => {
+          const activities =
+            day.activities ||
+            day.day_activities ||
+            activitiesMap[day.id] ||
+            [];
+
+          return (
+            <motion.div
+              key={day.id || day.day_number || dayIdx}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: dayIdx * 0.2 }}
+              className={`rounded-lg p-4 shadow-md transition ${
+                themeName === "dark"
+                  ? "bg-black/60 hover:bg-black/80"
+                  : "bg-[#fdf6e3] hover:bg-[#f5deb3]"
               }`}
             >
-              Day {day.day_number || dayIdx + 1}
-            </h3>
-            <ul className="space-y-3">
-              {day.activities || day.day_activities
-                ? (day.activities || day.day_activities).map((act, actIdx) => (
+              <h3
+                className={`text-lg font-semibold mb-3 ${
+                  themeName === "dark" ? "text-gold" : "text-[#3a2c0a]"
+                }`}
+              >
+                Day {day.day_number || dayIdx + 1}
+              </h3>
+              <ul className="space-y-3">
+                {activities.length > 0 ? (
+                  activities.map((act, actIdx) => (
                     <motion.li
                       key={act.id || actIdx}
                       initial={{ opacity: 0, x: -20 }}
@@ -133,14 +164,20 @@ export default function TripItinerary({ trip, lang }) {
                       <span>
                         {act.activity_translations?.[lang] ||
                           act.activity_translations?.en ||
-                          act.activity}
+                          act.activity ||
+                          "No activity description"}
                       </span>
                     </motion.li>
                   ))
-                : null}
-            </ul>
-          </motion.div>
-        ))}
+                ) : (
+                  <li className="text-gray-500 italic">
+                    No activities available for this day
+                  </li>
+                )}
+              </ul>
+            </motion.div>
+          );
+        })}
       </motion.div>
 
       {/* ✅ Pagination */}

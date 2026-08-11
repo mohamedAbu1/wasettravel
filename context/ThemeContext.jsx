@@ -1,38 +1,36 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import lightTheme from "@/constants/theme/lightTheme";
 import darkTheme from "@/constants/theme/darkTheme";
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 const ThemeContext = createContext();
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 export function ThemeProvider({ children }) {
   const [themeName, setThemeName] = useState("light");
   const [theme, setTheme] = useState(lightTheme);
-  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-  // Load saved theme
+  // ✅ تحميل الثيم المحفوظ
   useEffect(() => {
     const saved = localStorage.getItem("theme") || "light";
     applyTheme(saved);
   }, []);
-  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-  // Apply theme helper
+  // ✅ دالة لتطبيق الثيم
   const applyTheme = (mode) => {
     setThemeName(mode);
     setTheme(mode === "dark" ? darkTheme : lightTheme);
 
-    // Toggle class for Tailwind dark mode
+    // تحديث الـ attribute على <html>
+    document.documentElement.setAttribute("data-theme", mode);
+
+    // تحديث الـ class الخاصة بـ Tailwind (لو محتاج dark:)
     if (mode === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
 
-    // Update CSS variables for global usage
+    // تحديث بعض الـ CSS variables العامة
     document.documentElement.style.setProperty(
       "--color",
       mode === "dark" ? "#c9a34a" : "#ffffff"
@@ -46,15 +44,13 @@ export function ThemeProvider({ children }) {
       mode === "dark" ? "#0a0a0a" : "#ffffff"
     );
   };
-  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-  // Toggle theme
+  // ✅ دالة لتبديل الثيم
   const toggleThemeFun = () => {
     const newTheme = themeName === "dark" ? "light" : "dark";
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
   };
-  // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
   return (
     <ThemeContext.Provider value={{ theme, themeName, toggleThemeFun }}>

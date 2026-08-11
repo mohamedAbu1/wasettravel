@@ -7,61 +7,101 @@ import { useTranslation } from "react-i18next";
 import { usePathname, useRouter } from "next/navigation";
 import { useNotifications } from "@/context/NotificationsContext";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import MailIcon from "@mui/icons-material/Mail";
 import Badge from "@mui/material/Badge";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
-import Slide from "@mui/material/Slide";
 import { useState } from "react";
+import { useMessages } from "@/context/MessageContext";
+import NotificationsDrawer from "./components/NotificationsDrawer";
+import MessagesDrawer from "./components/MessagesDrawer";
 
 export default function RightBar({ scrolled }) {
-  const { userData } = useAuth();
-  const { themeName } = useTheme();
+  const { userData, setChatUser } = useAuth();
+  const { themeName, theme } = useTheme();
   const { t } = useTranslation("header");
-  const { notifications,markAsRead } = useNotifications();
+  const { notifications, markAsRead } = useNotifications();
+  const { fetchUserMessagesById, setMessages } = useMessages();
   const router = useRouter();
-
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
+
+  const now = Date.now();
+  const twelveHours = 12 * 60 * 60 * 1000;
+  const twoDays = 2 * 24 * 60 * 60 * 1000;
+
   const isHome =
     segments.length === 0 ||
     (segments.length === 1 &&
       ["en", "fr", "de", "it", "es", "pt"].includes(segments[0]));
 
-  const unreadCount = notifications.filter((n) => n.is_read === 0).length;
+  // ✅ إشعارات عامة (فلترة + ترتيب)
+  const filteredNotifications = notifications
+    .filter((n) => {
+      const createdTime = new Date(n.created_at).getTime();
+      return now - createdTime < twoDays; // إشعار أقل من يومين
+    })
+    .sort((a, b) => {
+      if (a.is_read === 0 && b.is_read !== 0) return -1;
+      if (a.is_read !== 0 && b.is_read === 0) return 1;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+  const unreadCount = filteredNotifications.filter(
+    (n) => n.is_read === 0 && n.event_type !== "message"
+  ).length;
+
   const [open, setOpen] = useState(false);
 
-  // دالة عند الضغط على الإشعار
-const handleNotificationClick = (notification) => {
-  // تحديث حالة الإشعار إلى مقروء
-  markAsRead(notification.id);
+  // ✅ إشعارات الرسائل (فلترة + ترتيب)
+  const messageNotifications = notifications
+    .filter((n) => n.event_type === "message")
+    .filter((n) => {
+      if (n.is_read === 0) return true; // غير مقروءة تبقى
+      const createdTime = new Date(n.created_at).getTime();
+      return now - createdTime < twelveHours; // مقروءة لكن أقل من 12 ساعة
+    })
+    .sort((a, b) => {
+      if (a.is_read === 0 && b.is_read !== 0) return -1;
+      if (a.is_read !== 0 && b.is_read === 0) return 1;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
 
-  // لو الإشعار شراء رحلة → تحويل للرحلة
-  if (notification.event_type === "purchase" && notification.trip_id) {
-    router.push(`/trips/${notification.trip_id}`);
-  }
+  const unreadMessages = messageNotifications.filter((n) => n.is_read === 0).length;
+  const [openMessages, setOpenMessages] = useState(false);
 
-  // ✅ لو الإشعار خاص بتعليق (review)
-  if (notification.event_type === "review" && notification.trip_id) {
-    router.push(`/trips/${notification.trip_id}?highlightReview=${notification.review_id}`);
-  }
+  const handleNotificationClick = (notification) => {
+    markAsRead(notification.id);
 
-  // ✅ لو الإشعار خاص بإعجاب على تعليق (review_like)
-  if (notification.event_type === "review_like" && notification.trip_id) {
-    router.push(`/trips/${notification.trip_id}?highlightReview=${notification.review_id}`);
-  }
-};
+    if (notification.event_type === "purchase" && notification.trip_id) {
+      router.push(`/trips/${notification.trip_id}`);
+    }
 
+    if (notification.event_type === "review" && notification.trip_id) {
+      router.push(`/trips/${notification.trip_id}?highlightReview=${notification.review_id}`);
+    }
 
+    if (notification.event_type === "review_like" && notification.trip_id) {
+      router.push(`/trips/${notification.trip_id}?highlightReview=${notification.review_id}`);
+    }
+  };
+
+  const handleMessageClick = async (notification) => {
+    await markAsRead(notification.id);
+
+    setChatUser({
+      id: notification.user_id,
+      name: notification.user_name,
+      image: notification.user_image,
+    });
+
+    const messages = await fetchUserMessagesById(notification.user_id);
+    setMessages(messages);
+  };
 
   return (
     <div className="flex items-center gap-4">
-      {/* Theme Toggle */}
       <ThemeToggle scrolled={scrolled} />
 
-      {/* Notifications Icon (only for Admins) */}
+      {/* ✅ أيقونة الإشعارات العامة */}
       {userData?.role === "ADMIN" && (
         <Badge badgeContent={unreadCount} color="error">
           <NotificationsIcon
@@ -81,101 +121,50 @@ const handleNotificationClick = (notification) => {
         </Badge>
       )}
 
-      {/* Drawer for Notifications with animation */}
-      <Drawer
-        anchor="right"
+      {/* ✅ أيقونة الرسائل */}
+      {userData?.role === "ADMIN" && messageNotifications.length > 0 && (
+        <Badge badgeContent={unreadMessages} color="error">
+          <MailIcon
+            onClick={() => setOpenMessages(true)}
+            sx={{
+              cursor: "pointer",
+              color:
+                themeName === "dark"
+                  ? "#fff"
+                  : !isHome
+                  ? "#333"
+                  : scrolled
+                  ? "#333"
+                  : "#fff",
+            }}
+          />
+        </Badge>
+      )}
+
+      {/* Drawers */}
+      <NotificationsDrawer
         open={open}
         onClose={() => setOpen(false)}
-        TransitionComponent={Slide}
-        TransitionProps={{ direction: "left" }}
-      >
-        <div
-          style={{
-            width: 400,
-            padding: "16px",
-            color: themeName === "dark" ? "#fff" : "#333",
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{ mb: 2, fontWeight: "600", color: themeName === "dark" ? "#fff" : "#333" }}
-          >
-            Notifications
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <List>
-            {notifications.map((n) => (
-              <ListItem
-                key={n.id}
-                button
-                onClick={() => handleNotificationClick(n)}
-                sx={{
-                  mb: 2,
-                  alignItems: "flex-start",
-                  backgroundColor: n.is_read === 1
-                    ? "transparent"
-                    : themeName === "dark"
-                    ? "secondary.main"
-                    : "info.main",
-                  borderRadius: "8px",
-                  padding: "12px",
-                  cursor: "pointer",
-                  transition: "0.3s",
-                  "&:hover": {
-                    backgroundColor: themeName === "dark" ? "#444" : "#eaeaea",
-                  },
-                }}
-              >
-                <img
-                  src={n.user_image || "/default-avatar.png"}
-                  alt={n.user_name}
-                  width={50}
-                  height={50}
-                  style={{
-                    borderRadius: "50%",
-                    marginRight: "12px",
-                    border: "2px solid #d4af37",
-                  }}
-                />
-                <ListItemText
-                  primary={
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: n.is_read ? "normal" : "bold", color: n.is_read && themeName === "dark" ? "#fff" : "#333", textTransform: "capitalize" }}
-                    >
-                      {n.user_name}
-                    </Typography>
-                  }
-                  secondary={
-                    <>
-                      <Typography variant="body2" color="text.secondary">
-                        {n.user_email}
-                      </Typography>
-                      <Typography variant="body2" sx={{ mt: 0.5 }}>
-                        {n.message}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {new Date(n.created_at).toLocaleString("en-GB", {
-                          timeZone: "Africa/Cairo",
-                        })}
-                      </Typography>
-                    </>
-                  }
-                />
-              </ListItem>
-            ))}
-          </List>
-        </div>
-      </Drawer>
+        themeName={themeName}
+        theme={theme}
+        handleNotificationClick={handleNotificationClick}
+        notifications={filteredNotifications}
+      />
 
-      {/* User Info */}
+      <MessagesDrawer
+        open={openMessages}
+        onClose={() => setOpenMessages(false)}
+        themeName={themeName}
+        theme={theme}
+        messageNotifications={messageNotifications}
+        handleMessageClick={handleMessageClick}
+      />
+
       {userData && (
         <div className="hidden lg:flex items-center gap-2">
           <img
             alt={userData?.name || "User Avatar"}
-            src={
-              userData?.avatar_url || userData?.image || "/default-avatar.png"
-            }
+            src={userData?.avatar_url || userData?.image || "/default-avatar.png"}
             width={40}
             height={40}
             style={{ border: "2px solid #d4af37", borderRadius: "50%" }}

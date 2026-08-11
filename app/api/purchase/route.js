@@ -6,6 +6,9 @@ export async function POST(req) {
   try {
     const {
       tripId,
+      user_name,
+      user_email,
+      user_image,
       numPersons,
       hasChildren,
       numChildren,
@@ -22,11 +25,10 @@ export async function POST(req) {
 
     const db = await connectDB();
 
-
-    // ✅ تحقق إذا كان فيه حجز سابق
+    // ✅ Check if there is an existing purchase
     const [existing] = await db.query(
       "SELECT * FROM purchases WHERE user_id = ? AND trip_id = ?",
-      [userId, tripId]
+      [userId, tripId],
     );
 
     if (existing.length > 0) {
@@ -35,71 +37,76 @@ export async function POST(req) {
       if (oldPurchase.status === "Cancelled") {
         const purchaseId = uuidv4();
 
-
         await db.query(
           `INSERT INTO purchases 
-            (id, user_id, trip_id, num_persons, has_children, num_children, has_pets, pet_type, 
+            (id, user_id, trip_id, user_name, user_email, user_image, num_persons, has_children, num_children, has_pets, pet_type, 
              has_guide, guide_languages, arrival_date, departure_date, platform, status, created_at) 
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
           [
             purchaseId,
             userId,
             tripId,
+            user_name,                // ✅ correct position
+            user_email,               // ✅ correct position
+            user_image,               // ✅ correct position
             numPersons,
             hasChildren,
             numChildren,
             hasPets,
-            JSON.stringify(petTypes),          // ✅ تخزين الحيوانات كـ JSON
+            JSON.stringify(petTypes),
             hasGuide,
-            JSON.stringify(selectedLanguages), // ✅ تخزين اللغات كـ JSON
+            JSON.stringify(selectedLanguages),
             arrivalDate,
             departureDate,
             platform,
             status,
-          ]
+          ],
         );
 
         return NextResponse.json(
           { message: "Trip re-purchased successfully!" },
-          { status: 200 }
+          { status: 200 },
         );
       }
 
       return NextResponse.json(
         { error: "You already purchased this trip" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // ✅ إضافة عملية شراء جديدة لو مفيش أي حجز سابق
+    // ✅ Add a new purchase if none exists
     const purchaseId = uuidv4();
 
     await db.query(
       `INSERT INTO purchases 
-        (id, user_id, trip_id, num_persons, has_children, num_children, has_pets, pet_type, 
+        (id, user_id, trip_id, user_name, user_email, user_image, num_persons, has_children, num_children, has_pets, pet_type, 
          has_guide, guide_languages, arrival_date, departure_date, platform, status, created_at) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       [
         purchaseId,
         userId,
         tripId,
+        user_name,                // ✅ correct position
+        user_email,               // ✅ correct position
+        user_image,               // ✅ correct position
         numPersons,
         hasChildren,
         numChildren,
         hasPets,
-        JSON.stringify(petTypes),          // ✅ تخزين الحيوانات كـ JSON
+        JSON.stringify(petTypes),
         hasGuide,
-        JSON.stringify(selectedLanguages), // ✅ تخزين اللغات كـ JSON
+        JSON.stringify(selectedLanguages),
         arrivalDate,
         departureDate,
         platform,
         status,
-      ]
+      ],
     );
 
     return NextResponse.json(
       { message: "Trip purchased successfully!" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     console.error("❌ Error in purchase:", err);

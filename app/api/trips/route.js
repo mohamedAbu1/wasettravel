@@ -17,30 +17,31 @@ export async function POST(req) {
 
     const db = await connectDB();
 
-    // ✅ إدخال الرحلة
+    // ✅ إدخال بيانات الرحلة الأساسية
     await db.execute(
       `INSERT INTO trips 
-      (id, title, description, currency, duration, duration_unit, cover_image, gallery_images, priceLevel, group_price, solo_price)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (id, title, description, currency, duration, duration_unit, cover_image, gallery_images, priceLevel, group_price, solo_price, discount_percent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         tripId,
-        safeStringify(body.title),
-        safeStringify(body.description),
+        JSON.stringify(body.title),
+        JSON.stringify(body.description),
         body.currency,
         body.duration,
         body.duration_unit,
         body.cover_image,
-        safeStringify(body.gallery_images),
+        JSON.stringify(body.gallery_images),
         body.priceLevel,
         body.group_price,
         body.solo_price,
+        String(body.discountPercent ?? "0"),
       ]
     );
 
     // ✅ إدخال includes
     if (body.includes?.length > 0) {
       const includesData = body.includes.map((inc) => [
-        uuidv4(), // id جديد
+        uuidv4(),
         tripId,
         safeStringify(inc),
       ]);
@@ -50,10 +51,23 @@ export async function POST(req) {
       );
     }
 
+    // ✅ إدخال exclusions
+    if (body.exclusions?.length > 0) {
+      const exclusionsData = body.exclusions.map((exc) => [
+        uuidv4(),
+        tripId,
+        safeStringify(exc),
+      ]);
+      await db.query(
+        "INSERT INTO exclusions (id, trip_id, exclusions_translations) VALUES ?",
+        [exclusionsData]
+      );
+    }
+
     // ✅ إدخال المدن
     if (body.cities?.length > 0) {
       const citiesData = body.cities.map((cityId) => [
-        uuidv4(), // id جديد
+        uuidv4(),
         tripId,
         cityId,
       ]);
@@ -66,7 +80,7 @@ export async function POST(req) {
     // ✅ إدخال التصنيفات
     if (body.categories?.length > 0) {
       const categoriesData = body.categories.map((catId) => [
-        uuidv4(), // id جديد
+        uuidv4(),
         tripId,
         catId,
       ]);
@@ -77,8 +91,8 @@ export async function POST(req) {
     }
 
     // ✅ إدخال الأيام والأنشطة
-    if (body.trip_days?.length > 0) {
-      for (const [index, day] of body.trip_days.entries()) {
+    if (body.itinerary?.length > 0) {
+      for (const [index, day] of body.itinerary.entries()) {
         const dayId = uuidv4();
         await db.execute(
           "INSERT INTO trip_days (id, trip_id, day_number) VALUES (?, ?, ?)",
@@ -87,7 +101,7 @@ export async function POST(req) {
 
         if (day.activities?.length > 0) {
           const activitiesData = day.activities.map((act) => [
-            uuidv4(), // id جديد
+            uuidv4(),
             dayId,
             act.time,
             safeStringify(act.activity_translations || act.activity),
@@ -119,44 +133,76 @@ export async function GET() {
       SELECT 
         t.*,
         COALESCE(
-          (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'name', c.name, 'images', c.images)) 
-           FROM trip_cities tc 
-           JOIN cities c ON tc.city_id = c.id 
-           WHERE tc.trip_id = t.id),
-          JSON_ARRAY()
+          CAST(
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'name', c.name, 'images', c.images)) 
+             FROM trip_cities tc 
+             JOIN cities c ON tc.city_id = c.id 
+             WHERE tc.trip_id = t.id)
+          AS CHAR
+        ), '[]'
         ) AS cities,
         COALESCE(
-          (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', cat.id, 'name', cat.name, 'images', cat.images)) 
-           FROM trip_categories tc 
-           JOIN categories cat ON tc.category_id = cat.id 
-           WHERE tc.trip_id = t.id),
-          JSON_ARRAY()
+          CAST(
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', cat.id, 'name', cat.name, 'images', cat.images)) 
+             FROM trip_categories tc 
+             JOIN categories cat ON tc.category_id = cat.id 
+             WHERE tc.trip_id = t.id)
+          AS CHAR
+        ), '[]'
         ) AS categories,
         COALESCE(
-          (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', inc.id, 'include_translations', inc.include_translations)) 
-           FROM includes inc WHERE inc.trip_id = t.id),
-          JSON_ARRAY()
+          CAST(
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', inc.id, 'include_translations', inc.include_translations)) 
+             FROM includes inc WHERE inc.trip_id = t.id)
+          AS CHAR
+        ), '[]'
         ) AS includes,
         COALESCE(
-          (SELECT JSON_ARRAYAGG(
-              JSON_OBJECT(
-                'id', td.id, 
-                'day_number', td.day_number,
-                'activities', (
-                  SELECT JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                      'id', da.id,
-                      'time', da.time,
-                      'activity_translations', da.activity_translations
+          CAST(
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', exc.id, 'exclusions_translations', exc.exclusions_translations)) 
+             FROM exclusions exc WHERE exc.trip_id = t.id)
+          AS CHAR
+        ), '[]'
+        ) AS exclusions,
+        COALESCE(
+          CAST(
+            (SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                  'id', td.id, 
+                  'day_number', td.day_number,
+                  'activities', (
+                    SELECT JSON_ARRAYAGG(
+                      JSON_OBJECT(
+                        'id', da.id,
+                        'time', da.time,
+                        'activity_translations', da.activity_translations
+                      )
                     )
+                    FROM day_activities da WHERE da.day_id = td.id
                   )
-                  FROM day_activities da WHERE da.day_id = td.id
                 )
+             ) 
+             FROM trip_days td WHERE td.trip_id = t.id)
+          AS CHAR
+        ), '[]'
+        ) AS days,
+        COALESCE(
+          CAST(
+            (SELECT JSON_ARRAYAGG(
+              JSON_OBJECT(
+                'id', r.id,
+                'user_id', r.user_id,
+                'name', r.name,
+                'comment', r.comment,
+                'rating', r.rating,
+                'avatar_url', r.avatar_url,
+                'created_at', r.created_at
               )
-           ) 
-           FROM trip_days td WHERE td.trip_id = t.id),
-          JSON_ARRAY()
-        ) AS days
+            )
+            FROM reviews r WHERE r.trip_id = t.id)
+          AS CHAR
+        ), '[]'
+        ) AS reviews
       FROM trips t
     `);
 
@@ -183,7 +229,10 @@ export async function GET() {
       cities: safeParse(trip.cities),
       categories: safeParse(trip.categories),
       includes: safeParse(trip.includes),
+      exclusions: safeParse(trip.exclusions),
       itinerary: safeParse(trip.days),
+      reviews: safeParse(trip.reviews),
+      discountPercent: safeParse(trip.discount_percent),
     }));
 
     return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {

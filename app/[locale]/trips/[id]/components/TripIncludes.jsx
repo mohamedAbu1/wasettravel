@@ -14,10 +14,42 @@ const translations = {
 };
 
 export default function TripIncludes({ trip, lang }) {
-  const { themeName } = useTheme();
+  const { theme ,themeName } = useTheme();
 
   // لو اللغة مش موجودة، نرجع للإنجليزية
   const t = translations[lang] || translations.en;
+
+  // ✅ دالة ترجمة النصوص من JSON أو object
+  const getLocalizedText = (obj) => {
+    if (!obj) return "Unknown";
+    if (typeof obj === "string") {
+      try {
+        const parsed = JSON.parse(obj);
+        return parsed?.[lang] || parsed?.en || Object.values(parsed)[0];
+      } catch {
+        return obj;
+      }
+    }
+    if (typeof obj === "object") {
+      return obj?.[lang] || obj?.en || Object.values(obj)[0];
+    }
+    return "Unknown";
+  };
+
+  // ✅ تأكد إن includes Array حتى لو جاية كـ string أو object
+  let includes = [];
+  try {
+    if (Array.isArray(trip.includes)) {
+      includes = trip.includes;
+    } else if (typeof trip.includes === "string") {
+      const parsed = JSON.parse(trip.includes);
+      includes = Array.isArray(parsed) ? parsed : [parsed];
+    } else if (typeof trip.includes === "object" && trip.includes !== null) {
+      includes = [trip.includes];
+    }
+  } catch {
+    includes = [];
+  }
 
   return (
     <motion.section
@@ -25,60 +57,56 @@ export default function TripIncludes({ trip, lang }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className={`w-1/2 p-6 rounded-xl shadow-lg transition ${
+ className={`w-1/2 h-fit p-6 rounded-xl shadow-lg transition ${
         themeName === "dark"
           ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
-          : "bg-white/80 text-[#3a2c0a]"
-      }`}
-    >
+          : "bg-white/90 text-[#3a2c0a]"
+      }`}    >
       {/* العنوان */}
       <motion.h2
         initial={{ opacity: 0, x: -30 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className={`text-2xl font-bold flex items-center gap-2 mb-4 border-b pb-2 ${
+ className={`text-2xl font-bold flex items-center gap-2 mb-4 border-b p-2 ${
           themeName === "dark" ? "border-gold/50" : "border-[#c9a34a]/50"
-        }`}
-      >
-        <FaCheckCircle
-          className={themeName === "dark" ? "text-[#c9a34a]" : "text-[#c9a34a]"}
-        />
+        }`}      >
+        <FaCheckCircle className={theme.icon} />
         {t.title}
       </motion.h2>
 
       {/* العناصر */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {trip.includes?.map((inc, idx) => (
-          <motion.div
-            key={inc.id}
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: idx * 0.1 }}
-            whileHover={{ scale: 1.05 }}
-            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer ${
-              themeName === "dark"
-                ? "bg-black/60 hover:bg-black/80"
-                : "bg-[#fdf6e3] hover:bg-[#f5deb3]"
-            }`}
-          >
+        {includes.filter(Boolean).map((inc, idx) => {
+          const incId = inc?.id || idx;
+          const incText = getLocalizedText(inc?.include_translations);
+
+          return (
             <motion.div
-              whileHover={{ scale: 1.3, rotate: 10 }}
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <FaCheckCircle
-                className={`flex-shrink-0 ${
-                  themeName === "dark" ? "text-[#c9a34a]" : "text-[#c9a34a]"
-                }`}
-              />
+              key={incId}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: idx * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer ${
+                themeName === "dark"
+                  ? "bg-gray-800 hover:bg-black/40 text-gray-100"
+                  : "bg-white hover:bg-[#f5deb3]/40 text-[#3a2c0a]"
+              }`}            >
+              <motion.div
+                whileHover={{ scale: 1.3, rotate: 10 }}
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <FaCheckCircle className={theme.icon} />
+              </motion.div>
+              <span className={`text-sm md:text-base font-medium ${theme.subText}`}>
+                {incText}
+              </span>
             </motion.div>
-            <span className="text-sm md:text-base font-medium">
-              {inc.include_translations?.[lang] || inc.include_translations?.en}
-            </span>
-          </motion.div>
-        ))}
+          );
+        })}
       </div>
     </motion.section>
   );

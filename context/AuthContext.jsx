@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useQueryFilters } from "./QueryContext";
 import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react"; // ✅ NextAuth
+import { useData } from "./DataContext";
 
 const AuthContext = createContext();
 
@@ -14,16 +15,17 @@ export function AuthProvider({ children }) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const { data: session } = useSession(); // ✅ جلب المستخدم من جوجل عبر NextAuth
+  const [chatUser, setChatUser] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
 
-  const [user, setUser] = useState(null);       // بيانات من API
+  const [user, setUser] = useState(null); // بيانات من API
   const [UserToken, setUserToken] = useState(null); // بيانات من التوكين
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const { handleSignUpClose } = useData();
   const { updateValue, getEncodedQuery } = useQueryFilters();
 
-  // ✅ جلب بيانات المستخدم من السيرفر
   const fetchUserFromServer = async () => {
     try {
       const res = await axios.get("/api/auth/me", { withCredentials: true });
@@ -31,8 +33,21 @@ export function AuthProvider({ children }) {
       setIsLoggedIn(true);
       console.log("📌 User from server:", res.data.user);
     } catch (err) {
-      setUserToken(null);
-      setIsLoggedIn(false);
+      console.warn("⚠️ Token expired or invalid, trying refresh...");
+      try {
+        const retry = await axios.post(
+          "/api/auth/refresh",
+          {},
+          { withCredentials: true },
+        );
+        setUserToken(retry.data.user);
+        setIsLoggedIn(true);
+        console.log("🔄 Token refreshed, user:", retry.data.user);
+      } catch (refreshErr) {
+        console.error("💥 Refresh failed:", refreshErr.message);
+        setUserToken(null);
+        setIsLoggedIn(false);
+      }
     }
   };
 
@@ -49,12 +64,14 @@ export function AuthProvider({ children }) {
       const res = await axios.post(
         "/api/auth/register",
         { name, email, password, gender },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       const data = res.data;
-      if (res.status !== 201) throw new Error(data.error || "Registration failed");
+      if (res.status !== 201)
+        throw new Error(data.error || "Registration failed");
 
       toast.success("✅ Account created successfully!");
+      handleSignUpClose();
       return data;
     } catch (err) {
       setError(err.message);
@@ -69,69 +86,88 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
+      console.log("🚀 محاولة تسجيل الدخول بدأت", { email, password });
+
       const res = await axios.post(
         "/api/auth/login",
         { email, password },
-        { withCredentials: true }
+        { withCredentials: true },
       );
+      console.log("📩 الرد من السيرفر:", res);
+
       const data = res.data;
-      if (res.status !== 200) throw new Error(data.error || "Login failed");
+      console.log("📦 البيانات المستلمة:", data);
+
+      if (res.status !== 200) {
+        console.error("❌ فشل تسجيل الدخول:", data.error);
+        throw new Error(data.error || "Login failed");
+      }
 
       const user = data.user;
+      console.log("👤 المستخدم بعد تسجيل الدخول:", user);
+
       setUser(user);
 
       // ✅ جلب بيانات المستخدم من السيرفر بعد تسجيل الدخول
+      console.log("🔄 استدعاء fetchUserFromServer...");
       await fetchUserFromServer();
 
       setIsLoggedIn(true);
+      console.log("✅ حالة تسجيل الدخول: true");
 
-      if (onSuccess) onSuccess();
+      if (onSuccess) {
+        console.log("🎯 تنفيذ دالة onSuccess");
+        onSuccess();
+      }
+
       const encodedQuery = getEncodedQuery();
+      console.log("🔗 إعادة التوجيه مع البيانات:", encodedQuery);
       router.push(`/?data=${encodedQuery}`);
 
       toast.success("✅ Logged in successfully!");
       return user;
     } catch (err) {
+      console.error("💥 خطأ أثناء تسجيل الدخول:", err.message);
       setError(err.message);
       toast.error("❌ Error: " + err.message);
     } finally {
       setLoading(false);
+      console.log("⏹️ انتهت عملية تسجيل الدخول");
     }
   };
 
   // ✅ تسجيل الدخول بجوجل
-const loginWithGoogle = async () => {
-  try {
-    const result = await signIn("google", { redirect: false });
-    if (result?.error) {
-      toast.error("❌ خطأ أثناء تسجيل الدخول بجوجل: " + result.error);
-      return;
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signIn("google", { redirect: false });
+      if (result?.error) {
+        toast.error("❌ خطأ أثناء تسجيل الدخول بجوجل: " + result.error);
+        return;
+      }
+
+      const res = await fetch("/api/auth/session");
+      const sessionData = await res.json();
+      const userData = sessionData?.user;
+
+      if (!userData) {
+        toast.error("❌ لم يتم العثور على بيانات المستخدم.");
+        return;
+      }
+
+      // ✅ استدعاء API route للتعامل مع MySQL
+      const dbRes = await axios.post("/api/auth/google", {
+        email: userData.email,
+        name: userData.name,
+      });
+
+      setUser(dbRes.data);
+      setIsLoggedIn(true);
+      toast.success("✅ تم تسجيل الدخول بجوجل!");
+    } catch (err) {
+      console.error("OAuth Error:", err);
+      toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول بجوجل.");
     }
-
-    const res = await fetch("/api/auth/session");
-    const sessionData = await res.json();
-    const userData = sessionData?.user;
-
-    if (!userData) {
-      toast.error("❌ لم يتم العثور على بيانات المستخدم.");
-      return;
-    }
-
-    // ✅ استدعاء API route للتعامل مع MySQL
-    const dbRes = await axios.post("/api/auth/google", {
-      email: userData.email,
-      name: userData.name,
-    });
-
-    setUser(dbRes.data);
-    setIsLoggedIn(true);
-    toast.success("✅ تم تسجيل الدخول بجوجل!");
-  } catch (err) {
-    console.error("OAuth Error:", err);
-    toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول بجوجل.");
-  }
-};
-
+  };
 
   // ✅ تسجيل الخروج
   const logout = async () => {
@@ -147,11 +183,11 @@ const loginWithGoogle = async () => {
   };
 
   const userData = user || session?.user;
-
+  console.log("object", userData);
   return (
     <AuthContext.Provider
       value={{
-        userData,        // بيانات من API أو من Google
+        userData, // بيانات من API أو من Google
         register,
         login,
         loginWithGoogle, // ✅ تسجيل الدخول بجوجل
@@ -164,6 +200,10 @@ const loginWithGoogle = async () => {
         handleOpen,
         handleClose,
         fetchUserFromServer,
+        chatUser,
+        setChatUser,
+        chatMessages,
+        setChatMessages,
       }}
     >
       {children}

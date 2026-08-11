@@ -141,6 +141,16 @@ const Footer = () => {
         >
           {t("Contact")}
         </Link>
+        <Link
+          href="/privacyPolicy"
+          className={`hover:underline ${
+            themeName === "dark"
+              ? "text-white/80 hover:text-gold"
+              : "text-[#3a2c0a]/80 hover:text-[#c9a34a]"
+          }`}
+        >
+          {t("privacyPolicy")}
+        </Link>
       </motion.div>
 
       {/* أيقونات السوشيال ميديا */}

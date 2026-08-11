@@ -13,7 +13,7 @@ import HeaderComponent from "./components/HeaderComponent";
 import FormComponent from "./components/FormComponent";
 import ActionsComponent from "./components/ActionsComponent";
 export default function SignUpModal() {
-  const { handleLoginOpen } = useData();
+  const { handleLoginOpen,signUpOpen,handleSignUpClose } = useData();
   const { themeName } = useTheme();
   const isDark = themeName === "dark";
   const { validateField } = useSecurity();
@@ -23,7 +23,7 @@ export default function SignUpModal() {
   const [gender, setGender] = useState("");
   const { t } = useTranslation("home");
 
-  const { register, loading, error, open, handleClose } = useAuth();
+  const { register, loading, loginWithGoogle, open, handleClose } = useAuth();
 
   // 🎨 ألوان واضحة للكتابة حسب الثيم
   const mainTextColor = isDark ? "#ffffff" : "#1a1a1a"; // النص الأساسي
@@ -78,30 +78,10 @@ export default function SignUpModal() {
       toast.error("❌ Error: " + err.message);
     }
   };
-  // const loginWithGoogle = async () => {
-  //   try {
-  //     const { data, error } = await supabase.auth.signInWithOAuth({
-  //       provider: "google",
-  //       options: {
-  //         // ✅ استخدام popup بدلاً من redirect
-  //         queryParams: {
-  //           access_type: "offline",
-  //           prompt: "select_account consent",
-  //         },
-  //       },
-  //     });
 
-  //     if (error) {
-  //       toast.error(`❌ خطأ في الاتصال بجوجل: ${error.message}`);
-  //     }
-  //   } catch (err) {
-  //     console.error("OAuth Error:", err);
-  //     toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول.");
-  //   }
-  // };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+    <Dialog open={signUpOpen} onClose={handleSignUpClose} fullWidth maxWidth="sm">
       <motion.div>
         <HeaderComponent isDark={isDark} />
         <DialogContent
@@ -126,13 +106,13 @@ export default function SignUpModal() {
             borderColor={borderColor}
             textFieldStyle={textFieldStyle}
           />
-          {/* <ActionsComponent
+          <ActionsComponent
             t={t}
             loginWithGoogle={loginWithGoogle}
             handleSubmit={handleSubmit}
             loading={loading}
             handleLoginOpen={handleLoginOpen}
-          /> */}
+          />
         </DialogContent>
       </motion.div>
     </Dialog>

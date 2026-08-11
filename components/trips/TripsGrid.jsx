@@ -1,5 +1,5 @@
 "use client";
-import { FaStar, FaDollarSign, FaEuroSign } from "react-icons/fa";
+import { FaStar, FaDollarSign, FaEuroSign, FaPoundSign } from "react-icons/fa";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -7,122 +7,96 @@ import { useAuth } from "@/context/AuthContext";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/context/LanguageContext";
-import { useEffect, useState } from "react";
-
-// 🟢 دالة تحسين الصور مع fallback
-const optimize = (url) => {
-  if (!url || typeof url !== "string" || url.trim() === "") {
-    return "/fallback.jpg"; // صورة افتراضية
-  }
-
-  // إزالة اللغة من المسار (en, fr, de, es, it, zh)
-  let cleanUrl = url.replace(/\/(en|fr|de|es|it|zh)\//, "/");
-
-  // إزالة أي query قديمة
-  cleanUrl = cleanUrl.split("?")[0];
-
-  // لو الرابط يبدأ بـ http → أضف الكويري
-  if (cleanUrl.startsWith("http")) {
-    return `${cleanUrl}?width=800&quality=70&format=webp`;
-  }
-
-  // لو مجرد اسم ملف → ضيف "/" في البداية لو مش موجود وأضف الكويري
-  const finalUrl = cleanUrl.startsWith("/") ? cleanUrl : `/${cleanUrl}`;
-  return `${finalUrl}?width=800&quality=70&format=webp`;
-};
-
-
+import { useTheme } from "@/context/ThemeContext";
+import { useCurrency } from "@/context/CurrencyContext"; // ✅ استدعاء الكونتكست
 
 export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { userData } = useAuth();
   const { currency, purchases } = usePurchase();
   const { t } = useTranslation("trips");
   const { lang } = useLanguage();
+  const { theme } = useTheme();
+  const { convertPrice, loading, error } = useCurrency(); // ✅ جلب أسعار العملات
+
   const getRandomStars = () => Math.floor(Math.random() * 3) + 3;
 
-  const [exchangeRate, setExchangeRate] = useState({
-    USD_EGP: 49.1,
-    EUR_USD: 1.18,
-    USD_EUR: 0.85,
-  });
+  // 🟢 دالة التحويل باستخدام CurrencyContext
 
-  useEffect(() => {
-    const fetchRate = async () => {
-      try {
-        const res = await fetch(
-          "https://api.exchangerate.host/latest?base=USD&symbols=EGP"
-        );
-        const data = await res.json();
-        if (data && data.rates && data.rates.EGP) {
-          setExchangeRate((prev) => ({ ...prev, USD_EGP: data.rates.EGP }));
-        } else {
-          console.warn("EGP rate not found in API response:", data);
-        }
-      } catch (err) {
-        console.error("Error fetching EGP rate:", err);
-      }
-    };
-    fetchRate();
-  }, []);
-
-  const convertPrice = (price, tripCurrency) => {
-    let converted = price;
-    if (currency === "EUR" && tripCurrency === "USD") {
-      converted = (price * exchangeRate.USD_EUR).toFixed(2);
-    } else if (currency === "USD" && tripCurrency === "EUR") {
-      converted = (price * exchangeRate.EUR_USD).toFixed(2);
-    } else if (currency === "EGP" && tripCurrency === "USD") {
-      converted = (price * exchangeRate.USD_EGP).toFixed(2);
+  if (loading)
+    return <p className="text-center">⏳ Loading currency rates...</p>;
+  if (error) return <p className="text-center text-red-500">❌ {error}</p>;
+const getLocalizedText = (obj, lang) => {
+  if (!obj) return "Unknown";
+  if (typeof obj === "string") {
+    try {
+      const parsed = JSON.parse(obj);
+      return parsed?.[lang] || parsed?.en || Object.values(parsed)[0];
+    } catch {
+      return obj;
     }
-    return converted;
-  };
+  }
+  if (typeof obj === "object") {
+    return obj?.[lang] || obj?.en || Object.values(obj)[0];
+  }
+  return "Unknown";
+};
+const getLocalizedTextG = (obj, lang) => {
+  if (!obj) return "Unknown";
+  if (typeof obj === "string") {
+    try {
+      const parsed = JSON.parse(obj);
+      return parsed?.[lang] || parsed?.en || Object.values(parsed)[0];
+    } catch {
+      return obj;
+    }
+  }
+  if (typeof obj === "object") {
+    return obj?.[lang] || obj?.en || Object.values(obj)[0];
+  }
+  return "Unknown";
+};
+
   return (
     <div
       className={`flex-1 z-[0] ${
         cardStyle === "vertical"
           ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           : "grid grid-cols-1 md:grid-cols-2 gap-6"
-      }`}
+      } `}
     >
       {trips.map((trip, i) => {
         const avgStars = getRandomStars();
-        const displayedPrice = convertPrice(trip.group_price, trip.currency || "USD");
+        const displayedPrice = convertPrice(trip.group_price, trip.currency);
 
         const hasPurchased =
-          user &&
+          userData &&
           purchases.some(
             (p) =>
-              p.user_id?.toString() === user.id?.toString() &&
+              p.user_id?.toString() === userData.id?.toString() &&
               p.trip_id?.toString() === trip.id?.toString() &&
-              p.status !== "Cancelled"
+              p.status !== "Cancelled",
           );
+        const hasActivePurchase = purchases.some(
+          (p) =>
+            p.trip_id === trip.id &&
+            p.user_id === userData?.id &&
+            p.status !== "Cancelled",
+        );
+        // 🟢 اختيار الأيقونة حسب العملة
+        let CurrencyIcon;
+        let currencyColor;
+        if (currency === "USD") {
+          CurrencyIcon = FaDollarSign;
+          currencyColor = theme.usdColor || "#2ecc71";
+        } else if (currency === "EUR") {
+          CurrencyIcon = FaEuroSign;
+          currencyColor = theme.eurColor || "#3498db";
+        } else if (currency === "EGP") {
+          CurrencyIcon = FaPoundSign;
+          currencyColor = theme.egpColor || "#b8860b";
+        }
 
-        // ✅ معالجة العنوان سواء كان نص أو JSON
-        const tripTitle =
-          typeof trip.title === "object"
-            ? trip.title[lang] || trip.title.en || Object.values(trip.title)[0]
-            : trip.title || "Untitled";
-
-   // ✅ معالجة المدن
-const tripCities =
-  trip.cities?.map((c) => {
-    const name = c?.name;
-    return typeof name === "object"
-      ? name[lang] || name.en || Object.values(name)[0]
-      : name;
-  }) || [];
-
-// ✅ معالجة التصنيفات
-const tripCategories =
-  trip.categories?.map((cat) => {
-    const name = cat?.name;
-    return typeof name === "object"
-      ? name[lang] || name.en || Object.values(name)[0]
-      : name;
-  }) || [];
-
- 
         return (
           <motion.div
             key={trip.id || i}
@@ -131,38 +105,113 @@ const tripCategories =
             transition={{ duration: 0.6, ease: "easeOut" }}
             whileHover={{
               scale: 1.05,
-              boxShadow: "0px 8px 20px rgba(0,0,0,0.3)",
+              boxShadow: theme.shadow,
             }}
-            className={`relative rounded-xl shadow-lg overflow-hidden border border-[#c9a34a]/30 ${
+            className={`relative overflow-hidden ${theme.card} ${
               cardStyle === "vertical" ? "h-[400px]" : "h-[300px]"
             }`}
           >
             <Image
-              src={optimize(trip.cover_image)}
-              alt={tripTitle}
+              src={trip.cover_image || "/default.jpg"}
+              alt={trip.title?.[lang] || trip.title?.en || "Trip image"}
               width={660}
               height={400}
               className="object-cover w-full h-full rounded-lg"
               priority
             />
+            {/* 🟢 استيكر الخصم في الأعلى يسار */}
+            {trip.discountPercent > 0 && (
+              <div className="absolute top-2 left-2 z-50">
+                {trip.discountPercent === 10 && (
+                  <Image
+                    src="/HomePageImage/off10.png"
+                    alt="10% Discount"
+                    width={50}
+                    height={50}
+                  />
+                )}
+                {trip.discountPercent === 20 && (
+                  <Image
+                    src="/HomePageImage/off120.png"
+                    alt="20% Discount"
+                    width={50}
+                    height={50}
+                  />
+                )}
+                {trip.discountPercent === 30 && (
+                  <Image
+                    src="/HomePageImage/off30.png"
+                    alt="30% Discount"
+                    width={50}
+                    height={50}
+                  />
+                )}
+                {trip.discountPercent === 40 && (
+                  <Image
+                    src="/HomePageImage/off40.png"
+                    alt="40% Discount"
+                    width={50}
+                    height={50}
+                  />
+                )}
+                {trip.discountPercent === 50 && (
+                  <Image
+                    src="/HomePageImage/50-percent.png"
+                    alt="50% Discount"
+                    width={50}
+                    height={50}
+                  />
+                )}
+              </div>
+            )}
 
-            <div className="absolute bottom-0 p-4 w-full flex flex-col gap-2 text-white bg-gradient-to-t from-black/70 to-transparent">
-              <h4 className="text-lg font-bold">{tripTitle}</h4>
-              <p className="text-sm opacity-90">
-                {tripCities.join(", ") || t("NoCity")}
-              </p>
-              <p className="text-sm opacity-90">
-                {tripCategories.join(", ") || t("NoCategory")}
-              </p>
+            {/* 🔴 استيكر عدد المبيعات في الأعلى يمين */}
+            {trip.purchase_count > 0 && (
+              <div className="absolute top-2 right-2 flex items-center gap-1">
+                <Image
+                  src="/HomePageImage/BESTSELLER.png" // ضع هنا مسار الصورة داخل public/icons
+                  alt="Purchases"
+                  width={50}
+                  height={50}
+                  className="drop-shadow-lg"
+                />
+              </div>
+            )}
+
+            <div
+              className={`absolute bottom-0 p-4 w-full flex flex-col gap-2 ${theme.overlay} text-white`}
+            >
+              <h4 className={`text-lg font-bold ${theme.title}`}>
+                {trip.title?.[lang] || trip.title?.en || "Untitled"}
+              </h4>
+
+       <p className={`${theme.subText} text-sm`}>
+  {Array.isArray(trip.cities) && trip.cities.length > 0
+    ? trip.cities
+        .filter(Boolean)
+        .map((c) => getLocalizedText(c.name, lang))
+        .join(", ")
+    : "Unknown City"}
+</p>
+
+<p className={`${theme.subText} text-sm`}>
+  {Array.isArray(trip.categories) && trip.categories.length > 0
+    ? trip.categories
+        .filter(Boolean)
+        .map((cat) => getLocalizedTextG(cat.name, lang))
+        .join(", ")
+    : t("NoCategory")}
+</p>
+
+
               <p className="text-md font-semibold flex items-center gap-2">
-                <span className="px-2 py-1 rounded flex items-center gap-1 bg-[#c9a34a] text-white">
-                  {currency === "USD" ? (
-                    <FaDollarSign />
-                  ) : currency === "EUR" ? (
-                    <FaEuroSign />
-                  ) : (
-                    "£"
-                  )}
+                <span
+                  className={`px-3 py-2 rounded-lg flex items-center gap-2 
+              bg-white/10 dark:bg-black/20 
+              backdrop-blur-md border border-[#C2A878]/40 
+              shadow-sm`}
+                >
+                  <CurrencyIcon style={{ color: currencyColor }} />
                   {displayedPrice} {currency}
                 </span>
               </p>
@@ -171,26 +220,36 @@ const tripCategories =
                 {[...Array(5)].map((_, idx) => (
                   <FaStar
                     key={idx}
-                    className={
-                      idx < avgStars
-                        ? "text-yellow-400"
-                        : "text-gray-500 opacity-50"
-                    }
+                    className={idx < avgStars ? theme.icon : theme.iconInactive}
                   />
                 ))}
-                <span className="text-sm opacity-80">({t("reviews")})</span>
+                <span className={`${theme.subText} text-sm`}>
+                  ({t("reviews")})
+                </span>
               </div>
-
-              <button
-                onClick={() => router.push(`/trips/${trip.id}`)}
-                className={`mt-2 px-4 py-2 rounded-lg font-bold transition text-white ${
-                  hasPurchased
-                    ? "bg-green-500 hover:bg-green-600"
-                    : "bg-[#c9a34a] hover:bg-yellow-500"
-                }`}
-              >
-                {hasPurchased ? t("Tripdetails") : t("btn")}
-              </button>
+              {hasActivePurchase === true ? (
+                <button
+                  onClick={() => router.push(`/trips/${trip.id}`)}
+                  className={`mt-3 px-5 py-2 rounded-lg font-bold transition cursor-pointer 
+              bg-white/10 dark:bg-black/20 
+              backdrop-blur-md border border-[#C2A878]/40 
+              text-[#C2A878] hover:bg-[#C2A878]/20 hover:text-white 
+              shadow-md`}
+                >
+                  {hasPurchased ? t("Tripdetails") : t("btn")}
+                </button>
+              ) : (
+                <button
+                  onClick={() => router.push(`/trips/${trip.id}`)}
+                  className={`mt-3 px-5 py-2 rounded-lg font-bold transition cursor-pointer 
+              bg-white/10 dark:bg-black/20 
+              backdrop-blur-md border border-[#C2A878]/40 
+              text-[#C2A878] hover:bg-[#C2A878]/20 hover:text-white 
+              shadow-md`}
+                >
+                  {hasPurchased ? t("Tripdetails") : t("btn")}
+                </button>
+              )}
             </div>
           </motion.div>
         );

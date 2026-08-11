@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 // ================== GET ==================
 export async function GET(req, context) {
   try {
-    const { id } = await context.params;
+    const { id } = context.params;
     const db = await connectDB();
 
     const [rows] = await db.query(`SELECT * FROM trips WHERE id = ? LIMIT 1`, [id]);
@@ -14,39 +14,39 @@ export async function GET(req, context) {
     }
     const trip = rows[0];
 
-    // ✅ جلب المدن مع id
+    // ✅ جلب المدن
     const [cities] = await db.query(
       `SELECT tc.id, tc.city_id, c.name 
        FROM trip_cities tc 
        JOIN cities c ON tc.city_id = c.id 
        WHERE tc.trip_id = ?`,
-      [id],
+      [id]
     );
-    const parsedCities = cities.map(c => ({
+    const parsedCities = cities.map((c) => ({
       ...c,
       name: typeof c.name === "string" ? JSON.parse(c.name) : c.name,
     }));
 
-    // ✅ جلب الفئات مع id
+    // ✅ جلب الفئات
     const [categories] = await db.query(
       `SELECT tc.id, tc.category_id, cat.name 
        FROM trip_categories tc 
        JOIN categories cat ON tc.category_id = cat.id 
        WHERE tc.trip_id = ?`,
-      [id],
+      [id]
     );
-    const parsedCategories = categories.map(cat => ({
+    const parsedCategories = categories.map((cat) => ({
       ...cat,
       name: typeof cat.name === "string" ? JSON.parse(cat.name) : cat.name,
     }));
 
-    // ✅ جلب الـ includes مع id
+    // ✅ جلب الـ includes
     const [includes] = await db.query(
       `SELECT id, include_translations 
        FROM includes WHERE trip_id = ?`,
-      [id],
+      [id]
     );
-    const parsedIncludes = includes.map(inc => ({
+    const parsedIncludes = includes.map((inc) => ({
       ...inc,
       include_translations:
         typeof inc.include_translations === "string"
@@ -54,19 +54,33 @@ export async function GET(req, context) {
           : inc.include_translations,
     }));
 
+    // ✅ جلب الـ exclusions
+    const [exclusions] = await db.query(
+      `SELECT id, exclusions_translations 
+       FROM exclusions WHERE trip_id = ?`,
+      [id]
+    );
+    const parsedExclusions = exclusions.map((exc) => ({
+      ...exc,
+      exclusions_translations:
+        typeof exc.exclusions_translations === "string"
+          ? JSON.parse(exc.exclusions_translations)
+          : exc.exclusions_translations,
+    }));
+
     // ✅ جلب الأيام والأنشطة
     const [days] = await db.query(
       `SELECT id, day_number 
        FROM trip_days WHERE trip_id = ?`,
-      [id],
+      [id]
     );
     for (const day of days) {
       const [activities] = await db.query(
         `SELECT id, time, activity_translations 
          FROM day_activities WHERE day_id = ?`,
-        [day.id],
+        [day.id]
       );
-      day.activities = activities.map(act => ({
+      day.activities = activities.map((act) => ({
         ...act,
         activity_translations:
           typeof act.activity_translations === "string"
@@ -83,10 +97,11 @@ export async function GET(req, context) {
           cities: parsedCities,
           categories: parsedCategories,
           includes: parsedIncludes,
+          exclusions: parsedExclusions,
           itinerary: days,
         },
       },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (err) {
     console.error("❌ [GET] Exception:", err.message);
@@ -97,7 +112,7 @@ export async function GET(req, context) {
 // ================== PUT ==================
 export async function PUT(req, context) {
   try {
-    const { id } = await context.params;
+    const { id } = context.params;
     const body = await req.json();
     const db = await connectDB();
 
@@ -105,7 +120,7 @@ export async function PUT(req, context) {
     await db.query(
       `UPDATE trips SET 
         title = ?, description = ?, solo_price = ?, group_price = ?, 
-        duration = ?, priceLevel = ?, cover_image = ?, gallery_images = ?
+        duration = ?, priceLevel = ?, cover_image = ?, gallery_images = ?, discount_percent = ?
        WHERE id = ?`,
       [
         JSON.stringify(body.title),
@@ -116,8 +131,9 @@ export async function PUT(req, context) {
         body.priceLevel,
         body.cover_image,
         JSON.stringify(body.gallery_images),
+        String(body.discountPercent ?? "0"),
         id,
-      ],
+      ]
     );
 
     // ✅ تحديث الفئات
@@ -126,7 +142,7 @@ export async function PUT(req, context) {
       for (const catId of body.categories) {
         await db.query(
           "INSERT INTO trip_categories (id, trip_id, category_id) VALUES (?, ?, ?)",
-          [uuidv4(), id, catId],
+          [uuidv4(), id, catId]
         );
       }
     }
@@ -137,35 +153,30 @@ export async function PUT(req, context) {
       for (const cityId of body.cities) {
         await db.query(
           "INSERT INTO trip_cities (id, trip_id, city_id) VALUES (?, ?, ?)",
-          [uuidv4(), id, cityId],
+          [uuidv4(), id, cityId]
         );
       }
     }
 
-    // ✅ تحديث الـ includes باستخدام UUID
+    // ✅ تحديث الـ includes
     if (Array.isArray(body.includes)) {
-      const [existingIncludes] = await db.query("SELECT id FROM includes WHERE trip_id = ?", [id]);
-      const existingIds = existingIncludes.map(inc => inc.id);
-      const incomingIds = body.includes.map(inc => inc.id).filter(Boolean);
-
-      const toDelete = existingIds.filter(dbId => !incomingIds.includes(dbId));
-      if (toDelete.length > 0) {
-        await db.query("DELETE FROM includes WHERE id IN (?)", [toDelete]);
-      }
-
+      await db.query("DELETE FROM includes WHERE trip_id = ?", [id]);
       for (const inc of body.includes) {
-        if (inc.id) {
-          await db.query(
-            "UPDATE includes SET include_translations = ? WHERE id = ? AND trip_id = ?",
-            [JSON.stringify(inc.include_translations), inc.id, id],
-          );
-        } else {
-          const newIncId = uuidv4();
-          await db.query(
-            "INSERT INTO includes (id, trip_id, include_translations) VALUES (?, ?, ?)",
-            [newIncId, id, JSON.stringify(inc.include_translations)],
-          );
-        }
+        await db.query(
+          "INSERT INTO includes (id, trip_id, include_translations) VALUES (?, ?, ?)",
+          [uuidv4(), id, JSON.stringify(inc.include_translations)]
+        );
+      }
+    }
+
+    // ✅ تحديث الـ exclusions
+    if (Array.isArray(body.exclusions)) {
+      await db.query("DELETE FROM exclusions WHERE trip_id = ?", [id]);
+      for (const exc of body.exclusions) {
+        await db.query(
+          "INSERT INTO exclusions (id, trip_id, exclusions_translations) VALUES (?, ?, ?)",
+          [uuidv4(), id, JSON.stringify(exc.exclusions_translations)]
+        );
       }
     }
 
@@ -175,13 +186,13 @@ export async function PUT(req, context) {
         if (day.id) {
           await db.query(
             "UPDATE trip_days SET day_number = ? WHERE id = ? AND trip_id = ?",
-            [day.day_number, day.id, id],
+            [day.day_number, day.id, id]
           );
         } else {
           const newDayId = uuidv4();
           await db.query(
             "INSERT INTO trip_days (id, trip_id, day_number) VALUES (?, ?, ?)",
-            [newDayId, id, day.day_number],
+            [newDayId, id, day.day_number]
           );
           day.id = newDayId;
         }
@@ -191,13 +202,13 @@ export async function PUT(req, context) {
             if (act.id) {
               await db.query(
                 "UPDATE day_activities SET time = ?, activity_translations = ? WHERE id = ? AND day_id = ?",
-                [act.time, JSON.stringify(act.activity_translations), act.id, day.id],
+                [act.time, JSON.stringify(act.activity_translations), act.id, day.id]
               );
             } else {
               const newActId = uuidv4();
               await db.query(
                 "INSERT INTO day_activities (id, day_id, time, activity_translations) VALUES (?, ?, ?, ?)",
-                [newActId, day.id, act.time, JSON.stringify(act.activity_translations)],
+                [newActId, day.id, act.time, JSON.stringify(act.activity_translations)]
               );
             }
           }
@@ -215,7 +226,7 @@ export async function PUT(req, context) {
 // ================== DELETE ==================
 export async function DELETE(req, context) {
   try {
-    const { id } = await context.params;
+    const { id } = context.params;
     const db = await connectDB();
 
     const [days] = await db.query("SELECT id FROM trip_days WHERE trip_id = ?", [id]);
@@ -226,10 +237,14 @@ export async function DELETE(req, context) {
     await db.query("DELETE FROM trip_cities WHERE trip_id = ?", [id]);
     await db.query("DELETE FROM trip_categories WHERE trip_id = ?", [id]);
     await db.query("DELETE FROM includes WHERE trip_id = ?", [id]);
+    await db.query("DELETE FROM exclusions WHERE trip_id = ?", [id]);
     await db.query("DELETE FROM trip_days WHERE trip_id = ?", [id]);
     await db.query("DELETE FROM trips WHERE id = ?", [id]);
 
-    return NextResponse.json({ success: true, message: "Trip deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      { success: true, message: "Trip deleted successfully" },
+      { status: 200 }
+    );
   } catch (err) {
     console.error("❌ [DELETE] Exception:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });

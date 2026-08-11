@@ -29,8 +29,8 @@ export function DataProvider({ children }) {
   const [index, setIndex] = useState(0);
   const [loginOpen, setLoginOpen] = useState(false);
   const [signUpOpen, setSignUpOpen] = useState(false);
-  const handleLoginOpen = () => {setLoginOpen(true) ,setOpen(false)};
-  const handleSignUpOpen = () => {setSignUpOpen(true) ,setOpen(false)};
+  const handleLoginOpen = () => {setLoginOpen(true) ,setSignUpOpen(false)};
+  const handleSignUpOpen = () => {setSignUpOpen(true) ,setLoginOpen(false)};
   const handleLoginClose = () => setLoginOpen(false);
   const handleSignUpClose = () => setSignUpOpen(false);
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

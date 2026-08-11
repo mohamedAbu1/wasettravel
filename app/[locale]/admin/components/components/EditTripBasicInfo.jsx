@@ -148,6 +148,31 @@ const EditTripBasicInfo = () => {
             </select>
           </div>
         </div>
+                {/* التخفيض */}
+      <div className="relative w-[20%]">
+  <label className={`block mb-1 text-sm font-semibold ${theme.subText}`}>
+    Discount
+  </label>
+  <select
+    value={tripData.discountPercent ?? 0}
+    onChange={(e) =>
+      updateTripField("discountPercent", parseInt(e.target.value))
+    }
+    className={`w-full px-3 py-2 rounded-lg font-bold cursor-pointer
+      backdrop-blur-md border border-[#C2A878]/40 shadow-sm
+      bg-white/10 dark:bg-black/20
+      text-[#C2A878] hover:bg-[#C2A878]/20 hover:text-white
+      transition duration-300 ease-in-out
+      ${selectClass}`}
+  >
+    <option value={0}>0%</option>
+    <option value={10}>10%</option>
+    <option value={20}>20%</option>
+    <option value={30}>30%</option>
+    <option value={40}>40%</option>
+    <option value={50}>50%</option>
+  </select>
+</div>
       </div>
     </div>
   );

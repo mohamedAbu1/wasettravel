@@ -14,7 +14,11 @@ import { TripIDProvider } from "@/context/TripIDContext";
 import { PurchaseProvider } from "@/context/PurchaseContext";
 import { QueryProvider } from "@/context/QueryContext";
 import { MessageProvider } from "@/context/MessageContext";
+import { UserProvider } from "@/context/UserContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
+import { AppProvider } from "@/context/AppContext";
+import { ChatProvider } from "@/context/ChatContext";
 import { CitiesCategoriesProvider } from "@/context/CitiesCategoriesContext";
 import { ToastContainer } from "react-toastify";
 import { Suspense } from "react";
@@ -27,34 +31,42 @@ export default function Providers({ children }) {
         <ThemeProvider>
           <Suspense fallback={<div>Loading filters...</div>}>
             <NotificationsProvider>
-              <QueryProvider>
-                <AuthProvider>
+              <CurrencyProvider>
+                <QueryProvider>
                   <DataProvider>
-                    <SecurityProvider>
-                      <TripProvider>
-                        <CitiesCategoriesProvider>
-                          <LanguageProvider>
-                            <ReviewsProvider>
-                              <MessageProvider>
-                                <TripIDProvider>
-                                  <PurchaseProvider>
-                                    <ToastContainer
-                                      position="top-right"
-                                      autoClose={3000}
-                                      theme="colored"
-                                    />
-                                    {children}
-                                  </PurchaseProvider>
-                                </TripIDProvider>
-                              </MessageProvider>
-                            </ReviewsProvider>
-                          </LanguageProvider>
-                        </CitiesCategoriesProvider>
-                      </TripProvider>
-                    </SecurityProvider>
+                    <AuthProvider>
+                      <UserProvider>
+                        <SecurityProvider>
+                          <TripProvider>
+                            <CitiesCategoriesProvider>
+                              <LanguageProvider>
+                                <ReviewsProvider>
+                                  <MessageProvider>
+                                    <TripIDProvider>
+                                      <ChatProvider>
+                                        <PurchaseProvider>
+                                          <AppProvider>
+                                            <ToastContainer
+                                              position="top-right"
+                                              autoClose={3000}
+                                              theme="colored"
+                                            />
+                                            {children}
+                                          </AppProvider>
+                                        </PurchaseProvider>
+                                      </ChatProvider>
+                                    </TripIDProvider>
+                                  </MessageProvider>
+                                </ReviewsProvider>
+                              </LanguageProvider>
+                            </CitiesCategoriesProvider>
+                          </TripProvider>
+                        </SecurityProvider>
+                      </UserProvider>
+                    </AuthProvider>
                   </DataProvider>
-                </AuthProvider>
-              </QueryProvider>
+                </QueryProvider>
+              </CurrencyProvider>
             </NotificationsProvider>
           </Suspense>
         </ThemeProvider>

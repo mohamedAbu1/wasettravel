@@ -23,7 +23,7 @@ export function NotificationsProvider({ children }) {
       }
     }
     fetchNotifications();
-  }, []);
+  }, [notifications]);
 
   // تحديث حالة الإشعار إلى مقروء
 const markAsRead = async (id) => {
@@ -41,11 +41,26 @@ const markAsRead = async (id) => {
     console.error("خطأ في تحديث الإشعار:", err);
   }
 };
+ const deleteNotification = async (id) => {
+    try {
+      const res = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
+      const data = await res.json();
 
+      if (data.success) {
+        // تحديث محلي: إزالة الإشعار من القائمة
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+        console.log("🗑️ تم حذف الإشعار بنجاح:", id);
+      } else {
+        console.error("❌ خطأ في حذف الإشعار:", data.error);
+      }
+    } catch (err) {
+      console.error("❌ خطأ أثناء حذف الإشعار:", err.message);
+    }
+  };
 
   return (
     <NotificationsContext.Provider
-      value={{ notifications, loading, markAsRead }}
+      value={{ notifications, loading, markAsRead,deleteNotification }}
     >
       {children}
     </NotificationsContext.Provider>

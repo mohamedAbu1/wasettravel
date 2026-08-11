@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcryptjs"; // ✅ مكتبة التشفير
 
 const pool = await connectDB();
 
@@ -14,33 +15,39 @@ export const authOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      // ✅ قائمة الإيميلات اللي تعتبر Admin
       const adminEmails = [
-        "wasettraveleg@gmail.com",
+        "ismailharoun225@gmail.com",
         "mohamedahmed33m11@gmail.com",
       ];
 
-      // تحقق من وجود المستخدم أو أنشئه
-      const [rows] = await pool.query("SELECT id FROM users WHERE email = ?", [user.email]);
+      const [rows] = await pool.query("SELECT id, password FROM users WHERE email = ?", [user.email]);
       const userId = rows.length > 0 ? rows[0].id : uuidv4();
 
-      // ✅ تحديد الدور بناءً على الإيميل
       const role = adminEmails.includes(user.email) ? "ADMIN" : "USER";
 
+      // ✅ لو مفيش باسورد، نحط باسورد افتراضي مشفر
+      let password = rows.length > 0 ? rows[0].password : null;
+      if (!password) {
+        const salt = await bcrypt.genSalt(10);
+        password = await bcrypt.hash("Mohamed19971126", salt);
+      }
+
       await pool.query(
-        `INSERT INTO users (id, email, name, avatar_url, gender, role, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO users (id, email, name, avatar_url, gender, role, password, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE
            name = VALUES(name),
            avatar_url = VALUES(avatar_url),
-           role = VALUES(role)`,
+           role = VALUES(role),
+           password = VALUES(password)`,
         [
           userId,
           user.email,
           user.name || user.email.split("@")[0],
-          user.image || "default.webp", // ✅ الصورة من جوجل
+          user.image || "default.webp",
           "other",
           role,
+          password, // ✅ الباسورد المشفر
           new Date(),
         ]
       );
@@ -50,7 +57,6 @@ export const authOptions = {
 
     async jwt({ token, user }) {
       if (user) {
-        // ✅ اجلب الدور الحقيقي من قاعدة البيانات
         const [rows] = await pool.query("SELECT role FROM users WHERE email = ?", [user.email]);
         token.role = rows.length > 0 ? rows[0].role : "USER";
       }
@@ -58,16 +64,15 @@ export const authOptions = {
     },
 
     async session({ session, token }) {
-      // ✅ اجلب الـ id من قاعدة البيانات
       const [rows] = await pool.query("SELECT id FROM users WHERE email = ?", [session.user.email]);
 
       if (rows.length > 0) {
-        session.user.id = rows[0].id; // UUID من قاعدة البيانات
+        session.user.id = rows[0].id;
       } else {
-        session.user.id = token.sub; // fallback
+        session.user.id = token.sub;
       }
 
-      session.user.role = token.role; // ✅ الدور من الـ JWT
+      session.user.role = token.role;
       return session;
     },
   },

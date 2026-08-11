@@ -10,7 +10,7 @@ import TopTripsSection from "@/components/home/TopTripsSection";
 import LoginModal from "@/components/home/components/LoginModal";
 import TopReviewsSection from "@/components/home/components/TopReviewsSection";
 import ChatWidget from "@/components/layout/ChatWidget";
-import { useAuth } from "@/context/AuthContext"; 
+import { useAuth } from "@/context/AuthContext";
 import Head from "next/head";
 import { useLanguage } from "@/context/LanguageContext";
 import { homeMetadata } from "@/lib/metadata/home";
@@ -18,9 +18,10 @@ import CurrencySelector from "@/components/layout/CurrencySelector";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import SignUpModal from "@/components/home/components/SignUpButton";
 import { useEffect, useState } from "react";
+import AdminChatWindow from "@/components/layout/AdminChatWindow";
 
 export default function Home() {
-  const { userData } = useAuth(); // ✅ جلب المستخدم الحالي من الـ API
+  const { userData, chatUser, setChatUser, chatMessages } = useAuth(); // ✅ جلب المستخدم الحالي من الـ API
   const { lang } = useLanguage();
   const meta = homeMetadata[lang] || homeMetadata.en;
   const [dbStatus, setDbStatus] = useState(null);
@@ -57,7 +58,7 @@ export default function Home() {
 
         {/* ================= CATEGORIES SECTION ================= */}
         <CategoriesSection />
-       
+
         {/* ================= TOP TRIPS SECTION ================= */}
         <TopTripsSection />
 
@@ -77,6 +78,9 @@ export default function Home() {
         {/* نافذة الدردشة تظهر فقط لو المستخدم مسجل دخول */}
         {userData && <ChatWidget />}
         {userData && <AdminDashboardButton />}
+        {chatUser && (
+          <AdminChatWindow user={chatUser} admin={userData} messages={chatMessages} onClose={() => setChatUser(null)} />
+        )}
         <CurrencySelector />
       </main>
     </>

@@ -4,49 +4,42 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 
-// ✅ إضافة رسالة جديدة (نص أو صورة)
 export async function POST(req) {
   try {
     const contentType = req.headers.get("content-type") || "";
 
-    // 📌 لو الرسالة صورة (multipart/form-data)
+    // 📌 لو الرسالة صورة
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
       const file = formData.get("file");
+      if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
 
-      if (!file) {
-        return NextResponse.json(
-          { error: "No file uploaded" },
-          { status: 400 },
-        );
-      }
-
+      // اسم فريد للصورة
       const fileName = `${Date.now()}-${file.name}`;
-      const baseUrl = `https://wasettravel.com/images/${fileName}`; // ✅ رابط الصورة النهائي
+      const baseUrl = `https://basttettravel.com/iamges/${fileName}`; // صححت iamges → iamges
 
-      let uploadPath;
-      if (process.env.NODE_ENV === "production") {
-        uploadPath = path.join(process.cwd(), "public/images", fileName); // ✅ فولدر محلي
-      } else {
-        uploadPath = `/home/u984684626/public_html/images/${fileName}`; // ✅ فولدر السيرفر
-      }
+      // مسار المشروع المحلي
+      const projectPath = path.join(process.cwd(), "public/iamges", fileName);
 
-      console.log("📥 Uploading file to:", uploadPath);
+      // مسار الاستضافة
+      const hostingPath = `/home/u984684626/public_html/iamges/${fileName}`;
 
-      // تأكد أن الفولدر موجود
-      await fs.promises.mkdir(path.dirname(uploadPath), { recursive: true });
+      // تجهيز المجلدات
+      await fs.promises.mkdir(path.dirname(projectPath), { recursive: true });
+      await fs.promises.mkdir(path.dirname(hostingPath), { recursive: true });
 
+      // تحويل الملف إلى buffer
       const buffer = Buffer.from(await file.arrayBuffer());
-      await fs.promises.writeFile(uploadPath, buffer);
 
-      // ✅ باقي البيانات من الـ formData
+      // حفظ نسخة في المشروع
+      await fs.promises.writeFile(projectPath, buffer);
+
+      // حفظ نسخة في الاستضافة
+      await fs.promises.writeFile(hostingPath, buffer);
+
+      // باقي البيانات
       const user_id = formData.get("user_id");
-      if (!user_id) {
-        return NextResponse.json(
-          { error: "user_id is required" },
-          { status: 400 },
-        );
-      }
+      if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
 
       const sender_type = formData.get("sender_type") || "admin";
       const user_name = formData.get("user_name") || "Admin";
@@ -61,61 +54,31 @@ export async function POST(req) {
         `INSERT INTO messages 
          (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
-        [
-          messagesId,
-          user_id,
-          baseUrl,
-          sender_type,
-          user_name,
-          user_image,
-          reply_to ?? null,
-          admin_id,
-        ],
+        [messagesId, user_id, baseUrl, sender_type, user_name, user_image, reply_to ?? null, admin_id],
       );
 
-      return NextResponse.json(
-        {
-          id: messagesId,
-          message: "Image message inserted successfully!",
-          url: baseUrl,
-        },
-        { status: 201 },
-      );
+      const newMessage = {
+        id: messagesId,
+        user_id,
+        content: baseUrl,
+        sender_type,
+        user_name,
+        user_image,
+        reply_to,
+        admin_id,
+        status: "sent",
+        created_at: new Date(),
+      };
+
+      return NextResponse.json(newMessage, { status: 201 });
     }
 
-    // 📌 لو الرسالة نصية (application/json)
-    let body = {};
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json(
-        { error: "Invalid or empty JSON body" },
-        { status: 400 },
-      );
-    }
+    // 📌 لو الرسالة نصية
+    const body = await req.json();
+    const { user_id, content, sender_type = "user", user_name = "Unknown User", user_image = "/default-avatar.png", reply_to = null, admin_id = null } = body;
 
-    const {
-      user_id,
-      content,
-      sender_type = "user",
-      user_name = "Unknown User",
-      user_image = "/default-avatar.png",
-      reply_to = null,
-      admin_id = null,
-    } = body;
-
-    if (!user_id) {
-      return NextResponse.json(
-        { error: "user_id is required" },
-        { status: 400 },
-      );
-    }
-    if (!content) {
-      return NextResponse.json(
-        { error: "Content cannot be null" },
-        { status: 400 },
-      );
-    }
+    if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
+    if (!content) return NextResponse.json({ error: "Content cannot be null" }, { status: 400 });
 
     const db = await connectDB();
     const messagesId = uuidv4();
@@ -124,22 +87,23 @@ export async function POST(req) {
       `INSERT INTO messages 
        (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
-      [
-        messagesId,
-        user_id,
-        content,
-        sender_type,
-        user_name,
-        user_image,
-        reply_to,
-        admin_id,
-      ],
+      [messagesId, user_id, content, sender_type, user_name, user_image, reply_to, admin_id],
     );
 
-    return NextResponse.json(
-      { id: messagesId, message: "Text message inserted successfully!" },
-      { status: 201 },
-    );
+    const newMessage = {
+      id: messagesId,
+      user_id,
+      content,
+      sender_type,
+      user_name,
+      user_image,
+      reply_to,
+      admin_id,
+      status: "sent",
+      created_at: new Date(),
+    };
+
+    return NextResponse.json(newMessage, { status: 201 });
   } catch (err) {
     console.error("❌ Error inserting message:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -153,7 +117,7 @@ export async function GET(req) {
     const messageId = searchParams.get("messageId");
 
     const db = await connectDB();
-    let query = `SELECT id, content, sender_type, created_at, user_name, user_image, reply_to, admin_id, status 
+    let query = `SELECT id, content, sender_type, created_at, user_name, user_image, reply_to, admin_id,user_id , status 
                  FROM messages`;
     let params = [];
 

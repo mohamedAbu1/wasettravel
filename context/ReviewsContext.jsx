@@ -11,7 +11,6 @@ export function ReviewsProvider({ children }) {
   const [allReviews, setAllReviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [likes, setLikes] = useState({});
-console.log("userData", userData);
   // ✅ جلب التعليقات الخاصة برحلة معينة
   const fetchReviewsByTrip = async (tripId) => {
     if (!tripId) return;
@@ -109,8 +108,8 @@ console.log("userData", userData);
   };
 
   // ✅ إضافة لايك
-  const addLike = async (reviewId) => {
-    if (!reviewId || !userData?.id) return;
+ const addLike = async (reviewId, userId) => {
+  if (!reviewId || !userId) return;
 
     try {
       const res = await axios.post(`/api/reviews/${reviewId}/like`, {
@@ -171,6 +170,42 @@ console.log("userData", userData);
       users: likes[review.id]?.users || [],
     }));
   };
+// ✅ حذف تعليق
+const deleteReview = async (reviewId) => {
+  if (!reviewId) {
+    return { success: false, error: "Missing reviewId or tripId" };
+  }
+
+  try {
+    const res = await axios.delete(`/api/reviews/${reviewId}`, {
+      data: { user_id: userData.id }, // للتأكد أن المستخدم هو صاحب التعليق أو عندك صلاحيات
+    });
+
+    const data = res.data;
+    if (data.success) {
+      // تحديث التعليقات الخاصة بالرحلة
+      setReviewsByTrip((prev) => ({
+        ...prev,
+        [tripId]: (prev[tripId] || []).filter((review) => review.id !== reviewId),
+      }));
+
+      // تحديث جميع التعليقات
+      setAllReviews((prev) => prev.filter((review) => review.id !== reviewId));
+
+      // إزالة اللايكات الخاصة بالتعليق المحذوف
+      setLikes((prev) => {
+        const updated = { ...prev };
+        delete updated[reviewId];
+        return updated;
+      });
+    }
+
+    return data;
+  } catch (err) {
+    console.error("❌ Error deleting review:", err);
+    return { success: false, error: err.message };
+  }
+};
 
   return (
     <ReviewsContext.Provider
@@ -187,6 +222,7 @@ console.log("userData", userData);
         addLike,
         removeLike,
         getUserLikes,
+        deleteReview,
       }}
     >
       {children}

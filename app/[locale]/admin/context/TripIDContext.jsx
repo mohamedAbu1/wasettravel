@@ -72,6 +72,7 @@ export function TripIDProvider({ children }) {
       if (res.ok) {
         setTripData({
           ...data.trip,
+          discountPercent: data.trip.discount_percent, // ✅ تحويل الاسم
           title:
             typeof data.trip.title === "string"
               ? JSON.parse(data.trip.title)
@@ -90,6 +91,15 @@ export function TripIDProvider({ children }) {
                   typeof inc.include_translations === "string"
                     ? JSON.parse(inc.include_translations)
                     : inc.include_translations,
+              }))
+            : [],
+          exclusions: Array.isArray(data.trip.exclusions)
+            ? data.trip.exclusions.map((exc) => ({
+                id: exc.id,
+                exclusions_translations:
+                  typeof exc.exclusions_translations === "string"
+                    ? JSON.parse(exc.exclusions_translations)
+                    : exc.exclusions_translations,
               }))
             : [],
         });
@@ -157,6 +167,7 @@ export function TripIDProvider({ children }) {
       gallery_images: tripData.gallery_images,
       solo_price: tripData.solo_price,
       group_price: tripData.group_price,
+      discountPercent: tripData.discountPercent,
 
       categories: (tripData.categories || [])
         .map((c) => (typeof c === "string" ? c : c?.category_id || c?.id))
@@ -170,6 +181,10 @@ export function TripIDProvider({ children }) {
       includes: (tripData.includes || []).map((inc) => ({
         id: inc.id,
         include_translations: inc.include_translations,
+      })),
+      exclusions: (tripData.exclusions || []).map((exc) => ({
+        id: exc.id,
+        exclusions_translations: exc.exclusions_translations,
       })),
 
       itinerary: tripData.itinerary || [],
@@ -196,7 +211,7 @@ export function TripIDProvider({ children }) {
   useEffect(() => {
     fetchAllTrips();
   }, []);
-
+  console.log("123object123", tripData);
   return (
     <TripIDContext.Provider
       value={{

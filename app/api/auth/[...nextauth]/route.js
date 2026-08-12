@@ -16,7 +16,7 @@ export const authOptions = {
   callbacks: {
     async signIn({ user }) {
       const adminEmails = [
-        "ismailharoun225@gmail.com",
+        "wasettraveleg@gmail.com",
         "mohamedahmed33m11@gmail.com",
       ];
 

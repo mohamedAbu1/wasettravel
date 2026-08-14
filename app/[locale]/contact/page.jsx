@@ -95,32 +95,10 @@ export default function ContactPage() {
         <meta name="description" content={meta.description} />
         <meta name="keywords" content={meta.keywords} />
       </Head>
-      <main className="relative flex flex-col min-h-screen justify-center items-center">
+      <main className="relative flex flex-col min-h-screen justify-center items-center overflow-y-hidden">
         <Header />
 
-        {isSmallScreen ? (
-          // ✅ واجهة بديلة للهواتف والشاشات الصغيرة
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotateY: 90 }}
-            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="flex flex-col items-center justify-center h-[70vh] text-center gap-6"
-          >
-            <h2 className="text-4xl font-extrabold text-[#c9a34a] drop-shadow-lg">
-              🚫 This page is not available on phones.🚫
-            </h2>
-            <p className="text-lg text-gray-600">
-              You should go to the homepage to follow your trips
-            </p>
-            <button
-              onClick={() => router.push("/")}
-              className="px-6 py-3 rounded-lg bg-[#c9a34a] text-white font-bold shadow-lg hover:bg-yellow-600 transition"
-            >
-              Return to home page
-            </button>
-          </motion.div>
-        ) : (
-          // ✅ التصميم العادي لصفحة التواصل
+        
           <>
             {/* خلفية الرموز الفرعونية */}
             <div className="absolute inset-0 pointer-events-none mt-9">
@@ -309,7 +287,6 @@ export default function ContactPage() {
               </div>
             </section>
           </>
-        )}
 
         <Footer />
         <SignUpModal />

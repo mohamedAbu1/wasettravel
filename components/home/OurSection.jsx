@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/purity */
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -23,211 +21,130 @@ const OurSection = () => {
   useEffect(() => {
     setHasMounted(true);
   }, []);
-
   if (!hasMounted) return null;
 
-  const symbols = [
-    "𓂀",
-    "𓋹",
-    "𓆣",
-    "𓇼",
-    "𓇯",
-    "𓏏",
-    "𓎛",
-    "𓊽",
-    "𓃾",
-    "𓅓",
-    "𓈇",
-    "𓉐",
-    "𓊹",
-    "𓌙",
-    "𓍿",
-    "𓎟",
+  const images = [
+    "/Aswan/pexels-furknsaglam-1596977-21348185.webp",
+    "/Luxor/pexels-oualid-soussi-2150533856-35050672.webp",
+    "/Cairo/pexels-ozgomz-7566890.webp",
+    "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
+    "/Luxor/pexels-yasmine-qasem-1054896-2034684.webp",
   ];
 
   return (
-    <section
-      id="section-four"
-      style={{ paddingBottom: "40px", paddingTop: "20px" }}
-      className={` hidden lg:flex relative w-full min-h-screen px-4 sm:py-10 md:py-12 lg:py-0 flex-col items-center justify-start ${theme.background} ${theme.text}`}
-    >
-      {/* خلفية الرموز الفرعونية */}
-      <div className="absolute inset-0 pointer-events-none -z-10">
-        {Array.from({ length: 25 }).map((_, i) => (
-          <span
-            key={i}
-            className={`absolute ${
-              themeName === "dark" ? "text-gray-700" : "text-[#c9a34a]"
-            } opacity-30 text-7xl animate-pulse`}
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              transform: `rotate(${Math.random() * 360}deg)`,
-            }}
+    <>
+      {/* ✅ نسخة الشاشات الكبيرة */}
+      <section
+        id="section-four"
+        className={`hidden lg:flex relative w-full min-h-screen px-4 py-12 flex-col items-center justify-start ${theme.background} ${theme.text}`}
+      >
+        <div className="w-full max-w-screen-xl flex flex-row items-center justify-between gap-10 relative z-10">
+          {/* Slider */}
+          <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-1/2 rounded-3xl overflow-hidden shadow-xl"
           >
-            {symbols[Math.floor(Math.random() * symbols.length)]}
-          </span>
-        ))}
-      </div>
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 4000, disableOnInteraction: false }}
+              spaceBetween={30}
+              slidesPerView={1}
+              className="w-full h-full"
+            >
+              {images.map((imgSrc, index) => (
+                <SwiperSlide key={index}>
+                  <div className="w-full h-[85vh]">
+                    <Image
+                      src={imgSrc}
+                      alt={`WasetTravel Slide ${index + 1}`}
+                      fill
+                      className="object-cover rounded-lg"
+                      loading="lazy"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </motion.div>
 
-      <div className="w-full max-w-screen-xl flex flex-col lg:flex-row items-center justify-between gap-10 relative z-10">
-        {/* ✅ Slider with animation */}
-        <motion.div
-          initial={{ opacity: 0, x: -100 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full lg:w-1/2 rounded-3xl overflow-hidden shadow-xl"
-          style={{
-            boxShadow:
-              themeName === "dark"
-                ? "0 6px 20px rgba(201,163,74,0.4)"
-                : "0 6px 20px rgba(58,44,10,0.2)",
-          }}
-        >
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            navigation
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 4000, disableOnInteraction: false }}
-            spaceBetween={30}
-            slidesPerView={1}
-            className="w-full h-full"
+          {/* Text */}
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-1/2 text-start"
           >
-            {[
-              "/Aswan/pexels-furknsaglam-1596977-21348185.webp",
-              "/Luxor/pexels-oualid-soussi-2150533856-35050672.webp",
-              "/Cairo/pexels-ozgomz-7566890.webp",
-              "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
-              "/Luxor/pexels-yasmine-qasem-1054896-2034684.webp",
-            ].map((imgSrc, index) => (
+            <p className="text-sm uppercase mb-2 tracking-wide">
+              {t("AboutUs")}
+            </p>
+            <h2 className="text-4xl font-bold mb-4">{t("DiscoverWasetTravel")}</h2>
+            <DividerWithIcon />
+            <p className="text-base mb-6 leading-relaxed">
+              {t("At")} <span className="text-[#c9a34a] font-semibold">WasetTravel</span> {t("AtP")}{" "}
+              <span className="text-[#c9a34a] font-semibold">{t("professionalguides")}</span> {t("AtPP")}
+            </p>
+            <button
+              onClick={() => router.push("/about")}
+              className="px-6 py-3 rounded-lg font-semibold transition shadow-lg bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+            >
+              {t("LearnMoreAboutUs")}
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ✅ نسخة الموبايل */}
+      <section
+        className={`flex lg:hidden flex-col w-full px-4 py-12 items-center justify-start ${theme.background} ${theme.text}`}
+      >
+        {/* Slider full width */}
+        <div className="w-full rounded-2xl overflow-hidden shadow-lg mb-8">
+          <Swiper
+            modules={[Pagination, Autoplay]}
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 3500, disableOnInteraction: false }}
+            spaceBetween={20}
+            slidesPerView={1}
+            className="w-full h-[300px] sm:h-[400px]"
+          >
+            {images.map((imgSrc, index) => (
               <SwiperSlide key={index}>
-                <div className="w-full h-[85vh]">
+                <div className="w-full h-full">
                   <Image
-                    src={imgSrc || "/fallback.jpg"}
+                    src={imgSrc}
                     alt={`WasetTravel Slide ${index + 1}`}
                     fill
-                    className="w-full h-full object-cover rounded-lg"
-                    loading="lazy" // ✅ يفضل للصور الثانوية
+                    className="object-cover rounded-lg"
+                    loading="lazy"
                   />
                 </div>
               </SwiperSlide>
             ))}
           </Swiper>
-        </motion.div>
+        </div>
 
-        {/* ✅ Text with animation */}
-        <motion.div
-          initial={{ opacity: 0, x: 100 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full lg:w-1/2 text-start gap-9"
-          style={{ paddingLeft: "13px" }}
-        >
-          <p
-            className="text-sm uppercase mb-2 tracking-wide"
-            style={{
-              color: themeName === "dark" ? "#aaa" : "#6b4f1d",
-            }}
-          >
-            {t("AboutUs")}
-          </p>
-
-          <h2
-            className="text-3xl lg:text-4xl font-bold mb-4 leading-snug"
-            style={{
-              color: themeName === "dark" ? "#fff" : "#3a2c0a",
-            }}
-          >
-            {t("DiscoverWasetTravel")}
-          </h2>
+        {/* Text under slider */}
+        <div className="text-center max-w-md">
+          <p className="text-xs uppercase mb-2 tracking-wide">{t("AboutUs")}</p>
+          <h2 className="text-2xl font-bold mb-4">{t("DiscoverWasetTravel")}</h2>
           <DividerWithIcon />
-
-          <p
-            className="text-base mb-6 leading-relaxed"
-            style={{
-              color: themeName === "dark" ? "#ccc" : "#5c4520",
-            }}
-          >
-            {t("At")}{" "}
-            <span
-              style={{
-                color: "#c9a34a",
-                fontWeight: 600,
-              }}
-            >
-              WasetTravel
-            </span>
-            {t("AtP")}{" "}
-            <span
-              style={{
-                color: "#c9a34a",
-                fontWeight: 600,
-              }}
-            >
-              {t("professionalguides")}
-            </span>{" "}
-            {t("AtPP")}
+          <p className="text-sm mb-6 leading-relaxed">
+            {t("At")} <span className="text-[#c9a34a] font-semibold">WasetTravel</span> {t("AtP")}{" "}
+            <span className="text-[#c9a34a] font-semibold">{t("professionalguides")}</span> {t("AtPP")}
           </p>
-
           <button
             onClick={() => router.push("/about")}
-            style={{ cursor: "pointer" }}
-            className={`hover:scale-105 px-6 py-3 rounded-lg font-semibold transition shadow-lg  ${
-              themeName === "dark"
-                ? "bg-amber-400 text-black hover:bg-yellow-500"
-                : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
-            }`}
+            className="px-5 py-2 rounded-lg font-medium transition shadow-md bg-[#c9a34a] text-white hover:bg-[#b5892e]"
           >
             {t("LearnMoreAboutUs")}
           </button>
-        </motion.div>
-          <motion.div
-          initial={{ opacity: 0, x: -100 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full lg:w-1/2 rounded-3xl overflow-hidden shadow-xl"
-          style={{
-            boxShadow:
-              themeName === "dark"
-                ? "0 6px 20px rgba(201,163,74,0.4)"
-                : "0 6px 20px rgba(58,44,10,0.2)",
-          }}
-        >
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            navigation
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 4000, disableOnInteraction: false }}
-            spaceBetween={30}
-            slidesPerView={1}
-            className="w-full h-full"
-          >
-            {[
-              "/Aswan/pexels-furknsaglam-1596977-21348185.webp",
-              "/Luxor/pexels-oualid-soussi-2150533856-35050672.webp",
-              "/Cairo/pexels-ozgomz-7566890.webp",
-              "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
-              "/Luxor/pexels-yasmine-qasem-1054896-2034684.webp",
-            ].map((imgSrc, index) => (
-              <SwiperSlide key={index}>
-                <div className="w-full h-[85vh]">
-                  <Image
-                    src={imgSrc || "/fallback.jpg"}
-                    alt={`WasetTravel Slide ${index + 1}`}
-                    fill
-                    className="w-full h-full object-cover rounded-lg"
-                    loading="lazy" // ✅ يفضل للصور الثانوية
-                  />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </motion.div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 };
 

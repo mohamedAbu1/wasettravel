@@ -123,56 +123,57 @@ const CitiesSection = () => {
   const looped = [...cities, ...cities];
 
   return (
-    <section
+   <section
+  className={`
+    flex py-12 px-6 flex-col w-full mx-auto relative
+     ${
+       themeName === "dark"
+         ? "bg-[#0f0f0f] text-white"
+         : "bg-[#fdf6e3] text-[#3a2c0a]"
+     }
+  `}
+>
+  <div className="max-w-2xl mx-auto mb-16 w-full">
+    <h2
       className={`
-        hidden lg:flex py-12 px-6 flex-col w-full mx-auto relative
-         ${
-           themeName === "dark"
-             ? "bg-[#0f0f0f] text-white"
-             : "bg-[#fdf6e3] text-[#3a2c0a]"
-         }
+        text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-wide drop-shadow-md text-center
+        ${
+          themeName === "dark"
+            ? "text-gold"
+            : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+        }
       `}
     >
-      <div className="max-w-2xl mx-auto mb-16 w-full">
-        <h2
-          className={`
-            text-5xl font-extrabold tracking-wide drop-shadow-md text-center
-            ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }
-          `}
-        >
-          {t("ExploreCities")}
-        </h2>
-        <DividerWithIcon />
-      </div>
+      {t("ExploreCities")}
+    </h2>
+    <DividerWithIcon />
+  </div>
 
-      {/* ✅ Marquee Animation */}
-      <div className="relative overflow-hidden w-full max-w-7xl mx-auto h-[410px]">
-        <motion.div
-          className="flex h-full"
-          animate={{ x: ["0%", "-100%"] }}
-          transition={{
-            duration: 20,
-            ease: "linear",
-            repeat: Infinity,
-          }}
-        >
-          {looped.map((city, i) => (
-            <CityCard
-              key={i}
-              city={city}
-              t={t}
-              themeName={themeName}
-              theme={theme}
-              language={normalizedLang}
-            />
-          ))}
-        </motion.div>
-      </div>
-    </section>
+  {/* ✅ Marquee Animation */}
+  <div className="relative overflow-hidden w-full max-w-7xl mx-auto h-[410px]">
+    <motion.div
+      className="flex h-full"
+      animate={{ x: ["0%", "-100%"] }}
+      transition={{
+        duration: 20,
+        ease: "linear",
+        repeat: Infinity,
+      }}
+    >
+      {looped.map((city, i) => (
+        <CityCard
+          key={i}
+          city={city}
+          t={t}
+          themeName={themeName}
+          theme={theme}
+          language={normalizedLang}
+        />
+      ))}
+    </motion.div>
+  </div>
+</section>
+
   );
 };
 

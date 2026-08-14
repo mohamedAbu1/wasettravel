@@ -8,21 +8,15 @@ import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
 
-// ✅ دالة لتشفير الكويري
 const encodeData = (obj) => btoa(JSON.stringify(obj));
 
-// ✅ دالة تحسين الصور
 const optimize = (url) => {
   if (!url || typeof url !== "string" || url.trim() === "") {
-    return "/fallback.jpg"; // صورة افتراضية
+    return "/fallback.jpg";
   }
-
-  // لو الرابط يبدأ بـ http أو https → أضف الـ query
   if (url.startsWith("http")) {
     return `${url}?width=800&quality=70&format=webp`;
   }
-
-  // لو مجرد اسم ملف → ضيف "/" في البداية فقط لو مش موجود
   const cleanUrl = url.startsWith("/") ? url : `/${url}`;
   return `${cleanUrl}?width=800&quality=70&format=webp`;
 };
@@ -33,7 +27,6 @@ function CategoryCard({ cat, themeName, language }) {
   const cardRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
-  // ✅ Lazy Loading
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -45,7 +38,6 @@ function CategoryCard({ cat, themeName, language }) {
     return () => observer.disconnect();
   }, []);
 
-  // ✅ أنيمشن تبديل الصور
   useEffect(() => {
     if (!visible || !cat.images?.length) return;
     const interval = setInterval(() => {
@@ -54,20 +46,16 @@ function CategoryCard({ cat, themeName, language }) {
     return () => clearInterval(interval);
   }, [visible, cat.images]);
 
-  // ✅ عرض الاسم الصحيح حسب اللغة
   const displayName =
     typeof cat.name === "object"
       ? cat.name?.[language] || cat.name?.en || Object.values(cat.name)[0]
       : cat.name;
 
-  // ✅ عند الضغط على البطاقة → الانتقال لصفحة الرحلات
   const handleClick = () => {
     const queryObj = {
       city: "all",
       category: [displayName],
-      price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(
-        displayName,
-      )
+      price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(displayName)
         ? "Luxury"
         : "All",
       popular: false,
@@ -75,13 +63,12 @@ function CategoryCard({ cat, themeName, language }) {
     const encoded = encodeData(queryObj);
     router.push(`/trips?data=${encoded}`);
   };
-  console.log(optimize(cat.images[imgIndex]));
 
   return (
     <div
       ref={cardRef}
       onClick={handleClick}
-      className={`relative rounded-2xl overflow-hidden group cursor-pointer h-[320px]
+      className={`relative rounded-2xl overflow-hidden group cursor-pointer h-[280px] sm:h-[320px]
         transition-all duration-500 hover:scale-[1.06] hover:shadow-2xl
         ${
           themeName === "dark"
@@ -110,7 +97,6 @@ function CategoryCard({ cat, themeName, language }) {
         )}
       </AnimatePresence>
 
-      {/* ✅ تدرج لوني أنيق مع الاسم */}
       <div
         className={`absolute inset-0 bg-gradient-to-t ${
           themeName === "dark" ? "from-black/60" : "from-[#fdf6e3]/70"
@@ -137,71 +123,73 @@ const CategoriesSection = () => {
   const { categories = [], loading } = useCitiesCategories();
   const [index, setIndex] = useState(0);
   const normalizedLang = i18n.language.split("-")[0];
+  const containerRef = useRef(null);
 
-  const looped = [...categories, ...categories];
   const cardWidth = 220;
+  const [containerWidth, setContainerWidth] = useState(0);
 
   useEffect(() => {
+    if (containerRef.current) {
+      setContainerWidth(containerRef.current.offsetWidth);
+    }
+    const handleResize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // ✅ سلايدر تلقائي دائري
+  useEffect(() => {
+    if (!categories.length) return;
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % categories.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval);
   }, [categories.length]);
-
-  const handleDragEnd = (event, info) => {
-    const offset = info.offset.x;
-    const direction = offset > 0 ? -1 : 1;
-    const newIndex = Math.min(
-      Math.max(index + direction, 0),
-      categories.length - 1,
-    );
-    setIndex(newIndex);
-  };
 
   if (loading) {
     return <p className="text-center text-gray-500">Loading categories...</p>;
   }
 
+  const looped = [...categories, ...categories, ...categories];
+
+  // حساب الإزاحة بحيث الكارد الحالي يكون في منتصف الشاشة
+  const offset = (containerWidth / 2) - (cardWidth / 2) - (index % categories.length) * cardWidth;
+
   return (
     <section
-      className={`hidden lg:flex flex-col py-24 px-6 w-full mx-auto relative transition-colors duration-500
-        ${
-          themeName === "dark"
-            ? "bg-[#0f0f0f] text-white"
-            : "bg-[#fdf6e3] text-[#3a2c0a]"
-        }
+      className={`flex flex-col py-16 px-4 sm:px-6 w-full mx-auto relative transition-colors duration-500
+        ${themeName === "dark" ? "bg-[#0f0f0f] text-white" : "bg-[#fdf6e3] text-[#3a2c0a]"}
       `}
     >
       <div className="max-w-7xl mx-auto mb-10 text-start">
         <h2
-          className={`text-5xl font-extrabold tracking-wide drop-shadow-md text-left
-            ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }
+          className={`text-3xl sm:text-5xl font-extrabold tracking-wide drop-shadow-md text-left
+            ${themeName === "dark"
+              ? "text-gold"
+              : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}
           `}
         >
           {t("ExploreCategories")}
         </h2>
-        <p className="mt-4 text-lg opacity-80 text-start">{t("Discover")}</p>
+        <p className="mt-4 text-base sm:text-lg opacity-80 text-start">{t("Discover")}</p>
         <DividerWithIcon />
       </div>
 
-      <div className="relative overflow-hidden w-full max-w-7xl mx-auto">
+      <div ref={containerRef} className="relative overflow-hidden w-full max-w-7xl mx-auto">
         <motion.div
           className="flex h-full cursor-grab active:cursor-grabbing"
-          drag="x"
-          dragConstraints={{ left: -looped.length * cardWidth, right: 0 }}
-          whileTap={{ cursor: "grabbing" }}
-          animate={{ x: -index * cardWidth }}
+          animate={{ x: offset }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          onDragEnd={handleDragEnd}
         >
           {looped.map((cat, i) => (
             <div
               key={i}
-              className="min-w-[100%] sm:min-w-[50%] md:min-w-[33.33%] lg:min-w-[20%] p-3"
+              className="min-w-[220px] p-3"
+              style={{ width: cardWidth }}
             >
               <CategoryCard
                 cat={cat}
@@ -215,5 +203,7 @@ const CategoriesSection = () => {
     </section>
   );
 };
+
+
 
 export default CategoriesSection;

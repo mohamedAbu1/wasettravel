@@ -17,13 +17,13 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
       }`}
     >
       {/* أيقونة البحث + input */}
-      <FaSearch className={`text-xl ${themeName === "dark" ? "text-gold" : "text-[#3a2c0a]"}`} />
+      <FaSearch className={` hidden lg:flex text-xl ${themeName === "dark" ? "text-gold" : "text-[#3a2c0a]"}`} />
       <input
         type="text"
         placeholder={t("Searchtrips")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className={`flex-1 p-2 rounded-lg border outline-none transition ${
+        className={` hidden lg:flex flex-1 p-2 rounded-lg border outline-none transition ${
           themeName === "dark"
             ? "bg-[#1a1a1a] text-white border-gold/30 focus:border-gold"
             : "bg-white text-[#3a2c0a] border-[#c9a34a]/30 focus:border-[#c9a34a]"
@@ -31,10 +31,10 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
       />
 
       {/* أزرار تغيير الاستايل */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 w-auto">
         <button
           onClick={() => setCardStyle("vertical")}
-          className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold transition ${
+          className={`flex w-1/2 items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold transition ${
             cardStyle === "vertical"
               ? themeName === "dark"
                 ? "bg-[#C2A878] text-black hover:bg-yellow-500"
@@ -49,7 +49,7 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
 
         <button
           onClick={() => setCardStyle("horizontal")}
-          className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold transition ${
+          className={`flex w-1/2 items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold transition ${
             cardStyle === "horizontal"
               ? themeName === "dark"
                 ? "bg-[#C2A878] text-black hover:bg-yellow-500"

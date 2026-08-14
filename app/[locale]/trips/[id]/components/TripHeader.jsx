@@ -105,7 +105,7 @@ const tripDescription =
         {trip.gallery_images.map((img, index) => (
           <div
             key={index}
-            className={`relative w-[150px] h-[100px] rounded-lg cursor-pointer border-2`}
+            className={`relative w-[145px] h-[100px] rounded-lg cursor-pointer border-2`}
             style={{
               borderColor:
                 index === activeIndex

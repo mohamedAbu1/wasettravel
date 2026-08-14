@@ -5,7 +5,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useTripID } from "../../context/TripIDContext";
 
 const EditTripBasicInfo = () => {
-  const { themeName } = useTheme();
+  const { theme,themeName } = useTheme();
   const { tripData, updateTripField } = useTripID();
 
   // اللغات المدعومة
@@ -156,7 +156,7 @@ const EditTripBasicInfo = () => {
             Discount
           </label>
           <select
-            value={tripData.discountPercent ?? 0}
+            value={tripData?.discountPercent ?? 0}
             onChange={(e) =>
               updateTripField("discountPercent", parseInt(e.target.value))
             }

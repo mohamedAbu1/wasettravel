@@ -69,7 +69,7 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       variants={fadeUp}
-      className={`p-6 rounded-xl shadow-lg transition ${
+      className={`p-6 rounded-xl shadow-lg transition  ${
         themeName === "dark"
           ? "bg-gradient-to-br from-[#0a0a0a] via-[#111] to-[#1a1a1a] text-[#b5892e] border border-[#c9a34a]/40 "
           : "bg-white/0 border border-[#c9a34a]/30 text-[#1a1a1a]"

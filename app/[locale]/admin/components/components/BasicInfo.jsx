@@ -4,7 +4,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useTrip } from "../../context/TripContext";
 
 export default function BasicInfo() {
-  const { themeName } = useTheme();
+  const {theme, themeName } = useTheme();
   const { tripData, updateTripField } = useTrip();
 
   const languages = ["en", "es", "fr", "de", "it", "zh"];

@@ -16,7 +16,7 @@ const encodeQuery = (queryObj) => {
 
 const Footer = () => {
   const { theme, themeName } = useTheme();
-  const { t } = useTranslation("footer");
+  const { t } = useTranslation("footer","cancellationPolicy");
 
   const symbols = [
     "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽","𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
@@ -106,6 +106,7 @@ const Footer = () => {
         </Link>
         <Link href="/contact" className="hover:underline">{t("Contact")}</Link>
         <Link href="/privacyPolicy" className="hover:underline">{t("privacyPolicy")}</Link>
+        <Link href="/cancellationPolicy" className="hover:underline">{t("cancellationPolicy")}</Link>
       </motion.div>
 
       {/* أيقونات السوشيال ميديا */}

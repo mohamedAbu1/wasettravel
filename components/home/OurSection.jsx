@@ -94,6 +94,37 @@ const OurSection = () => {
               {t("LearnMoreAboutUs")}
             </button>
           </motion.div>
+
+           <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-1/2 rounded-3xl overflow-hidden shadow-xl"
+          >
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 4000, disableOnInteraction: false }}
+              spaceBetween={30}
+              slidesPerView={1}
+              className="w-full h-full"
+            >
+              {images.map((imgSrc, index) => (
+                <SwiperSlide key={index}>
+                  <div className="w-full h-[85vh]">
+                    <Image
+                      src={imgSrc}
+                      alt={`WasetTravel Slide ${index + 1}`}
+                      fill
+                      className="object-cover rounded-lg"
+                      loading="lazy"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </motion.div>
         </div>
       </section>
 

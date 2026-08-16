@@ -62,17 +62,15 @@ export default function Header() {
             {userData ? (
               <>
                 <FaSignOutAlt size={20} />
-                <span>Logout</span>
               </>
             ) : (
               <>
                 <FaUserPlus size={20} />
-                <span>Login</span>
               </>
             )}
           </Button>
         </motion.div>
-              <ThemeToggle scrolled={scrolled} />
+        <ThemeToggle scrolled={scrolled} />
 
         <MobileHeaderAuth />
       </div>

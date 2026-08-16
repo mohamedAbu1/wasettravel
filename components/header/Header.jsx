@@ -11,6 +11,7 @@ import { FaSignOutAlt, FaUserPlus } from "react-icons/fa";
 import { useData } from "@/context/DataContext";
 import { signOut, signIn } from "next-auth/react"; // ✅ إضافة
 import MobileHeaderAuth from "./components/MobileHeaderAuth";
+import ThemeToggle from "../ThemeToggle";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -71,6 +72,8 @@ export default function Header() {
             )}
           </Button>
         </motion.div>
+              <ThemeToggle scrolled={scrolled} />
+
         <MobileHeaderAuth />
       </div>
     </motion.header>

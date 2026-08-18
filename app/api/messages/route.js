@@ -16,7 +16,7 @@ export async function POST(req) {
 
       // اسم فريد للصورة
       const fileName = `${Date.now()}-${file.name}`;
-      const baseUrl = `https://basttettravel.com/iamges/${fileName}`; // صححت iamges → iamges
+      const baseUrl = `https://wasettravel.com/iamges/${fileName}`; // صححت iamges → iamges
 
       // مسار المشروع المحلي
       const projectPath = path.join(process.cwd(), "public/iamges", fileName);

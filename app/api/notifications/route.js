@@ -1,54 +1,48 @@
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { getUserToken } from "@/lib/notifications"; // 🟢 الدالة اللي تجيب التوكن
+import { getUserToken } from "@/lib/notifications";
 
-// ✅ إضافة إشعار جديد + إرسال إشعار للموبايل
 export async function POST(req) {
   try {
     const db = await connectDB();
     const body = await req.json();
     const id = uuidv4();
 
-    // تحقق أولاً إذا كان هناك إشعار بنفس message_id أو بنفس الحدث في آخر دقيقة
-    const [existing] = await db.execute(
-      `SELECT id FROM notifications 
-       WHERE message_id = ? 
-       OR (event_type = ? AND user_id = ? AND TIMESTAMPDIFF(SECOND, created_at, NOW()) < 60)`,
-      [body.message_id, body.event_type, body.user_id]
-    );
+    // 🕒 توليد الوقت الحالي بالثانية
+    const now = new Date();
+    const createdAtSecond = now.toISOString().slice(0, 19).replace("T", " ");
 
-    if (existing.length === 0) {
-      await db.execute(
-        `INSERT INTO notifications 
-         (id, admin_id, event_type, message, user_id, user_name, user_email, user_image, trip_id, message_id, created_at, is_read) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0)`,
-        [
-          id,
-          body.admin_id,
-          body.event_type,
-          body.message,
-          body.user_id,
-          body.user_name,
-          body.user_email,
-          body.user_image,
-          body.trip_id,
-          body.message_id,
-        ]
-      );
+    // ✅ تحقق من وجود إشعار بنفس المستخدم والحدث في نفس الثانية
+  const [existing] = await db.execute(
+  `SELECT id FROM notifications 
+   WHERE event_type = ? AND user_id = ? AND message = ? 
+   AND TIMESTAMPDIFF(SECOND, created_at, NOW()) < 60`,
+  [body.event_type, body.user_id, body.message]
+);
 
-      // 🧹 تنظيف التكرارات: حذف أي إشعارات بنفس الثانية لنفس المستخدم والحدث
-      await db.execute(`
-        DELETE n1 FROM notifications n1
-        INNER JOIN notifications n2 
-        ON n1.id > n2.id 
-        AND n1.event_type = n2.event_type 
-        AND n1.user_id = n2.user_id 
-        AND DATE_FORMAT(n1.created_at, '%Y-%m-%d %H:%i:%s') = DATE_FORMAT(n2.created_at, '%Y-%m-%d %H:%i:%s')
-      `);
-    }
+if (existing.length === 0) {
+  await db.execute(
+    `INSERT INTO notifications 
+     (id, admin_id, event_type, message, user_id, user_name, user_email, user_image, trip_id, message_id, created_at, is_read) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0)`,
+    [
+      id,
+      body.admin_id,
+      body.event_type,
+      body.message,
+      body.user_id,
+      body.user_name,
+      body.user_email,
+      body.user_image,
+      body.trip_id,
+      body.message_id,
+    ]
+  );
+}
 
-    // إرسال إشعار للموبايل إذا فيه توكن
+
+    // 📱 إرسال إشعار للموبايل إذا فيه توكن
     const expoPushToken = await getUserToken(body.user_id);
     if (expoPushToken) {
       await fetch("https://wasettravel.com/api/send-notification", {

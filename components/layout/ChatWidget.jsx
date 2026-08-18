@@ -9,18 +9,27 @@ import { useAuth } from "@/context/AuthContext";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
-
+import { useChat } from "@/context/ChatContext";
+import { useTranslation } from "react-i18next";
 export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
-  const [open, setOpen] = useState(false);
   const { theme, themeName } = useTheme();
-  const { messages, sendMessage, fetchMessages, markMessageSeen } = useMessages();
+  const { messages, sendMessage, fetchMessages, markMessageSeen } =
+    useMessages();
   const [text, setText] = useState("");
   const { userData } = useAuth(); // ✅ بيانات من AuthContext
   const [adminTyping, setAdminTyping] = useState(false);
-
-  const [bookingMode, setBookingMode] = useState(false);
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const {
+    open,
+    bookingMode,
+    from,
+    setFrom,
+    setOpen,
+    to,
+    setTo,
+    setBookingMode,
+    setMessageses,
+  } = useChat();
+    const { t } = useTranslation("home");
 
   // ✅ جلب رسائل المستخدم
   useEffect(() => {
@@ -39,6 +48,29 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
       });
     }
   }, [userData, messages]);
+  // ✅ فتح الدردشة بعد دقيقتين من تسجيل الدخول
+
+  useEffect(() => {
+    if (userData?.id) {
+      const timer = setTimeout(async () => {
+        setOpen(true); // يفتح نافذة الدردشة
+
+        // ✅ إرسال الرسالة باسم الأدمن وليس المستخدم
+        await sendMessage({
+          user_id: "c7674367-18c9-4d2a-b94c-eb80ac716005", // أو ID الأدمن الحقيقي
+          user_name: "👑 Basttet Travel 👑",
+
+          user_image: "/HomePageImage/Copilot_20260613_134423.webp",
+          content:
+           t("welcomeMessage", { defaultValue: "👋 Hello and welcome! The Basttet Travel team is excited to help you plan your next unforgettable journey. How can we assist you today?" }),
+          sender_type: "admin", // مهم جداً لتظهر الرسالة بلون الأدمن
+          status: "sent",
+        });
+      }, 30000); //  نص دقيقه
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // ✅ استعلام حالة الكتابة للأدمن
   useEffect(() => {
@@ -56,7 +88,8 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
       await sendMessage({
         user_id: userData?.id,
         user_name: userData?.name,
-        user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
+        user_image:
+          userData?.avatar_url || userData?.image || "/default-avatar.png",
         content: text,
         sender_type: "user",
         status: "sent",
@@ -68,38 +101,38 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const isAdmin = userData?.role === "ADMIN";
 
   const handleSendImage = async (file) => {
-  const formData = new FormData();
-  formData.append("file", file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-  // ✅ لازم تبعت بيانات المستخدم مع الصورة
-  formData.append("user_id", userData?.id);
-  formData.append("user_name", userData?.name || "Unknown User");
-  formData.append(
-    "user_image",
-    userData?.avatar_url || userData?.image || "/default-avatar.png"
-  );
-  formData.append("sender_type", "user");
-  formData.append("admin_id", "SYSTEM"); // أو أي قيمة مناسبة
+    // ✅ لازم تبعت بيانات المستخدم مع الصورة
+    formData.append("user_id", userData?.id);
+    formData.append("user_name", userData?.name || "Unknown User");
+    formData.append(
+      "user_image",
+      userData?.avatar_url || userData?.image || "/default-avatar.png",
+    );
+    formData.append("sender_type", "user");
+    formData.append("admin_id", "SYSTEM"); // أو أي قيمة مناسبة
 
-  const res = await fetch("/api/messages", {
-    method: "POST",
-    body: formData,
-  });
+    const res = await fetch("/api/messages", {
+      method: "POST",
+      body: formData,
+    });
 
-  const data = await res.json();
-  if (!data.url) return;
+    const data = await res.json();
+    if (!data.url) return;
 
-  // ✅ الرسالة الجديدة تدخل في الـ context
-  await sendMessage({
-    user_id: userData?.id,
-    user_name: userData?.name,
-    user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
-    content: data.url, // الرابط النهائي للصورة
-    sender_type: "user",
-    status: "sent",
-  });
-};
-
+    // ✅ الرسالة الجديدة تدخل في الـ context
+    await sendMessage({
+      user_id: userData?.id,
+      user_name: userData?.name,
+      user_image:
+        userData?.avatar_url || userData?.image || "/default-avatar.png",
+      content: data.url, // الرابط النهائي للصورة
+      sender_type: "user",
+      status: "sent",
+    });
+  };
 
   return (
     <>
@@ -131,7 +164,53 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
               themeName={themeName}
             />
 
-            {!bookingMode && (
+            {bookingMode ? (
+              <div className="p-6 rounded-xl shadow-lg bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900">
+                <p className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200">
+                  🚗 Where would you like to book the car from and to?
+                </p>
+
+                <input
+                  type="text"
+                  placeholder="From"
+                  value={from}
+                  onChange={(e) => setFrom(e.target.value)}
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full mb-3 
+               focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
+                />
+
+                <input
+                  type="text"
+                  placeholder="To"
+                  value={to}
+                  onChange={(e) => setTo(e.target.value)}
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full mb-3 
+               focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
+                />
+
+                <button
+                  onClick={() => {
+                    const bookingMessage = `🚗 Car booking request from ${from} to ${to}`;
+                    setText(bookingMessage); // ✅ يملأ النص
+                    handleSend(); // يرسل الرسالة للـ backend
+                    setMessageses((prev) => [
+                      ...prev,
+                      {
+                        sender: "assistant",
+                        content:
+                          "✅ Your request has been recorded. Please select the date and time.",
+                      },
+                    ]);
+                    setBookingMode(false);
+                  }}
+                  className="mt-4 w-full px-6 py-3 rounded-lg font-bold text-white 
+               bg-gradient-to-r from-[#C2A878] to-[#eab308] 
+               shadow-md hover:scale-105 transition-transform duration-300"
+                >
+                  Confirm Booking
+                </button>
+              </div>
+            ) : (
               <ChatInput
                 text={text}
                 setText={setText}

@@ -4,7 +4,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
 
 export default function DividerWithIcon() {
-  const { themeName } = useTheme();
+  const { themeName, theme } = useTheme();
 
   return (
     <motion.div
@@ -12,28 +12,36 @@ export default function DividerWithIcon() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="flex items-center gap-3 justify-center"
+      className="flex items-center gap-3 justify-center w-full"
     >
+      {/* الخط الأيسر */}
       <div
-        className={`h-[3px] w-full ${
-          themeName === "dark"
-            ? "bg-[#c9a34a] opacity-15"
-            : "bg-[#c9a34a]/50 opacity-30"
-        }`}
+        className="h-[3px] flex-1 rounded-full"
+        style={{
+          background: "var(--text-gradient)", // ✅ استخدام CSS variable
+          opacity: themeName === "dark" ? 0.25 : 0.4,
+        }}
       ></div>
-      <span
-        className={`text-2xl ${
-          themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
-        }`}
+
+      {/* الأيقونة الفرعونية */}
+      <motion.span
+        whileHover={{ scale: 1.2, rotate: 10 }}
+        transition={{ type: "spring", stiffness: 200 }}
+        className="text-2xl font-bold text-gradient" // ✅ استخدام class text-gradient
+        style={{
+          filter: `drop-shadow(0 0 6px ${theme.logoBorder || "#C2A878"})`,
+        }}
       >
-        𓋹
-      </span>
+        𓂀
+      </motion.span>
+
+      {/* الخط الأيمن */}
       <div
-        className={`h-[3px] w-full ${
-          themeName === "dark"
-            ? "bg-[#c9a34a] opacity-15"
-            : "bg-[#c9a34a]/50 opacity-30"
-        }`}
+        className="h-[3px] flex-1 rounded-full"
+        style={{
+          background: "var(--text-gradient)", // ✅ استخدام CSS variable
+          opacity: themeName === "dark" ? 0.25 : 0.4,
+        }}
       ></div>
     </motion.div>
   );

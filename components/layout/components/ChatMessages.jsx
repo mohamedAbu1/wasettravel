@@ -1,9 +1,17 @@
+"use client"
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { saveAs } from "file-saver";
 import { FaClock, FaDownload, FaExpand, FaComments } from "react-icons/fa";
+import { useEffect ,useRef} from "react";
 
 export default function ChatMessages({ messages, adminTyping, themeName }) {
+    const messagesEndRef = useRef(null);
+   useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
   const handleDownload = async (url, id) => {
     const response = await fetch(url);
     const blob = await response.blob();
@@ -22,7 +30,7 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
           saveAs(newBlob, `chat-image-${id}.jpg`);
         },
         "image/jpeg",
-        0.7,
+        0.7
       );
     };
   };
@@ -45,13 +53,14 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
               }`}
             >
               <img
-                src={
-                  msg.user_image ||
-                  "https://dxpbyrcbklqrjlytmkum.supabase.co/storage/v1/object/public/avatars/technical-writer-digital-avatar-generative-ai_934475-9098.webp"
-                }
+               src={
+                  msg.sender_type === "admin" ?   themeName === "dark"
+                ? "/HomePageImage/Copilot_20260613_134423.webp"
+                : "/HomePageImage/Copilot_20260613_134550.webp" :
+                  msg.user_image}
                 alt={msg.user_name}
                 className={`w-12 h-12 rounded-full border ${
-                  msg.sender_type === "admin" ? "border-yellow-500" : ""
+                  msg.sender_type === "admin" ? "border-yellow-500" : "border-[#41707e]"
                 } object-cover`}
               />
               <div
@@ -61,20 +70,45 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
                       ? "bg-gray-700 text-white"
                       : "bg-gray-200 text-black"
                     : themeName === "dark"
-                      ? "bg-yellow-500 text-black"
-                      : "bg-yellow-400 text-white"
+                    ? "bg-yellow-500 text-black"
+                    : "bg-[#41707e] text-white"
                 }`}
               >
                 <p className="text-sm font-semibold mb-1 capitalize">
-                  {msg.sender_type === "admin" ? "👑 Waset Travel" : msg.user_name || "WasetTravel"}
+                  {msg.sender_type === "admin" ? "👑 Basttet Travel 👑" : msg.user_name} 
                 </p>
 
-                {msg.content.startsWith("https") ? (
-                  <img
-                    src={msg.content}
-                    alt="uploaded"
-                    className="w-full rounded-lg object-cover"
-                  />
+                {msg.content.startsWith("http") &&
+                msg.content.match(/\.(jpeg|jpg|gif|png|webp)$/) ? (
+                  <div className="relative group w-full max-w-xs">
+                    <img
+                      src={msg.content}
+                      alt="uploaded"
+                      className="w-full rounded-lg object-cover"
+                    />
+                    <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <button
+                        onClick={() => handleDownload(msg.content, msg.id)}
+                        className={`flex items-center gap-2 px-3 py-1 text-xs font-medium rounded shadow ${
+                          themeName === "dark"
+                            ? "bg-gray-700 text-white hover:bg-gray-600"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
+                        } transition`}
+                      >
+                        <FaDownload className="text-sm" /> Download
+                      </button>
+                      <button
+                        onClick={() => window.open(msg.content, "_blank")}
+                        className={`flex items-center gap-2 px-3 py-1 text-xs font-medium rounded shadow ${
+                          themeName === "dark"
+                            ? "bg-gray-700 text-white hover:bg-gray-600"
+                            : "bg-green-500 text-white hover:bg-green-600"
+                        } transition`}
+                      >
+                        <FaExpand className="text-sm" /> View
+                      </button>
+                    </div>
+                  </div>
                 ) : (
                   <p>{msg.content}</p>
                 )}

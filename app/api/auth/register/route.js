@@ -52,13 +52,27 @@ export async function POST(request) {
 
     const { name, email, password, gender } = body;
 
-    // ✅ تحقق من البريد إذا كان موجود مسبقًا
-    const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    // ✅ تحقق من قوة كلمة المرور
+    if (!password || password.length < 8) {
+      return NextResponse.json(
+        { error: "كلمة المرور يجب أن تكون 8 أحرف على الأقل" },
+        { status: 400 }
+      );
+    }
+
+    // ✅ تحقق من البريد إذا كان موجود مسبقًا (case-insensitive)
+    const [existing] = await db.query(
+      "SELECT * FROM users WHERE LOWER(email) = LOWER(?)",
+      [email]
+    );
     console.log("🔵 [API REGISTER] نتيجة البحث عن البريد:", existing);
 
     if (existing.length > 0) {
       console.warn("⚠️ [API REGISTER] البريد مستخدم بالفعل");
-      return NextResponse.json({ error: "البريد مستخدم بالفعل" }, { status: 400 });
+      return NextResponse.json(
+        { error: "هذا البريد مسجل مسبقًا، يرجى استخدام بريد آخر" },
+        { status: 400 }
+      );
     }
 
     // ✅ تشفير كلمة المرور
@@ -71,17 +85,21 @@ export async function POST(request) {
 
     // ✅ إدخال المستخدم في قاعدة البيانات
     await db.query(
-      "INSERT INTO users (id, name, email, password, gender, role, avatar_url, created_at) VALUES (UUID(), ?, ?, ?, ?, ?, ?, NOW())",
-      [name, email, hashedPassword, gender, "USER", avatarUrl],
+      "INSERT INTO users (id, name, email, password, gender, role, avatar_url, status, created_at, updated_at) VALUES (UUID(), ?, ?, ?, ?, ?, ?, 'ACTIVE', NOW(), NOW())",
+      [name, email, hashedPassword, gender, "USER", avatarUrl]
     );
     console.log("✅ [API REGISTER] المستخدم أُضيف لقاعدة البيانات");
 
     // ✅ جلب بيانات المستخدم الجديد
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    const [rows] = await db.query("SELECT * FROM users WHERE LOWER(email) = LOWER(?)", [email]);
     const newUser = rows[0];
     console.log("🔵 [API REGISTER] المستخدم الجديد:", newUser);
 
     // ✅ إنشاء JWT token
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in environment variables");
+    }
+
     const accessToken = jwt.sign(
       { id: newUser.id, email: newUser.email, role: newUser.role },
       process.env.JWT_SECRET,

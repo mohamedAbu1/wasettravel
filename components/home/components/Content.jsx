@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 
 const Content = () => {
   const { theme } = useTheme();
-  const { setCity, city, setPrice, group_price , tripType, setTripType } = useData();
+  const { setCity, city, setPrice,price, group_price , tripType, setTripType } = useData();
 
   const { i18n, t } = useTranslation("home");
   const currentLang = i18n.language || "en";
@@ -24,7 +24,7 @@ const Content = () => {
 
   const router = useRouter();
 
-  const isFormValid = city && group_price  && tripType;
+  const isFormValid = city && price  && tripType;
   const handleSearch = () => {
     // نبني الكويري مباشرة من القيم الحالية في الانبوتات
     const queryObj = {

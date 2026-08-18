@@ -121,7 +121,7 @@ export default function RightBar({ scrolled }) {
       )}
 
       {/* ✅ أيقونة الرسائل */}
-      {userData?.role === "ADMIN" && messageNotifications.length > 0 && (
+      {userData?.role === "ADMIN" && (
         <Badge badgeContent={unreadMessages} color="error" className="hidden lg:flex">
           <MailIcon
             onClick={() => setOpenMessages(true)}

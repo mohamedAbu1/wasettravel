@@ -13,6 +13,7 @@ export function NotificationsProvider({ children }) {
       try {
         const res = await fetch("/api/notifications");
         const data = await res.json();
+        console.log("ahmed ali",data)
         if (data.success) {
           setNotifications(data.notifications);
         }

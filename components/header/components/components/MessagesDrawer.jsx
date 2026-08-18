@@ -16,7 +16,7 @@ import DividerWithIcon from "@/components/layout/DividerWithIcon";
 
 export default function MessagesDrawer({ open, onClose, themeName, theme, messageNotifications, handleMessageClick }) {
   const { deleteNotification } = useNotifications();
-
+console.log("hello",messageNotifications)
   return (
     <Drawer
       anchor="right"
@@ -95,7 +95,7 @@ export default function MessagesDrawer({ open, onClose, themeName, theme, messag
                             sx={{
                               fontStyle: "italic",
                               fontWeight: 500,
-                              filter: `drop-shadow(0 0 4px ${theme.logoBorder || "#C2A878"})`,
+                              color:"#C2A878"
                             }}
                           >
                             {n.user_email}
@@ -108,10 +108,8 @@ export default function MessagesDrawer({ open, onClose, themeName, theme, messag
                               mt: 0.5,
                               fontWeight: "bold",
                               letterSpacing: "0.5px",
-                              background: "var(--text-gradient)",
-                              WebkitBackgroundClip: "text",
-                              WebkitTextFillColor: "transparent",
-                              filter: `drop-shadow(0 0 6px ${theme.logoBorder || "#C2A878"})`,
+                              color:"#C2A878"
+                             
                             }}
                           >
                             {n.message}
@@ -124,10 +122,7 @@ export default function MessagesDrawer({ open, onClose, themeName, theme, messag
                               mt: 0.5,
                               fontWeight: 400,
                               opacity: 0.8,
-                              background: "var(--text-gradient)",
-                              WebkitBackgroundClip: "text",
-                              WebkitTextFillColor: "transparent",
-                              filter: `drop-shadow(0 0 3px ${theme.logoBorder || "#C2A878"})`,
+                             color:"#C2A878"
                             }}
                           >
                             {new Date(n.created_at).toLocaleString("en-GB", {

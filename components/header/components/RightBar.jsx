@@ -23,7 +23,7 @@ export default function RightBar({ scrolled }) {
   const router = useRouter();
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
-
+console.log("mohamed abu",notifications)
   const now = Date.now();
   const twelveHours = 12 * 60 * 60 * 1000;
   const twoDays = 2 * 24 * 60 * 60 * 1000;

@@ -19,12 +19,14 @@ import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import SignUpModal from "@/components/home/components/SignUpButton";
 import { useEffect, useState } from "react";
 import AdminChatWindow from "@/components/layout/AdminChatWindow";
+import { useMessages } from "@/context/MessageContext";
 
 export default function Home() {
-  const { userData, chatUser, setChatUser, chatMessages } = useAuth(); // ✅ جلب المستخدم الحالي من الـ API
+  const { userData, chatUser, setChatUser,  } = useAuth(); // ✅ جلب المستخدم الحالي من الـ API
   const { lang } = useLanguage();
   const meta = homeMetadata[lang] || homeMetadata.en;
   const [dbStatus, setDbStatus] = useState(null);
+  const { messages, fetchUserMessagesById, sendMessage } = useMessages();
 
   useEffect(() => {
     async function checkConnection() {
@@ -79,7 +81,7 @@ export default function Home() {
         {userData && <ChatWidget />}
         {userData && <AdminDashboardButton />}
         {chatUser && (
-          <AdminChatWindow user={chatUser} admin={userData} messages={chatMessages} onClose={() => setChatUser(null)} />
+          <AdminChatWindow user={chatUser} admin={userData} messages={messages} onClose={() => setChatUser(null)} />
         )}
         <CurrencySelector />
       </main>

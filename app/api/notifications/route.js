@@ -10,7 +10,7 @@ export async function POST(req) {
     const body = await req.json();
     const id = uuidv4();
 
-    // تحقق أولاً إذا كان هناك إشعار بنفس message_id أو بنفس الحدث في نفس الدقيقة
+    // تحقق أولاً إذا كان هناك إشعار بنفس message_id أو بنفس الحدث في آخر دقيقة
     const [existing] = await db.execute(
       `SELECT id FROM notifications 
        WHERE message_id = ? 
@@ -36,6 +36,16 @@ export async function POST(req) {
           body.message_id,
         ]
       );
+
+      // 🧹 تنظيف التكرارات: حذف أي إشعارات بنفس الثانية لنفس المستخدم والحدث
+      await db.execute(`
+        DELETE n1 FROM notifications n1
+        INNER JOIN notifications n2 
+        ON n1.id > n2.id 
+        AND n1.event_type = n2.event_type 
+        AND n1.user_id = n2.user_id 
+        AND DATE_FORMAT(n1.created_at, '%Y-%m-%d %H:%i:%s') = DATE_FORMAT(n2.created_at, '%Y-%m-%d %H:%i:%s')
+      `);
     }
 
     // إرسال إشعار للموبايل إذا فيه توكن

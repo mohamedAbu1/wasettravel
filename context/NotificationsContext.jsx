@@ -13,7 +13,6 @@ export function NotificationsProvider({ children }) {
       try {
         const res = await fetch("/api/notifications");
         const data = await res.json();
-        console.log("ahmed ali",data)
         if (data.success) {
           setNotifications(data.notifications);
         }
@@ -50,7 +49,6 @@ const markAsRead = async (id) => {
       if (data.success) {
         // تحديث محلي: إزالة الإشعار من القائمة
         setNotifications((prev) => prev.filter((n) => n.id !== id));
-        console.log("🗑️ تم حذف الإشعار بنجاح:", id);
       } else {
         console.error("❌ خطأ في حذف الإشعار:", data.error);
       }

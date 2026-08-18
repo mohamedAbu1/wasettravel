@@ -23,7 +23,6 @@ export default function RightBar({ scrolled }) {
   const router = useRouter();
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
-console.log("mohamed abu",notifications)
   const now = Date.now();
   const twelveHours = 12 * 60 * 60 * 1000;
   const twoDays = 2 * 24 * 60 * 60 * 1000;
@@ -46,7 +45,7 @@ console.log("mohamed abu",notifications)
     });
 
   const unreadCount = filteredNotifications.filter(
-    (n) => n.is_read === 0 && n.event_type !== "message"
+    (n) => n.is_read === 0 && n.event_type !== "message",
   ).length;
 
   const [open, setOpen] = useState(false);
@@ -64,8 +63,28 @@ console.log("mohamed abu",notifications)
       if (a.is_read !== 0 && b.is_read === 0) return 1;
       return new Date(b.created_at) - new Date(a.created_at);
     });
-
-  const unreadMessages = messageNotifications.filter((n) => n.is_read === 0).length;
+  const uniqueFilteredNotifications = filteredNotifications.filter(
+    (n, index, self) => {
+      const createdAt = new Date(n.created_at)
+        .toISOString()
+        .split("T")[1]
+        .split(".")[0];
+      // نحول created_at إلى HH:MM:SS فقط
+      return (
+        index ===
+        self.findIndex((m) => {
+          const mCreatedAt = new Date(m.created_at)
+            .toISOString()
+            .split("T")[1]
+            .split(".")[0];
+          return mCreatedAt === createdAt;
+        })
+      );
+    },
+  );
+  const unreadMessages = uniqueFilteredNotifications.filter(
+    (n) => n.is_read === 0,
+  ).length;
   const [openMessages, setOpenMessages] = useState(false);
 
   const handleNotificationClick = (notification) => {
@@ -76,11 +95,15 @@ console.log("mohamed abu",notifications)
     }
 
     if (notification.event_type === "review" && notification.trip_id) {
-      router.push(`/trips/${notification.trip_id}?highlightReview=${notification.review_id}`);
+      router.push(
+        `/trips/${notification.trip_id}?highlightReview=${notification.review_id}`,
+      );
     }
 
     if (notification.event_type === "review_like" && notification.trip_id) {
-      router.push(`/trips/${notification.trip_id}?highlightReview=${notification.review_id}`);
+      router.push(
+        `/trips/${notification.trip_id}?highlightReview=${notification.review_id}`,
+      );
     }
   };
 
@@ -99,10 +122,13 @@ console.log("mohamed abu",notifications)
 
   return (
     <div className="hidden lg:flex items-center gap-4">
-
       {/* ✅ أيقونة الإشعارات العامة */}
       {userData?.role === "ADMIN" && (
-        <Badge badgeContent={unreadCount} color="error" className="hidden lg:flex">
+        <Badge
+          badgeContent={unreadCount}
+          color="error"
+          className="hidden lg:flex"
+        >
           <NotificationsIcon
             onClick={() => setOpen(true)}
             sx={{
@@ -111,10 +137,10 @@ console.log("mohamed abu",notifications)
                 themeName === "dark"
                   ? "#fff"
                   : !isHome
-                  ? "#333"
-                  : scrolled
-                  ? "#333"
-                  : "#fff",
+                    ? "#333"
+                    : scrolled
+                      ? "#333"
+                      : "#fff",
             }}
           />
         </Badge>
@@ -122,7 +148,11 @@ console.log("mohamed abu",notifications)
 
       {/* ✅ أيقونة الرسائل */}
       {userData?.role === "ADMIN" && (
-        <Badge badgeContent={unreadMessages} color="error" className="hidden lg:flex">
+        <Badge
+          badgeContent={unreadMessages}
+          color="error"
+          className="hidden lg:flex"
+        >
           <MailIcon
             onClick={() => setOpenMessages(true)}
             sx={{
@@ -131,10 +161,10 @@ console.log("mohamed abu",notifications)
                 themeName === "dark"
                   ? "#fff"
                   : !isHome
-                  ? "#333"
-                  : scrolled
-                  ? "#333"
-                  : "#fff",
+                    ? "#333"
+                    : scrolled
+                      ? "#333"
+                      : "#fff",
             }}
           />
         </Badge>
@@ -163,7 +193,9 @@ console.log("mohamed abu",notifications)
         <div className="hidden lg:flex items-center gap-2">
           <img
             alt={userData?.name || "User Avatar"}
-            src={userData?.avatar_url || userData?.image || "/default-avatar.png"}
+            src={
+              userData?.avatar_url || userData?.image || "/default-avatar.png"
+            }
             width={40}
             height={40}
             style={{ border: "2px solid #d4af37", borderRadius: "50%" }}
@@ -177,10 +209,10 @@ console.log("mohamed abu",notifications)
                 themeName === "dark"
                   ? "#fff"
                   : !isHome
-                  ? "#333"
-                  : scrolled
-                  ? "#333"
-                  : "#fff",
+                    ? "#333"
+                    : scrolled
+                      ? "#333"
+                      : "#fff",
             }}
           >
             {userData?.name}

@@ -55,8 +55,8 @@ export default function AdminChatMessages({ messages, themeName }) {
           >
             <p className="text-sm font-semibold mb-1 capitalize">
               {msg.sender_type === "admin"
-                ? "👑 Basttet Travel 👑"
-                : msg.user_name || "Basttet Travel"}
+                ? "👑 Waset Travel 👑"
+                : msg.user_name || "Waset Travel"}
             </p>
 
             {msg.content.startsWith("https") ? (

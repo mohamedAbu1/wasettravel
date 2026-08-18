@@ -41,7 +41,7 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: user.id,
-          user_name: "Basttet Travel",
+          user_name: "Waset Travel",
           user_image:
             admin?.avatar_url || admin?.image || "/default-avatar.png",
           content: text,
@@ -64,7 +64,7 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("user_id", user.id);
-    formData.append("user_name", "Basttet Travel");
+    formData.append("user_name", "Waset Travel");
     formData.append(
       "user_image",
       admin?.avatar_url || admin?.image || "/default-avatar.png",
@@ -81,7 +81,6 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
     if (!data.content) return;
     setMessages((prev) => [...prev, data]); // ✅ إضافة الرسالة محليًا
   };
-
   return (
     <AnimatePresence>
       {user && (

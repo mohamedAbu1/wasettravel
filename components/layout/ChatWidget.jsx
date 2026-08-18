@@ -58,11 +58,11 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
         // ✅ إرسال الرسالة باسم الأدمن وليس المستخدم
         await sendMessage({
           user_id: "c7674367-18c9-4d2a-b94c-eb80ac716005", // أو ID الأدمن الحقيقي
-          user_name: "👑 Basttet Travel 👑",
+          user_name: "👑 Waset Travel 👑",
 
           user_image: "/HomePageImage/Copilot_20260613_134423.webp",
           content:
-           t("welcomeMessage", { defaultValue: "👋 Hello and welcome! The Basttet Travel team is excited to help you plan your next unforgettable journey. How can we assist you today?" }),
+           t("welcomeMessage", { defaultValue: "👋 Hello and welcome! The Waset Travel team is excited to help you plan your next unforgettable journey. How can we assist you today?" }),
           sender_type: "admin", // مهم جداً لتظهر الرسالة بلون الأدمن
           status: "sent",
         });

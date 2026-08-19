@@ -13,34 +13,36 @@ export async function POST(req) {
     const now = new Date();
     const createdAtSecond = now.toISOString().slice(0, 19).replace("T", " ");
 
-    // ✅ تحقق من وجود إشعار بنفس المستخدم والحدث في نفس الثانية
-  const [existing] = await db.execute(
-  `SELECT id FROM notifications 
-   WHERE event_type = ? AND user_id = ? AND message = ? 
-   AND TIMESTAMPDIFF(SECOND, created_at, NOW()) < 60`,
-  [body.event_type, body.user_id, body.message]
-);
+    // ✅ ID ثابت للأدمن
+    const fixedAdminId = "a2626113-27e3-4c00-ac02-109a9ba344d8";
 
-if (existing.length === 0) {
-  await db.execute(
-    `INSERT INTO notifications 
-     (id, admin_id, event_type, message, user_id, user_name, user_email, user_image, trip_id, message_id, created_at, is_read) 
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0)`,
-    [
-      id,
-      body.admin_id,
-      body.event_type,
-      body.message,
-      body.user_id,
-      body.user_name,
-      body.user_email,
-      body.user_image,
-      body.trip_id,
-      body.message_id,
-    ]
-  );
-}
+    // ✅ تحقق من وجود إشعار بنفس المستخدم والحدث والرسالة خلال آخر دقيقة
+    const [existing] = await db.execute(
+      `SELECT id FROM notifications 
+       WHERE event_type = ? AND user_id = ? AND message = ? 
+       AND TIMESTAMPDIFF(SECOND, created_at, NOW()) < 60`,
+      [body.event_type, body.user_id, body.message,body.admin_id]
+    );
 
+    if (existing.length === 0) {
+      await db.execute(
+        `INSERT INTO notifications 
+         (id, admin_id, event_type, message, user_id, user_name, user_email, user_image, trip_id, message_id, created_at, is_read) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0)`,
+        [
+          id,
+          fixedAdminId, // ✅ هنا القيمة الثابتة
+          body.event_type,
+          body.message,
+          body.user_id,
+          body.user_name,
+          body.user_email,
+          body.user_image,
+          body.trip_id,
+          body.message_id,
+        ]
+      );
+    }
 
     // 📱 إرسال إشعار للموبايل إذا فيه توكن
     const expoPushToken = await getUserToken(body.user_id);
@@ -58,9 +60,13 @@ if (existing.length === 0) {
 
     return NextResponse.json({ success: true, id });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }
+
 
 // ✅ جلب الإشعارات
 export async function GET() {

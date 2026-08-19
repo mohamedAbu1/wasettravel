@@ -11,12 +11,12 @@ import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
 import { useChat } from "@/context/ChatContext";
 import { useTranslation } from "react-i18next";
+
 export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const { theme, themeName } = useTheme();
-  const { messages, sendMessage, fetchMessages, markMessageSeen } =
-    useMessages();
+  const { messages, sendMessage, fetchMessages, markMessageSeen } = useMessages();
   const [text, setText] = useState("");
-  const { userData } = useAuth(); // ✅ بيانات من AuthContext
+  const { userData } = useAuth();
   const [adminTyping, setAdminTyping] = useState(false);
   const {
     open,
@@ -29,14 +29,17 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     setBookingMode,
     setMessageses,
   } = useChat();
-    const { t } = useTranslation("home");
+  const { t } = useTranslation("home");
+
+  // ✅ فلاغ لمنع تكرار رسالة الترحيب
+  const [welcomeSent, setWelcomeSent] = useState(false);
 
   // ✅ جلب رسائل المستخدم
   useEffect(() => {
     if (userData?.id) {
       fetchMessages(userData.id);
     }
-  }, [userData]);
+  }, [userData?.id]);
 
   // ✅ تحديث حالة الرسائل إلى "seen"
   useEffect(() => {
@@ -47,30 +50,29 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
         }
       });
     }
-  }, [userData, messages]);
-  // ✅ فتح الدردشة بعد دقيقتين من تسجيل الدخول
+  }, [userData?.id, messages]);
 
+  // ✅ فتح الدردشة بعد 30 ثانية من تسجيل الدخول وإرسال رسالة ترحيب مرة واحدة فقط
   useEffect(() => {
-    if (userData?.id) {
+    if (userData?.id && !welcomeSent) {
       const timer = setTimeout(async () => {
-        setOpen(true); // يفتح نافذة الدردشة
-
-        // ✅ إرسال الرسالة باسم الأدمن وليس المستخدم
+        setOpen(true);
         await sendMessage({
-          user_id: "c7674367-18c9-4d2a-b94c-eb80ac716005", // أو ID الأدمن الحقيقي
+          user_id: "c7674367-18c9-4d2a-b94c-eb80ac716005",
           user_name: "👑 Waset Travel 👑",
-
           user_image: "/HomePageImage/Copilot_20260613_134423.webp",
-          content:
-           t("welcomeMessage", { defaultValue: "👋 Hello and welcome! The Waset Travel team is excited to help you plan your next unforgettable journey. How can we assist you today?" }),
-          sender_type: "admin", // مهم جداً لتظهر الرسالة بلون الأدمن
+          content: t("welcomeMessage", {
+            defaultValue:
+              "👋 Hello and welcome! The Waset Travel team is excited to help you plan your next unforgettable journey. How can we assist you today?",
+          }),
+          sender_type: "admin",
           status: "sent",
         });
-      }, 30000); //  نص دقيقه
-
+        setWelcomeSent(true); // يمنع التكرار
+      }, 30000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [userData?.id, welcomeSent]);
 
   // ✅ استعلام حالة الكتابة للأدمن
   useEffect(() => {
@@ -100,19 +102,18 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
 
   const isAdmin = userData?.role === "ADMIN";
 
+  // ✅ تعديل رفع الصور: لا تستدعي sendMessage مرة ثانية
   const handleSendImage = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-
-    // ✅ لازم تبعت بيانات المستخدم مع الصورة
     formData.append("user_id", userData?.id);
     formData.append("user_name", userData?.name || "Unknown User");
     formData.append(
       "user_image",
-      userData?.avatar_url || userData?.image || "/default-avatar.png",
+      userData?.avatar_url || userData?.image || "/default-avatar.png"
     );
     formData.append("sender_type", "user");
-    formData.append("admin_id", "SYSTEM"); // أو أي قيمة مناسبة
+    formData.append("admin_id", "SYSTEM");
 
     const res = await fetch("/api/messages", {
       method: "POST",
@@ -120,18 +121,10 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     });
 
     const data = await res.json();
-    if (!data.url) return;
+    if (!data.content) return;
 
-    // ✅ الرسالة الجديدة تدخل في الـ context
-    await sendMessage({
-      user_id: userData?.id,
-      user_name: userData?.name,
-      user_image:
-        userData?.avatar_url || userData?.image || "/default-avatar.png",
-      content: data.url, // الرابط النهائي للصورة
-      sender_type: "user",
-      status: "sent",
-    });
+    // ✅ أضف الرسالة مباشرة للـ context بدون إرسال جديد
+    setMessageses((prev) => [...prev, data]);
   };
 
   return (
@@ -175,8 +168,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                   placeholder="From"
                   value={from}
                   onChange={(e) => setFrom(e.target.value)}
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full mb-3 
-               focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
                 />
 
                 <input
@@ -184,15 +176,14 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                   placeholder="To"
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
-                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full mb-3 
-               focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
+                  className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
                 />
 
                 <button
                   onClick={() => {
                     const bookingMessage = `🚗 Car booking request from ${from} to ${to}`;
-                    setText(bookingMessage); // ✅ يملأ النص
-                    handleSend(); // يرسل الرسالة للـ backend
+                    setText(bookingMessage);
+                    handleSend();
                     setMessageses((prev) => [
                       ...prev,
                       {
@@ -203,9 +194,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                     ]);
                     setBookingMode(false);
                   }}
-                  className="mt-4 w-full px-6 py-3 rounded-lg font-bold text-white 
-               bg-gradient-to-r from-[#C2A878] to-[#eab308] 
-               shadow-md hover:scale-105 transition-transform duration-300"
+                  className="mt-4 w-full px-6 py-3 rounded-lg font-bold text-white bg-gradient-to-r from-[#C2A878] to-[#eab308] shadow-md hover:scale-105 transition-transform duration-300"
                 >
                   Confirm Booking
                 </button>

@@ -17,12 +17,13 @@ export async function POST(req) {
     const fixedAdminId = "a2626113-27e3-4c00-ac02-109a9ba344d8";
 
     // ✅ تحقق من وجود إشعار بنفس المستخدم والحدث والرسالة خلال آخر دقيقة
-    const [existing] = await db.execute(
-      `SELECT id FROM notifications 
-       WHERE event_type = ? AND user_id = ? AND message = ? 
-       AND TIMESTAMPDIFF(SECOND, created_at, NOW()) < 60`,
-      [body.event_type, body.user_id, body.message,body.admin_id]
-    );
+   const [existing] = await db.execute(
+  `SELECT id FROM notifications 
+   WHERE event_type = ? AND user_id = ? AND message = ? AND admin_id = ?
+   AND TIMESTAMPDIFF(SECOND, created_at, NOW()) < 5`,
+  [body.event_type, body.user_id, body.message, fixedAdminId]
+);
+
 
     if (existing.length === 0) {
       await db.execute(

@@ -1,4 +1,5 @@
 "use client";
+import { v4 as uuidv4 } from "uuid";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
 
@@ -24,6 +25,7 @@ const emptyTrip = {
   solo_price: 0,
   group_price: 0,
   discountPercent: 0,
+  details: [], // ✅ تفاصيل الرحلة الجديدة
 };
 
 export function TripProvider({ children }) {
@@ -77,49 +79,85 @@ export function TripProvider({ children }) {
       throw new Error(result.error || "Upload gallery failed");
     return result.gallery_images; // ✅ رجّع المصفوفة مباشرة
   };
-
-  const saveTrip = async () => {
-    try {
-      setError(null);
-
-      let coverUrl = tripData.cover_image;
-      if (tripData.cover_file) {
-        coverUrl = await uploadCover(tripData.cover_file);
-      }
-
-      let galleryData = tripData.gallery_images;
-      if (tripData.gallery_files?.length > 0) {
-        galleryData = await uploadGallery();
-      }
-
-      const payload = {
-        ...tripData,
-        cover_image: coverUrl,
-        gallery_images: galleryData,
-        exclusions: tripData.exclusions,
-      };
-
-      // ✅ تتبع قبل الإرسال
-
-
-      const res = await fetch("/api/trips", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await res.json();
-
-      if (result.success) {
-        setTripData(emptyTrip);
-      }
-
-      return result;
-    } catch (err) {
-      setError(err.message);
-      return { success: false, error: err.message };
-    }
+  const addDetail = (optionKey, translations) => {
+    setTripData((prev) => ({
+      ...prev,
+      details: [
+        ...(prev.details || []),
+        {
+          id: uuidv4(),
+          option_key: optionKey,
+          translations,
+          values: Object.keys(translations).reduce((acc, lang) => {
+            acc[lang] = "";
+            return acc;
+          }, {}),
+        },
+      ],
+    }));
   };
+
+  const updateDetail = (optionKey, lang, value) => {
+    setTripData((prev) => ({
+      ...prev,
+      details: prev.details.map((d) =>
+        d.option_key === optionKey
+          ? { ...d, values: { ...d.values, [lang]: value } }
+          : d,
+      ),
+    }));
+  };
+
+  const removeDetail = (optionKey) => {
+    setTripData((prev) => ({
+      ...prev,
+      details: prev.details.filter((d) => d.option_key !== optionKey),
+    }));
+  };
+const saveTrip = async () => {
+  try {
+    setError(null);
+
+    let coverUrl = tripData.cover_image;
+    if (tripData.cover_file) {
+      coverUrl = await uploadCover(tripData.cover_file);
+    }
+
+    let galleryData = tripData.gallery_images;
+    if (tripData.gallery_files?.length > 0) {
+      galleryData = await uploadGallery();
+    }
+
+    const payload = {
+      ...tripData,
+      cover_image: coverUrl,
+      gallery_images: galleryData,
+      exclusions: tripData.exclusions,
+      details: tripData.details, // ✅ إرسال تفاصيل الرحلة
+    };
+
+    // ✅ اطبع القيم قبل الإرسال
+    console.log("➡️ Payload being sent to backend:", payload);
+
+    const res = await fetch("/api/trips", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      setTripData(emptyTrip);
+    }
+
+    return result;
+  } catch (err) {
+    setError(err.message);
+    return { success: false, error: err.message };
+  }
+};
+
 
   // ✅ جلب الرحلات
   const fetchTrips = useCallback(async () => {
@@ -156,6 +194,9 @@ export function TripProvider({ children }) {
         uploadCover,
         setTrips,
         uploadGallery,
+        addDetail, // ✅
+        updateDetail, // ✅
+        removeDetail, // ✅
         error,
       }}
     >

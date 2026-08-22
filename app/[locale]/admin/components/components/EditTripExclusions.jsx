@@ -45,7 +45,7 @@ const EditTripExclusions = () => {
   };
 
   return (
-    <div>
+    <div className="mt-4">
       <h3
         className={`text-xl font-bold mb-3 ${
           themeName === "dark" ? "text-red-400" : "text-[#8b0000]"

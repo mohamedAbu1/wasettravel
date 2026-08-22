@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import { useTrip } from "../context/TripContext";
@@ -14,11 +14,12 @@ import SaveButton from "./components/SaveButton";
 import TripClassification from "./components/TripClassification";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import TripExclusions from "./components/TripExclusions";
+import TripDetailsTable from "./components/TripDetailsTable";
 
 export default function AddTrip() {
   const { themeName } = useTheme();
   const { tripData, updateTripField, saveTrip } = useTrip();
-
+  const [tripDetails, setTripDetails] = useState([]);
   return (
     <motion.form
       onSubmit={async (e) => {
@@ -79,7 +80,10 @@ export default function AddTrip() {
       <TripExclusions />
       {/* البرنامج اليومي */}
       <DailyItinerary />
-
+      <TripDetailsTable
+        tripDetails={tripDetails}
+        setTripDetails={setTripDetails}
+      />
       {/* زر الحفظ */}
       <SaveButton />
     </motion.form>

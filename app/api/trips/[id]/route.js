@@ -89,6 +89,18 @@ export async function GET(req, context) {
       }));
     }
 
+    // ✅ جلب تفاصيل الرحلة (trip_details)
+    const [details] = await db.query(
+      `SELECT id, option_key, translations, detail_values 
+       FROM trip_details WHERE trip_id = ?`,
+      [id]
+    );
+    const parsedDetails = details.map((d) => ({
+      ...d,
+      translations: typeof d.translations === "string" ? JSON.parse(d.translations) : d.translations,
+      detail_values: typeof d.detail_values === "string" ? JSON.parse(d.detail_values) : d.detail_values,
+    }));
+
     return NextResponse.json(
       {
         success: true,
@@ -99,6 +111,7 @@ export async function GET(req, context) {
           includes: parsedIncludes,
           exclusions: parsedExclusions,
           itinerary: days,
+          trip_details: parsedDetails,
         },
       },
       { status: 200 }
@@ -216,6 +229,23 @@ export async function PUT(req, context) {
       }
     }
 
+    // ✅ تحديث تفاصيل الرحلة (trip_details)
+    if (Array.isArray(body.details)) {
+      await db.query("DELETE FROM trip_details WHERE trip_id = ?", [id]);
+      for (const detail of body.details) {
+        await db.query(
+          "INSERT INTO trip_details (id, trip_id, option_key, translations, detail_values) VALUES (?, ?, ?, ?, ?)",
+          [
+            uuidv4(),
+            id,
+            detail.option_key,
+            JSON.stringify(detail.translations),
+            JSON.stringify(detail.detail_values),
+          ]
+        );
+      }
+    }
+
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (err) {
     console.error("❌ [PUT] Exception:", err.message);
@@ -229,20 +259,36 @@ export async function DELETE(req, context) {
     const { id } = context.params;
     const db = await connectDB();
 
+    // ✅ جلب الأيام المرتبطة بالرحلة
     const [days] = await db.query("SELECT id FROM trip_days WHERE trip_id = ?", [id]);
     for (const day of days) {
+      // ✅ حذف الأنشطة المرتبطة بكل يوم
       await db.query("DELETE FROM day_activities WHERE day_id = ?", [day.id]);
     }
 
+    // ✅ حذف المدن المرتبطة بالرحلة
     await db.query("DELETE FROM trip_cities WHERE trip_id = ?", [id]);
+
+    // ✅ حذف التصنيفات المرتبطة بالرحلة
     await db.query("DELETE FROM trip_categories WHERE trip_id = ?", [id]);
+
+    // ✅ حذف الـ includes
     await db.query("DELETE FROM includes WHERE trip_id = ?", [id]);
+
+    // ✅ حذف الـ exclusions
     await db.query("DELETE FROM exclusions WHERE trip_id = ?", [id]);
+
+    // ✅ حذف الأيام
     await db.query("DELETE FROM trip_days WHERE trip_id = ?", [id]);
+
+    // ✅ حذف تفاصيل الرحلة (trip_details)
+    await db.query("DELETE FROM trip_details WHERE trip_id = ?", [id]);
+
+    // ✅ حذف الرحلة نفسها
     await db.query("DELETE FROM trips WHERE id = ?", [id]);
 
     return NextResponse.json(
-      { success: true, message: "Trip deleted successfully" },
+      { success: true, message: "Trip and all related data deleted successfully" },
       { status: 200 }
     );
   } catch (err) {

@@ -18,6 +18,7 @@ export async function POST(req) {
     const db = await connectDB();
 
     // ✅ إدخال بيانات الرحلة الأساسية
+    console.log("➡️ Saving trip base data:", body);
     await db.execute(
       `INSERT INTO trips 
        (id, title, description, currency, duration, duration_unit, cover_image, gallery_images, priceLevel, group_price, solo_price, discount_percent)
@@ -35,11 +36,13 @@ export async function POST(req) {
         body.group_price,
         body.solo_price,
         String(body.discountPercent ?? "0"),
-      ]
+      ],
     );
+    console.log("✅ Trip inserted with ID:", tripId);
 
     // ✅ إدخال includes
     if (body.includes?.length > 0) {
+      console.log("➡️ Inserting includes:", body.includes);
       const includesData = body.includes.map((inc) => [
         uuidv4(),
         tripId,
@@ -47,12 +50,14 @@ export async function POST(req) {
       ]);
       await db.query(
         "INSERT INTO includes (id, trip_id, include_translations) VALUES ?",
-        [includesData]
+        [includesData],
       );
+      console.log("✅ Includes inserted:", includesData.length);
     }
 
     // ✅ إدخال exclusions
     if (body.exclusions?.length > 0) {
+      console.log("➡️ Inserting exclusions:", body.exclusions);
       const exclusionsData = body.exclusions.map((exc) => [
         uuidv4(),
         tripId,
@@ -60,12 +65,14 @@ export async function POST(req) {
       ]);
       await db.query(
         "INSERT INTO exclusions (id, trip_id, exclusions_translations) VALUES ?",
-        [exclusionsData]
+        [exclusionsData],
       );
+      console.log("✅ Exclusions inserted:", exclusionsData.length);
     }
 
     // ✅ إدخال المدن
     if (body.cities?.length > 0) {
+      console.log("➡️ Inserting cities:", body.cities);
       const citiesData = body.cities.map((cityId) => [
         uuidv4(),
         tripId,
@@ -73,12 +80,14 @@ export async function POST(req) {
       ]);
       await db.query(
         "INSERT INTO trip_cities (id, trip_id, city_id) VALUES ?",
-        [citiesData]
+        [citiesData],
       );
+      console.log("✅ Cities inserted:", citiesData.length);
     }
 
     // ✅ إدخال التصنيفات
     if (body.categories?.length > 0) {
+      console.log("➡️ Inserting categories:", body.categories);
       const categoriesData = body.categories.map((catId) => [
         uuidv4(),
         tripId,
@@ -86,20 +95,28 @@ export async function POST(req) {
       ]);
       await db.query(
         "INSERT INTO trip_categories (id, trip_id, category_id) VALUES ?",
-        [categoriesData]
+        [categoriesData],
       );
+      console.log("✅ Categories inserted:", categoriesData.length);
     }
 
     // ✅ إدخال الأيام والأنشطة
     if (body.itinerary?.length > 0) {
+      console.log("➡️ Inserting itinerary:", body.itinerary);
       for (const [index, day] of body.itinerary.entries()) {
         const dayId = uuidv4();
         await db.execute(
           "INSERT INTO trip_days (id, trip_id, day_number) VALUES (?, ?, ?)",
-          [dayId, tripId, day.day_number || index + 1]
+          [dayId, tripId, day.day_number || index + 1],
         );
+        console.log("✅ Day inserted:", dayId);
 
         if (day.activities?.length > 0) {
+          console.log(
+            "➡️ Inserting activities for day:",
+            dayId,
+            day.activities,
+          );
           const activitiesData = day.activities.map((act) => [
             uuidv4(),
             dayId,
@@ -108,10 +125,30 @@ export async function POST(req) {
           ]);
           await db.query(
             "INSERT INTO day_activities (id, day_id, time, activity_translations) VALUES ?",
-            [activitiesData]
+            [activitiesData],
           );
+          console.log("✅ Activities inserted:", activitiesData.length);
         }
       }
+    }
+
+    // ✅ إدخال تفاصيل الرحلة (trip_details)
+    if (body.details?.length > 0) {
+      console.log("➡️ Inserting trip details:", body.details);
+      const detailsData = body.details.map((detail) => [
+        uuidv4(),
+        tripId,
+        detail.key,
+        JSON.stringify(detail.translations),
+        JSON.stringify(detail.values),
+      ]);
+
+      await db.query(
+        "INSERT INTO trip_details (id, trip_id, option_key, translations, detail_values) VALUES ?",
+        [detailsData],
+      );
+
+      console.log("✅ Trip details inserted:", detailsData.length);
     }
 
     return new Response(JSON.stringify({ success: true, tripId }), {
@@ -121,7 +158,7 @@ export async function POST(req) {
     console.error("❌ API Error:", err);
     return new Response(
       JSON.stringify({ success: false, error: err.message }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -202,7 +239,21 @@ export async function GET() {
             FROM reviews r WHERE r.trip_id = t.id)
           AS CHAR
         ), '[]'
-        ) AS reviews
+        ) AS reviews,
+        COALESCE(
+          CAST(
+            (SELECT JSON_ARRAYAGG(
+              JSON_OBJECT(
+                'id', td.id,
+                'option_key', td.option_key,
+                'translations', td.translations,
+                'detail_values', td.detail_values
+              )
+            )
+            FROM trip_details td WHERE td.trip_id = t.id)
+          AS CHAR
+        ), '[]'
+        ) AS trip_details
       FROM trips t
     `);
 
@@ -232,7 +283,8 @@ export async function GET() {
       exclusions: safeParse(trip.exclusions),
       itinerary: safeParse(trip.days),
       reviews: safeParse(trip.reviews),
-      discountPercent: safeParse(trip.discount_percent),
+      trip_details: safeParse(trip.trip_details),
+      discountPercent: Number(trip.discount_percent ?? 0),
     }));
 
     return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {
@@ -243,7 +295,7 @@ export async function GET() {
     console.error("GET /api/trips error:", err);
     return new Response(
       JSON.stringify({ success: false, error: err.message }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

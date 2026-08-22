@@ -52,7 +52,7 @@ const cities = Array.isArray(tripData?.cities)
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 mt-4">
       {/* الفئات */}
       <div className="flex flex-col gap-2">
         <label

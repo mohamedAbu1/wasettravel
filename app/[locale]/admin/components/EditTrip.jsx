@@ -9,6 +9,7 @@ import EditTripDailyItinerary from "./components/EditTripDailyItinerary";
 import EditTripSaveButton from "./components/EditTripSaveButton";
 import TripSelector from "./components/TripSelector";
 import EditTripExclusions from "./components/EditTripExclusions";
+import EditTripDetailsTable from "./components/EditTripDetailsTable";
 
 export default function EditTripFull({ themeName }) {
   return (
@@ -34,6 +35,8 @@ export default function EditTripFull({ themeName }) {
       {/* المتضمنات */}
       <EditTripIncludes />
       <EditTripExclusions />
+            <EditTripDetailsTable />
+
       {/* الجدول اليومي */}
       <EditTripDailyItinerary />
 

@@ -97,7 +97,7 @@ const TopTripsSection = () => {
 
             return (
               <motion.div
-                key={trip.id || i}
+                key={`${trip.id}-${i}`}
                 initial={{ opacity: 0, y: 50, scale: 0.95 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.8, delay: i * 0.2 }}
@@ -184,7 +184,7 @@ const TopTripsSection = () => {
           >
             {[...topTrips, ...topTrips, ...topTrips].map((trip, i) => (
               <div
-                key={trip.id || i}
+                key={`${trip.id}-${i}`}
                 className="min-w-[100%] p-3 relative rounded-2xl overflow-hidden group"
               >
                 <div className="relative h-72">
@@ -204,7 +204,7 @@ const TopTripsSection = () => {
 
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-yellow-400 text-base font-semibold">
-                      ⭐ {trip.rating || "4.5"}
+                                          ⭐ {trip.rating || "4.5"}
                     </span>
                     <span className="text-sm opacity-80 text-white">
                       ({Array.isArray(trip.reviews) ? trip.reviews.length : 0}{" "}

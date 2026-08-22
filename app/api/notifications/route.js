@@ -1,53 +1,38 @@
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { getUserToken } from "@/lib/notifications";
+import { getUserToken } from "@/lib/notifications"; // 🟢 الدالة اللي تجيب التوكن
 
+// ✅ إضافة إشعار جديد + إرسال إشعار للموبايل
 export async function POST(req) {
   try {
     const db = await connectDB();
     const body = await req.json();
-    const id = uuidv4();
 
-    // 🕒 توليد الوقت الحالي بالثانية
-    const now = new Date();
-    const createdAtSecond = now.toISOString().slice(0, 19).replace("T", " ");
+    const id = uuidv4(); // توليد id فريد
 
-    // ✅ ID ثابت للأدمن
-    const fixedAdminId = "a2626113-27e3-4c00-ac02-109a9ba344d8";
+    await db.execute(
+      `INSERT INTO notifications 
+       (id, admin_id, event_type, message, user_id, user_name, user_email, user_image, trip_id, type, created_at, is_read) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0)`,
+      [
+        id,
+        body.admin_id,
+        body.event_type,
+        body.message,
+        body.user_id,
+        body.user_name,
+        body.user_email,
+        body.user_image,
+        body.trip_id,
+        body.type,
+      ]
+    );
 
-    // ✅ تحقق من وجود إشعار بنفس المستخدم والحدث والرسالة خلال آخر دقيقة
-   const [existing] = await db.execute(
-  `SELECT id FROM notifications 
-   WHERE event_type = ? AND user_id = ? AND message = ? AND admin_id = ?
-   AND TIMESTAMPDIFF(SECOND, created_at, NOW()) < 5`,
-  [body.event_type, body.user_id, body.message, fixedAdminId]
-);
-
-
-    if (existing.length === 0) {
-      await db.execute(
-        `INSERT INTO notifications 
-         (id, admin_id, event_type, message, user_id, user_name, user_email, user_image, trip_id, message_id, created_at, is_read) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0)`,
-        [
-          id,
-          fixedAdminId, // ✅ هنا القيمة الثابتة
-          body.event_type,
-          body.message,
-          body.user_id,
-          body.user_name,
-          body.user_email,
-          body.user_image,
-          body.trip_id,
-          body.message_id,
-        ]
-      );
-    }
-
-    // 📱 إرسال إشعار للموبايل إذا فيه توكن
+    // 🟢 اجلب الـ token من جدول push_tokens
     const expoPushToken = await getUserToken(body.user_id);
     if (expoPushToken) {
+      // 🟢 استدعاء API Route send-notification
       await fetch("https://wasettravel.com/api/send-notification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,13 +53,12 @@ export async function POST(req) {
   }
 }
 
-
 // ✅ جلب الإشعارات
 export async function GET() {
   try {
     const db = await connectDB();
     const [rows] = await db.execute(
-      `SELECT id, admin_id, event_type, user_id, message, message_id, user_name, user_email, user_image, created_at, is_read, trip_id 
+      `SELECT id, admin_id, event_type, user_id, message, type, user_name, user_email, user_image, created_at, is_read, trip_id 
        FROM notifications 
        ORDER BY created_at DESC`
     );

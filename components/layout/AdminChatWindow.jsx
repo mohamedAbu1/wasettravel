@@ -43,7 +43,7 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
           user_id: user.id,
           user_name: "Waset Travel",
           user_image:
-            admin?.avatar_url || admin?.image || "/default-avatar.png",
+            admin?.avatar_url || admin?.image || "/HomePageImage/apple-touch-icon.png",
           content: text,
           sender_type: "admin",
           status: "sent",

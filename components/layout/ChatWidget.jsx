@@ -60,7 +60,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
         await sendMessage({
           user_id: "c7674367-18c9-4d2a-b94c-eb80ac716005",
           user_name: "👑 Waset Travel 👑",
-          user_image: "/HomePageImage/Copilot_20260613_134423.webp",
+          user_image: "/HomePageImage/apple-touch-icon.png",
           content: t("welcomeMessage", {
             defaultValue:
               "👋 Hello and welcome! The Waset Travel team is excited to help you plan your next unforgettable journey. How can we assist you today?",

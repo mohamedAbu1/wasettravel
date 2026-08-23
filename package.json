@@ -36,6 +36,7 @@
     "emoji-picker-react": "^4.16.1",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.23.26",
+    "handlebars": "^4.7.9",
     "i18next": "^25.7.3",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-http-backend": "^3.0.2",

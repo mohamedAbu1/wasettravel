@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { motion } from "framer-motion";
-import { XCircleIcon } from "@heroicons/react/24/solid";
-const CalendarBooking = ({ prise, setCheckInPrice, checkInPrice ,checkIn,setCheckIn,checkOut,setCheckOut}) => {
+import { motion, AnimatePresence } from "framer-motion";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+
+const CalendarBooking = ({
+  prise,
+  setCheckInPrice,
+  checkInPrice,
+  checkIn,
+  setCheckIn,
+  checkOut,
+  setCheckOut,
+}) => {
   const { themeName } = useTheme();
 
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -28,14 +37,18 @@ const CalendarBooking = ({ prise, setCheckInPrice, checkInPrice ,checkIn,setChec
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   const [prices, setPrices] = useState([]);
+  const [guests, setGuests] = useState(0); // ✅ عدد الأشخاص
 
   // توليد أسعار جديدة
-  const generatePrices = () => {
-    return Array.from(
-      { length: daysInMonth },
-      () => Math.floor(Math.random() * prise) + 5,
-    );
-  };
+// توليد أسعار جديدة مرتبطة بسعر الفرد ±6 دولار
+const generatePrices = () => {
+  return Array.from({ length: daysInMonth }, () => {
+    const variation = Math.floor(Math.random() * 13) - 6; 
+    // من -6 إلى +6
+    return prise + variation;
+  });
+};
+
 
   // تحميل الأسعار من localStorage أو توليد جديدة لو مر 24 ساعة
   useEffect(() => {
@@ -64,12 +77,10 @@ const CalendarBooking = ({ prise, setCheckInPrice, checkInPrice ,checkIn,setChec
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // منع اختيار تاريخ قديم
     if (selectedDate < today) return;
 
     const selected = `${day} ${months[currentMonth]} ${year}`;
 
-    // إذا ضغط على نفس اليوم → إلغاء
     if (checkIn === selected) {
       setCheckIn(null);
       setCheckInPrice(null);
@@ -80,14 +91,11 @@ const CalendarBooking = ({ prise, setCheckInPrice, checkInPrice ,checkIn,setChec
       return;
     }
 
-    // منطق اختيار التواريخ
     if (!checkIn || (checkIn && checkOut)) {
-      // اختيار Check-in جديد
       setCheckIn(selected);
       setCheckInPrice(price);
       setCheckOut(null);
     } else if (!checkOut) {
-      // اختيار Check-out فقط إذا كان بعد Check-in
       const checkInDate = new Date(checkIn);
       if (selectedDate > checkInDate) {
         setCheckOut(selected);
@@ -147,7 +155,6 @@ const CalendarBooking = ({ prise, setCheckInPrice, checkInPrice ,checkIn,setChec
           const isCheckOut = checkOut === selected;
           const price = prices[index];
 
-          // حساب التظليل بين Check-in و Check-out
           let isBetween = false;
           if (checkIn && checkOut) {
             const checkInDate = new Date(checkIn);
@@ -156,7 +163,6 @@ const CalendarBooking = ({ prise, setCheckInPrice, checkInPrice ,checkIn,setChec
               selectedDate > checkInDate && selectedDate < checkOutDate;
           }
 
-          // منع اختيار غير منطقي
           let isInvalid = false;
           if (checkIn && !checkOut && selectedDate <= new Date(checkIn)) {
             isInvalid = true;
@@ -239,23 +245,26 @@ const CalendarBooking = ({ prise, setCheckInPrice, checkInPrice ,checkIn,setChec
           </p>
         </div>
       </div>
+
       {/* Reset Buttons */}
       {(checkIn || checkOut) && (
         <div className="mt-6 flex justify-center">
-          <button
+          <motion.button
             onClick={() => {
               setCheckIn(null);
               setCheckInPrice(null);
               setCheckOut(null);
             }}
-            className="px-4 py-2 cursor-pointer rounded-lg bg-gray-400 text-white hover:bg-gray-500 transition"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-4 py-2 cursor-pointer rounded-lg bg-gray-400 text-white hover:bg-gray-500 transition shadow-md"
           >
             Clear All
-          </button>
+          </motion.button>
         </div>
       )}
     </div>
   );
 };
 
-export default CalendarBooking;
+export default CalendarBooking

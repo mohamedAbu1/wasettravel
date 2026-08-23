@@ -11,8 +11,8 @@ const BookingCalendar = ({ trip }) => {
   const {
     participants,
     setParticipants,
-    children,
-    setChildren,
+    childrenCount,
+    setChildrenCount,
     checkInPrice,
     setCheckInPrice,
     checkIn,
@@ -26,7 +26,7 @@ const BookingCalendar = ({ trip }) => {
 
   return (
     <div
-      className={`w-1/2 h-fit p-6 rounded-xl shadow-lg transition font-sans ${
+      className={`w-full lg:w-1/2 h-fit p-6 rounded-xl shadow-lg transition font-sans ${
         themeName === "dark"
           ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
           : "bg-white/90 text-[#3a2c0a]"
@@ -43,7 +43,7 @@ const BookingCalendar = ({ trip }) => {
 
       <div className="flex justify-between mb-6">
         {/* Adults */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-1 lg:space-x-4">
           <div>
             <p className="font-medium">Adult</p>
             <p className="text-sm text-gray-500">Age 6 - 100</p>
@@ -75,26 +75,26 @@ const BookingCalendar = ({ trip }) => {
         </div>
 
         {/* Children */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-1 lg:space-x-4">
           <div>
             <p className="font-medium">Child</p>
             <p className="text-sm text-gray-500">Age 6 - 12</p>
           </div>
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => setChildren(Math.max(0, children - 1))}
+              onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}
               className={`px-2 cursor-pointer py-1 rounded disabled:opacity-50 ${
                 themeName === "dark"
                   ? "bg-blue-600 text-white"
                   : "bg-blue-600 text-white"
               }`}
-              disabled={children === 0}
+              disabled={childrenCount === 0}
             >
               -
             </button>
-            <span>{children}</span>
+            <span>{childrenCount}</span>
             <button
-              onClick={() => setChildren(children + 1)}
+              onClick={() => setChildrenCount(childrenCount + 1)}
               className={`px-2 cursor-pointer py-1 rounded ${
                 themeName === "dark"
                   ? "bg-yellow-500 text-black"
@@ -108,7 +108,7 @@ const BookingCalendar = ({ trip }) => {
       </div>
 
       {/* Calendar Section OR Message */}
-      {participants + children === 0 ? (
+      {participants === 0 ? (
         <div className="text-center py-10">
           <p
             className={`text-lg font-semibold ${
@@ -136,7 +136,9 @@ const BookingCalendar = ({ trip }) => {
       <BookingSummaryCard
         checkInPrice={checkInPrice}
         participants={participants}
-        children={children}
+        childrenCount={childrenCount}
+        checkOut={checkOut}
+        checkIn={checkIn}
       />
     </div>
   );

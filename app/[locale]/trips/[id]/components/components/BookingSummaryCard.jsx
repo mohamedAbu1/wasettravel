@@ -5,38 +5,85 @@ import { toast } from "react-toastify";
 import { useData } from "@/context/DataContext";
 import { useChat } from "@/context/ChatContext";
 import { motion } from "framer-motion";
+import { useMessages } from "@/context/MessageContext";
+
 const BookingSummaryCard = ({
   tourName,
   participants,
   checkInPrice,
-  children,
+  checkIn,
+  childrenCount,
+  checkOut,
 }) => {
   const { themeName } = useTheme();
   const { userData } = useAuth();
   const { handleLoginOpen } = useData();
-  const { open, setOpen } = useChat();
-
+  const { open, setOpen } = useChat(); // ✅ أضفت setMessageses هنا
+  const { setMessageses,sendMessage } = useMessages(); // ✅ أضفت setMessageses هنا
   // حساب سعر الأطفال (مثال: نصف السعر)
-  const childrenPrice = (checkInPrice * children) / 2;
-
+  const childrenPrice = (checkInPrice * childrenCount) / 2;
+  let total = "$0,00";
   // السعر الأساسي
-  let total = checkInPrice * participants + childrenPrice;
+  total = checkInPrice * participants + childrenPrice;
 
   // تطبيق الخصم إذا كان أكثر من فرد واحد
   if (participants > 1) {
     total = total * 0.6; // خصم 60% → يبقى 60% فقط
   }
+const handleBookingClick = async () => {
+  if (!participants || !checkInPrice || !checkIn || !checkOut) {
+    toast.error("⚠️ Please complete all booking details before proceeding.");
+    return;
+  }
 
-  const handleBookingClick = () => {
-    if (userData) {
-      // ✅ المستخدم مسجل دخول → افتح الدردشة
-      setOpen(!open);
-    } else {
-      // ❌ المستخدم غير مسجل دخول → افتح تسجيل الدخول + توست
-      handleLoginOpen();
-      toast.error("You must log in to book the trip");
-    }
-  };
+  if (userData) {
+    setOpen(true);
+
+    // ✅ إرسال الرسالة للـ Admin عبر sendMessage
+await sendMessage({
+  user_id: userData?.id,
+  user_name: userData?.name,
+  user_image:
+    userData?.avatar_url || userData?.image || "/default-avatar.png",
+  content: `
+🧾 **Booking Summary**
+
+---
+
+🏷️ **Tour:** ${tourName || "Private Cairo Tour – Giza Pyramids, Sphinx & GEM"}
+
+
+👤 **Adults:** ${participants}  👶 **Children:** ${childrenCount}
+
+📅 **Check-in:** ${checkIn}
+
+📅 **Check-out:** ${checkOut}
+
+💵 **Price per adult:** $${checkInPrice}
+
+💰 **Total:** $${total.toFixed(2)}
+
+---
+
+✅ **Please confirm availability and assist the guest.**
+  `,
+  sender_type: "user",
+  status: "sent",
+});
+
+
+
+    // ✅ إضافة رسالة تأكيد داخل الدردشة
+    setMessageses((prev) => [
+      ...prev,
+      { sender: "assistant", content: "✅ Booking request recorded successfully." },
+    ]);
+  } else {
+    handleLoginOpen();
+    toast.error("You must log in to book the trip");
+  }
+};
+
 
   return (
     <div className={`booking-card ${themeName}`}>
@@ -51,8 +98,8 @@ const BookingSummaryCard = ({
             {tourName ||
               "Private Cairo Tour – Giza Pyramids, Sphinx & Grand Egyptian Museum (GEM)"}
           </p>
-          <p className="participants">Participants: {participants || 1}</p>
-          <p className="children">Children: {children || 0}</p>
+          <p className="participants">Participants: {participants || 0}</p>
+          <p className="participants">Children: {childrenCount || 0}</p>
         </div>
 
         {/* Tear Line */}
@@ -63,7 +110,10 @@ const BookingSummaryCard = ({
         {/* Right Side */}
         <div className="ticket-right">
           <p>Total:</p>
-          <p className="total">{`$${total.toFixed(2)}`}</p>
+          <p className="total">
+            {!isNaN(total) ? `$${total.toFixed(2)}` : "$0.00"}
+          </p>
+
           {/* {participants > 1 && (
             <p className="discount text-green-600 text-sm mt-1">
               🎉 40% discount applied!

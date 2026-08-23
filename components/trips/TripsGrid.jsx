@@ -17,46 +17,52 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const { t } = useTranslation("trips");
   const { lang } = useLanguage();
   const { theme } = useTheme();
-  const { convertPrice, loading, error } = useCurrency(); // ✅ جلب أسعار العملات
 
   const getRandomStars = () => Math.floor(Math.random() * 3) + 3;
-
-  // 🟢 دالة التحويل باستخدام CurrencyContext
-
-  if (loading)
-    return <p className="text-center">⏳ Loading currency rates...</p>;
-  if (error) return <p className="text-center text-red-500">❌ {error}</p>;
-const getLocalizedText = (obj, lang) => {
-  if (!obj) return "Unknown";
-  if (typeof obj === "string") {
-    try {
-      const parsed = JSON.parse(obj);
-      return parsed?.[lang] || parsed?.en || Object.values(parsed)[0];
-    } catch {
-      return obj;
+  
+  const getLocalizedText = (obj, lang) => {
+    if (!obj) return "Unknown";
+    if (typeof obj === "string") {
+      try {
+        const parsed = JSON.parse(obj);
+        return parsed?.[lang] || parsed?.en || Object.values(parsed)[0];
+      } catch {
+        return obj;
+      }
     }
-  }
-  if (typeof obj === "object") {
-    return obj?.[lang] || obj?.en || Object.values(obj)[0];
-  }
-  return "Unknown";
-};
-const getLocalizedTextG = (obj, lang) => {
-  if (!obj) return "Unknown";
-  if (typeof obj === "string") {
-    try {
-      const parsed = JSON.parse(obj);
-      return parsed?.[lang] || parsed?.en || Object.values(parsed)[0];
-    } catch {
-      return obj;
+    if (typeof obj === "object") {
+      return obj?.[lang] || obj?.en || Object.values(obj)[0];
     }
-  }
-  if (typeof obj === "object") {
-    return obj?.[lang] || obj?.en || Object.values(obj)[0];
-  }
-  return "Unknown";
-};
-
+    return "Unknown";
+  };
+  const getLocalizedTextG = (obj, lang) => {
+    if (!obj) return "Unknown";
+    if (typeof obj === "string") {
+      try {
+        const parsed = JSON.parse(obj);
+        return parsed?.[lang] || parsed?.en || Object.values(parsed)[0];
+      } catch {
+        return obj;
+      }
+    }
+    if (typeof obj === "object") {
+      return obj?.[lang] || obj?.en || Object.values(obj)[0];
+    }
+    return "Unknown";
+  };
+  const convertPrice = (group_price, tripCurrency) => {
+    let converted = group_price;
+    if (currency === "EUR" && tripCurrency === "USD") {
+      converted = (group_price * 0.85).toFixed(2);
+    } else if (currency === "USD" && tripCurrency === "EUR") {
+      converted = (group_price * 1.18).toFixed(2);
+    } else if (currency === "EGP" && tripCurrency === "USD") {
+      converted = (group_price * 49.1).toFixed(2);
+    } else if (currency === "USD" && tripCurrency === "EGP") {
+      converted = (group_price / 49.1).toFixed(2);
+    }
+    return converted;
+  };
   return (
     <div
       className={`flex-1 z-[0] ${
@@ -185,24 +191,23 @@ const getLocalizedTextG = (obj, lang) => {
                 {trip.title?.[lang] || trip.title?.en || "Untitled"}
               </h4>
 
-       <p className={`${theme.subText} text-sm`}>
-  {Array.isArray(trip.cities) && trip.cities.length > 0
-    ? trip.cities
-        .filter(Boolean)
-        .map((c) => getLocalizedText(c.name, lang))
-        .join(", ")
-    : "Unknown City"}
-</p>
+              <p className={`${theme.subText} text-sm`}>
+                {Array.isArray(trip.cities) && trip.cities.length > 0
+                  ? trip.cities
+                      .filter(Boolean)
+                      .map((c) => getLocalizedText(c.name, lang))
+                      .join(", ")
+                  : "Unknown City"}
+              </p>
 
-<p className={`${theme.subText} text-sm`}>
-  {Array.isArray(trip.categories) && trip.categories.length > 0
-    ? trip.categories
-        .filter(Boolean)
-        .map((cat) => getLocalizedTextG(cat.name, lang))
-        .join(", ")
-    : t("NoCategory")}
-</p>
-
+              <p className={`${theme.subText} text-sm`}>
+                {Array.isArray(trip.categories) && trip.categories.length > 0
+                  ? trip.categories
+                      .filter(Boolean)
+                      .map((cat) => getLocalizedTextG(cat.name, lang))
+                      .join(", ")
+                  : t("NoCategory")}
+              </p>
 
               <p className="text-md font-semibold flex items-center gap-2">
                 <span

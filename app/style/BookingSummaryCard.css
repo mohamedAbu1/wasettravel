@@ -90,7 +90,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 55%;
+  left: 60%;
   border-left: 1px dashed var(--light-border);
   display: flex;
   align-items: center;

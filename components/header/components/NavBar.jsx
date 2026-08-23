@@ -16,7 +16,7 @@ export default function NavBar({ scrolled }) {
   const pathname = usePathname();
   const { t } = useTranslation("header");
 
-  const navItems = ["home", "trips", "about", "contact","privacyPolicy"];
+  const navItems = ["home", "trips", "about", "contact","privacyPolicy","b2b"];
 
   const segments = pathname.split("/").filter(Boolean);
   const langPrefix = segments[0];
@@ -63,7 +63,7 @@ export default function NavBar({ scrolled }) {
           >
             <Link
               href={`/${langPrefix}${path}`}
-              className={`relative group px-4 py-2 rounded-lg transition-all duration-300 ${
+              className={`relative uppercase group px-4 py-2 rounded-lg transition-all duration-300 ${
                 isActive
                   ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold shadow-md scale-105 border-b-4 border-yellow-600"
                   : themeName === "dark"

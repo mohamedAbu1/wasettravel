@@ -44,7 +44,7 @@ export default function ReviewCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, delay: idx * 0.1 }}
-      className={`w-[48%] p-5 rounded-xl shadow-lg border ${
+      className={`w-[100%] lg:w-[47%] p-5 rounded-xl shadow-lg border ${
         themeName === "dark"
           ? "bg-gradient-to-br from-black/70 to-black/40 text-gold border-yellow-700"
           : "bg-gradient-to-br from-[#fffaf0] to-[#fdf6e3] text-[#3a2c0a] border-[#e0c97f]"

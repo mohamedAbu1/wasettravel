@@ -111,7 +111,7 @@ export default function TripItinerary({ trip, lang }) {
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: dayIdx * 0.2 }}
-            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer ${
+            className={`flex flex-col items-center gap-3 p-3 rounded-lg cursor-pointer ${
               themeName === "dark"
                 ? "bg-gray-800 hover:bg-black/40 text-gray-100"
                 : "bg-white hover:bg-[#f5deb3]/40 text-[#3a2c0a]"
@@ -130,14 +130,7 @@ export default function TripItinerary({ trip, lang }) {
                   transition={{ duration: 0.5, delay: actIdx * 0.1 }}
                   className={`flex items-center gap-3 text-sm md:text-base ${theme.subText}`}
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.2, rotate: 15 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                    className="flex items-center gap-2 font-bold"
-                  >
-                    <FaClock className={theme.icon} />
-                    <span>{formatTime(act.time)}</span>
-                  </motion.div>
+                 
                   <span>{getLocalizedText(act.activity_translations)}</span>
                 </motion.li>
               ))}

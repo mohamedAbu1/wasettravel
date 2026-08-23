@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import TripExclusions from "./components/TripExclusions";
 import CalendarWidget from "./components/CalendarWidget";
+import TripOverviewTable from "./components/TripOverviewTable";
 
 export default function TripPage({ params }) {
   const { id } = params;
@@ -84,9 +85,11 @@ export default function TripPage({ params }) {
               theme={theme}
               themeName={themeName}
             />
+            <TripOverviewTable trip={trip}/>
+
             <AccessibilityInfo theme={themeName} themeName={themeName} />
           </div>
-          <CalendarWidget trip={trip}/>
+          <CalendarWidget trip={trip} />
         </div>
 
         {/* المميزات */}
@@ -118,31 +121,12 @@ export default function TripPage({ params }) {
         {/* المراجعات + الأزرار */}
         <div className="col-span-1 lg:col-span-3">
           <TripReviews trip={trip} lang={lang} theme={theme} />
-          {userData &&
-            userData?.role !== "ADMIN" &&
-            (hasActivePurchase ? (
-              <CancelButton trip={trip} theme={theme} />
-            ) : (
-              <>
-                <PurchaseButton trip={trip} theme={theme} />
-                <Link
-                  href="/privacyPolicy"
-                  className="fixed bottom-29 left-6 flex-row rounded-[8px] px-6 py-3 bg-transparent backdrop-blur-md 
-                   border border-[#C2A878] text-[#C2A878] font-semibold tracking-wide 
-                   hover:bg-[#C2A878]/20 hover:text-white transition-all duration-300 
-                   shadow-lg cursor-pointer"
-                >
-                  {t("PrivacyPolicy")}
-                </Link>
-              </>
-            ))}
         </div>
       </div>
 
       {/* ✅ تصميم احترافي للموبايل */}
       <div className="block lg:hidden p-4 pt-29 space-y-6">
         <TripHeader trip={trip} lang={lang} theme={theme} />
-        <TripInfo trip={trip} lang={lang} theme={theme} themeName={themeName} />
         <TripCities
           trip={trip}
           lang={lang}
@@ -167,12 +151,15 @@ export default function TripPage({ params }) {
           theme={theme}
           themeName={themeName}
         />
+        <TripOverviewTable />
         <TripItinerary
           trip={trip}
           lang={lang}
           theme={theme}
           themeName={themeName}
         />
+        <CalendarWidget trip={trip} />
+
         <TripReviews trip={trip} lang={lang} theme={theme} />
 
         {/* أزرار واضحة وكبيرة */}

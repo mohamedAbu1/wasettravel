@@ -97,7 +97,7 @@ const TripDetailsTable = () => {
                 </label>
                 <input
                   type="text"
-                  value={detail.detail_values[lang] || ""}
+                  value={detail.detail_values?.[lang] || ""}
                   onChange={(e) => handleChange(detail.option_key, lang, e.target.value)}
                   placeholder={`Enter ${detail.translations[lang]} value`}
                   className={`w-full p-2 rounded-lg border ${

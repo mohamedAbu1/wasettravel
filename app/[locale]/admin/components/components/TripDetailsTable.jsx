@@ -96,16 +96,17 @@ const TripDetailsTable = () => {
                   {detail.translations[lang]} ({lang.toUpperCase()})
                 </label>
                 <input
-                  type="text"
-                  value={detail.detail_values?.[lang] || ""}
-                  onChange={(e) => handleChange(detail.option_key, lang, e.target.value)}
-                  placeholder={`Enter ${detail.translations[lang]} value`}
-                  className={`w-full p-2 rounded-lg border ${
-                    themeName === "dark"
-                      ? "bg-black/30 border-gold/40 text-gold"
-                      : "bg-white border-[#c9a34a]/40 text-[#3a2c0a]"
-                  }`}
-                />
+  type="text"
+  value={detail.values?.[lang] || ""}
+  onChange={(e) => handleChange(detail.option_key, lang, e.target.value)}
+  placeholder={`Enter ${detail.translations[lang]} value`}
+  className={`w-full p-2 rounded-lg border ${
+    themeName === "dark"
+      ? "bg-black/30 border-gold/40 text-gold"
+      : "bg-white border-[#c9a34a]/40 text-[#3a2c0a]"
+  }`}
+/>
+
               </div>
             ))}
           </div>

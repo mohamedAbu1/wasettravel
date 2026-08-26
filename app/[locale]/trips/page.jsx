@@ -207,7 +207,7 @@ export default function TripsPage() {
                       }}
                       className={`px-3 py-1 rounded-lg font-bold cursor-pointer transition ${
                         currentPage === i + 1
-                          ? "bg-[var(--primary-color)] text-white"
+                          ? "bg-[var(--primary-color)] text-gray-700"
                           : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                       }`}
                     >

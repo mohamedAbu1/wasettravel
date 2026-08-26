@@ -15,8 +15,8 @@ const LeftSocialIcons = () => {
       Icon: FaInstagram,
       url: "https://www.instagram.com/kader.mohameda?igsh=MXZkd3VvOTNhanJoZA==",
     },
-    { Icon: FaWhatsapp, url: "https://wa.me/qr/WIFIQJUBO2PJH1" },
-    { Icon: MdEmail, url: "mailto:yourmail@example.com" },
+    { Icon: FaWhatsapp, url: "https://wa.me/201091126069" },
+    { Icon: MdEmail, url: "mailto:wasettraveleg@gmail.com" },
     {
       Icon: FaTiktok,
       url: "https://www.tiktok.com/@mohamedakader25?_r=1&_t=ZS-97OkNILIAZm",

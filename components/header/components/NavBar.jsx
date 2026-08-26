@@ -16,7 +16,7 @@ export default function NavBar({ scrolled }) {
   const pathname = usePathname();
   const { t } = useTranslation("header");
 
-  const navItems = ["home", "trips", "about", "contact","privacyPolicy","b2b"];
+  const navItems = ["home", "trips", "about", "contact","b2b"];
 
   const segments = pathname.split("/").filter(Boolean);
   const langPrefix = segments[0];

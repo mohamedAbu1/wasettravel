@@ -52,7 +52,7 @@ export default function DownloadAppSection() {
 
         {/* Tripadvisor Button */}
         <a
-          href="https://www.tripadvisor.com/Attraction_Review-g294205-d34511536-Reviews-Waset_Travel-Luxor_Nile_River_Valley.html"
+          href="https://www.tripadvisor.com/UserReviewEdit-g294205-d34511536-Waset_Travel-Luxor_Nile_River_Valley.html"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center w-[280px] text-center gap-2 px-6 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow-md hover:bg-teal-700 transition-all"

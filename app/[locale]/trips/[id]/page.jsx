@@ -158,7 +158,7 @@ export default function TripPage({ params }) {
           theme={theme}
           themeName={themeName}
         />
-        <CalendarWidget trip={trip} />
+        <CalendarWidget trip={trip} id={id}/>
 
         <TripReviews trip={trip} lang={lang} theme={theme} />
 

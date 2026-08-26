@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 
 const CalendarBooking = ({
+    tripId,
   prise,
   setCheckInPrice,
   checkInPrice,
@@ -40,20 +41,16 @@ const CalendarBooking = ({
   const [guests, setGuests] = useState(0); // ✅ عدد الأشخاص
 
   // توليد أسعار جديدة
-// توليد أسعار جديدة مرتبطة بسعر الفرد ±6 دولار
-const generatePrices = () => {
-  return Array.from({ length: daysInMonth }, () => {
-    const variation = Math.floor(Math.random() * 13) - 6; 
-    // من -6 إلى +6
-    return prise + variation;
-  });
-};
+  const generatePrices = () => {
+    return Array.from({ length: daysInMonth }, () => {
+      const variation = Math.round((Math.random() - 0.5) * 12);
+      return prise + variation;
+    });
+  };
 
-
-  // تحميل الأسعار من localStorage أو توليد جديدة لو مر 24 ساعة
   useEffect(() => {
-    const savedData = localStorage.getItem("calendarPrices");
-    const savedTime = localStorage.getItem("calendarPricesTime");
+    const savedData = localStorage.getItem(`calendarPrices_${tripId}`);
+    const savedTime = localStorage.getItem(`calendarPricesTime_${tripId}`);
 
     if (savedData && savedTime) {
       const lastUpdate = new Date(savedTime);
@@ -68,10 +65,12 @@ const generatePrices = () => {
 
     const newPrices = generatePrices();
     setPrices(newPrices);
-    localStorage.setItem("calendarPrices", JSON.stringify(newPrices));
-    localStorage.setItem("calendarPricesTime", new Date().toISOString());
-  }, [currentMonth, prise]);
-
+    localStorage.setItem(`calendarPrices_${tripId}`, JSON.stringify(newPrices));
+    localStorage.setItem(
+      `calendarPricesTime_${tripId}`,
+      new Date().toISOString(),
+    );
+  }, [currentMonth, prise, tripId]);
   const handleDateClick = (day, price) => {
     const selectedDate = new Date(year, currentMonth, day);
     const today = new Date();

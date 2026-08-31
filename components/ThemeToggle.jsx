@@ -2,7 +2,7 @@
 import React from "react";
 import { BsSun, BsMoon } from "react-icons/bs";
 import { motion } from "framer-motion";
-import { Button } from "@mui/material";
+import Button from '@mui/material/Button';
 import { useTheme } from "@/context/ThemeContext";
 import { usePathname } from "next/navigation";
 
@@ -33,9 +33,9 @@ const ThemeToggle = ({ scrolled }) => {
         `}
       >
         {themeName === "dark" ? (
-          <BsSun size={20} color="#fff" />
+          <BsSun size={20} aria-label="dark mode" color="#fff" />
         ) : (
-          <BsMoon size={20} color={scrolled  ? "#999" : isHome  ? "#fff": "#999"} />
+          <BsMoon size={20} aria-label="light mode" color={scrolled  ? "#999" : isHome  ? "#fff": "#999"} />
         )}
       </Button>
     </motion.div>

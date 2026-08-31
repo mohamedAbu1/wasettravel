@@ -75,6 +75,7 @@ const Footer = () => {
       {/* اسم البراند */}
       <motion.p
         variants={fadeUp}
+        aria-label="Waset Travel brand name"
         className={`
           text-2xl font-extrabold tracking-wide drop-shadow-md relative z-10
           ${themeName === "dark" 
@@ -88,6 +89,7 @@ const Footer = () => {
       {/* الوصف */}
       <motion.p
         variants={fadeUp}
+        aria-label="Footer description"
         className="mt-2 text-sm opacity-80 text-center max-w-xl relative z-10"
       >
         {t("p")}
@@ -98,40 +100,43 @@ const Footer = () => {
         variants={fadeUp}
         className="flex flex-wrap gap-6 mt-6 text-sm font-medium relative z-10 justify-center"
       >
-        <Link href="/" className="hover:underline">{t("Home")}</Link>
-        <Link href="/about" className="hover:underline">{t("AboutUs")}</Link>
-        {/* ✅ رابط Trips مع الكويري */}
-        <Link href={`/trips?data=${tripsQuery}`} className="hover:underline">
-          {t("Tours")}
-        </Link>
-        <Link href="/contact" className="hover:underline">{t("Contact")}</Link>
-        <Link href="/privacyPolicy" className="hover:underline">{t("privacyPolicy")}</Link>
-        <Link href="/cancellationPolicy" className="hover:underline">{t("cancellationPolicy")}</Link>
+        <Link href="/" aria-label="Go to Home page" className="hover:underline">{t("Home")}</Link>
+        <Link href="/about" aria-label="Learn more about Waset Travel" className="hover:underline">{t("AboutUs")}</Link>
+        <Link href={`/trips?data=${tripsQuery}`} aria-label="Browse available tours" className="hover:underline">{t("Tours")}</Link>
+        <Link href="/contact" aria-label="Contact Waset Travel" className="hover:underline">{t("Contact")}</Link>
+        <Link href="/privacyPolicy" aria-label="Read our privacy policy" className="hover:underline">{t("privacyPolicy")}</Link>
+        <Link href="/cancellationPolicy" aria-label="Read our cancellation policy" className="hover:underline">{t("cancellationPolicy")}</Link>
       </motion.div>
 
       {/* أيقونات السوشيال ميديا */}
       <motion.div variants={fadeUp} className="flex gap-5 mt-8 relative z-10">
         <a href="https://www.facebook.com/share/1BTkjPD5Sd/" target="_blank" rel="noopener noreferrer"
+          aria-label="Visit our Facebook page"
           className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
           <FaFacebookF />
         </a>
         <a href="https://www.instagram.com/kader.mohameda" target="_blank" rel="noopener noreferrer"
+          aria-label="Visit our Instagram page"
           className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
           <FaInstagram />
         </a>
         <a href="https://wa.me/qr/WIFIQJUBO2PJH1" target="_blank" rel="noopener noreferrer"
+          aria-label="Chat with us on WhatsApp"
           className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
           <FaWhatsapp />
         </a>
         <a href="mailto:info@wasettravel.com" target="_blank" rel="noopener noreferrer"
+          aria-label="Send us an email"
           className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
           <MdEmail />
         </a>
         <a href="https://www.tiktok.com/@mohamedakader25" target="_blank" rel="noopener noreferrer"
+          aria-label="Follow us on TikTok"
           className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
           <FaTiktok />
         </a>
         <a href="https://wasettravel.blogspot.com" target="_blank" rel="noopener noreferrer"
+          aria-label="Read our blog on Blogger"
           className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
           <FaBlogger />
         </a>

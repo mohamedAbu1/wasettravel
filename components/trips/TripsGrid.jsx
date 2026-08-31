@@ -8,12 +8,13 @@ import { usePurchase } from "@/context/PurchaseContext";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
-import { useCurrency } from "@/context/CurrencyContext"; // ✅ استدعاء الكونتكست
+import { useCurrency } from "@/context/CurrencyContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+
 export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const router = useRouter();
   const { userData } = useAuth();
@@ -37,6 +38,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
     }
     return converted;
   };
+
   return (
     <div
       className={`flex-1 z-[0] ${
@@ -57,13 +59,6 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               p.trip_id?.toString() === trip.id?.toString() &&
               p.status !== "Cancelled",
           );
-
-        const hasActivePurchase = purchases.some(
-          (p) =>
-            p.trip_id === trip.id &&
-            p.user_id === userData?.id &&
-            p.status !== "Cancelled",
-        );
 
         // 🟢 اختيار الأيقونة حسب العملة
         let CurrencyIcon;
@@ -89,11 +84,15 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               scale: 1.02,
               boxShadow: theme.shadow,
             }}
-            className={`flex ${cardStyle === "vertical" ? "w-full flex-col" : "flex-row"} bg-white dark:bg-transparent rounded-xl shadow-lg overflow-hidden`}
+            className={`flex ${
+              cardStyle === "vertical" ? "w-full flex-col" : "flex-row"
+            } bg-white dark:bg-transparent rounded-xl shadow-lg overflow-hidden`}
           >
             {/* قسم الصور بسليدر */}
             <div
-              className={` ${cardStyle === "vertical" ? "w-full" : "lg:w-1/2"} w-full`}
+              className={` ${
+                cardStyle === "vertical" ? "w-full" : "lg:w-1/2"
+              } w-full`}
             >
               <Swiper
                 spaceBetween={10}
@@ -109,7 +108,9 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                   <SwiperSlide key={idx}>
                     <Image
                       src={img || "/default.jpg"}
-                      alt={trip.title?.[lang] || trip.title?.en || "Trip image"}
+                      alt={`Trip image: ${
+                        trip.title?.[lang] || trip.title?.en || "Untitled"
+                      }`}
                       width={600}
                       height={450}
                       className="object-cover w-full h-full"
@@ -118,53 +119,68 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 ))}
               </Swiper>
             </div>
+
             {/* قسم المعلومات */}
             <div
-              className={`${cardStyle === "vertical" ? "w-full" : "lg:w-1/2"} w-full p-6 flex flex-col gap-4`}
+              className={`${
+                cardStyle === "vertical" ? "w-full" : "lg:w-1/2"
+              } w-full p-6 flex flex-col gap-4`}
             >
-              <h3 className="text-1xl font-bold text-[#C2A878]">
+              <h3
+                role="heading"
+                aria-level={3}
+                aria-label={trip.title?.[lang] || trip.title?.en || "Untitled"}
+                className="text-1xl font-bold text-[#C2A878]"
+              >
                 {trip.title?.[lang] || trip.title?.en || "Untitled"}
               </h3>
-              <p className="text-gray-600 dark:text-gray-500 text-sm">
+
+              <p
+                aria-label="Trip cities"
+                className="text-gray-600 dark:text-gray-500 text-sm"
+              >
                 {Array.isArray(trip.cities) && trip.cities.length > 0
                   ? trip.cities
                       .filter(Boolean)
-                      .map((c) => {
-                        // ✅ نقرأ مباشرة من c.name لأنه object
-                        return (
-                          c.name?.[lang] ||
-                          c.name?.["en"] ||
-                          Object.values(c.name)[0] ||
-                          "Unknown City"
-                        );
-                      })
+                      .map((c) =>
+                        c.name?.[lang] ||
+                        c.name?.["en"] ||
+                        Object.values(c.name)[0] ||
+                        "Unknown City"
+                      )
                       .join(", ")
                   : "Unknown City"}
               </p>
 
-              <p className="text-gray-600 dark:text-gray-500 text-sm">
+              <p
+                aria-label="Trip categories"
+                className="text-gray-600 dark:text-gray-500 text-sm"
+              >
                 {Array.isArray(trip.categories) && trip.categories.length > 0
                   ? trip.categories
                       .filter(Boolean)
-                      .map((cat) => {
-                        // ✅ نقرأ مباشرة من cat.name لأنه object
-                        return (
-                          cat.name?.[lang] ||
-                          cat.name?.["en"] ||
-                          Object.values(cat.name)[0] ||
-                          "Unknown Category"
-                        );
-                      })
+                      .map((cat) =>
+                        cat.name?.[lang] ||
+                        cat.name?.["en"] ||
+                        Object.values(cat.name)[0] ||
+                        "Unknown Category"
+                      )
                       .join(", ")
                   : t("NoCategory")}
               </p>
 
-              <p className="text-lg font-semibold flex items-center gap-2">
+              <p
+                aria-label={`Trip price in ${currency}`}
+                className="text-lg font-semibold flex items-center gap-2"
+              >
                 <CurrencyIcon style={{ color: currencyColor }} />
                 {displayedPrice} {currency}
               </p>
 
-              <div className="flex items-center gap-2">
+              <div
+                className="flex items-center gap-2"
+                aria-label={`Average rating ${avgStars} out of 5`}
+              >
                 {[...Array(5)].map((_, idx) => (
                   <FaStar
                     key={idx}
@@ -178,8 +194,9 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
 
               <button
                 onClick={() => router.push(`/trips/${trip.id}`)}
+                aria-label={hasPurchased ? "View trip details" : "Book this trip"}
                 className="mt-3 px-5 py-2 rounded-lg font-bold transition cursor-pointer 
-          bg-[#C2A878] text-white hover:bg-[#a58a60] shadow-md"
+                  bg-[#C2A878] text-white hover:bg-[#a58a60] shadow-md"
               >
                 {hasPurchased ? t("Tripdetails") : t("btn")}
               </button>

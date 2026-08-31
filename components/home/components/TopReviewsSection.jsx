@@ -37,7 +37,7 @@ export default function TopReviewsSection() {
           .sort(
             (a, b) =>
               new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
+              new Date(a.created_at).getTime(),
           )
           .slice(0, 6);
 
@@ -76,9 +76,16 @@ export default function TopReviewsSection() {
   }, []);
 
   return (
-    <section className={`py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-screen max-w-full flex flex-col items-center justify-center bg-[url('/HomePageImage/421009550_cc929d60-b9e0-426e-84d8-74d70ab10d55.svg')] bg-cover bg-center`}>
+    <section
+      className={`py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-screen max-w-full flex flex-col items-center justify-center bg-[url('/HomePageImage/421009550_cc929d60-b9e0-426e-84d8-74d70ab10d55.svg')] bg-cover bg-center`}
+    >
       <EgyptianBackground />
-      <h2 className="sc-title-first text-[21px] md:text-5xl font-extrabold tracking-wide drop-shadow-md text-left text-gradient">
+      <h2
+        role="heading"
+        aria-level={2}
+        aria-label={t("h6")}
+        className="sc-title-first text-[21px] md:text-5xl font-extrabold tracking-wide drop-shadow-md text-left text-gradient"
+      >
         <span className="inline-block transform scale-x-[-1] mr-4">𓅓</span>
         {t("h6")}
         <span className="inline-block ml-4">𓅓</span>
@@ -117,6 +124,9 @@ export default function TopReviewsSection() {
     return (
       <motion.div
         key={rev.id || idx}
+        role="group"
+        aria-label={`Review card by ${rev.name || "Anonymous"} with ${rev.likesCount} likes`}
+        tabIndex={0}
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -125,7 +135,7 @@ export default function TopReviewsSection() {
         style={{
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
-          marginLeft:"20px",
+          marginLeft: "20px",
           border: `1px solid ${theme.logoBorder}`,
           boxShadow: theme.shadow,
         }}
@@ -135,7 +145,7 @@ export default function TopReviewsSection() {
           {rev.avatar_url ? (
             <img
               src={rev.avatar_url}
-              alt={rev.name}
+              alt={`Avatar of ${rev.name || "Anonymous user"}`} // ✅ وصف أوضح
               className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 object-cover"
               style={{ borderColor: theme.logoBorder }}
             />
@@ -148,7 +158,10 @@ export default function TopReviewsSection() {
             </h3>
             <div className="flex gap-1">
               {[...Array(rev.rating || 0)].map((_, i) => (
-                <FaStar key={i} className="text-yellow-500 text-sm md:text-base" />
+                <FaStar
+                  key={i}
+                  className="text-yellow-500 text-sm md:text-base"
+                />
               ))}
             </div>
           </div>
@@ -156,8 +169,13 @@ export default function TopReviewsSection() {
 
         {/* Body */}
         <div className="relative flex-1 mt-4">
-          <FaQuoteLeft className={`absolute top-0 left-0 text-2xl opacity-20 ${theme.icon}`} />
-          <p className={`italic leading-relaxed text-sm md:text-base pl-8 ${theme.subText}`} style={{ textAlign: "justify" }}>
+          <FaQuoteLeft
+            className={`absolute top-0 left-0 text-2xl opacity-20 ${theme.icon}`}
+          />
+          <p
+            className={`italic leading-relaxed text-sm md:text-base pl-8 ${theme.subText}`}
+            style={{ textAlign: "justify" }}
+          >
             {comment}
           </p>
           {rev.comment?.length > 150 && (
@@ -165,6 +183,7 @@ export default function TopReviewsSection() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => toggleExpand(rev.id)}
+              aria-label={expanded ? "Hide full review" : "Read full review"} // ✅ اسم واضح
               className={`text-xs md:text-sm mt-2 font-semibold tracking-wide cursor-pointer transition-all duration-300 ${theme.buttonPrimary}`}
               style={{ border: `1px solid ${theme.logoBorder}` }}
             >
@@ -176,9 +195,13 @@ export default function TopReviewsSection() {
         {/* Footer */}
         <div className="flex justify-between items-center mt-4 border-t pt-2">
           <span className={`text-xs md:text-sm ${theme.subText}`}>
-            {rev.created_at ? format(new Date(rev.created_at), "dd MMM yyyy") : "Unknown date"}
+            {rev.created_at
+              ? format(new Date(rev.created_at), "dd MMM yyyy")
+              : "Unknown date"}
           </span>
-          <div className={`flex items-center gap-2 font-semibold text-xs md:text-sm px-3 py-1 rounded-full shadow-sm ${theme.buttonPrimary}`}>
+          <div
+            className={`flex items-center gap-2 font-semibold text-xs md:text-sm px-3 py-1 rounded-full shadow-sm ${theme.buttonPrimary}`}
+          >
             <FaHeart />
             <span>{rev.likesCount}</span>
           </div>

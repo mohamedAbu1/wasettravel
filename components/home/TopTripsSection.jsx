@@ -97,17 +97,20 @@ const TopTripsSection = () => {
 
             return (
               <motion.div
-                key={`${trip.id}-${i}`}
-                initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.8, delay: i * 0.2 }}
-                viewport={{ once: true }}
-                className="flex-1 basis-full sm:basis-[48%] lg:basis-[30%] xl:basis-[22%] relative rounded-2xl overflow-hidden group transition-all duration-500 hover:scale-[1.05] hover:shadow-2xl hover:-rotate-1"
-              >
+  key={`${trip.id}-${i}`}
+  role="group"
+  aria-label={`Trip card for ${trip.title?.[normalizedLang] || "Untitled Trip"}`}
+  tabIndex={0}
+  initial={{ opacity: 0, y: 50, scale: 0.95 }}
+  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+  transition={{ duration: 0.8, delay: i * 0.2 }}
+  viewport={{ once: true }}
+  className="flex-1 basis-full sm:basis-[48%] lg:basis-[30%] xl:basis-[22%] relative rounded-2xl overflow-hidden group transition-all duration-500 hover:scale-[1.05] hover:shadow-2xl hover:-rotate-1"
+>
                 <div className="relative h-72">
                   <Image
                     src={trip.cover_image || "/default.jpg"}
-                    alt={trip.title?.[normalizedLang] || "Trip image"}
+                      alt={`Cover image for ${trip.title?.[normalizedLang] || "Trip"}`}
                     fill
                     className="object-cover group-hover:scale-110 transition duration-700 rounded-lg"
                   />
@@ -139,6 +142,11 @@ const TopTripsSection = () => {
                     </p>
                     <button
                       onClick={() => router.push(`/trips/${trip.id}`)}
+                      aria-label={
+                        hasPurchased
+                          ? `View details for ${trip.title?.[normalizedLang]}`
+                          : `Book trip ${trip.title?.[normalizedLang]}`
+                      }
                       className={`px-5 py-2 rounded-lg font-medium transition text-white ${
                         hasPurchased
                           ? "bg-green-500 hover:bg-green-600"
@@ -164,15 +172,18 @@ const TopTripsSection = () => {
         }`}
       >
         <div className="max-w-7xl mx-auto mb-8 text-center">
-          <h2
-            className={`text-3xl font-extrabold tracking-wide drop-shadow-md ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }`}
-          >
-            {t("TopTrips")}
-          </h2>
+         <h2
+  role="heading"
+  aria-level={2}
+  aria-label={t("TopTrips")}
+  className={`text-5xl font-extrabold tracking-wide drop-shadow-md ${
+    themeName === "dark"
+      ? "text-gold"
+      : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+  }`}
+>
+  {t("TopTrips")}
+</h2>
           <DividerWithIcon />
         </div>
 
@@ -204,7 +215,7 @@ const TopTripsSection = () => {
 
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-yellow-400 text-base font-semibold">
-                                          ⭐ {trip.rating || "4.5"}
+                      ⭐ {trip.rating || "4.5"}
                     </span>
                     <span className="text-sm opacity-80 text-white">
                       ({Array.isArray(trip.reviews) ? trip.reviews.length : 0}{" "}

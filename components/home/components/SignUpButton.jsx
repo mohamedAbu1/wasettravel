@@ -12,8 +12,9 @@ import { useTranslation } from "react-i18next";
 import HeaderComponent from "./components/HeaderComponent";
 import FormComponent from "./components/FormComponent";
 import ActionsComponent from "./components/ActionsComponent";
+
 export default function SignUpModal() {
-  const { handleLoginOpen,signUpOpen,handleSignUpClose } = useData();
+  const { handleLoginOpen, signUpOpen, handleSignUpClose } = useData();
   const { themeName } = useTheme();
   const isDark = themeName === "dark";
   const { validateField } = useSecurity();
@@ -23,13 +24,13 @@ export default function SignUpModal() {
   const [gender, setGender] = useState("");
   const { t } = useTranslation("home");
 
-  const { register, loading, loginWithGoogle, open, handleClose } = useAuth();
+  const { register, loading, loginWithGoogle, handleClose } = useAuth();
 
   // 🎨 ألوان واضحة للكتابة حسب الثيم
-  const mainTextColor = isDark ? "#ffffff" : "#1a1a1a"; // النص الأساسي
-  const placeholderColor = isDark ? "#FFD700" : "#3a2c0a"; // الـ placeholder
-  const labelColor = isDark ? "#FFD700" : "#3a2c0a"; // الـ label
-  const borderColor = isDark ? "#FFD700" : "#c9a34a"; // الإطار
+  const mainTextColor = isDark ? "#ffffff" : "#1a1a1a";
+  const placeholderColor = isDark ? "#FFD700" : "#3a2c0a";
+  const labelColor = isDark ? "#FFD700" : "#3a2c0a";
+  const borderColor = isDark ? "#FFD700" : "#c9a34a";
 
   const textFieldStyle = {
     "& .MuiOutlinedInput-root": {
@@ -45,13 +46,13 @@ export default function SignUpModal() {
       letterSpacing: "0.5px",
     },
     "& .MuiInputBase-input": {
-      color: mainTextColor, // لون النص الأساسي
+      color: mainTextColor,
       fontWeight: "600",
       fontSize: "1rem",
       letterSpacing: "0.3px",
     },
     "& .MuiInputBase-input::placeholder": {
-      color: placeholderColor, // لون الـ placeholder
+      color: placeholderColor,
       opacity: 0.8,
       fontStyle: "italic",
     },
@@ -69,22 +70,26 @@ export default function SignUpModal() {
     }
     try {
       await register(email, password, fullName, gender);
-
       toast.success("✅ A confirmation message has been sent to your account.");
-
-      // ✅ أغلق نافذة التسجيل وافتح نافذة تسجيل الدخول
       handleClose();
     } catch (err) {
       toast.error("❌ Error: " + err.message);
     }
   };
 
-
   return (
-    <Dialog open={signUpOpen} onClose={handleSignUpClose} fullWidth maxWidth="sm">
+    <Dialog 
+      open={signUpOpen} 
+      onClose={handleSignUpClose} 
+      fullWidth 
+      maxWidth="sm"
+      aria-labelledby="signup-dialog-title" // ✅ وصف النافذة
+    >
       <motion.div>
         <HeaderComponent isDark={isDark} />
         <DialogContent
+          id="signup-dialog-content"
+          aria-label="Sign up form" // ✅ وصف المحتوى
           style={{
             display: "flex",
             flexDirection: "column",

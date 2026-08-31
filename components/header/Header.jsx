@@ -61,11 +61,11 @@ export default function Header() {
           >
             {userData ? (
               <>
-                <FaSignOutAlt size={20} />
+                <FaSignOutAlt aria-label="Sign Out" size={20} />
               </>
             ) : (
               <>
-                <FaUserPlus size={20} />
+                <FaUserPlus aria-label="Sign in" size={20} />
               </>
             )}
           </Button>

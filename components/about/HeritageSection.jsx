@@ -30,6 +30,8 @@ export default function HeritageSection() {
 
   return (
     <motion.section
+      role="region"
+      aria-label="Egyptian Heritage Section"
       className="relative z-10 pb-20 px-6"
       initial="hidden"
       whileInView="visible"
@@ -45,14 +47,24 @@ export default function HeritageSection() {
         {/* النص */}
         <motion.div variants={fadeLeft} className="flex-1">
           <h3
-            className={`text-2xl font-bold mb-3 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+            role="heading"
+            aria-level={3}
+            aria-label={t("h5")}
+            className={`text-2xl font-bold mb-3 ${
+              themeName === "dark"
+                ? "text-gold"
+                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+            }`}
           >
             {t("h5")}
           </h3>
           <DividerWithIcon />
 
           <p
-            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
+            aria-label="Egyptian heritage description"
+            className={`${
+              themeName === "dark" ? "text-white/80" : "text-[#5c4520]"
+            }`}
           >
             {t("p4")}
           </p>
@@ -64,8 +76,8 @@ export default function HeritageSection() {
           className="flex-1 relative w-full h-56"
         >
           <Image
-            src="/HomePageImage/pexels-axp-photography-500641970-18934598.webp"
-            alt="Egyptian Heritage"
+            src="/iamges/pexels-axp-photography-500641970-18934598.webp"
+            alt="Ancient Egyptian heritage site with Waset Travel"
             fill
             className="object-cover rounded-2xl"
           />

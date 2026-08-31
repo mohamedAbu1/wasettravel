@@ -15,38 +15,70 @@ export default function PrivacyContent({ theme }) {
       className={`${theme.card} shadow-lg p-10 mt-[-4rem] relative z-10 max-w-5xl mx-auto`}
     >
       <article
+        role="article"
+        aria-label="Privacy Policy Content"
         className={`prose max-w-none prose-lg leading-relaxed ${theme.text} flex flex-col gap-3`}
       >
-        <h1 className={`${theme.title} text-3xl pt-5`}>
+        <h1
+          role="heading"
+          aria-level={1}
+          aria-label={t("title")}
+          className={`${theme.title} text-3xl pt-5`}
+        >
           {t("title")}
         </h1>
         <DividerWithIcon />
 
         <p>
-          <strong className="capitalize">{t("effectiveDate", { defaultValue: "Effective date:" })}</strong> {t("effectiveDate")}
+          <strong className="capitalize">
+            {t("effectiveDate", { defaultValue: "Effective date:" })}
+          </strong>{" "}
+          {t("effectiveDate")}
         </p>
         <p>{t("intro")}</p>
-        <>
-          {t("dataUsage")}{" "}
-          {t("consent")}{" "}
-          <Link href="/cancellationPolicy" className="text-blue-500 underline">
+        <p>
+          {t("dataUsage")} {t("consent")}{" "}
+          <Link
+            href="/cancellationPolicy"
+            aria-label="Read our Cancellation Policy"
+            className="text-blue-500 underline"
+          >
             Cancellation Policy
           </Link>
-        </>
-        <DividerWithIcon />
+        </p>
         <DividerWithIcon />
 
-        <h2 className={theme.heading}>
+        {/* Information Collection */}
+        <h2
+          role="heading"
+          aria-level={2}
+          aria-label={t("informationCollection")}
+          className={theme.heading}
+        >
           <strong className="capitalize">{t("informationCollection")}</strong>
         </h2>
         <p>{t("informationCollectionText")}</p>
         <DividerWithIcon />
 
-        <h3 className={theme.heading}>
+        {/* Types of Data */}
+        <h3
+          role="heading"
+          aria-level={3}
+          aria-label={t("typesOfData")}
+          className={theme.heading}
+        >
           <strong className="capitalize">{t("typesOfData")}</strong>
         </h3>
-        <h4 className={theme.subText}>{t("personalData")}</h4>
-        <ul>
+
+        <h4
+          role="heading"
+          aria-level={4}
+          aria-label={t("personalData")}
+          className={theme.subText}
+        >
+          {t("personalData")}
+        </h4>
+        <ul aria-label="List of personal data collected">
           <li>{t("emailAddress")}</li>
           <li>{t("fullName")}</li>
           <li>{t("phoneNumber")}</li>
@@ -54,17 +86,37 @@ export default function PrivacyContent({ theme }) {
           <li>{t("cookiesUsage")}</li>
         </ul>
 
-        <h4 className={theme.subText}>{t("usageData")}</h4>
+        <h4
+          role="heading"
+          aria-level={4}
+          aria-label={t("usageData")}
+          className={theme.subText}
+        >
+          {t("usageData")}
+        </h4>
         <p>{t("usageDataText")}</p>
 
-        <h4 className={theme.subText}>{t("cookiesData")}</h4>
+        <h4
+          role="heading"
+          aria-level={4}
+          aria-label={t("cookiesData")}
+          className={theme.subText}
+        >
+          {t("cookiesData")}
+        </h4>
         <p>{t("cookiesDataText")}</p>
         <DividerWithIcon />
 
-        <h2 className={theme.heading}>
+        {/* Use of Data */}
+        <h2
+          role="heading"
+          aria-level={2}
+          aria-label={t("useOfData")}
+          className={theme.heading}
+        >
           <strong className="capitalize">{t("useOfData")}</strong>
         </h2>
-        <ul>
+        <ul aria-label="List of purposes for using data">
           <li>{t("provideService")}</li>
           <li>{t("notifyChanges")}</li>
           <li>{t("interactiveFeatures")}</li>
@@ -74,13 +126,25 @@ export default function PrivacyContent({ theme }) {
         </ul>
         <DividerWithIcon />
 
-        <h2 className={theme.heading}>
+        {/* Contact Us */}
+        <h2
+          role="heading"
+          aria-level={2}
+          aria-label={t("contactUs")}
+          className={theme.heading}
+        >
           <strong className="capitalize">{t("contactUs")}</strong>
         </h2>
-        <ul>
-          <li><strong>{t("ownerLabel")}</strong> {t("owner")}</li>
-          <li><strong>{t("emailLabel")}</strong> {t("email")}</li>
-          <li><strong>{t("phoneLabel")}</strong> {t("phone")}</li>
+        <ul aria-label="Contact information list">
+          <li>
+            <strong>{t("ownerLabel")}</strong> {t("owner")}
+          </li>
+          <li>
+            <strong>{t("emailLabel")}</strong> {t("email")}
+          </li>
+          <li>
+            <strong>{t("phoneLabel")}</strong> {t("phone")}
+          </li>
         </ul>
       </article>
     </motion.div>

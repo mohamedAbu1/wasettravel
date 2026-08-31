@@ -31,7 +31,9 @@ function CityCard({ city, themeName, theme, language, t }) {
   const router = useRouter();
   const cityName =
     typeof city.name === "object"
-      ? city.name?.[language] || city.name?.["en"] || Object.values(city.name)[0]
+      ? city.name?.[language] ||
+        city.name?.["en"] ||
+        Object.values(city.name)[0]
       : city.name;
 
   const cardRef = useRef(null);
@@ -43,7 +45,7 @@ function CityCard({ city, themeName, theme, language, t }) {
       (entries) => {
         if (entries[0].isIntersecting) setVisible(true);
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
     if (cardRef.current) observer.observe(cardRef.current);
     return () => observer.disconnect();
@@ -53,7 +55,7 @@ function CityCard({ city, themeName, theme, language, t }) {
     const queryObj = {
       city: [cityName],
       category: "all",
-      group_price : "All",
+      group_price: "All",
       popular: false,
     };
     const encoded = encodeData(queryObj);
@@ -61,7 +63,13 @@ function CityCard({ city, themeName, theme, language, t }) {
   };
 
   return (
-    <div ref={cardRef} className="min-w-[250px] p-4">
+    <div
+      ref={cardRef}
+      role="group"
+      aria-label={`City card for ${cityName}`}
+      tabIndex={0}
+      className="min-w-[250px] p-4"
+    >
       <div
         className={`
           relative h-72 rounded-2xl overflow-hidden group cursor-pointer
@@ -73,7 +81,7 @@ function CityCard({ city, themeName, theme, language, t }) {
         {visible && (
           <Image
             src={optimize(city?.images?.[0])}
-            alt={cityName || "City image"}
+            alt={`City view of ${cityName}`} // ✅ وصف أوضح
             fill
             loading="lazy"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
@@ -92,14 +100,15 @@ function CityCard({ city, themeName, theme, language, t }) {
           </p>
           <button
             onClick={handleExplore}
+            aria-label={`Explore trips in ${cityName}`} // ✅ اسم واضح
             className={`
-              opacity-0 group-hover:opacity-100 px-4 py-2 rounded-lg text-sm font-medium transition text-white cursor-pointer
-              ${
-                themeName === "dark"
-                  ? "bg-[#c9a34a] hover:bg-yellow-500"
-                  : "bg-[#c9a34a] hover:bg-[#b5892e]"
-              }
-            `}
+    opacity-0 group-hover:opacity-100 px-4 py-2 rounded-lg text-sm font-medium transition text-white cursor-pointer
+    ${
+      themeName === "dark"
+        ? "bg-[#c9a34a] hover:bg-yellow-500"
+        : "bg-[#c9a34a] hover:bg-[#b5892e]"
+    }
+  `}
           >
             {t("Explore")}
           </button>
@@ -123,8 +132,8 @@ const CitiesSection = () => {
   const looped = [...cities, ...cities];
 
   return (
-   <section
-  className={`
+    <section
+      className={`
     flex py-12 px-6 flex-col w-full mx-auto relative
      ${
        themeName === "dark"
@@ -132,48 +141,50 @@ const CitiesSection = () => {
          : "bg-[#fdf6e3] text-[#3a2c0a]"
      }
   `}
->
-  <div className="max-w-2xl mx-auto mb-16 w-full">
-    <h2
-      className={`
-        text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-wide drop-shadow-md text-center
-        ${
-          themeName === "dark"
-            ? "text-gold"
-            : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-        }
-      `}
     >
-      {t("ExploreCities")}
-    </h2>
-    <DividerWithIcon />
-  </div>
+      <div className="max-w-2xl mx-auto mb-16 w-full">
+        <h2
+          role="heading"
+          aria-level={2}
+          aria-label={t("ExploreCities")}
+          className={`
+    text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-wide drop-shadow-md text-center
+    ${
+      themeName === "dark"
+        ? "text-gold"
+        : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+    }
+  `}
+        >
+          {t("ExploreCities")}
+        </h2>
+        <DividerWithIcon />
+      </div>
 
-  {/* ✅ Marquee Animation */}
-  <div className="relative overflow-hidden w-full max-w-7xl mx-auto h-[410px]">
-    <motion.div
-      className="flex h-full"
-      animate={{ x: ["0%", "-100%"] }}
-      transition={{
-        duration: 20,
-        ease: "linear",
-        repeat: Infinity,
-      }}
-    >
-      {looped.map((city, i) => (
-        <CityCard
-          key={i}
-          city={city}
-          t={t}
-          themeName={themeName}
-          theme={theme}
-          language={normalizedLang}
-        />
-      ))}
-    </motion.div>
-  </div>
-</section>
-
+      {/* ✅ Marquee Animation */}
+      <div className="relative overflow-hidden w-full max-w-7xl mx-auto h-[410px]">
+        <motion.div
+          className="flex h-full"
+          animate={{ x: ["0%", "-100%"] }}
+          transition={{
+            duration: 20,
+            ease: "linear",
+            repeat: Infinity,
+          }}
+        >
+          {looped.map((city, i) => (
+            <CityCard
+              key={i}
+              city={city}
+              t={t}
+              themeName={themeName}
+              theme={theme}
+              language={normalizedLang}
+            />
+          ))}
+        </motion.div>
+      </div>
+    </section>
   );
 };
 

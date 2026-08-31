@@ -31,7 +31,7 @@ export default function HeroSection() {
           >
             <Image
               src={images[index] || "/default-hero.jpg"}
-              alt="WasetTravel Slide"
+              alt="Waset Travel hero background showing Egypt tours"
               fill
               priority // ✅ يجعل الصورة الأساسية تتحمل فورًا
               className="object-cover"

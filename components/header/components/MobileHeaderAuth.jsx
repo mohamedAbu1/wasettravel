@@ -28,12 +28,12 @@ export default function MobileHeaderAuth() {
   return (
     <div>
       {!userData ? (
-        <IconButton onClick={loginWithGoogle} style={{ borderRadius: "15px" }}>
+        <IconButton onClick={loginWithGoogle} aria-label="Google Button" style={{ borderRadius: "15px" }}>
           <FcGoogle size={28} />
         </IconButton>
       ) : (
         <>
-          <IconButton onClick={handleOpenMenu}>
+          <IconButton onClick={handleOpenMenu} aria-label="Avatar Button">
             <Avatar
               src={userData?.avatar_url || userData?.image || "/default-avatar.png"}
               alt={userData?.name}

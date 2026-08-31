@@ -11,12 +11,12 @@ import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
 import { useChat } from "@/context/ChatContext";
 import { useTranslation } from "react-i18next";
+
 export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const { theme, themeName } = useTheme();
-  const { messages, sendMessage, fetchMessages, markMessageSeen } =
-    useMessages();
+  const { messages, sendMessage, fetchMessages, markMessageSeen } = useMessages();
   const [text, setText] = useState("");
-  const { userData } = useAuth(); // ✅ بيانات من AuthContext
+  const { userData } = useAuth();
   const [adminTyping, setAdminTyping] = useState(false);
   const {
     open,
@@ -31,14 +31,12 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   } = useChat();
   const { t } = useTranslation("home");
 
-  // ✅ جلب رسائل المستخدم
   useEffect(() => {
     if (userData?.id) {
       fetchMessages(userData.id);
     }
   }, [userData]);
 
-  // ✅ تحديث حالة الرسائل إلى "seen"
   useEffect(() => {
     if (userData?.id && messages.length > 0) {
       messages.forEach((msg) => {
@@ -48,33 +46,27 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
       });
     }
   }, [userData, messages]);
-  // ✅ فتح الدردشة بعد دقيقتين من تسجيل الدخول
 
   useEffect(() => {
     if (userData?.id) {
       const timer = setTimeout(async () => {
-        setOpen(true); // يفتح نافذة الدردشة
-
-        // ✅ إرسال الرسالة باسم الأدمن وليس المستخدم
+        setOpen(true);
         await sendMessage({
-          user_id: "c7674367-18c9-4d2a-b94c-eb80ac716005", // أو ID الأدمن الحقيقي
+          user_id: "c7674367-18c9-4d2a-b94c-eb80ac716005",
           user_name: "👑 Basttet Travel 👑",
-
           user_image: "/HomePageImage/Copilot_20260613_134423.webp",
           content: t("welcomeMessage", {
             defaultValue:
               "👋 Hello and welcome! The Basttet Travel team is excited to help you plan your next unforgettable journey. How can we assist you today?",
           }),
-          sender_type: "admin", // مهم جداً لتظهر الرسالة بلون الأدمن
+          sender_type: "admin",
           status: "sent",
         });
-      }, 30000); //  نص دقيقه
-
+      }, 30000);
       return () => clearTimeout(timer);
     }
   }, []);
 
-  // ✅ استعلام حالة الكتابة للأدمن
   useEffect(() => {
     if (!userData?.id) return;
     const interval = setInterval(async () => {
@@ -90,8 +82,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
       await sendMessage({
         user_id: userData?.id,
         user_name: userData?.name,
-        user_image:
-          userData?.avatar_url || userData?.image || "/default-avatar.png",
+        user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
         content: text,
         sender_type: "user",
         status: "sent",
@@ -105,32 +96,21 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const handleSendImage = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-
-    // ✅ لازم تبعت بيانات المستخدم مع الصورة
     formData.append("user_id", userData?.id);
     formData.append("user_name", userData?.name || "Unknown User");
-    formData.append(
-      "user_image",
-      userData?.avatar_url || userData?.image || "/default-avatar.png",
-    );
+    formData.append("user_image", userData?.avatar_url || userData?.image || "/default-avatar.png");
     formData.append("sender_type", "user");
-    formData.append("admin_id", "SYSTEM"); // أو أي قيمة مناسبة
+    formData.append("admin_id", "SYSTEM");
 
-    const res = await fetch("/api/messages", {
-      method: "POST",
-      body: formData,
-    });
-
+    const res = await fetch("/api/messages", { method: "POST", body: formData });
     const data = await res.json();
     if (!data.url) return;
 
-    // ✅ الرسالة الجديدة تدخل في الـ context
     await sendMessage({
       user_id: userData?.id,
       user_name: userData?.name,
-      user_image:
-        userData?.avatar_url || userData?.image || "/default-avatar.png",
-      content: data.url, // الرابط النهائي للصورة
+      user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
+      content: data.url,
       sender_type: "user",
       status: "sent",
     });
@@ -144,6 +124,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
           onClick={() => setOpen(!open)}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
+          aria-label="Open chat widget"
           className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg flex items-center justify-center ${theme.buttonPrimary}`}
         >
           <FaComments size={22} color="#fff" />
@@ -153,6 +134,8 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
       <AnimatePresence>
         {open && !isAdmin && (
           <motion.div
+            role="dialog"
+            aria-label="Chat window"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
@@ -160,11 +143,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
           >
             <EgyptianBackground />
             <ChatHeader onClose={() => setOpen(false)} theme={theme} />
-            <ChatMessages
-              messages={messages}
-              adminTyping={adminTyping}
-              themeName={themeName}
-            />
+            <ChatMessages messages={messages} adminTyping={adminTyping} themeName={themeName} />
 
             {bookingMode ? (
               <div className="p-6 rounded-xl shadow-lg bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900">
@@ -175,39 +154,41 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                 <input
                   type="text"
                   placeholder="From"
+                  aria-label="Car booking from location"
                   value={from}
                   onChange={(e) => setFrom(e.target.value)}
                   className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full mb-3 
-               focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
+                  focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
                 />
 
                 <input
                   type="text"
                   placeholder="To"
+                  aria-label="Car booking to location"
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                   className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full mb-3 
-               focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
+                  focus:outline-none focus:ring-2 focus:ring-[#C2A878] dark:bg-gray-700 dark:text-white"
                 />
 
                 <button
                   onClick={() => {
                     const bookingMessage = `🚗 Car booking request from ${from} to ${to}`;
-                    setText(bookingMessage); // ✅ يملأ النص
-                    handleSend(); // يرسل الرسالة للـ backend
+                    setText(bookingMessage);
+                    handleSend();
                     setMessageses((prev) => [
                       ...prev,
                       {
                         sender: "assistant",
-                        content:
-                          "✅ Your request has been recorded. Please select the date and time.",
+                        content: "✅ Your request has been recorded. Please select the date and time.",
                       },
                     ]);
                     setBookingMode(false);
                   }}
+                  aria-label="Confirm car booking request"
                   className="mt-4 w-full px-6 py-3 rounded-lg font-bold text-white 
-               bg-gradient-to-r from-[#C2A878] to-[#eab308] 
-               shadow-md hover:scale-105 transition-transform duration-300"
+                  bg-gradient-to-r from-[#C2A878] to-[#eab308] 
+                  shadow-md hover:scale-105 transition-transform duration-300"
                 >
                   Confirm Booking
                 </button>

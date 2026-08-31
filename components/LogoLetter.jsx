@@ -1,5 +1,5 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 /* Logo Letter Component */
 export default function LogoLetter({ char, theme }) {
@@ -17,6 +17,8 @@ export default function LogoLetter({ char, theme }) {
         WebkitTextFillColor: "transparent",
       }}
       className="relative px-[8px] text-center font-extrabold border-2 rounded-lg transition-transform duration-500"
+      aria-label={char === "𓂀" ? "Eye of Horus symbol" : `Letter ${char}`} // ✅ اسم واضح لكل حرف أو رمز
+      title={char === "𓂀" ? "Eye of Horus symbol" : `Letter ${char}`} // ✅ Tooltip يظهر عند المرور
     >
       {char}
     </motion.span>

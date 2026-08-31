@@ -8,13 +8,13 @@ export default function CancelButton({ trip }) {
   const { cancelTrip } = usePurchase();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { userData } = useAuth(); // ✅ جلب المستخدم الحالي
+  const { userData } = useAuth();
 
   const cancelBooking = async () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await cancelTrip(trip.id,userData.id);
+      const result = await cancelTrip(trip.id, userData.id);
       if (result.success) {
         toast.success("✅ Booking cancelled successfully!");
       } else {
@@ -31,12 +31,16 @@ export default function CancelButton({ trip }) {
       <button
         onClick={cancelBooking}
         disabled={loading}
-               className="fixed bottom-6 left-6 px-6 py-3 rounded-xl font-semibold shadow-lg flex items-center gap-2 transition transform hover:scale-105 hover:shadow-2xl z-40 text-white cursor-pointer bg-gradient-to-r from-red-500 to-red-600"
-
+        aria-label={loading ? "Cancelling booking" : "Cancel this booking"}
+        className="fixed bottom-6 left-6 px-6 py-3 rounded-xl font-semibold shadow-lg flex items-center gap-2 transition transform hover:scale-105 hover:shadow-2xl z-40 text-white cursor-pointer bg-gradient-to-r from-red-500 to-red-600"
       >
         {loading ? "Cancelling..." : "❌ Cancel Booking"}
       </button>
-      {error && <p className="text-red-500 mt-2">Error: {error}</p>}
+      {error && (
+        <p role="alert" aria-live="assertive" className="text-red-500 mt-2">
+          Error: {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -3,8 +3,8 @@ import { FaGooglePlay, FaApple, FaGlobe, FaMapMarkedAlt } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 export default function DownloadAppSection() {
-    const { t } = useTranslation("home");
-  
+  const { t } = useTranslation("home");
+
   return (
     <section className="w-full flex lg:hidden flex-col items-center justify-center gap-6 py-12 backdrop-blur-[2px] rounded-xl shadow-lg">
       {/* Title */}
@@ -22,6 +22,7 @@ export default function DownloadAppSection() {
           href="https://play.google.com/store/apps/details?id=your_app_id"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Download on Google Play"
           className="flex items-center w-[280px] gap-2 px-6 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-all"
         >
           <FaGooglePlay size={22} />
@@ -33,6 +34,7 @@ export default function DownloadAppSection() {
           href="https://apps.apple.com/app/your_app_id"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Download on Apple App Store"
           className="flex items-center w-[280px] gap-2 px-6 py-3 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 transition-all"
         >
           <FaApple size={22} />
@@ -44,6 +46,7 @@ export default function DownloadAppSection() {
           href="https://www.viator.com/your_page_link"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Visit our Viator page"
           className="flex items-center w-[280px] gap-2 px-6 py-3 bg-[#c9a34a] text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all"
         >
           <FaGlobe size={22} />
@@ -52,9 +55,10 @@ export default function DownloadAppSection() {
 
         {/* Tripadvisor Button */}
         <a
-          href="https://www.tripadvisor.com/UserReviewEdit-g294205-d34511536-Waset_Travel-Luxor_Nile_River_Valley.html"
+          href="https://www.tripadvisor.com/Attraction_Review-g294205-d34511536-Reviews-Waset_Travel-Luxor_Nile_River_Valley.html"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Read reviews on Tripadvisor"
           className="flex items-center w-[280px] text-center gap-2 px-6 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow-md hover:bg-teal-700 transition-all"
         >
           <FaMapMarkedAlt size={22} />

@@ -118,7 +118,7 @@ const BookingCalendar = ({ trip,id }) => {
             Please add participants to view available dates
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Select the number of adults or children to continue booking.
+            Select the number of adults to continue booking.
           </p>
         </div>
       ) : (

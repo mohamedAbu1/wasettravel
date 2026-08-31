@@ -55,7 +55,9 @@ function CategoryCard({ cat, themeName, language }) {
     const queryObj = {
       city: "all",
       category: [displayName],
-      price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(displayName)
+      price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(
+        displayName,
+      )
         ? "Luxury"
         : "All",
       popular: false,
@@ -68,13 +70,16 @@ function CategoryCard({ cat, themeName, language }) {
     <div
       ref={cardRef}
       onClick={handleClick}
+      aria-label={`View trips in category ${displayName}`} // ✅ اسم واضح
+      role="button" // ✅ يوضح إنها زر
+      tabIndex={0} // ✅ يخليها قابلة للتركيز بالكيبورد
       className={`relative rounded-2xl overflow-hidden group cursor-pointer h-[280px] sm:h-[320px]
-        transition-all duration-500 hover:scale-[1.06] hover:shadow-2xl
-        ${
-          themeName === "dark"
-            ? "bg-[#1a1a1a] border border-gold/20 shadow-lg"
-            : "bg-[#fff8e1] border border-[#c9a34a]/30 shadow-md"
-        }`}
+    transition-all duration-500 hover:scale-[1.06] hover:shadow-2xl
+    ${
+      themeName === "dark"
+        ? "bg-[#1a1a1a] border border-gold/20 shadow-lg"
+        : "bg-[#fff8e1] border border-[#c9a34a]/30 shadow-md"
+    }`}
     >
       <AnimatePresence mode="sync">
         {visible && (
@@ -88,8 +93,7 @@ function CategoryCard({ cat, themeName, language }) {
           >
             <Image
               src={optimize(cat.images[imgIndex])}
-              alt={displayName}
-              fill
+              alt={`Category image for ${displayName}`} // ✅ وصف أوضح              fill
               loading="lazy"
               className="object-cover rounded-lg"
             />
@@ -157,7 +161,10 @@ const CategoriesSection = () => {
   const looped = [...categories, ...categories, ...categories];
 
   // حساب الإزاحة بحيث الكارد الحالي يكون في منتصف الشاشة
-  const offset = (containerWidth / 2) - (cardWidth / 2) - (index % categories.length) * cardWidth;
+  const offset =
+    containerWidth / 2 -
+    cardWidth / 2 -
+    (index % categories.length) * cardWidth;
 
   return (
     <section
@@ -167,19 +174,27 @@ const CategoriesSection = () => {
     >
       <div className="max-w-7xl mx-auto mb-10 text-start">
         <h2
+          role="heading"
+          aria-level={2}
+          aria-label={t("ExploreCategories")}
           className={`text-3xl sm:text-5xl font-extrabold tracking-wide drop-shadow-md text-left
-            ${themeName === "dark"
-              ? "text-gold"
-              : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}
-          `}
-        >
-          {t("ExploreCategories")}
-        </h2>
-        <p className="mt-4 text-base sm:text-lg opacity-80 text-start">{t("Discover")}</p>
+    ${
+      themeName === "dark"
+        ? "text-gold"
+        : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+    }
+  `}
+        ></h2>
+        <p className="mt-4 text-base sm:text-lg opacity-80 text-start">
+          {t("Discover")}
+        </p>
         <DividerWithIcon />
       </div>
 
-      <div ref={containerRef} className="relative overflow-hidden w-full max-w-7xl mx-auto">
+      <div
+        ref={containerRef}
+        className="relative overflow-hidden w-full max-w-7xl mx-auto"
+      >
         <motion.div
           className="flex h-full cursor-grab active:cursor-grabbing"
           animate={{ x: offset }}
@@ -203,7 +218,5 @@ const CategoriesSection = () => {
     </section>
   );
 };
-
-
 
 export default CategoriesSection;

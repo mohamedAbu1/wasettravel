@@ -25,13 +25,21 @@ export default function AboutHero() {
             {t("AboutWasetTravel")}
           </p>
           <DividerWithIcon />
-          <h1
-            className={`text-4xl lg:text-5xl font-extrabold leading-tight ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
-          >
-            {t("h1")}
-          </h1>
+       <h1
+  role="heading"
+  aria-level={1}
+  aria-label={t("h1")}
+  className={`text-4xl lg:text-5xl font-extrabold leading-tight ${
+    themeName === "dark"
+      ? "text-gold"
+      : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+  }`}
+>
+  {t("h1")}
+</h1>
           <DividerWithIcon />
           <p
+            aria-label="About Waset Travel introduction"
             className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"} text-lg`}
           >
             Welcome to Waset Travel, your trusted gateway to discovering the
@@ -71,7 +79,7 @@ export default function AboutHero() {
         >
           <Image
             src="/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp"
-            alt="WasetTravel Luxury Experience"
+              alt="Travelers exploring Egypt with Waset Travel"
             fill
             className="object-cover"
           />

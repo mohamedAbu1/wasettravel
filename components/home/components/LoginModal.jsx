@@ -12,7 +12,7 @@ import { MdEmail, MdLock } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
-import { useAuth } from "@/context/AuthContext"; // ✅ استخدام AuthContext
+import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import { useSecurity } from "@/context/SecurityContext";
 import { useTranslation } from "react-i18next";
@@ -26,11 +26,9 @@ export default function LoginModal() {
   const [password, setPassword] = useState("");
   const { t } = useTranslation("home");
 
-  // ✅ جلب الدوال من AuthContext
   const { login, loginWithGoogle, loading, handleClose } = useAuth();
   const { validateField } = useSecurity();
 
-  // ✅ تسجيل الدخول بالبريد وكلمة المرور
   const handleSubmit = useCallback(async () => {
     const emailError = validateField("email", email);
     const passwordError = validateField("password", password);
@@ -51,7 +49,13 @@ export default function LoginModal() {
   }, [email, password, validateField, login, handleLoginClose, handleClose]);
 
   return (
-    <Dialog open={loginOpen} onClose={handleLoginClose} fullWidth maxWidth="sm">
+    <Dialog 
+      open={loginOpen} 
+      onClose={handleLoginClose} 
+      fullWidth 
+      maxWidth="sm"
+      aria-labelledby="login-dialog-title" // ✅ وصف النافذة
+    >
       <motion.div
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -70,6 +74,8 @@ export default function LoginModal() {
         {/* Header */}
         <div style={{ textAlign: "center", padding: "28px 0 16px" }}>
           <h2
+            id="login-dialog-title"
+            aria-label="Login form title"
             style={{
               fontFamily: "Cinzel, serif",
               fontSize: "40px",
@@ -88,6 +94,7 @@ export default function LoginModal() {
 
         {/* Content */}
         <DialogContent
+          aria-label="Login form content"
           style={{
             display: "flex",
             flexDirection: "column",
@@ -97,6 +104,7 @@ export default function LoginModal() {
         >
           <TextField
             label={t("Email")}
+            aria-label="Email address"
             type="email"
             fullWidth
             value={email}
@@ -112,6 +120,7 @@ export default function LoginModal() {
 
           <TextField
             label={t("Password")}
+            aria-label="Password"
             type="password"
             fullWidth
             value={password}
@@ -132,7 +141,8 @@ export default function LoginModal() {
           {/* Social Buttons */}
           <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
             <IconButton
-              onClick={loginWithGoogle} // ✅ استدعاء الدالة من AuthContext
+              onClick={loginWithGoogle}
+              aria-label="Sign in with Google"
               style={{
                 width: "280px",
                 height: "56px",
@@ -162,6 +172,7 @@ export default function LoginModal() {
               fullWidth
               onClick={handleSubmit}
               disabled={loading}
+              aria-label="Submit login form"
               style={{
                 marginTop: "12px",
                 background: "linear-gradient(to right, #c9a34a, #eab308)",
@@ -184,6 +195,7 @@ export default function LoginModal() {
               handleLoginClose();
               handleSignUpOpen();
             }}
+            aria-label="Go to sign up form"
             style={{
               marginTop: "8px",
               color: "#c9a34a",

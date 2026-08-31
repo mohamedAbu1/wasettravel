@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useAuth } from "@/context/AuthContext";
-import {  } from "next-auth/react"; // ✅ إضافة NextAuth
+import {} from "next-auth/react"; // ✅ إضافة NextAuth
 
 const CarBookingSection = () => {
   const { themeName } = useTheme();
@@ -60,7 +60,7 @@ const CarBookingSection = () => {
       <div className="absolute inset-0 -z-10">
         <Image
           src="/HomePageImage/Copilot_20251003_105735.webp"
-          alt="Luxury Car Background"
+          alt="Background image showing luxury car transfer" // ✅ وصف أوضح
           fill
           className="object-cover opacity-20 rounded-lg"
           priority // ✅ لو الصورة أساسية في الصفحة (خلفية أو Hero)
@@ -106,7 +106,7 @@ const CarBookingSection = () => {
         >
           <Image
             src="/HomePageImage/car-png-39057.png"
-            alt="Luxury Car"
+            alt="Luxury car illustration" // ✅ وصف أوضح
             fill
             className="object-contain drop-shadow-2xl"
             priority // ✅ لو الصورة أساسية في الصفحة (مثلاً Hero أو خلفية مهمة)
@@ -120,6 +120,9 @@ const CarBookingSection = () => {
           className="flex-1 text-center lg:text-left"
         >
           <h2
+            role="heading"
+            aria-level={2}
+            aria-label={t("PremiumCarTransfer")}
             className={`text-5xl font-extrabold tracking-wide drop-shadow-md flex items-center gap-3 justify-center lg:justify-start ${
               themeName === "dark"
                 ? "text-gold"
@@ -128,11 +131,16 @@ const CarBookingSection = () => {
           >
             {t("PremiumCarTransfer")}
           </h2>
+
           <DividerWithIcon />
 
-          <p className="mt-6 text-lg opacity-80 leading-relaxed max-w-xl">
+          <p
+            aria-label="Description of premium car transfer service"
+            className="mt-6 text-lg opacity-80 leading-relaxed max-w-xl"
+          >
             {t("Experience")}
           </p>
+
           {userData ? (
             // ✅ زر الحجز يظهر فقط إذا كان فيه مستخدم
             <motion.button
@@ -141,6 +149,7 @@ const CarBookingSection = () => {
               onClick={() => {
                 window.dispatchEvent(new CustomEvent("openCarBookingChat"));
               }}
+              aria-label="Book your premium car transfer" // ✅ اسم واضح
               className={`mt-8 inline-block px-10 py-4 rounded-full font-bold text-lg shadow-xl transition-transform transform hover:scale-105 ${
                 themeName === "dark"
                   ? "bg-amber-300 text-black hover:bg-yellow-500"

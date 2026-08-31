@@ -25,6 +25,8 @@ export default function MissionValues() {
 
   return (
     <motion.section
+      role="region"
+      aria-label="Mission and Values Section"
       className="relative z-10 py-8 px-6"
       initial="hidden"
       whileInView="visible"
@@ -35,6 +37,7 @@ export default function MissionValues() {
         variants={staggerContainer}
         className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8"
       >
+        {/* Mission */}
         <motion.div
           variants={fadeUp}
           className={`rounded-2xl p-6 border ${
@@ -44,12 +47,20 @@ export default function MissionValues() {
           }`}
         >
           <h3
-            className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+            role="heading"
+            aria-level={3}
+            aria-label={t("h3")}
+            className={`text-xl font-bold mb-2 ${
+              themeName === "dark"
+                ? "text-gold"
+                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+            }`}
           >
             {t("h3")}
           </h3>
           <DividerWithIcon />
           <p
+            aria-label="Mission statement text"
             className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
           >
             {t("p2")}
@@ -57,6 +68,7 @@ export default function MissionValues() {
           <DividerWithIcon />
         </motion.div>
 
+        {/* Values */}
         <motion.div
           variants={fadeUp}
           className={`rounded-2xl p-6 border ${
@@ -66,13 +78,20 @@ export default function MissionValues() {
           }`}
         >
           <h3
-            className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+            role="heading"
+            aria-level={3}
+            aria-label={t("h2")}
+            className={`text-xl font-bold mb-2 ${
+              themeName === "dark"
+                ? "text-gold"
+                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+            }`}
           >
             {t("h2")}
           </h3>
           <DividerWithIcon />
-
           <p
+            aria-label="Values description text"
             className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
           >
             {t("li")}
@@ -80,6 +99,7 @@ export default function MissionValues() {
           <DividerWithIcon />
         </motion.div>
 
+        {/* Vision */}
         <motion.div
           variants={fadeUp}
           className={`rounded-2xl p-6 border ${
@@ -89,13 +109,20 @@ export default function MissionValues() {
           }`}
         >
           <h3
-            className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+            role="heading"
+            aria-level={3}
+            aria-label={t("h4")}
+            className={`text-xl font-bold mb-2 ${
+              themeName === "dark"
+                ? "text-gold"
+                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+            }`}
           >
             {t("h4")}
           </h3>
           <DividerWithIcon />
-
           <p
+            aria-label="Vision statement text"
             className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
           >
             {t("p3")}

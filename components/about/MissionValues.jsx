@@ -2,20 +2,18 @@
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import DividerWithIcon from "../layout/DividerWithIcon";
+import dynamic from "next/dynamic";
+
+// ✅ Lazy load للمكون DividerWithIcon
+const DividerWithIcon = dynamic(() => import("../layout/DividerWithIcon"), { ssr: false });
 
 export default function MissionValues() {
   const { themeName } = useTheme();
   const { t } = useTranslation("about");
 
-  // ✨ إعدادات الأنيميشن
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
 
   const staggerContainer = {
@@ -38,93 +36,36 @@ export default function MissionValues() {
         className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8"
       >
         {/* Mission */}
-        <motion.div
-          variants={fadeUp}
-          className={`rounded-2xl p-6 border ${
-            themeName === "dark"
-              ? "border-gold/25 bg-black/30"
-              : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
-          }`}
-        >
-          <h3
-            role="heading"
-            aria-level={3}
-            aria-label={t("h3")}
-            className={`text-xl font-bold mb-2 ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }`}
-          >
+        <motion.div variants={fadeUp} className={`rounded-2xl p-6 border ${themeName === "dark" ? "border-gold/25 bg-black/30" : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"}`}>
+          <h3 role="heading" aria-level={3} aria-label={t("h3")} className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}>
             {t("h3")}
           </h3>
           <DividerWithIcon />
-          <p
-            aria-label="Mission statement text"
-            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
-          >
+          <p aria-label="Mission statement text" className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}>
             {t("p2")}
           </p>
           <DividerWithIcon />
         </motion.div>
 
         {/* Values */}
-        <motion.div
-          variants={fadeUp}
-          className={`rounded-2xl p-6 border ${
-            themeName === "dark"
-              ? "border-gold/25 bg-black/30"
-              : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
-          }`}
-        >
-          <h3
-            role="heading"
-            aria-level={3}
-            aria-label={t("h2")}
-            className={`text-xl font-bold mb-2 ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }`}
-          >
+        <motion.div variants={fadeUp} className={`rounded-2xl p-6 border ${themeName === "dark" ? "border-gold/25 bg-black/30" : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"}`}>
+          <h3 role="heading" aria-level={3} aria-label={t("h2")} className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}>
             {t("h2")}
           </h3>
           <DividerWithIcon />
-          <p
-            aria-label="Values description text"
-            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
-          >
+          <p aria-label="Values description text" className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}>
             {t("li")}
           </p>
           <DividerWithIcon />
         </motion.div>
 
         {/* Vision */}
-        <motion.div
-          variants={fadeUp}
-          className={`rounded-2xl p-6 border ${
-            themeName === "dark"
-              ? "border-gold/25 bg-black/30"
-              : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"
-          }`}
-        >
-          <h3
-            role="heading"
-            aria-level={3}
-            aria-label={t("h4")}
-            className={`text-xl font-bold mb-2 ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }`}
-          >
+        <motion.div variants={fadeUp} className={`rounded-2xl p-6 border ${themeName === "dark" ? "border-gold/25 bg-black/30" : "border-[#c9a34a]/25 bg-white/60 backdrop-blur-sm"}`}>
+          <h3 role="heading" aria-level={3} aria-label={t("h4")} className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}>
             {t("h4")}
           </h3>
           <DividerWithIcon />
-          <p
-            aria-label="Vision statement text"
-            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
-          >
+          <p aria-label="Vision statement text" className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}>
             {t("p3")}
           </p>
           <DividerWithIcon />

@@ -3,13 +3,17 @@ import React from "react";
 import { motion } from "framer-motion";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import Header from "@/components/header/Header";
-import TestimonialsSection from "@/components/b2b/TestimonialsSection";
 import Footer from "@/components/Footer/Footer";
 import { useTheme } from "@/context/ThemeContext";
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaTiktok } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-import Head from "next/head";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+import SeoHead from "@/components/layout/SeoHead";
+
+// ✅ Lazy load components غير حرجة
+const TestimonialsSection = dynamic(() => import("@/components/b2b/TestimonialsSection"), { ssr: false });
+const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr: false });
 
 const B2bPage = () => {
   const { theme, themeName } = useTheme();
@@ -24,13 +28,11 @@ const B2bPage = () => {
 
   return (
     <>
-      <Head>
-        <title>B2B Travel Management Partner in Egypt</title>
-        <meta
-          name="description"
-          content="Discover Waset Travel B2B services: guided tours, transportation, accommodations, and Nile cruises tailored for your clients."
-        />
-      </Head>
+      <SeoHead
+        title="B2B Travel Management Partner in Egypt"
+        description="Discover Waset Travel B2B services: guided tours, transportation, accommodations, and Nile cruises tailored for your clients."
+        image="/cover.jpg"
+      />
 
       <main className={`${theme.background} ${theme.text}`}>
         {/* Hero Section */}
@@ -171,6 +173,7 @@ const B2bPage = () => {
                 height={300}
                 quality={75}
                 sizes="(max-width: 768px) 100vw, 400px"
+                loading="lazy"
                 placeholder="blur"
                 blurDataURL="/iamges/blur-placeholder.jpg"
                 className="rounded-lg shadow-lg object-cover"
@@ -185,6 +188,7 @@ const B2bPage = () => {
         </div>
 
         <Footer />
+        <ChatWidget />
       </main>
     </>
   );

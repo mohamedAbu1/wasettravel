@@ -7,26 +7,31 @@ import NavBar from "./components/NavBar";
 import RightBar from "./components/RightBar";
 import Button from "@mui/material/Button";
 import { useAuth } from "@/context/AuthContext";
-import { FaSignOutAlt, FaUserPlus } from "react-icons/fa";
 import { useData } from "@/context/DataContext";
-import { signOut, signIn } from "next-auth/react"; // ✅ إضافة
+import { signOut } from "next-auth/react"; 
 import MobileHeaderAuth from "./components/MobileHeaderAuth";
 import ThemeToggle from "../ThemeToggle";
+import dynamic from "next/dynamic";
+
+// ✅ Lazy load للأيقونات
+const FaSignOutAlt = dynamic(() => import("react-icons/fa").then(mod => mod.FaSignOutAlt), { ssr: false });
+const FaUserPlus = dynamic(() => import("react-icons/fa").then(mod => mod.FaUserPlus), { ssr: false });
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { theme } = useTheme();
-  const { logout, handleOpen, userData } = useAuth();
+  const { userData } = useAuth();
   const { handleLoginOpen } = useData();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true }); // ✅ تحسين الأداء
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <motion.header
+      role="banner" // ✅ تحسين الـ accessibility
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
@@ -41,9 +46,10 @@ export default function Header() {
         <NavBar scrolled={scrolled} />
         <RightBar scrolled={scrolled} />
 
-        {/* ✅ Show button depending on userData */}
+        {/* ✅ زر تسجيل الدخول/الخروج */}
         <motion.div whileHover={{ scale: 1.1 }} className="hidden lg:flex">
           <Button
+            aria-label={userData ? "Sign out" : "Sign in"} // ✅ تحسين الـ accessibility
             onClick={userData ? () => signOut() : () => handleLoginOpen()}
             style={{
               padding: "12px 24px",
@@ -59,19 +65,11 @@ export default function Header() {
               gap: "8px",
             }}
           >
-            {userData ? (
-              <>
-                <FaSignOutAlt aria-label="Sign Out" size={20} />
-              </>
-            ) : (
-              <>
-                <FaUserPlus aria-label="Sign in" size={20} />
-              </>
-            )}
+            {userData ? <FaSignOutAlt size={20} /> : <FaUserPlus size={20} />}
           </Button>
         </motion.div>
-        <ThemeToggle scrolled={scrolled} />
 
+        <ThemeToggle scrolled={scrolled} />
         <MobileHeaderAuth />
       </div>
     </motion.header>

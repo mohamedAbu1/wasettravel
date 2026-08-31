@@ -1,15 +1,12 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import DividerWithIcon from "../layout/DividerWithIcon";
 
 export default function CTASection() {
   const { themeName } = useTheme();
   const { t } = useTranslation("about");
 
-  // ✨ إعدادات الأنيميشن
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } }
@@ -28,10 +25,7 @@ export default function CTASection() {
       viewport={{ once: true, amount: 0.3 }}
       variants={staggerContainer}
     >
-      <motion.div
-        variants={staggerContainer}
-        className="max-w-7xl mx-auto text-center"
-      >
+      <motion.div variants={staggerContainer} className="max-w-7xl mx-auto text-center">
         <motion.h4
           variants={fadeUp}
           className={`text-xl font-semibold mb-3 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}

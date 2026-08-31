@@ -1,9 +1,15 @@
 "use client";
-import { Swiper, SwiperSlide } from "swiper/react";
+import dynamic from "next/dynamic";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { useTheme } from "@/context/ThemeContext";
+import Image from "next/image";
+import { FaStar } from "react-icons/fa";
+
+// ✅ Lazy load للـ Swiper
+const Swiper = dynamic(() => import("swiper/react").then(mod => mod.Swiper), { ssr: false });
+const SwiperSlide = dynamic(() => import("swiper/react").then(mod => mod.SwiperSlide), { ssr: false });
 
 const testimonials = [
   {
@@ -27,15 +33,11 @@ const testimonials = [
 ];
 
 export default function TestimonialsSection() {
-  const { theme } = useTheme(); // ✅ استدعاء الثيم
+  const { theme } = useTheme();
 
   return (
-    <section className={`py-10 px-6 rounded-lg ${theme.card} ${theme.shadow}`}>
-      <Swiper
-        navigation={true}
-        modules={[Navigation]}
-        className="max-w-4xl mx-auto text-center"
-      >
+    <section aria-label="Customer Testimonials" className={`py-10 px-6 rounded-lg ${theme.card} ${theme.shadow}`}>
+      <Swiper navigation={true} modules={[Navigation]} className="max-w-4xl mx-auto text-center">
         {testimonials.map((item, index) => (
           <SwiperSlide key={index}>
             <div className="flex flex-col items-center space-y-4">
@@ -43,21 +45,22 @@ export default function TestimonialsSection() {
               <p className={`italic max-w-2xl ${theme.text}`}>{item.text}</p>
               <div className={`text-4xl ${theme.icon}`}>”</div>
 
-              {/* النجوم */}
+              {/* النجوم باستخدام react-icons */}
               <div className="flex justify-center text-yellow-400 text-xl">
-                {Array(item.rating)
-                  .fill()
-                  .map((_, i) => (
-                    <span key={i}>★</span>
-                  ))}
+                {Array(item.rating).fill().map((_, i) => (
+                  <FaStar key={i} />
+                ))}
               </div>
 
               {/* معلومات المستخدم */}
               <div className="flex items-center gap-3 mt-2">
-                <img
+                <Image
                   src={item.image}
                   alt={item.name}
-                  className="w-10 h-10 rounded-full object-cover border border-[#C9A34A]"
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover border border-[#C9A34A]"
+                  loading="lazy"
                 />
                 <div className={`text-sm ${theme.subText}`}>
                   <p className="font-semibold">{item.name}</p>

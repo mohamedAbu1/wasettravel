@@ -1,7 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
-import DividerWithIcon from "../layout/DividerWithIcon";
+import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
+
+// ✅ Lazy load للمكون DividerWithIcon
+const DividerWithIcon = dynamic(() => import("../layout/DividerWithIcon"), { ssr: false });
 
 export default function CancellationPolicyContent({ theme }) {
   const { t } = useTranslation("cancellationPolicy");
@@ -18,12 +21,7 @@ export default function CancellationPolicyContent({ theme }) {
         aria-label="Cancellation Policy Content"
         className={`prose max-w-none prose-lg leading-relaxed ${theme.text} flex flex-col gap-3`}
       >
-        <h1
-          role="heading"
-          aria-level={1}
-          aria-label={t("title")}
-          className={`${theme.title} text-3xl pt-5 capitalize`}
-        >
+        <h1 role="heading" aria-level={1} aria-label={t("title")} className={`${theme.title} text-3xl pt-5 capitalize`}>
           {t("title")}
         </h1>
         <DividerWithIcon />

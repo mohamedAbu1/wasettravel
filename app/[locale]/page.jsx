@@ -7,38 +7,42 @@ import CitiesSection from "@/components/home/CitiesSection";
 import HeroSection from "@/components/home/HeroSection";
 import OurSection from "@/components/home/OurSection";
 import TopTripsSection from "@/components/home/TopTripsSection";
-import LoginModal from "@/components/home/components/LoginModal";
 import TopReviewsSection from "@/components/home/components/TopReviewsSection";
-import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
-import Head from "next/head";
 import { useLanguage } from "@/context/LanguageContext";
 import { homeMetadata } from "@/lib/metadata/home";
-import CurrencySelector from "@/components/layout/CurrencySelector";
-import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
-import SignUpModal from "@/components/home/components/SignUpButton";
 import { useEffect, useState } from "react";
-import AdminChatWindow from "@/components/layout/AdminChatWindow";
 import { useMessages } from "@/context/MessageContext";
 import SeoHead from "@/components/layout/SeoHead";
+import dynamic from "next/dynamic";
+
+// ✅ Lazy load components غير حرجة
+const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr: false });
+const CurrencySelector = dynamic(() => import("@/components/layout/CurrencySelector"), { ssr: false });
+const AdminDashboardButton = dynamic(() => import("@/components/layout/AdminDashboardButton"), { ssr: false });
+const AdminChatWindow = dynamic(() => import("@/components/layout/AdminChatWindow"), { ssr: false });
+const LoginModal = dynamic(() => import("@/components/home/components/LoginModal"), { ssr: false });
+const SignUpModal = dynamic(() => import("@/components/home/components/SignUpButton"), { ssr: false });
 
 export default function Home() {
-  const { userData, chatUser, setChatUser,  } = useAuth(); // ✅ جلب المستخدم الحالي من الـ API
+  const { userData, chatUser, setChatUser } = useAuth();
   const { lang } = useLanguage();
   const meta = homeMetadata[lang] || homeMetadata.en;
   const [dbStatus, setDbStatus] = useState(null);
-  const { messages, fetchUserMessagesById, sendMessage } = useMessages();
+  const { messages } = useMessages();
 
   useEffect(() => {
-    async function checkConnection() {
-      const res = await fetch("/api/testConnection");
-      const data = await res.json();
-      setDbStatus(data);
-    }
-    checkConnection();
+    // ✅ تأجيل الاتصال بقاعدة البيانات لتقليل الضغط في أول تحميل
+    const timer = setTimeout(() => {
+      async function checkConnection() {
+        const res = await fetch("/api/testConnection");
+        const data = await res.json();
+        setDbStatus(data);
+      }
+      checkConnection();
+    }, 2000);
+    return () => clearTimeout(timer);
   }, []);
-
-  // ✅ دمج بيانات المستخدم من AuthContext و NextAuth
 
   return (
     <>
@@ -46,14 +50,14 @@ export default function Home() {
         title={meta.title}
         description={meta.description}
         keywords={meta.keywords}
-        image="/cover.jpg" // صورة افتراضية للصفحة
+        image="/cover.jpg"
       />
       <main
         className={`
-        w-full flex flex-col items-center justify-center
-        min-h-screen font-sans bg-white transition-colors duration-300
-        overflow-hidden
-      `}
+          w-full flex flex-col items-center justify-center
+          min-h-screen font-sans bg-white transition-colors duration-300
+          overflow-hidden
+        `}
       >
         <Header />
 
@@ -71,19 +75,23 @@ export default function Home() {
 
         <OurSection />
         <TopReviewsSection />
-
         <CarBookingSection />
 
         {/* ================= FOOTER ================= */}
         <Footer />
+
+        {/* ✅ Lazy loaded components */}
         <SignUpModal />
         <LoginModal />
-
-        {/* نافذة الدردشة تظهر فقط لو المستخدم مسجل دخول */}
         {userData && <ChatWidget />}
         {userData && <AdminDashboardButton />}
         {chatUser && (
-          <AdminChatWindow user={chatUser} admin={userData} messages={messages} onClose={() => setChatUser(null)} />
+          <AdminChatWindow
+            user={chatUser}
+            admin={userData}
+            messages={messages}
+            onClose={() => setChatUser(null)}
+          />
         )}
         <CurrencySelector />
       </main>

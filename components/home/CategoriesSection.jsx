@@ -189,7 +189,7 @@ const CategoriesSection = () => {
         : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
     }
   `}
-        ></h2>
+        >{t("ExploreCategories")}</h2>
         <p className="mt-4 text-base sm:text-lg opacity-80 text-start">
           {t("Discover")}
         </p>

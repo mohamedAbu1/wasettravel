@@ -3,9 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: [
-      "dxpbyrcbklqrjlytmkum.supabase.co", // دومين Supabase
-      "lkwlrezhuxercfvtjiiw.supabase.co", // دومين Supabase إضافي
-      "wasettravel.com", // موقعك
+      "dxpbyrcbklqrjlytmkum.supabase.co",
+      "lkwlrezhuxercfvtjiiw.supabase.co",
+      "wasettravel.com",
     ],
     remotePatterns: [
       {
@@ -14,6 +14,10 @@ const nextConfig = {
         pathname: "/images/**",
       },
     ],
+  },
+  experimental: {
+    legacyBrowsers: false, // ✅ يمنع إضافة polyfills للمتصفحات القديمة
+    browsersListForSwc: true, // ✅ يعتمد على إعدادات browserslist
   },
 };
 

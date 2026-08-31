@@ -74,6 +74,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^16.1.6",
     "babel-plugin-react-compiler": "1.0.0",
+    "cssnano": "^8.0.10",
     "eslint": "^9.39.2",
     "eslint-config-next": "^15.5.12",
     "eslint-plugin-react-hooks-extra": "^2.12.4"

@@ -16,7 +16,6 @@ import TripItinerary from "./components/TripItinerary";
 import TripReviews from "./components/TripReviews";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
-import PurchaseButton from "./components/PurchaseButton";
 import CancelButton from "./components/CancelButton";
 import { usePurchase } from "@/context/PurchaseContext";
 import AccessibilityInfo from "./components/components/AccessibilityInfo";
@@ -55,6 +54,11 @@ export default function TripPage({ params }) {
   );
 
   return (
+    <>
+    <Head>
+  <title>{trip.title?.[lang] || trip.title?.en}</title>
+  <meta name="description" content={trip.description?.[lang] || trip.description?.en} />
+</Head>
     <main className={`min-h-screen relative ${theme.text}`}>
       <Header />
       <EgyptianBackground />
@@ -186,5 +190,6 @@ export default function TripPage({ params }) {
         />
       )}
     </main>
+    </>
   );
 }

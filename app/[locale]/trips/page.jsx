@@ -22,6 +22,7 @@ import CurrencySelector from "../../../components/layout/CurrencySelector";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import AdminChatWindow from "@/components/layout/AdminChatWindow";
 import { usePurchase } from "@/context/PurchaseContext";
+import SeoHead from "@/components/layout/SeoHead";
 export default function TripsPage() {
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const {
@@ -159,16 +160,12 @@ export default function TripsPage() {
 
   return (
     <>
-      <Head>
-        <title>{meta.title}</title>
-        <meta name="description" content={meta.description} />
-        <meta name="keywords" content={meta.keywords} />
-        <link rel="canonical" href="https://wasettravel.com/" />
-        <img
-          src="/Nile_Cruise/Dahabeya-program-SOBEK-900x600.webp"
-          alt="Nile Cruise with Basttet Travel"
-        />
-      </Head>
+       <SeoHead
+              title={meta.title}
+              description={meta.description}
+              keywords={meta.keywords}
+              image="/cover.jpg" // صورة افتراضية للصفحة
+            />
 
       <main className="relative flex flex-col min-h-screen justify-center items-center mt-7">
         <EgyptianBackground />

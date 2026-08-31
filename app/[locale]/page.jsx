@@ -20,6 +20,7 @@ import SignUpModal from "@/components/home/components/SignUpButton";
 import { useEffect, useState } from "react";
 import AdminChatWindow from "@/components/layout/AdminChatWindow";
 import { useMessages } from "@/context/MessageContext";
+import SeoHead from "@/components/layout/SeoHead";
 
 export default function Home() {
   const { userData, chatUser, setChatUser,  } = useAuth(); // ✅ جلب المستخدم الحالي من الـ API
@@ -41,11 +42,12 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>{meta.title}</title>
-        <meta name="description" content={meta.description} />
-        <meta name="keywords" content={meta.keywords} />
-      </Head>
+      <SeoHead
+        title={meta.title}
+        description={meta.description}
+        keywords={meta.keywords}
+        image="/cover.jpg" // صورة افتراضية للصفحة
+      />
       <main
         className={`
         w-full flex flex-col items-center justify-center

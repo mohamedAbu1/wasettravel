@@ -8,6 +8,7 @@ import Footer from "@/components/Footer/Footer";
 import { useTheme } from "@/context/ThemeContext";
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaTiktok } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import Head from "next/head";
 
 const B2bPage = () => {
   const { theme, themeName } = useTheme();
@@ -21,6 +22,11 @@ const B2bPage = () => {
   ];
 
   return (
+    <>
+    <Head>
+  <title>B2B Travel Management Partner in Egypt</title>
+  <meta name="description" content="Discover Waset Travel B2B services: guided tours, transportation, accommodations, and Nile cruises tailored for your clients." />
+</Head>
     <main className={`${theme.background} ${theme.text}`}>
       {/* Hero Section */}
       <Header />
@@ -162,6 +168,7 @@ const B2bPage = () => {
 
       <Footer />
     </main>
+    </>
   );
 };
 

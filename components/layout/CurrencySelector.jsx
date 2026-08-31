@@ -43,7 +43,9 @@ export default function CurrencySelector() {
       transition={{ duration: 0.6 }}
       className="fixed bottom-6 left-6 z-[99]"
     >
+      {/* ✅ إضافة aria-label لتوضيح وظيفة الـ combobox */}
       <Select
+        aria-label="Select currency"
         value={currency}
         onChange={(e) => setCurrency(e.target.value)}
         size="small"
@@ -66,13 +68,13 @@ export default function CurrencySelector() {
         }}
       >
         <MenuItem value="USD" sx={{ color: usdColor, fontWeight: "600" }}>
-          $
+          USD $
         </MenuItem>
         <MenuItem value="EUR" sx={{ color: eurColor, fontWeight: "600" }}>
-          €
+          EUR €
         </MenuItem>
-          <MenuItem value="EGP" sx={{ color: egpColor, fontWeight: "600" }}>
-          £
+        <MenuItem value="EGP" sx={{ color: egpColor, fontWeight: "600" }}>
+          EGP £
         </MenuItem>
       </Select>
     </motion.div>

@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 const CancellationPolicyPage = () => {
   const { themeName, theme } = useTheme();
   const { userData } = useAuth();
-   const symbols = [
+  const symbols = [
     "𓂀",
     "𓋹",
     "𓆣",
@@ -32,32 +32,41 @@ const CancellationPolicyPage = () => {
   ];
 
   return (
-    <main
-      className={`min-h-screen ${theme.background} transition-colors duration-500 font-sans`}
-    >
-      <EgyptianBackground />
-     <div className="absolute inset-0 flex flex-wrap justify-center items-center opacity-10 pointer-events-none">
-        {symbols.map((sym, i) => (
-          <motion.span
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 0.3, y: 0 }}
-            transition={{ duration: 1, delay: i * 0.1 }}
-            className="text-6xl m-6"
-            style={{
-              color: theme.icon,
-            }}
-          >
-            {sym}
-          </motion.span>
-        ))}
-      </div>
-      <Header />
-      <HeroSection themeName={themeName} theme={theme} />
-      <CancellationPolicyContent theme={theme} />
-      <Footer />
-      {userData && <ChatWidget />}
-    </main>
+    <>
+      <Head>
+        <title>Cancellation Policy - Waset Travel</title>
+        <meta
+          name="description"
+          content="Read Waset Travel's cancellation policy to understand terms, conditions, and refund options for your bookings."
+        />
+      </Head>
+      <main
+        className={`min-h-screen ${theme.background} transition-colors duration-500 font-sans`}
+      >
+        <EgyptianBackground />
+        <div className="absolute inset-0 flex flex-wrap justify-center items-center opacity-10 pointer-events-none">
+          {symbols.map((sym, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 0.3, y: 0 }}
+              transition={{ duration: 1, delay: i * 0.1 }}
+              className="text-6xl m-6"
+              style={{
+                color: theme.icon,
+              }}
+            >
+              {sym}
+            </motion.span>
+          ))}
+        </div>
+        <Header />
+        <HeroSection themeName={themeName} theme={theme} />
+        <CancellationPolicyContent theme={theme} />
+        <Footer />
+        {userData && <ChatWidget />}
+      </main>
+    </>
   );
 };
 

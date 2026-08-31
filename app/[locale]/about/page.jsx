@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import CurrencySelector from "@/components/layout/CurrencySelector";
 import SignUpModal from "@/components/home/components/SignUpButton";
+import SeoHead from "@/components/layout/SeoHead";
 
 export default function AboutPage() {
   const { theme } = useTheme();
@@ -39,11 +40,12 @@ export default function AboutPage() {
 
   return (
     <>
-      <Head>
-        <title>{meta.title}</title>
-        <meta name="description" content={meta.description} />
-        <meta name="keywords" content={meta.keywords} />
-      </Head>
+      <SeoHead
+        title={meta.title}
+        description={meta.description}
+        keywords={meta.keywords}
+        image="/cover.jpg" // صورة افتراضية للصفحة
+      />
       <main className="relative flex flex-col min-h-screen justify-center items-center">
         <Header />
         <EgyptianBackground />

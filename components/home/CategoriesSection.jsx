@@ -93,7 +93,8 @@ function CategoryCard({ cat, themeName, language }) {
           >
             <Image
               src={optimize(cat.images[imgIndex])}
-              alt={`Category image for ${displayName}`} // ✅ وصف أوضح              fill
+              alt={displayName}
+              fill
               loading="lazy"
               className="object-cover rounded-lg"
             />

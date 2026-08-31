@@ -1,48 +1,21 @@
 "use client";
-import Drawer from "@mui/material/Drawer";
-import Slide from "@mui/material/Slide";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import Fade from "@mui/material/Fade";
-import IconButton from "@mui/material/IconButton";
+import Drawer from '@mui/material/Drawer';
+import Slide from '@mui/material/Slide';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Fade from '@mui/material/Fade';
+import IconButton from '@mui/material/IconButton';
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import { useNotifications } from "@/context/NotificationsContext";
 import DividerWithIcon from "@/components/layout/DividerWithIcon";
 
-export default function MessagesDrawer({
-  open,
-  onClose,
-  themeName,
-  theme,
-  messageNotifications,
-  handleMessageClick,
-}) {
+export default function MessagesDrawer({ open, onClose, themeName, theme, messageNotifications, handleMessageClick }) {
   const { deleteNotification } = useNotifications();
-  // فلترة الرسائل بحيث لا يظهر إلا واحدة لكل توقيت بالثانية
-  const uniqueMessageNotifications = messageNotifications.filter(
-    (n, index, self) => {
-      const createdAt = new Date(n.created_at)
-        .toISOString()
-        .split("T")[1]
-        .split(".")[0];
-      // نحول created_at إلى HH:MM:SS فقط
-      return (
-        index ===
-        self.findIndex((m) => {
-          const mCreatedAt = new Date(m.created_at)
-            .toISOString()
-            .split("T")[1]
-            .split(".")[0];
-          return mCreatedAt === createdAt && m.message === n.message;
-        })
-      );
-    },
-  );
 
   return (
     <Drawer
@@ -66,7 +39,7 @@ export default function MessagesDrawer({
         </Typography>
         <Divider sx={{ mb: 2 }} />
         <List>
-          {uniqueMessageNotifications.map((n) => (
+          {messageNotifications.map((n) => (
             <Fade in={true} timeout={500} key={n.id}>
               <Box sx={{ mb: 3 }}>
                 {/* Divider فوق الكارد */}
@@ -81,17 +54,14 @@ export default function MessagesDrawer({
                       n.is_read === 1
                         ? "transparent"
                         : themeName === "dark"
-                          ? "rgba(255,255,255,0.08)"
-                          : "rgba(0,0,0,0.05)",
+                        ? "rgba(255,255,255,0.08)"
+                        : "rgba(0,0,0,0.05)",
                     borderRadius: "12px",
                     padding: "12px",
-                    boxShadow: n.is_read
-                      ? "none"
-                      : "0 2px 6px rgba(0,0,0,0.15)",
+                    boxShadow: n.is_read ? "none" : "0 2px 6px rgba(0,0,0,0.15)",
                     transition: "0.3s",
                     "&:hover": {
-                      backgroundColor:
-                        themeName === "dark" ? "#333" : "#eaeaea",
+                      backgroundColor: themeName === "dark" ? "#333" : "#eaeaea",
                     },
                   }}
                 >
@@ -125,7 +95,7 @@ export default function MessagesDrawer({
                             sx={{
                               fontStyle: "italic",
                               fontWeight: 500,
-                              color: "#C2A878",
+                              filter: `drop-shadow(0 0 4px ${theme.logoBorder || "#C2A878"})`,
                             }}
                           >
                             {n.user_email}
@@ -138,7 +108,7 @@ export default function MessagesDrawer({
                               mt: 0.5,
                               fontWeight: "bold",
                               letterSpacing: "0.5px",
-                              color: "#C2A878",
+                             color:"#C2A878"
                             }}
                           >
                             {n.message}
@@ -151,7 +121,7 @@ export default function MessagesDrawer({
                               mt: 0.5,
                               fontWeight: 400,
                               opacity: 0.8,
-                              color: "#C2A878",
+                              color:"#C2A878"
                             }}
                           >
                             {new Date(n.created_at).toLocaleString("en-GB", {

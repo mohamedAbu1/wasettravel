@@ -24,24 +24,23 @@ export function NotificationsProvider({ children }) {
     }
     fetchNotifications();
   }, [notifications]);
-
   // تحديث حالة الإشعار إلى مقروء
-const markAsRead = async (id) => {
-  try {
-    await fetch(`/api/notifications/read/${id}`, { method: "PUT" });
-    // تحديث محلي
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n))
-    );
-    // إعادة جلب من السيرفر للتأكد
-    const res = await fetch("/api/notifications");
-    const data = await res.json();
-    if (data.success) setNotifications(data.notifications);
-  } catch (err) {
-    console.error("خطأ في تحديث الإشعار:", err);
-  }
-};
- const deleteNotification = async (id) => {
+  const markAsRead = async (id) => {
+    try {
+      await fetch(`/api/notifications/read/${id}`, { method: "PUT" });
+      // تحديث محلي
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n)),
+      );
+      // إعادة جلب من السيرفر للتأكد
+      const res = await fetch("/api/notifications");
+      const data = await res.json();
+      if (data.success) setNotifications(data.notifications);
+    } catch (err) {
+      console.error("خطأ في تحديث الإشعار:", err);
+    }
+  };
+  const deleteNotification = async (id) => {
     try {
       const res = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
       const data = await res.json();
@@ -59,7 +58,7 @@ const markAsRead = async (id) => {
 
   return (
     <NotificationsContext.Provider
-      value={{ notifications, loading, markAsRead,deleteNotification }}
+      value={{ notifications, loading, markAsRead, deleteNotification }}
     >
       {children}
     </NotificationsContext.Provider>

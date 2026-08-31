@@ -24,7 +24,6 @@ const emptyTrip = {
   solo_price: 0,
   group_price: 0,
   discountPercent: 0,
-  details: [], // ✅ تفاصيل الرحلة الجديدة
 };
 
 export function TripProvider({ children }) {
@@ -98,10 +97,10 @@ export function TripProvider({ children }) {
         cover_image: coverUrl,
         gallery_images: galleryData,
         exclusions: tripData.exclusions,
-        details: tripData.details, // ✅ إرسال تفاصيل الرحلة
       };
 
       // ✅ تتبع قبل الإرسال
+    
 
       const res = await fetch("/api/trips", {
         method: "POST",

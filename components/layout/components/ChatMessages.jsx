@@ -75,7 +75,7 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
                 }`}
               >
                 <p className="text-sm font-semibold mb-1 capitalize">
-                  {msg.sender_type === "admin" ? "👑 Waset Travel 👑" : msg.user_name} 
+                  {msg.sender_type === "admin" ? "👑 Basttet Travel 👑" : msg.user_name} 
                 </p>
 
                 {msg.content.startsWith("http") &&

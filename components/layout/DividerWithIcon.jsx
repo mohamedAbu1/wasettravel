@@ -18,7 +18,7 @@ export default function DividerWithIcon() {
       <div
         className="h-[3px] flex-1 rounded-full"
         style={{
-          background: "var(--text-gradient)", // ✅ استخدام CSS variable
+          backgroundColor: themeName === "dark" ? "#C2A878" : "#1A1A1A",
           opacity: themeName === "dark" ? 0.25 : 0.4,
         }}
       ></div>
@@ -32,14 +32,14 @@ export default function DividerWithIcon() {
           filter: `drop-shadow(0 0 6px ${theme.logoBorder || "#C2A878"})`,
         }}
       >
-        𓂀
+        ☥
       </motion.span>
 
       {/* الخط الأيمن */}
       <div
         className="h-[3px] flex-1 rounded-full"
         style={{
-          background: "var(--text-gradient)", // ✅ استخدام CSS variable
+          backgroundColor: themeName === "dark" ? "#C2A878" : "#1A1A1A",
           opacity: themeName === "dark" ? 0.25 : 0.4,
         }}
       ></div>

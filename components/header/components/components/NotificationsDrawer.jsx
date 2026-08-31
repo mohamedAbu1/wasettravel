@@ -120,7 +120,7 @@ export default function NotificationsDrawer({
                             sx={{
                               fontStyle: "italic",
                               fontWeight: 500,
-                              color:"#C2A878",
+                              filter: `drop-shadow(0 0 4px ${theme.logoBorder || "#C2A878"})`,
                             }}
                           >
                             {n.user_email}
@@ -132,7 +132,8 @@ export default function NotificationsDrawer({
                               mt: 0.5,
                               fontWeight: "bold",
                               letterSpacing: "0.5px",
-                            color:"#C2A878",
+                                                          color:"#C2A878"
+
                             }}
                           >
                             {n.message}
@@ -144,7 +145,8 @@ export default function NotificationsDrawer({
                               mt: 0.5,
                               fontWeight: 400,
                               opacity: 0.8,
-                             color:"#C2A878",
+                                                          color:"#C2A878"
+
                             }}
                           >
                             {new Date(n.created_at).toLocaleString("en-GB", {

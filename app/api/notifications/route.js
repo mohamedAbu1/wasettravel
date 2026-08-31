@@ -26,14 +26,14 @@ export async function POST(req) {
         body.user_image,
         body.trip_id,
         body.type,
-      ]
+      ],
     );
 
     // 🟢 اجلب الـ token من جدول push_tokens
     const expoPushToken = await getUserToken(body.user_id);
     if (expoPushToken) {
       // 🟢 استدعاء API Route send-notification
-      await fetch("https://wasettravel.com/api/send-notification", {
+      await fetch("https://basttettravel.com/api/send-notification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -48,7 +48,7 @@ export async function POST(req) {
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -58,16 +58,16 @@ export async function GET() {
   try {
     const db = await connectDB();
     const [rows] = await db.execute(
-      `SELECT id, admin_id, event_type, user_id, message, type, user_name, user_email, user_image, created_at, is_read, trip_id 
-       FROM notifications 
-       ORDER BY created_at DESC`
+      `SELECT id, admin_id, event_type, user_id, message, created_at_second, user_name, user_email, user_image, created_at, is_read, trip_id 
+   FROM notifications 
+   ORDER BY created_at DESC`,
     );
 
     return NextResponse.json({ success: true, notifications: rows });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

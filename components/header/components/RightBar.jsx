@@ -23,6 +23,7 @@ export default function RightBar({ scrolled }) {
   const router = useRouter();
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
+
   const now = Date.now();
   const twelveHours = 12 * 60 * 60 * 1000;
   const twoDays = 2 * 24 * 60 * 60 * 1000;
@@ -63,26 +64,8 @@ export default function RightBar({ scrolled }) {
       if (a.is_read !== 0 && b.is_read === 0) return 1;
       return new Date(b.created_at) - new Date(a.created_at);
     });
-  const uniqueFilteredNotifications = filteredNotifications.filter(
-    (n, index, self) => {
-      const createdAt = new Date(n.created_at)
-        .toISOString()
-        .split("T")[1]
-        .split(".")[0];
-      // نحول created_at إلى HH:MM:SS فقط
-      return (
-        index ===
-        self.findIndex((m) => {
-          const mCreatedAt = new Date(m.created_at)
-            .toISOString()
-            .split("T")[1]
-            .split(".")[0];
-          return mCreatedAt === createdAt;
-        })
-      );
-    },
-  );
-  const unreadMessages = uniqueFilteredNotifications.filter(
+
+  const unreadMessages = messageNotifications.filter(
     (n) => n.is_read === 0,
   ).length;
   const [openMessages, setOpenMessages] = useState(false);
@@ -147,7 +130,7 @@ export default function RightBar({ scrolled }) {
       )}
 
       {/* ✅ أيقونة الرسائل */}
-      {userData?.role === "ADMIN" && (
+      {userData?.role === "ADMIN" && messageNotifications.length > 0 && (
         <Badge
           badgeContent={unreadMessages}
           color="error"

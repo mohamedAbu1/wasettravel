@@ -23,11 +23,11 @@ export function MessageProvider({ children }) {
         return;
       }
       const data = await res.json();
-      const merged = [...prev];
-      data.forEach((m) => {
-        if (!merged.some((x) => x.id === m.id)) merged.push(m);
+      setMessages((prev) => {
+        const ids = new Set(prev.map((m) => m.id));
+        const merged = [...prev, ...data.filter((m) => !ids.has(m.id))];
+        return merged;
       });
-      setMessages(merged);
     } catch (err) {
       console.error("❌ Error fetching messages:", err.message);
     } finally {
@@ -74,16 +74,12 @@ export function MessageProvider({ children }) {
     };
 
     // أضف الرسالة مباشرة للـ state علشان تظهر فورًا
-    if (loading) return; // منع الإرسال أثناء التحميل
-setLoading(true);
-
     const tempMessage = {
       ...payload,
       id: Date.now(),
       status: "pending",
     };
     setMessages((prev) => [...prev, tempMessage]);
-setLoading(false);
 
     try {
       const res = await fetch("/api/messages", {
@@ -167,7 +163,7 @@ setLoading(false);
     if (userData?.id) {
       fetchMessages(userData.id);
     }
-  }, [userData?.id]);
+  }, [userData?.id,open]);
 
   return (
     <MessageContext.Provider

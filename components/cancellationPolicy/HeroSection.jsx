@@ -9,18 +9,24 @@ export default function HeroSection({ themeName, theme }) {
 
   return (
     <div className="relative h-[60vh] w-full">
-      <Image
-        src={
-          themeName === "dark"
-            ? "/HomePageImage/asdasdas.webp"
-            : "/HomePageImage/asdasdas.webp"
-        }
-        alt={t("cancellationPolicy.altImage", {
-          defaultValue: "Great Sphinx of Giza",
-        })}
-        fill
-        className="object-cover brightness-75"
-      />
+     <Image
+  src={
+    themeName === "dark"
+      ? "/HomePageImage/asdasdas.webp"
+      : "/HomePageImage/asdasdas.webp"
+  }
+  alt={t("cancellationPolicy.altImage", {
+    defaultValue: "Great Sphinx of Giza",
+  })}
+  fill
+  quality={75} // ✅ ضغط الصورة
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px" // ✅ صور متجاوبة
+  priority // ✅ تحميل سريع للصورة الأساسية
+  placeholder="blur" // ✅ صورة منخفضة الجودة أثناء التحميل
+  blurDataURL="/HomePageImage/blur-placeholder.jpg" // نسخة مصغرة للتحميل التدريجي
+  className="object-cover brightness-75"
+/>
+
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
         <motion.h1
           initial={{ opacity: 0, y: -50 }}

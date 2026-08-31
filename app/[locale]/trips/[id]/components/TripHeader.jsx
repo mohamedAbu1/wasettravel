@@ -15,7 +15,7 @@ export default function TripHeader({ trip, lang }) {
     if (!trip?.gallery_images || trip.gallery_images.length === 0) return;
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) =>
-        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1
+        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1,
       );
     }, 3000);
     return () => clearInterval(interval);
@@ -32,7 +32,7 @@ export default function TripHeader({ trip, lang }) {
   // ✅ الكلمات المراد تمييزها
   const searchWords = sites.map((site) => site.name);
 
-const tripDescription =
+  const tripDescription =
     typeof trip?.description?.[lang] === "string"
       ? trip.description[lang]
       : trip?.description?.en || "";
@@ -40,11 +40,15 @@ const tripDescription =
   // ✅ بناء Regex لكل الكلمات مرة واحدة
   const regex = new RegExp(`(${searchWords.join("|")})`, "gi");
 
-  const highlightedText = reactStringReplace(tripDescription, regex, (match, i) => (
-    <span key={i} className="highlighted-text">
-      {match}
-    </span>
-  ));
+  const highlightedText = reactStringReplace(
+    tripDescription,
+    regex,
+    (match, i) => (
+      <span key={i} className="highlighted-text">
+        {match}
+      </span>
+    ),
+  );
 
   return (
     <motion.section
@@ -88,8 +92,14 @@ const tripDescription =
             "Trip image"
           }
           fill
-          className="object-cover w-full h-[500px] transform hover:scale-105 transition duration-500 rounded-lg"
-          priority
+          quality={75} // ✅ ضغط الصورة
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px" // ✅ صور متجاوبة
+          priority // ✅ تحميل الصورة الأولى بسرعة
+          loading={activeIndex === 0 ? "eager" : "lazy"} // ✅ تحميل كسول للباقي
+          placeholder="blur" // ✅ صورة منخفضة الجودة أثناء التحميل
+          blurDataURL="/default-blur.jpg" // ✅ نسخة مصغرة للتحميل التدريجي
+          className="object-cover w-full h-[500px] rounded-lg"
+          style={{ aspectRatio: "4/3" }} // ✅ يمنع تغير الأبعاد أثناء التحميل
         />
 
         {trip.gallery_images[activeIndex].name && (
@@ -120,7 +130,12 @@ const tripDescription =
               src={img.url || "/default.jpg"}
               alt={img.name?.[lang] || img.name?.en || `Thumbnail ${index}`}
               fill
+              quality={60} // ✅ ضغط إضافي للصور الصغيرة
+              sizes="150px" // ✅ حجم ثابت للصور المصغرة
+              loading="lazy" // ✅ تحميل كسول
               className="object-cover rounded-lg"
+              placeholder="blur"
+              blurDataURL="/default-blur-thumb.jpg"
             />
 
             {img.name && (

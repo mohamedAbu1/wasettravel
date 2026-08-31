@@ -8,3 +8,8 @@
 @import "./luxury-input.css";
 @import "./select.css";
 @import "./BookingSummaryCard.css";
+.swiper-slide img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}

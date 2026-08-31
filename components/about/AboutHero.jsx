@@ -77,12 +77,18 @@ export default function AboutHero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative w-full h-80 lg:h-[420px] rounded-2xl overflow-hidden shadow-2xl"
         >
-          <Image
-            src="/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp"
-              alt="Travelers exploring Egypt with Waset Travel"
-            fill
-            className="object-cover"
-          />
+        <Image
+  src="/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp"
+  alt="Travelers exploring Egypt with Waset Travel"
+  fill
+  quality={75} // ✅ ضغط الصورة
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px" // ✅ صور متجاوبة
+  priority // ✅ تحميل سريع للصورة الأساسية
+  placeholder="blur" // ✅ صورة منخفضة الجودة أثناء التحميل
+  blurDataURL="/HomePageImage/blur-placeholder.jpg" // نسخة مصغرة للتحميل التدريجي
+  className="object-cover"
+/>
+
         </motion.div>
       </div>
     </section>

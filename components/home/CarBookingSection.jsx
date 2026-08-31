@@ -60,12 +60,16 @@ const CarBookingSection = () => {
       <div className="absolute inset-0 -z-10">
         <Image
           src="/HomePageImage/Copilot_20251003_105735.webp"
-          alt="Background image showing luxury car transfer" // ✅ وصف أوضح
+          alt="Background image showing luxury car transfer"
           fill
+          quality={75} // ضغط الصورة لتقليل الحجم
+          sizes="100vw" // صور متجاوبة
+          priority
+          placeholder="blur"
+          blurDataURL="/HomePageImage/blur-placeholder.jpg"
           className="object-cover opacity-20 rounded-lg"
-          priority // ✅ لو الصورة أساسية في الصفحة (خلفية أو Hero)
-          quality={85} // ✅ يقلل حجم الصورة ويحافظ على الجودة
         />
+
         <div
           className={`absolute inset-0 bg-gradient-to-br ${
             themeName === "dark"
@@ -106,11 +110,14 @@ const CarBookingSection = () => {
         >
           <Image
             src="/HomePageImage/car-png-39057.png"
-            alt="Luxury car illustration" // ✅ وصف أوضح
+            alt="Luxury car illustration"
             fill
+            quality={75}
+            sizes="(max-width: 768px) 100vw, 600px"
+            priority
+            placeholder="blur"
+            blurDataURL="/HomePageImage/car-blur.jpg"
             className="object-contain drop-shadow-2xl"
-            priority // ✅ لو الصورة أساسية في الصفحة (مثلاً Hero أو خلفية مهمة)
-            quality={85} // ✅ يقلل حجم الصورة ويحافظ على جودة مناسبة
           />
         </motion.div>
 

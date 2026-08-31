@@ -60,7 +60,7 @@ const OurSection = () => {
                   <div className="w-full h-[85vh]">
                     <Image
                       src={imgSrc}
-                        alt={`Slide ${index + 1} showing Waset Travel destination`} // ✅ وصف أوضح
+                      alt={`Slide ${index + 1} showing Waset Travel destination`} // ✅ وصف أوضح
                       fill
                       className="object-cover rounded-lg"
                       loading="lazy"
@@ -81,23 +81,29 @@ const OurSection = () => {
             <p className="text-sm uppercase mb-2 tracking-wide">
               {t("AboutUs")}
             </p>
-            <h2 className="text-4xl font-bold mb-4">{t("DiscoverWasetTravel")}</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              {t("DiscoverWasetTravel")}
+            </h2>
             <DividerWithIcon />
             <p className="text-base mb-6 leading-relaxed">
-              {t("At")} <span className="text-[#c9a34a] font-semibold">WasetTravel</span> {t("AtP")}{" "}
-              <span className="text-[#c9a34a] font-semibold">{t("professionalguides")}</span> {t("AtPP")}
+              {t("At")}{" "}
+              <span className="text-[#c9a34a] font-semibold">WasetTravel</span>{" "}
+              {t("AtP")}{" "}
+              <span className="text-[#c9a34a] font-semibold">
+                {t("professionalguides")}
+              </span>{" "}
+              {t("AtPP")}
             </p>
-     <button
-  onClick={() => router.push("/about")}
-  aria-label="Learn more about Waset Travel" // ✅ اسم واضح
-  className="px-6 py-3 rounded-lg font-semibold transition shadow-lg bg-[#c9a34a] text-white hover:bg-[#b5892e]"
->
-  {t("LearnMoreAboutUs")}
-</button>
-
+            <button
+              onClick={() => router.push("/about")}
+              aria-label="Learn more about Waset Travel" // ✅ اسم واضح
+              className="px-6 py-3 rounded-lg font-semibold transition shadow-lg bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+            >
+              {t("LearnMoreAboutUs")}
+            </button>
           </motion.div>
 
-           <motion.div
+          <motion.div
             initial={{ opacity: 0, x: -100 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
@@ -116,12 +122,17 @@ const OurSection = () => {
                 <SwiperSlide key={index}>
                   <div className="w-full h-[85vh]">
                     <Image
-                      src={imgSrc}
-                      alt={`WasetTravel Slide ${index + 1}`}
-                      fill
-                      className="object-cover rounded-lg"
-                      loading="lazy"
-                    />
+  src={imgSrc}
+  alt={`Slide ${index + 1} showing Waset Travel destination`}
+  fill
+  quality={75} // ضغط الصورة لتقليل الحجم
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+  loading="lazy"
+  placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
+  blurDataURL="/HomePageImage/blur-placeholder.jpg" // نسخة مصغرة للتحميل التدريجي
+  className="object-cover rounded-lg"
+/>
+
                   </div>
                 </SwiperSlide>
               ))}
@@ -147,13 +158,18 @@ const OurSection = () => {
             {images.map((imgSrc, index) => (
               <SwiperSlide key={index}>
                 <div className="w-full h-full">
-                  <Image
-                    src={imgSrc}
-                    alt={`WasetTravel Slide ${index + 1}`}
-                    fill
-                    className="object-cover rounded-lg"
-                    loading="lazy"
-                  />
+               <Image
+  src={imgSrc}
+  alt={`Slide ${index + 1} showing Waset Travel destination`}
+  fill
+  quality={75} // ضغط الصورة لتقليل الحجم
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+  loading="lazy"
+  placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
+  blurDataURL="/HomePageImage/blur-placeholder.jpg" // نسخة مصغرة للتحميل التدريجي
+  className="object-cover rounded-lg"
+/>
+
                 </div>
               </SwiperSlide>
             ))}
@@ -164,22 +180,27 @@ const OurSection = () => {
         <div className="text-center max-w-md">
           <p className="text-xs uppercase mb-2 tracking-wide">{t("AboutUs")}</p>
           <h2
-  role="heading"
-  aria-level={2}
-  aria-label={t("DiscoverWasetTravel")}
-  className="text-4xl font-bold mb-4"
->
-  {t("DiscoverWasetTravel")}
-</h2>
+            role="heading"
+            aria-level={2}
+            aria-label={t("DiscoverWasetTravel")}
+            className="text-4xl font-bold mb-4"
+          >
+            {t("DiscoverWasetTravel")}
+          </h2>
 
           <DividerWithIcon />
-         <p
-  aria-label="About Waset Travel description"
-  className="text-base mb-6 leading-relaxed"
->
-  {t("At")} <span className="text-[#c9a34a] font-semibold">WasetTravel</span> {t("AtP")}{" "}
-  <span className="text-[#c9a34a] font-semibold">{t("professionalguides")}</span> {t("AtPP")}
-</p>
+          <p
+            aria-label="About Waset Travel description"
+            className="text-base mb-6 leading-relaxed"
+          >
+            {t("At")}{" "}
+            <span className="text-[#c9a34a] font-semibold">WasetTravel</span>{" "}
+            {t("AtP")}{" "}
+            <span className="text-[#c9a34a] font-semibold">
+              {t("professionalguides")}
+            </span>{" "}
+            {t("AtPP")}
+          </p>
 
           <button
             onClick={() => router.push("/about")}

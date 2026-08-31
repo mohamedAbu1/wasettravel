@@ -108,12 +108,17 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                   <SwiperSlide key={idx}>
                     <Image
                       src={img || "/default.jpg"}
-                      alt={`Trip image: ${
-                        trip.title?.[lang] || trip.title?.en || "Untitled"
-                      }`}
+                      alt={`Trip image: ${trip.title?.[lang] || trip.title?.en || "Untitled"}`}
                       width={600}
                       height={450}
-                      className="object-cover w-full h-full"
+                      quality={75} // ✅ ضغط الصورة بدون فقدان واضح للجودة
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" // ✅ صور متجاوبة
+                      priority={i === 0} // ✅ تحميل الصورة الأولى بسرعة لتحسين LCP
+                      loading={i === 0 ? "eager" : "lazy"} // ✅ تحميل كسول لباقي الصور
+                      className="object-cover w-full h-full rounded-lg"
+                      style={{ aspectRatio: "4/3" }} // ✅ يمنع تغير الأبعاد أثناء التحميل (يقلل CLS)
+                      placeholder="blur" // ✅ تحسين تجربة التحميل
+                      blurDataURL="/default-blur.jpg" // ✅ صورة منخفضة الجودة أثناء التحميل
                     />
                   </SwiperSlide>
                 ))}
@@ -142,11 +147,12 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 {Array.isArray(trip.cities) && trip.cities.length > 0
                   ? trip.cities
                       .filter(Boolean)
-                      .map((c) =>
-                        c.name?.[lang] ||
-                        c.name?.["en"] ||
-                        Object.values(c.name)[0] ||
-                        "Unknown City"
+                      .map(
+                        (c) =>
+                          c.name?.[lang] ||
+                          c.name?.["en"] ||
+                          Object.values(c.name)[0] ||
+                          "Unknown City",
                       )
                       .join(", ")
                   : "Unknown City"}
@@ -159,11 +165,12 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 {Array.isArray(trip.categories) && trip.categories.length > 0
                   ? trip.categories
                       .filter(Boolean)
-                      .map((cat) =>
-                        cat.name?.[lang] ||
-                        cat.name?.["en"] ||
-                        Object.values(cat.name)[0] ||
-                        "Unknown Category"
+                      .map(
+                        (cat) =>
+                          cat.name?.[lang] ||
+                          cat.name?.["en"] ||
+                          Object.values(cat.name)[0] ||
+                          "Unknown Category",
                       )
                       .join(", ")
                   : t("NoCategory")}
@@ -194,7 +201,9 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
 
               <button
                 onClick={() => router.push(`/trips/${trip.id}`)}
-                aria-label={hasPurchased ? "View trip details" : "Book this trip"}
+                aria-label={
+                  hasPurchased ? "View trip details" : "Book this trip"
+                }
                 className="mt-3 px-5 py-2 rounded-lg font-bold transition cursor-pointer 
                   bg-[#C2A878] text-white hover:bg-[#a58a60] shadow-md"
               >

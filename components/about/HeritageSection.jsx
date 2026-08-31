@@ -79,6 +79,11 @@ export default function HeritageSection() {
             src="/iamges/pexels-axp-photography-500641970-18934598.webp"
             alt="Ancient Egyptian heritage site with Waset Travel"
             fill
+            quality={75} // ✅ ضغط الصورة
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" // ✅ صور متجاوبة
+            priority // ✅ تحميل سريع للصورة الأساسية
+            placeholder="blur" // ✅ صورة منخفضة الجودة أثناء التحميل
+            blurDataURL="/iamges/blur-placeholder.jpg" // نسخة مصغرة للتحميل التدريجي
             className="object-cover rounded-2xl"
           />
         </motion.div>

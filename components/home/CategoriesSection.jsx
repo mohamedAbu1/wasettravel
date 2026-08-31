@@ -95,7 +95,11 @@ function CategoryCard({ cat, themeName, language }) {
               src={optimize(cat.images[imgIndex])}
               alt={displayName}
               fill
+              quality={75} // ضغط الصورة لتقليل الحجم
+              sizes="(max-width: 768px) 100vw, 220px" // صور متجاوبة حسب حجم الكارد
               loading="lazy"
+              placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
+              blurDataURL="/fallback-blur.jpg" // نسخة مصغرة للتحميل التدريجي
               className="object-cover rounded-lg"
             />
           </motion.div>

@@ -79,14 +79,18 @@ function CityCard({ city, themeName, theme, language, t }) {
         `}
       >
         {visible && (
-          <Image
-            src={optimize(city?.images?.[0])}
-            alt={`City view of ${cityName}`} // ✅ وصف أوضح
-            fill
-            loading="lazy"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            className="object-cover rounded-lg"
-          />
+        <Image
+  src={optimize(city?.images?.[0])}
+  alt={`City view of ${cityName}`}
+  fill
+  quality={75} // ضغط الصورة لتقليل الحجم
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+  loading="lazy"
+  placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
+  blurDataURL="/fallback-blur.jpg" // نسخة مصغرة للتحميل التدريجي
+  className="object-cover rounded-lg"
+/>
+
         )}
         <div
           className={`

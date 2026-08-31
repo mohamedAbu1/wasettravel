@@ -13,7 +13,6 @@ import TripCities from "./components/TripCities";
 import TripCategories from "./components/TripCategories";
 import TripIncludes from "./components/TripIncludes";
 import TripItinerary from "./components/TripItinerary";
-import TripInfo from "./components/TripInfo";
 import TripReviews from "./components/TripReviews";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";

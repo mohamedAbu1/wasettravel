@@ -8,7 +8,7 @@ export default function RootLayout({ children }) {
       <head>
         {/* بدل @import */}
         <link rel="preload" href="/theme.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/scrollbar.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
+        <link rel="preload" href="/scrollbar.css" as="style" onload="this.onLoad=null;this.rel='stylesheet'"/>
         <link rel="preload" href="/animations.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
         <link rel="preload" href="/swiper.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
         <link rel="preload" href="/social-icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>

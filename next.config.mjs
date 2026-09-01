@@ -15,10 +15,6 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    legacyBrowsers: false, // ✅ يمنع إضافة polyfills للمتصفحات القديمة
-    browsersListForSwc: true, // ✅ يعتمد على إعدادات browserslist
-  },
 };
 
 export default nextConfig;

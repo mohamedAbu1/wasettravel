@@ -102,15 +102,14 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 pagination={{ clickable: true }}
                 navigation
                 modules={[Autoplay, Pagination, Navigation]}
-                className="h-[300px] lg:h-[450px]"
+                className="h-[300px] lg:h-[400px] bg-amber-700"
               >
                 {(trip.images || [trip.cover_image]).map((img, idx) => (
                   <SwiperSlide key={idx}>
                     <Image
                       src={img || "/default.jpg"}
                       alt={`Trip image: ${trip.title?.[lang] || trip.title?.en || "Untitled"}`}
-                      width={600}
-                      height={450}
+                      fill
                       quality={75} // ✅ ضغط الصورة بدون فقدان واضح للجودة
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" // ✅ صور متجاوبة
                       priority={i === 0} // ✅ تحميل الصورة الأولى بسرعة لتحسين LCP

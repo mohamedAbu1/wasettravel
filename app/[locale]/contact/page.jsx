@@ -10,7 +10,6 @@ import { useTranslation } from "react-i18next";
 import LoginModal from "@/components/home/components/LoginModal";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
-import Head from "next/head";
 import { useLanguage } from "@/context/LanguageContext";
 import { contactMetadata } from "@/lib/metadata/contact";
 import DividerWithIcon from "@/components/layout/DividerWithIcon";

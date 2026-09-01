@@ -94,7 +94,6 @@ export default function TripHeader({ trip, lang }) {
           fill
           quality={75} // ✅ ضغط الصورة
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px" // ✅ صور متجاوبة
-          priority // ✅ تحميل الصورة الأولى بسرعة
           loading={activeIndex === 0 ? "eager" : "lazy"} // ✅ تحميل كسول للباقي
           placeholder="blur" // ✅ صورة منخفضة الجودة أثناء التحميل
           blurDataURL="/default-blur.jpg" // ✅ نسخة مصغرة للتحميل التدريجي

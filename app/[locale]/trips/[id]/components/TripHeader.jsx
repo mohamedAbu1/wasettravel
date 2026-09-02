@@ -5,50 +5,38 @@ import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
 import { sites } from "@/constants/images";
-import reactStringReplace from "react-string-replace"; // ✅ المكتبة الجديدة
+import reactStringReplace from "react-string-replace";
 
 export default function TripHeader({ trip, lang }) {
   const { themeName } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
-  // ✅ تغيير تلقائي كل 3 ثواني
+
+  // تغيير تلقائي كل 3 ثواني
   useEffect(() => {
     if (!trip?.gallery_images || trip.gallery_images.length === 0) return;
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) =>
-        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1,
+        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1
       );
     }, 3000);
     return () => clearInterval(interval);
   }, [trip?.gallery_images?.length]);
 
   if (!trip?.gallery_images || trip.gallery_images.length === 0) {
-    return (
-      <div className="text-center py-10">
-        No photos are available for this trip.
-      </div>
-    );
+    return <div className="text-center py-10">No photos are available for this trip.</div>;
   }
 
-  // ✅ الكلمات المراد تمييزها
+  // الكلمات المراد تمييزها
   const searchWords = sites.map((site) => site.name);
-
   const tripDescription =
     typeof trip?.description?.[lang] === "string"
       ? trip.description[lang]
       : trip?.description?.en || "";
 
-  // ✅ بناء Regex لكل الكلمات مرة واحدة
   const regex = new RegExp(`(${searchWords.join("|")})`, "gi");
-
-  const highlightedText = reactStringReplace(
-    tripDescription,
-    regex,
-    (match, i) => (
-      <span key={i} className="highlighted-text">
-        {match}
-      </span>
-    ),
-  );
+  const highlightedText = reactStringReplace(tripDescription, regex, (match, i) => (
+    <span key={i} className="highlighted-text">{match}</span>
+  ));
 
   return (
     <motion.section
@@ -75,7 +63,7 @@ export default function TripHeader({ trip, lang }) {
         {trip.title?.[lang] || trip.title?.en}
       </motion.h1>
 
-      {/* ✅ الصورة الرئيسية */}
+      {/* الصورة الرئيسية */}
       <motion.div
         key={activeIndex}
         initial={{ opacity: 0, scale: 0.9 }}
@@ -86,42 +74,33 @@ export default function TripHeader({ trip, lang }) {
       >
         <Image
           src={trip.gallery_images[activeIndex].url || "/default.jpg"}
-          alt={
-            trip.gallery_images[activeIndex].name?.[lang] ||
-            trip.gallery_images[activeIndex].name?.en ||
-            "Trip image"
-          }
+          alt={trip.gallery_images[activeIndex].name?.[lang] || trip.gallery_images[activeIndex].name?.en || "Trip image"}
           fill
-          priority
-          quality={75} // ✅ ضغط الصورة
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px" // ✅ صور متجاوبة
-          placeholder="blur" // ✅ صورة منخفضة الجودة أثناء التحميل
-          blurDataURL="/default-blur.jpg" // ✅ نسخة مصغرة للتحميل التدريجي
-          className="object-cover w-full h-[500px] rounded-lg"
-          style={{ aspectRatio: "4/3" }} // ✅ يمنع تغير الأبعاد أثناء التحميل
+          priority={activeIndex === 0} // ✅ فقط الصورة الأولى priority
+          quality={75}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+          placeholder="blur"
+          blurDataURL="/default-blur.jpg"
+          className="object-cover w-full h-[500px] rounded-lg aspect-[4/3]" // ✅ CSS class للـ aspectRatio
         />
 
         {trip.gallery_images[activeIndex].name && (
           <div className="absolute bottom-4 left-4 text-xl font-bold px-4 py-2 rounded bg-black/50 text-white">
-            {trip.gallery_images[activeIndex].name?.[lang] ||
-              trip.gallery_images[activeIndex].name?.en}
+            {trip.gallery_images[activeIndex].name?.[lang] || trip.gallery_images[activeIndex].name?.en}
           </div>
         )}
       </motion.div>
 
-      {/* ✅ الصور الجانبية المصغرة */}
+      {/* الصور الجانبية المصغرة */}
       <div className="flex gap-4 flex-wrap">
         {trip.gallery_images.map((img, index) => (
           <div
             key={index}
             className={`relative w-[145px] h-[100px] rounded-lg cursor-pointer border-2`}
             style={{
-              borderColor:
-                index === activeIndex
-                  ? themeName === "dark"
-                    ? "#FFD700"
-                    : "#c9a34a"
-                  : "transparent",
+              borderColor: index === activeIndex
+                ? themeName === "dark" ? "#FFD700" : "#c9a34a"
+                : "transparent",
             }}
             onClick={() => setActiveIndex(index)}
           >
@@ -129,24 +108,18 @@ export default function TripHeader({ trip, lang }) {
               src={img.url || "/default.jpg"}
               alt={img.name?.[lang] || img.name?.en || `Thumbnail ${index}`}
               fill
-              quality={60} // ✅ ضغط إضافي للصور الصغيرة
-              sizes="150px" // ✅ حجم ثابت للصور المصغرة
-              loading="lazy" // ✅ تحميل كسول
+              quality={60}
+              sizes="150px"
+              loading="lazy"
               className="object-cover rounded-lg"
               placeholder="blur"
               blurDataURL="/default-blur-thumb.jpg"
             />
-
-            {img.name && (
-              <div className="absolute bottom-2 left-2 text-xs font-bold bg-black/50 text-white px-2 py-1 rounded">
-                {img.name?.[lang] || img.name?.en}
-              </div>
-            )}
           </div>
         ))}
       </div>
 
-      {/* ✅ الوصف مع تمييز الكلمات */}
+      {/* الوصف مع تمييز الكلمات */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -161,7 +134,6 @@ export default function TripHeader({ trip, lang }) {
         .highlighted-text {
           color: #c9a34a;
           font-weight: bold;
-          text-decoration: none;
         }
         .highlighted-text:hover {
           text-decoration: underline;

@@ -142,7 +142,6 @@ export function TripProvider({ children }) {
   const getTripById = (id) => {
     return trips.find((trip) => String(trip.id) === String(id));
   };
-  console.log("object",trips)
   return (
     <TripContext.Provider
       value={{

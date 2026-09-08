@@ -293,7 +293,6 @@ export async function GET() {
       trip_details: safeParse(trip.trip_details),
       discountPercent: Number(trip.discount_percent ?? 0),
     }));
-    console.log("object", parsedTrips);
     return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {
       status: 200,
       headers: { "Cache-Control": "public, max-age=3600" },

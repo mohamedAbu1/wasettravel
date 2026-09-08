@@ -9,7 +9,6 @@ export async function POST(request) {
     const db = await connectDB();
     const { email, password } = await request.json();
 
-    console.log("📩 Step 1: Received login request", { email });
 
     // ✅ البحث عن المستخدم
     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);

@@ -102,7 +102,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 pagination={{ clickable: true }}
                 navigation
                 modules={[Autoplay, Pagination, Navigation]}
-                className="h-[300px] lg:h-[400px] bg-amber-700"
+                className="h-[300px] lg:h-[480px] bg-amber-700"
               >
                 {(trip.images || [trip.cover_image]).map((img, idx) => (
                   <SwiperSlide key={idx}>

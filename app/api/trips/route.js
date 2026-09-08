@@ -267,8 +267,12 @@ export async function GET() {
 
     const parsedTrips = trips.map((trip) => ({
       ...trip,
-      title: trip.title ? JSON.parse(trip.title) : {},
-      description: trip.description ? JSON.parse(trip.description) : {},
+      title:
+        typeof trip.title === "string" ? JSON.parse(trip.title) : trip.title,
+      description:
+        typeof trip.description === "string"
+          ? JSON.parse(trip.description)
+          : trip.description,
       cover_image: trip.cover_image,
       solo_price: Number(trip.solo_price),
       group_price: Number(trip.group_price),
@@ -276,7 +280,10 @@ export async function GET() {
       duration: Number(trip.duration),
       priceLevel: trip.priceLevel,
       duration_unit: trip.duration_unit || "",
-      gallery_images: safeParse(trip.gallery_images),
+      gallery_images:
+        typeof trip.gallery_images === "string"
+          ? JSON.parse(trip.gallery_images)
+          : trip.gallery_images || [],
       cities: safeParse(trip.cities),
       categories: safeParse(trip.categories),
       includes: safeParse(trip.includes),
@@ -286,7 +293,7 @@ export async function GET() {
       trip_details: safeParse(trip.trip_details),
       discountPercent: Number(trip.discount_percent ?? 0),
     }));
-
+    console.log("object", parsedTrips);
     return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {
       status: 200,
       headers: { "Cache-Control": "public, max-age=3600" },

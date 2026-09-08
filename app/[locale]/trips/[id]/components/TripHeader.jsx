@@ -10,7 +10,7 @@ import reactStringReplace from "react-string-replace";
 export default function TripHeader({ trip, lang }) {
   const { themeName } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
-
+console.log("object",trip)
   // تغيير تلقائي كل 3 ثواني
   useEffect(() => {
     if (!trip?.gallery_images || trip.gallery_images.length === 0) return;

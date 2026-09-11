@@ -1,3 +1,5 @@
+const { createTheme } = require("@mui/material/styles");
+
 module.exports = {
   darkMode: "class",
   content: [

@@ -62,7 +62,7 @@ export default function AboutHero() {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
             priority // ✅ الصورة الأساسية فقط
             placeholder="blur"
-            blurDataURL="/HomePageImage/blur-placeholder.jpg"
+            blurDataURL="/HomePageImage/apple-touch-icon.png"
             className="object-cover"
           />
         </motion.div>

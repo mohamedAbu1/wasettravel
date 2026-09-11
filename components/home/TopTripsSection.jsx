@@ -24,7 +24,7 @@ const TopTripsSection = () => {
   const cardWidth = 300;
 
   useEffect(() => {
-    fetchTrips();
+      fetchTrips("?summary=1");
   }, []);
 
   useEffect(() => {
@@ -42,8 +42,8 @@ const TopTripsSection = () => {
   const topTrips = [...trips]
     .sort(
       (a, b) =>
-        (Array.isArray(b.reviews) ? b.reviews.length : 0) -
-        (Array.isArray(a.reviews) ? a.reviews.length : 0),
+        (b.review_count ?? b.reviews?.length ?? 0) -
+        (a.review_count ?? a.reviews?.length ?? 0),
     )
     .slice(0, 6);
 
@@ -109,14 +109,12 @@ const TopTripsSection = () => {
               >
                 <div className="relative h-72">
                   <Image
-                    src={trip.cover_image || "/default.jpg"}
+                    src={trip.cover_image || "/Luxor/pexels-axp-photography-500641970-18934598.webp"}
                     alt={`Cover image for ${trip.title?.[normalizedLang] || "Trip"}`}
                     fill
                     quality={75} // ضغط الصورة لتقليل الحجم
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
                     loading="lazy"
-                    placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
-                    blurDataURL="/default-blur.jpg" // نسخة مصغرة للتحميل التدريجي
                     className="object-cover group-hover:scale-110 transition duration-700 rounded-lg"
                   />
 
@@ -133,7 +131,7 @@ const TopTripsSection = () => {
                       ⭐ {trip.rating || "4.5"}
                     </span>
                     <span className="text-sm opacity-80 text-white">
-                      ({Array.isArray(trip.reviews) ? trip.reviews.length : 0}{" "}
+                      ({trip.review_count ?? trip.reviews?.length ?? 0}{" "}
                       {t("reviews")})
                     </span>
                   </div>
@@ -206,14 +204,12 @@ const TopTripsSection = () => {
               >
                 <div className="relative h-72">
                   <Image
-                    src={trip.cover_image || "/default.jpg"}
+                    src={trip.cover_image || "/Luxor/pexels-axp-photography-500641970-18934598.webp"}
                     alt={`Cover image for ${trip.title?.[normalizedLang] || "Trip"}`}
                     fill
                     quality={75} // ضغط الصورة لتقليل الحجم
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
                     loading="lazy"
-                    placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
-                    blurDataURL="/default-blur.jpg" // نسخة مصغرة للتحميل التدريجي
                     className="object-cover group-hover:scale-110 transition duration-700 rounded-lg"
                   />
 
@@ -230,7 +226,7 @@ const TopTripsSection = () => {
                       ⭐ {trip.rating || "4.5"}
                     </span>
                     <span className="text-sm opacity-80 text-white">
-                      ({Array.isArray(trip.reviews) ? trip.reviews.length : 0}{" "}
+                      ({trip.review_count ?? trip.reviews?.length ?? 0}{" "}
                       {t("reviews")})
                     </span>
                   </div>

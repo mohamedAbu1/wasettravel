@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import db from "@/lib/db"; // الاتصال بقاعدة البيانات
+import { connectDB } from "@/lib/db";
 
 export async function POST(req) {
   try {
+    const db = await connectDB();
     const { userId, event_type, message } = await req.json();
 
     // 🟢 1. إدخال الإشعار في جدول notifications

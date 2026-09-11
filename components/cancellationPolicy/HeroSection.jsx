@@ -17,7 +17,7 @@ export default function HeroSection({ themeName, theme }) {
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
         priority
         placeholder="blur"
-        blurDataURL="/HomePageImage/blur-placeholder.jpg"
+        blurDataURL="/HomePageImage/apple-touch-icon.png"
         className="object-cover brightness-75"
       />
 

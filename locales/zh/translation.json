@@ -122,8 +122,9 @@
   },
   "tripsId": {
     "submitReview": "提交评价",
-    "average": "平均"
+    "average": "平均","additionalDetails":"其他信息","travelingWithChildren":"携带儿童旅行","numberOfChildren":"儿童人数","travelingWithPets":"携带宠物旅行","selectPets":"选择宠物","cat":"猫","dog":"狗","tourGuide":"导游","selectUpToTwoLanguages":"最多选择两种语言","groupSize":"团队人数","tripSchedule":"行程安排","alreadyInEgypt":"我已经在埃及","arrivalDate":"抵达日期","departureDate":"离开日期","bookingSummary":"预订摘要","tearHere":"从此处撕开","participants":"参与人数","children":"儿童","total":"总计","addToCart":"加入购物车","processing":"处理中...","bookNowPayLater":"立即预订（稍后付款）","paymentProcessing":"正在处理付款...","payOnlineNow":"立即在线付款","loginToCompletePayment":"请登录以完成付款。","paymentTokenError":"无法获取付款令牌。","paymentGatewayError":"支付网关错误。","tripBooked":"行程预订成功！","payLaterInfo":"您可以稍后在控制面板付款。","bookingDetailsRequired":"请完成所有预订信息。","bookingRequestRecorded":"预订请求已成功记录。","loginToBook":"请登录后预订行程","selectTwoLanguages":"最多只能选择两种语言。"
   },
+  "b2b": {"title":"您在埃及的首选旅游管理合作伙伴","intro":"为您的客户提供全面而非凡的埃及旅行服务。","whatWeProvide":"我们的服务","provideText":"我们定制非凡体验，创造难忘回忆。","expertise":"专业知识","expertiseText":"埃及学专家带来知识与热情。","professionalism":"专业素养","professionalismText":"专业团队确保安全与舒适。","customization":"定制服务","customizationText":"根据客户需求定制行程。","experience":"经验","experienceText":"多年经验服务个人旅行者和团队。","contactText":"用非凡的埃及旅程丰富您的产品。","contactUs":"联系我们"},
     "privacyPolicy": {
     "title": "隐私政策",
     "effectiveDate": "生效日期: 2026年7月1日",

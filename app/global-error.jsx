@@ -1,0 +1,5 @@
+"use client";
+
+export default function GlobalError({ reset }) {
+  return <html lang="en"><body style={{ margin: 0, background: "#0a0a0a", color: "#ededed", fontFamily: "Arial, Helvetica, sans-serif" }}><main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "24px", textAlign: "center" }}><section style={{ maxWidth: "560px", border: "1px solid rgba(201,163,74,.45)", borderRadius: "28px", padding: "48px 32px", background: "rgba(30,30,30,.85)" }}><div style={{ fontSize: "48px", color: "#c9a34a" }}>𓂀</div><p style={{ color: "#c9a34a", letterSpacing: ".3em", fontWeight: 700 }}>WASETTRAVEL</p><h1 style={{ fontSize: "36px", margin: "20px 0 12px" }}>We are restoring the journey</h1><p style={{ opacity: .75, lineHeight: 1.7 }}>An unexpected error occurred. Please try again in a moment.</p><button onClick={() => reset()} style={{ marginTop: "24px", border: 0, borderRadius: "12px", padding: "14px 28px", background: "#c9a34a", color: "#fff", fontWeight: 700, cursor: "pointer" }}>Try again</button></section></main></body></html>;
+}

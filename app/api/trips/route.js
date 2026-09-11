@@ -163,10 +163,23 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(req) {
   try {
     const db = await connectDB();
-    const [trips] = await db.query(`
+    const summary = new URL(req.url).searchParams.get("summary") === "1";
+    const query = summary
+      ? `
+      SELECT
+        t.id,
+        t.title,
+        t.currency,
+        t.cover_image,
+        t.group_price,
+        t.rating,
+        COALESCE((SELECT COUNT(*) FROM reviews r WHERE r.trip_id = t.id), 0) AS review_count
+      FROM trips t
+    `
+      : `
       SELECT 
         t.*,
         COALESCE(
@@ -255,7 +268,8 @@ export async function GET() {
         ), '[]'
         ) AS trip_details
       FROM trips t
-    `);
+    `;
+    const [trips] = await db.query(query);
 
     const safeParse = (value) => {
       try {
@@ -290,6 +304,7 @@ export async function GET() {
       exclusions: safeParse(trip.exclusions),
       itinerary: safeParse(trip.days),
       reviews: safeParse(trip.reviews),
+      review_count: Number(trip.review_count ?? 0),
       trip_details: safeParse(trip.trip_details),
       discountPercent: Number(trip.discount_percent ?? 0),
     }));

@@ -4,7 +4,9 @@
     "trips": "Reisen",
     "about": "Über uns",
     "contact": "Kontakt",
-    "admin": "Admin"
+    "admin": "Admin",
+    "Logout": "Abmelden",
+    "SignUp": "Registrieren"
   },
   "home": {
     "FullName": "Vollständiger Name",
@@ -120,8 +122,9 @@
   },
     "tripsId": {
     "submitReview": "Bewertung abgeben",
-  "Average": "Durchschnitt"
+  "average": "Durchschnitt","additionalDetails":"Zusätzliche Angaben","travelingWithChildren":"Reise mit Kindern","numberOfChildren":"Anzahl der Kinder","travelingWithPets":"Reise mit Haustieren","selectPets":"Haustiere auswählen","cat":"Katze","dog":"Hund","tourGuide":"Reiseleitung","selectUpToTwoLanguages":"Bis zu 2 Sprachen auswählen","groupSize":"Gruppengröße","tripSchedule":"Reiseplan","alreadyInEgypt":"Ich bin bereits in Ägypten","arrivalDate":"Ankunftsdatum","departureDate":"Abreisedatum","bookingSummary":"Buchungsübersicht","tearHere":"HIER TRENNEN","participants":"Teilnehmer","children":"Kinder","total":"Gesamt","addToCart":"In den Warenkorb","processing":"Wird verarbeitet...","bookNowPayLater":"Jetzt buchen (später zahlen)","paymentProcessing":"Zahlung wird verarbeitet...","payOnlineNow":"Jetzt online bezahlen","loginToCompletePayment":"Bitte melden Sie sich an, um die Zahlung abzuschließen.","paymentTokenError":"Zahlungstoken konnte nicht abgerufen werden.","paymentGatewayError":"Fehler beim Zahlungsanbieter.","tripBooked":"Reise erfolgreich gebucht!","payLaterInfo":"Sie können später über Ihr Dashboard bezahlen.","bookingDetailsRequired":"Bitte vervollständigen Sie die Buchungsdaten.","bookingRequestRecorded":"Buchungsanfrage erfolgreich gespeichert.","loginToBook":"Bitte melden Sie sich an, um die Reise zu buchen","selectTwoLanguages":"Sie können bis zu 2 Sprachen auswählen."
   },
+  "b2b": {"title":"Ihr erstklassiger Partner für Reisemanagement in Ägypten","intro":"Umfassende Reiseservices für außergewöhnliche Reisen Ihrer Kunden.","whatWeProvide":"Unser Angebot","provideText":"Individuelle Erlebnisse, die über das Gewöhnliche hinausgehen.","expertise":"Fachwissen","expertiseText":"Erfahrene Ägyptologen verbinden Wissen und Leidenschaft.","professionalism":"Professionalität","professionalismText":"Fahrer und Guides stehen für Sicherheit und Komfort.","customization":"Individualisierung","customizationText":"Reisepläne nach den Wünschen Ihrer Kunden.","experience":"Erfahrung","experienceText":"Jahrelange Erfahrung mit Einzelreisenden und Gruppen.","contactText":"Bereichern Sie Ihr Angebot mit unvergesslichen Reisen durch Ägypten.","contactUs":"Kontaktieren Sie uns"},
   "privacyPolicy": {
     "title": "Datenschutzrichtlinie",
     "effectiveDate": "Gültigkeitsdatum: 1. Juli 2026",

@@ -11,9 +11,6 @@ import StatsSection from "@/components/about/StatsSection";
 import HeritageSection from "@/components/about/HeritageSection";
 import CTASection from "@/components/about/CTASection";
 import { useLanguage } from "@/context/LanguageContext";
-import { aboutMetadata } from "@/lib/metadata/about";
-import { useRouter } from "next/navigation";
-import SeoHead from "@/components/layout/SeoHead";
 import dynamic from "next/dynamic";
 
 // ✅ Lazy load components غير حرجة
@@ -27,26 +24,9 @@ export default function AboutPage() {
   const { theme } = useTheme();
   const { userData } = useAuth();
   const { lang } = useLanguage();
-  const meta = aboutMetadata[lang] || aboutMetadata.en;
-  const router = useRouter();
-
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  useEffect(() => {
-    const checkScreen = () => setIsSmallScreen(window.innerWidth <= 1024);
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
-    return () => window.removeEventListener("resize", checkScreen);
-  }, []);
 
   return (
     <>
-      <SeoHead
-        title={meta.title}
-        description={meta.description}
-        keywords={meta.keywords}
-        image="/cover.jpg"
-      />
       <main className="relative flex flex-col min-h-screen justify-center items-center">
         <Header />
         <EgyptianBackground />

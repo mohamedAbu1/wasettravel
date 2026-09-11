@@ -10,10 +10,7 @@ import TopTripsSection from "@/components/home/TopTripsSection";
 import TopReviewsSection from "@/components/home/components/TopReviewsSection";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { homeMetadata } from "@/lib/metadata/home";
-import { useEffect, useState } from "react";
 import { useMessages } from "@/context/MessageContext";
-import SeoHead from "@/components/layout/SeoHead";
 import dynamic from "next/dynamic";
 
 // ✅ Lazy load components غير حرجة
@@ -27,31 +24,10 @@ const SignUpModal = dynamic(() => import("@/components/home/components/SignUpBut
 export default function Home() {
   const { userData, chatUser, setChatUser } = useAuth();
   const { lang } = useLanguage();
-  const meta = homeMetadata[lang] || homeMetadata.en;
-  const [dbStatus, setDbStatus] = useState(null);
   const { messages } = useMessages();
-
-  useEffect(() => {
-    // ✅ تأجيل الاتصال بقاعدة البيانات لتقليل الضغط في أول تحميل
-    const timer = setTimeout(() => {
-      async function checkConnection() {
-        const res = await fetch("/api/testConnection");
-        const data = await res.json();
-        setDbStatus(data);
-      }
-      checkConnection();
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <>
-      <SeoHead
-        title={meta.title}
-        description={meta.description}
-        keywords={meta.keywords}
-        image="/cover.jpg"
-      />
       <main
         className={`
           w-full flex flex-col items-center justify-center

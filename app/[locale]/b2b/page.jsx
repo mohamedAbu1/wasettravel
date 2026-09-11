@@ -10,6 +10,7 @@ import { MdEmail } from "react-icons/md";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import SeoHead from "@/components/layout/SeoHead";
+import { useTranslation } from "react-i18next";
 
 // ✅ Lazy load components غير حرجة
 const TestimonialsSection = dynamic(() => import("@/components/b2b/TestimonialsSection"), { ssr: false });
@@ -17,6 +18,7 @@ const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr
 
 const B2bPage = () => {
   const { theme, themeName } = useTheme();
+  const { t } = useTranslation("b2b");
 
   const socialLinks = [
     { Icon: FaFacebookF, url: "https://www.facebook.com/share/1BTkjPD5Sd/", label: "Visit our Facebook page" },
@@ -50,7 +52,7 @@ const B2bPage = () => {
             sizes="100vw"
             priority
             placeholder="blur"
-            blurDataURL="/iamges/blur-placeholder.jpg"
+            blurDataURL="/HomePageImage/apple-touch-icon.png"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/50"></div>
@@ -64,22 +66,17 @@ const B2bPage = () => {
             <h1
               role="heading"
               aria-level={1}
-              aria-label="Your Premier Travel Management Partner in Egypt"
+              aria-label={t("title")}
               className={`text-3xl md:text-5xl mb-4 ${theme.title}`}
             >
-              Your Premier Travel Management Partner in Egypt
+              {t("title")}
             </h1>
 
             <p
-              aria-label="Company introduction text"
+              aria-label={t("intro")}
               className={`text-sm md:text-lg leading-relaxed mb-6 ${theme.subText}`}
             >
-              As a leading destination management company in Egypt, we deliver a
-              comprehensive suite of travel services designed to provide your
-              clients with a seamless and extraordinary journey. Our core
-              capabilities encompass bespoke private guided tours, efficient
-              ground transportation, domestic flight logistics, luxury
-              accommodations, and exclusive Dahabiya Nile cruises.
+              {t("intro")}
             </p>
           </motion.div>
 
@@ -112,25 +109,22 @@ const B2bPage = () => {
             <h2
               role="heading"
               aria-level={2}
-              aria-label="What we are providing"
+              aria-label={t("whatWeProvide")}
               className={`text-3xl mb-4 ${theme.title}`}
             >
-              What we are providing
+              {t("whatWeProvide")}
             </h2>
             <p className={theme.subText}>
-              We believe that our dedication to quality and our strategic location
-              can significantly enhance the travel options you present to your
-              customers. Our true forte lies in customizing experiences that
-              transcend the ordinary, crafting memories that last a lifetime.
+              {t("provideText")}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            {[
-              { title: "Expertise", desc: "Our team comprises expert Egyptologists, each bringing a wealth of knowledge and passion to every tour." },
-              { title: "Professionalism", desc: "We pride ourselves on the professionalism of our drivers and guides, ensuring safety, comfort, and insightful experiences." },
-              { title: "Customization", desc: "We specialize in tailoring itineraries to meet the specific desires of your clients." },
-              { title: "Experience", desc: "With years of operation, we have honed our ability to cater to both individual travelers and groups." },
+              {[
+              { title: t("expertise"), desc: t("expertiseText") },
+              { title: t("professionalism"), desc: t("professionalismText") },
+              { title: t("customization"), desc: t("customizationText") },
+              { title: t("experience"), desc: t("experienceText") },
             ].map((item, idx) => (
               <div key={idx} className={`flex flex-col items-center ${theme.card} p-6`}>
                 <div className={`w-12 h-12 flex items-center justify-center mb-4 ${theme.border}`}>
@@ -155,13 +149,10 @@ const B2bPage = () => {
           <div className={`w-2/3 flex items-center justify-center flex-wrap flex-col lg:flex-row ${theme.card} ${theme.shadow}`}>
             <div className="md:w-1/3 space-y-4">
               <p className={`text-lg leading-relaxed ${theme.subText}`}>
-                We are eager to discuss how we can enrich your offerings and
-                delight your customers with unparalleled journeys through Egypt.
-                Please feel free to reach out at your earliest convenience to
-                initiate a conversation about our potential partnership.
+                {t("contactText")}
               </p>
               <button aria-label="Contact Waset Travel team" className={theme.buttonSecondary}>
-                Contact us
+                {t("contactUs")}
               </button>
             </div>
 
@@ -175,7 +166,7 @@ const B2bPage = () => {
                 sizes="(max-width: 768px) 100vw, 400px"
                 loading="lazy"
                 placeholder="blur"
-                blurDataURL="/iamges/blur-placeholder.jpg"
+                blurDataURL="/HomePageImage/apple-touch-icon.png"
                 className="rounded-lg shadow-lg object-cover"
               />
             </div>

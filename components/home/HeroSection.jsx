@@ -8,7 +8,6 @@ import { useData } from "@/context/DataContext";
 import SocialMediaIcons from "./components/SocialMediaIcons";
 import LeftSocialIcons from "./components/LeftSocialIcons";
 import LogoLetter from "../LogoLetter";
-import Head from "next/head";
 
 export default function HeroSection() {
   const { theme } = useTheme();
@@ -16,15 +15,6 @@ export default function HeroSection() {
 
   return (
     <>
-      {/* ✅ SEO تحسين */}
-      <Head>
-        <title>Waset Travel - Explore Egypt</title>
-        <meta
-          name="description"
-          content="Discover Egypt with Waset Travel. Private tours, Nile cruises, and authentic experiences guided by certified Egyptologists."
-        />
-      </Head>
-
       <section
         className={`relative h-[100vh] w-full overflow-hidden ${theme.background} ${theme.text}`}
       >
@@ -40,14 +30,12 @@ export default function HeroSection() {
               className="absolute inset-0"
             >
               <Image
-                src={images[index] || "/default-hero.jpg"}
+                src={images[index] || "/Luxor/pexels-axp-photography-500641970-18934598.webp"}
                 alt="Waset Travel hero background showing Egypt tours"
                 fill
                 quality={75} // ✅ ضغط الصورة
                 sizes="100vw" // ✅ صور متجاوبة
                 priority // ✅ تحميل سريع للصورة الأساسية
-                placeholder="blur" // ✅ صورة منخفضة الجودة أثناء التحميل
-                blurDataURL="/default-hero-blur.jpg" // نسخة مصغرة للتحميل التدريجي
                 className="object-cover"
               />
             </motion.div>

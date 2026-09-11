@@ -122,11 +122,11 @@ export function TripProvider({ children }) {
   };
 
   // ✅ جلب الرحلات
-  const fetchTrips = useCallback(async () => {
+  const fetchTrips = useCallback(async (query = "") => {
     setLoadingTrips(true);
     setError(null);
     try {
-      const res = await fetch("/api/trips");
+      const res = await fetch(`/api/trips${query}`);
       const result = await res.json();
       if (result.success) {
         setTrips(result.trips);

@@ -47,3 +47,15 @@
     animation: slideIn 0.5s ease-out forwards;
   }
 }
+@keyframes egyptian-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+}
+
+@keyframes status-symbol-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(0, -14px, 0) rotate(8deg); }
+}
+.status-symbol { animation: status-symbol-float 7s ease-in-out infinite; }
+.status-spinner { width: 2.25rem; height: 2.25rem; border: 3px solid rgba(201,163,74,.25); border-top-color: #c9a34a; border-radius: 9999px; animation: status-spin .8s linear infinite; }
+@keyframes status-spin { to { transform: rotate(360deg); } }

@@ -5,6 +5,7 @@ import {
 } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function TripSchedule({
   arrivalDate,
@@ -13,6 +14,7 @@ export default function TripSchedule({
   setDepartureDate,
 }) {
   const { themeName } = useTheme();
+  const { t } = useTranslation("tripsId");
   const [alreadyInEgypt, setAlreadyInEgypt] = useState(false);
 
   const today = new Date();
@@ -29,7 +31,7 @@ export default function TripSchedule({
           themeName === "dark" ? "text-[#c9a34a]" : "text-[#11111194]"
         }`}
       >
-        Trip Schedule
+        {t("tripSchedule")}
       </h3>
 
       {/* ✅ Checkbox */}
@@ -41,7 +43,7 @@ export default function TripSchedule({
           className="w-4 h-4 accent-[#c9a34a]"
         />
         <label className="font-medium">
-          I am already in Egypt
+          {t("alreadyInEgypt")}
         </label>
       </div>
 
@@ -55,7 +57,7 @@ export default function TripSchedule({
                 themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"
               }`}
             />
-            <label className="block font-medium">Arrival Date</label>
+            <label className="block font-medium">{t("arrivalDate")}</label>
             <input
               type="date"
               value={arrivalDate}
@@ -72,7 +74,7 @@ export default function TripSchedule({
                 themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"
               }`}
             />
-            <label className="block font-medium">Departure Date</label>
+            <label className="block font-medium">{t("departureDate")}</label>
             <input
               type="date"
               value={departureDate}

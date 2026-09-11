@@ -1,12 +1,12 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [country, setCountry] = useState(null);
 
-  useEffect(() => {
+  const detectCountry = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -15,14 +15,15 @@ export function AppProvider({ children }) {
         const res = await fetch(
           `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
         );
+        if (!res.ok) return;
         const data = await res.json();
-        setCountry(data.countryName);
+        setCountry(data.countryName || null);
       });
     }
-  }, []);
+  };
 
   return (
-    <AppContext.Provider value={{ country }}>
+    <AppContext.Provider value={{ country, detectCountry }}>
       {children}
     </AppContext.Provider>
   );

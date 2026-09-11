@@ -59,14 +59,14 @@ const CarBookingSection = () => {
       {/* Background Car Image */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/HomePageImage/Copilot_20251003_105735.webp"
+          src="/HomePageImage/car-png-39057.png"
           alt="Background image showing luxury car transfer"
           fill
           quality={75} // ضغط الصورة لتقليل الحجم
           sizes="100vw" // صور متجاوبة
           priority
           placeholder="blur"
-          blurDataURL="/HomePageImage/blur-placeholder.jpg"
+          blurDataURL="/HomePageImage/apple-touch-icon.png"
           className="object-cover opacity-20 rounded-lg"
         />
 
@@ -116,7 +116,7 @@ const CarBookingSection = () => {
             sizes="(max-width: 768px) 100vw, 600px"
             priority
             placeholder="blur"
-            blurDataURL="/HomePageImage/car-blur.jpg"
+          blurDataURL="/HomePageImage/apple-touch-icon.png"
             className="object-contain drop-shadow-2xl"
           />
         </motion.div>

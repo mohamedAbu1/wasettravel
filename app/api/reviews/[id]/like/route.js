@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 
 // ✅ جلب اللايكات
-export async function GET(req, context) {
+export async function GET(request, { params }) {
   try {
-        const reviewId = params.id;
+    const { id: reviewId } = await params;
 
     const db = await connectDB();
     const [rows] = await db.query(
@@ -23,11 +23,11 @@ export async function GET(req, context) {
 }
 
 // ✅ إضافة لايك
-export async function POST(req, context) {
+export async function POST(request, { params }) {
   try {
-    const reviewId = params.id;
+    const { id: reviewId } = await params;
 
-    const body = await req.json();
+    const body = await request.json();
     const { user_id } = body;
 
     if (!user_id) {
@@ -47,12 +47,11 @@ export async function POST(req, context) {
 }
 
 // ✅ إزالة لايك
-export async function DELETE(req, context) {
+export async function DELETE(request, { params }) {
   try {
-    const { params } = await context; // ✅ لازم await
-    const reviewId = params.id;
+    const { id: reviewId } = await params;
 
-    const body = await req.json();
+    const body = await request.json();
     const { user_id } = body;
 
     if (!user_id) {

@@ -4,7 +4,9 @@
     "trips": "Voyages",
     "about": "À propos",
     "contact": "Contact",
-    "admin": "Admin"
+    "admin": "Admin",
+    "Logout": "Se déconnecter",
+    "SignUp": "S'inscrire"
   },
   "home": {
     "FullName": "Nom complet",
@@ -119,8 +121,9 @@
   },
      "tripsId": {
    "submitReview": "Soumettre l'avis",
-  "Average": "Moyenne"
+  "average": "Moyenne","additionalDetails":"Détails supplémentaires","travelingWithChildren":"Voyage avec des enfants","numberOfChildren":"Nombre d'enfants","travelingWithPets":"Voyage avec des animaux","selectPets":"Sélectionner les animaux","cat":"Chat","dog":"Chien","tourGuide":"Guide touristique","selectUpToTwoLanguages":"Sélectionnez jusqu'à 2 langues","groupSize":"Taille du groupe","tripSchedule":"Programme du voyage","alreadyInEgypt":"Je suis déjà en Égypte","arrivalDate":"Date d'arrivée","departureDate":"Date de départ","bookingSummary":"Résumé de la réservation","tearHere":"DÉCHIRER ICI","participants":"Participants","children":"Enfants","total":"Total","addToCart":"Ajouter au panier","processing":"Traitement...","bookNowPayLater":"Réserver maintenant (payer plus tard)","paymentProcessing":"Paiement en cours...","payOnlineNow":"Payer en ligne","loginToCompletePayment":"Veuillez vous connecter pour effectuer le paiement.","paymentTokenError":"Impossible d'obtenir le jeton de paiement.","paymentGatewayError":"Erreur de la passerelle de paiement.","tripBooked":"Voyage réservé avec succès !","payLaterInfo":"Vous pourrez payer plus tard depuis votre tableau de bord.","bookingDetailsRequired":"Veuillez compléter les détails de la réservation.","bookingRequestRecorded":"Demande de réservation enregistrée.","loginToBook":"Vous devez vous connecter pour réserver ce voyage","selectTwoLanguages":"Vous pouvez sélectionner jusqu'à 2 langues."
   },
+  "b2b": {"title":"Votre partenaire privilégié pour la gestion de voyages en Égypte","intro":"Nous proposons des services complets pour des voyages exceptionnels en Égypte.","whatWeProvide":"Ce que nous proposons","provideText":"Nous créons des expériences personnalisées qui sortent de l'ordinaire.","expertise":"Expertise","expertiseText":"Des égyptologues experts partagent leurs connaissances.","professionalism":"Professionnalisme","professionalismText":"Nos équipes garantissent sécurité et confort.","customization":"Personnalisation","customizationText":"Des itinéraires adaptés à vos clients.","experience":"Expérience","experienceText":"Des années au service des voyageurs et des groupes.","contactText":"Enrichissez votre offre avec des voyages uniques en Égypte.","contactUs":"Nous contacter"},
    "privacyPolicy": {
     "title": "Politique de confidentialité",
     "effectiveDate": "Date d'entrée en vigueur: 1 juillet 2026",

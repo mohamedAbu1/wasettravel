@@ -129,7 +129,7 @@ const OurSection = () => {
   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
   loading="lazy"
   placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
-  blurDataURL="/HomePageImage/blur-placeholder.jpg" // نسخة مصغرة للتحميل التدريجي
+  blurDataURL="/HomePageImage/apple-touch-icon.png" // نسخة مصغرة للتحميل التدريجي
   className="object-cover rounded-lg"
 />
 
@@ -166,7 +166,7 @@ const OurSection = () => {
   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
   loading="lazy"
   placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
-  blurDataURL="/HomePageImage/blur-placeholder.jpg" // نسخة مصغرة للتحميل التدريجي
+  blurDataURL="/HomePageImage/apple-touch-icon.png" // نسخة مصغرة للتحميل التدريجي
   className="object-cover rounded-lg"
 />
 

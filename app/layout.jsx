@@ -2,22 +2,37 @@
 import "./style/globals.css";
 import Providers from "./providers";
 
+export const metadata = {
+  metadataBase: new URL("https://wasettravel.com"),
+  title: "WasetTravel | Explore Egypt's Best Tours & Trips",
+  description:
+    "Discover Egypt with WasetTravel: luxury Nile cruises, desert safaris, Red Sea diving, historical tours, and personalized travel experiences.",
+  keywords:
+    "WasetTravel, Egypt tours, Nile cruise, desert safari, Red Sea diving, Luxor, Aswan, travel agency",
+  openGraph: {
+    title: "WasetTravel | Explore Egypt's Best Tours & Trips",
+    description:
+      "Discover Egypt with WasetTravel through curated tours and personalized travel experiences.",
+    type: "website",
+    url: "https://wasettravel.com/en",
+    siteName: "WasetTravel",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WasetTravel | Explore Egypt's Best Tours & Trips",
+    description:
+      "Discover Egypt with WasetTravel through curated tours and personalized travel experiences.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* بدل @import */}
-        <link rel="preload" href="/theme.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/scrollbar.css" as="style" onload="this.onLoad=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/animations.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/swiper.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/social-icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/mui-inputs.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/datepicker.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/luxury-input.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/select.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-        <link rel="preload" href="/BookingSummaryCard.css" as="style" onload="this.onload=null;this.rel='stylesheet'"/>
-      </head>
       <body>
         <Providers>{children}</Providers>
       </body>

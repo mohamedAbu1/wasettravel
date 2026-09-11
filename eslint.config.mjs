@@ -1,19 +1,30 @@
 // eslint.config.js
 import js from "@eslint/js";
+import globals from "globals";
 
 export default [
-  js.configs.recommended,
   {
     ignores: [
-      "node_modules",
-      ".next",
-      "dist",
-      "build",
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/build/**",
     ],
-    rules: {
-      // أمثلة على قواعد إضافية
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
+  },
+  js.configs.recommended,
+  {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.es2021,
+      },
     },
+    ignores: [
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/build/**",
+    ],
   },
 ];

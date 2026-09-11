@@ -6,6 +6,7 @@ import { useData } from "@/context/DataContext";
 import { useChat } from "@/context/ChatContext";
 import { motion } from "framer-motion";
 import { useMessages } from "@/context/MessageContext";
+import { useTranslation } from "react-i18next";
 
 const BookingSummaryCard = ({
   tourName,
@@ -20,6 +21,7 @@ const BookingSummaryCard = ({
   const { handleLoginOpen } = useData();
   const { open, setOpen } = useChat(); // ✅ أضفت setMessageses هنا
   const { setMessageses,sendMessage } = useMessages(); // ✅ أضفت setMessageses هنا
+  const { t } = useTranslation("tripsId");
   // حساب سعر الأطفال (مثال: نصف السعر)
   const childrenPrice = (checkInPrice * childrenCount) / 2;
   let total = "$0,00";
@@ -32,7 +34,7 @@ const BookingSummaryCard = ({
   }
 const handleBookingClick = async () => {
   if (!participants || !checkInPrice || !checkIn || !checkOut) {
-    toast.error("⚠️ Please complete all booking details before proceeding.");
+    toast.error(`⚠️ ${t("bookingDetailsRequired")}`);
     return;
   }
 
@@ -76,11 +78,11 @@ await sendMessage({
     // ✅ إضافة رسالة تأكيد داخل الدردشة
     setMessageses((prev) => [
       ...prev,
-      { sender: "assistant", content: "✅ Booking request recorded successfully." },
+      { sender: "assistant", content: `✅ ${t("bookingRequestRecorded")}` },
     ]);
   } else {
     handleLoginOpen();
-    toast.error("You must log in to book the trip");
+    toast.error(t("loginToBook"));
   }
 };
 
@@ -88,7 +90,7 @@ await sendMessage({
   return (
     <div className={`booking-card ${themeName}`}>
       {/* Header */}
-      <h2 className="booking-header">Booking Summary</h2>
+      <h2 className="booking-header">{t("bookingSummary")}</h2>
 
       {/* Ticket Card */}
       <div className="ticket">
@@ -98,18 +100,18 @@ await sendMessage({
             {tourName ||
               "Private Cairo Tour – Giza Pyramids, Sphinx & Grand Egyptian Museum (GEM)"}
           </p>
-          <p className="participants">Participants: {participants || 0}</p>
-          <p className="participants">Children: {childrenCount || 0}</p>
+          <p className="participants">{t("participants")}: {participants || 0}</p>
+          <p className="participants">{t("children")}: {childrenCount || 0}</p>
         </div>
 
         {/* Tear Line */}
         <div className="ticket-line">
-          <span>TEAR HERE</span>
+          <span>{t("tearHere")}</span>
         </div>
 
         {/* Right Side */}
         <div className="ticket-right">
-          <p>Total:</p>
+          <p>{t("total")}:</p>
           <p className="total">
             {!isNaN(total) ? `$${total.toFixed(2)}` : "$0.00"}
           </p>
@@ -136,7 +138,7 @@ await sendMessage({
       }`}
         >
           <span className="text-xl">🛒</span>
-          <span>Add to cart</span>
+          <span>{t("addToCart")}</span>
 
           {/* إيفيكت خلفي متحرك */}
           <span className="absolute inset-0 rounded-lg bg-white/10 blur-sm animate-pulse"></span>

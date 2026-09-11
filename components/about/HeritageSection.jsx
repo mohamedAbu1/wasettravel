@@ -69,7 +69,7 @@ export default function HeritageSection() {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
             loading="lazy" // ✅ تحميل مؤجل للصور الثانوية
             placeholder="blur"
-            blurDataURL="/iamges/blur-placeholder.jpg"
+            blurDataURL="/HomePageImage/apple-touch-icon.png"
             className="object-cover rounded-2xl"
           />
         </motion.div>

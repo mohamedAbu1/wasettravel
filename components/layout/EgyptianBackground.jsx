@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
-import { motion } from "framer-motion";
 
 const symbols = [
   "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽",
@@ -30,16 +29,8 @@ export default function EgyptianBackground() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {items.map((item) => (
-        <motion.span
+        <span
           key={item.id}
-          initial={{ y: 0, opacity: 0 }}
-          animate={{ y: [0, -10, 0], opacity: item.opacity }}
-          transition={{
-            duration: 6 + Math.random() * 4,
-            repeat: Infinity,
-            delay: item.delay,
-            ease: "easeInOut",
-          }}
           style={{
             position: "absolute",
             top: `${item.top}%`,
@@ -48,10 +39,12 @@ export default function EgyptianBackground() {
             transform: `rotate(${item.rotate}deg)`,
             color: theme.icon,
             filter: "blur(0.5px)",
+            animation: "egyptian-float 10s ease-in-out infinite",
+            animationDelay: `${item.delay}s`,
           }}
         >
           {item.symbol}
-        </motion.span>
+        </span>
       ))}
     </div>
   );

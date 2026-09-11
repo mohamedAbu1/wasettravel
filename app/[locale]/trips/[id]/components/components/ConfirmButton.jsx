@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 export default function ConfirmButton({
   trip,
@@ -22,10 +23,11 @@ export default function ConfirmButton({
   const [loading, setLoading] = useState(false);
   const [loadingPay, setLoadingPay] = useState(false);
   const { userData } = useAuth();
+  const { t } = useTranslation("tripsId");
 
   const handlePayment = async () => {
-    if (!user) {
-      toast.error("Please log in to complete the payment.");
+    if (!userData) {
+      toast.error(t("loginToCompletePayment"));
       return;
     }
     setLoadingPay(true);
@@ -49,15 +51,14 @@ export default function ConfirmButton({
         // ✅ التوجيه الصحيح للسيرفر الجديد الخاص بحسابك
         window.location.href = `https://accept.paymob.com/api/acceptance/iframes/${process.env.NEXT_PUBLIC_PAYMOB_IFRAME_ID}?payment_token=${data.token}`;
       } else {
-        toast.error("Failed to get payment token.");
+        toast.error(t("paymentTokenError"));
       }
     } catch (err) {
-      toast.error("Payment gateway error.");
+      toast.error(t("paymentGatewayError"));
     } finally {
       setLoadingPay(false);
     }
   };
-console.log("object",userData)
   const handlePurchase = async () => {
     setLoading(true);
     const bookingData = {
@@ -77,11 +78,11 @@ console.log("object",userData)
     };
     const result = await purchaseTrip(bookingData);
     if (result.success) {
-      toast.success("✅ Trip booked successfully!");
-      toast.info("💡 You can pay later from your dashboard.");
+      toast.success(`✅ ${t("tripBooked")}`);
+      toast.info(`💡 ${t("payLaterInfo")}`);
       onClose();
     } else {
-      toast.error("❌ " + result.error);
+      toast.error(`❌ ${result.error}`);
     }
     setLoading(false);
   };
@@ -94,7 +95,7 @@ console.log("object",userData)
         className={`mt-4 w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition cursor-pointer text-white ${loading ? "opacity-50 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"}`}
       >
         <FaCheckCircle className="w-5 h-5" />
-        {loading ? "Processing..." : "Book Now (Pay Later)"}
+        {loading ? t("processing") : t("bookNowPayLater")}
       </button>
       <button
         onClick={handlePayment}
@@ -102,7 +103,7 @@ console.log("object",userData)
         className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition cursor-pointer text-white ${loadingPay ? "opacity-50 cursor-not-allowed" : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"}`}
       >
         <FaCreditCard className="w-5 h-5" />
-        {loadingPay ? "Payment is being processed..." : "Pay online now"}
+        {loadingPay ? t("paymentProcessing") : t("payOnlineNow")}
       </button>
     </div>
   );

@@ -23,7 +23,7 @@ export default function HeroSection({ themeName, theme }) {
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px" // ✅ صور متجاوبة
         priority // ✅ تحميل سريع للصورة الأساسية
         placeholder="blur" // ✅ صورة منخفضة الجودة أثناء التحميل
-        blurDataURL="/HomePageImage/blur-placeholder.jpg" // نسخة مصغرة للتحميل التدريجي
+        blurDataURL="/HomePageImage/apple-touch-icon.png" // نسخة مصغرة للتحميل التدريجي
         className="object-cover brightness-75"
       />
 

@@ -11,13 +11,10 @@ import LoginModal from "@/components/home/components/LoginModal";
 import ChatWidget from "@/components/layout/ChatWidget";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { contactMetadata } from "@/lib/metadata/contact";
 import DividerWithIcon from "@/components/layout/DividerWithIcon";
-import { useRouter } from "next/navigation";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import CurrencySelector from "@/components/layout/CurrencySelector";
 import SignUpModal from "@/components/home/components/SignUpButton";
-import SeoHead from "@/components/layout/SeoHead";
 
 const symbols = [
   "𓂀",
@@ -42,9 +39,7 @@ export default function ContactPage() {
   const { theme, themeName } = useTheme();
   const { userData } = useAuth();
   const { lang } = useLanguage();
-  const meta = contactMetadata[lang] || contactMetadata.en;
   const { t } = useTranslation("contact");
-  const router = useRouter();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -53,14 +48,6 @@ export default function ContactPage() {
     message: "",
   });
 
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  useEffect(() => {
-    const checkScreen = () => setIsSmallScreen(window.innerWidth <= 1024);
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
-    return () => window.removeEventListener("resize", checkScreen);
-  }, []);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -90,12 +77,6 @@ export default function ContactPage() {
 
   return (
     <>
-      <SeoHead
-        title={meta.title}
-        description={meta.description}
-        keywords={meta.keywords}
-        image="/cover.jpg" // صورة افتراضية للصفحة
-      />
       <main className="relative flex flex-col min-h-screen justify-center items-center overflow-y-hidden">
         <Header />
 

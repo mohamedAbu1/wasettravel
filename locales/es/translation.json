@@ -4,7 +4,9 @@
     "trips": "Viajes",
     "about": "Acerca de",
     "contact": "Contacto",
-    "admin": "Admin"
+    "admin": "Admin",
+    "Logout": "Cerrar sesión",
+    "SignUp": "Registrarse"
   },
   "home": {
     "FullName": "Nombre completo",
@@ -119,8 +121,9 @@
   },
        "tripsId": {
  "submitReview": "Enviar reseña",
-  "Average": "Promedio"
+  "average": "Promedio","additionalDetails":"Detalles adicionales","travelingWithChildren":"Viajo con niños","numberOfChildren":"Número de niños","travelingWithPets":"Viajo con mascotas","selectPets":"Selecciona mascotas","cat":"Gato","dog":"Perro","tourGuide":"Guía turístico","selectUpToTwoLanguages":"Selecciona hasta 2 idiomas","groupSize":"Tamaño del grupo","tripSchedule":"Itinerario del viaje","alreadyInEgypt":"Ya estoy en Egipto","arrivalDate":"Fecha de llegada","departureDate":"Fecha de salida","bookingSummary":"Resumen de reserva","tearHere":"RASGAR AQUÍ","participants":"Participantes","children":"Niños","total":"Total","addToCart":"Añadir al carrito","processing":"Procesando...","bookNowPayLater":"Reservar ahora (pagar después)","paymentProcessing":"Procesando el pago...","payOnlineNow":"Pagar en línea ahora","loginToCompletePayment":"Inicia sesión para completar el pago.","paymentTokenError":"No se pudo obtener el token de pago.","paymentGatewayError":"Error de la pasarela de pago.","tripBooked":"¡Viaje reservado correctamente!","payLaterInfo":"Puedes pagar después desde tu panel.","bookingDetailsRequired":"Completa todos los datos de la reserva antes de continuar.","bookingRequestRecorded":"Solicitud de reserva registrada correctamente.","loginToBook":"Debes iniciar sesión para reservar el viaje","selectTwoLanguages":"Solo puedes seleccionar hasta 2 idiomas."
   },
+  "b2b": {"title":"Tu socio principal de gestión de viajes en Egipto","intro":"Ofrecemos servicios integrales para viajes extraordinarios de tus clientes.","whatWeProvide":"Lo que ofrecemos","provideText":"Personalizamos experiencias extraordinarias y creamos recuerdos duraderos.","expertise":"Experiencia","expertiseText":"Egiptólogos expertos aportan conocimiento y pasión.","professionalism":"Profesionalidad","professionalismText":"Conductores y guías garantizan seguridad y comodidad.","customization":"Personalización","customizationText":"Itinerarios adaptados a tus clientes.","experience":"Trayectoria","experienceText":"Años de experiencia atendiendo viajeros y grupos.","contactText":"Enriquece tu oferta con viajes excepcionales por Egipto.","contactUs":"Contáctanos"},
     "privacyPolicy": {
     "title": "Política de privacidad",
     "effectiveDate": "Fecha de vigencia: 1 de julio de 2026",

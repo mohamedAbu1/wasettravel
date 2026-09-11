@@ -122,9 +122,10 @@
   },
   "tripsId": {
     "submitReview": "Submit Review",
-    "average":"Average"
+    "average":"Average","additionalDetails":"Additional Details","travelingWithChildren":"Traveling with children","numberOfChildren":"Number of children","travelingWithPets":"Traveling with pets","selectPets":"Select pets","cat":"Cat","dog":"Dog","tourGuide":"Tour Guide","selectUpToTwoLanguages":"Select up to 2 languages","groupSize":"Group Size","tripSchedule":"Trip Schedule","alreadyInEgypt":"I am already in Egypt","arrivalDate":"Arrival Date","departureDate":"Departure Date","bookingSummary":"Booking Summary","tearHere":"TEAR HERE","participants":"Participants","children":"Children","total":"Total","addToCart":"Add to cart","processing":"Processing...","bookNowPayLater":"Book Now (Pay Later)","paymentProcessing":"Payment is being processed...","payOnlineNow":"Pay online now","loginToCompletePayment":"Please log in to complete the payment.","paymentTokenError":"Failed to get payment token.","paymentGatewayError":"Payment gateway error.","tripBooked":"Trip booked successfully!","payLaterInfo":"You can pay later from your dashboard.","bookingDetailsRequired":"Please complete all booking details before proceeding.","bookingRequestRecorded":"Booking request recorded successfully.","loginToBook":"You must log in to book the trip","selectTwoLanguages":"You can select only up to 2 languages."
   },
-    "privacyPolicy": {
+  "b2b": {"title":"Your Premier Travel Management Partner in Egypt","intro":"As a leading destination management company in Egypt, we deliver seamless and extraordinary journeys for your clients.","whatWeProvide":"What we are providing","provideText":"We customize experiences that transcend the ordinary, crafting memories that last a lifetime.","expertise":"Expertise","expertiseText":"Expert Egyptologists bring knowledge and passion to every tour.","professionalism":"Professionalism","professionalismText":"Professional drivers and guides ensure safety, comfort, and insight.","customization":"Customization","customizationText":"Itineraries tailored to your clients' specific desires.","experience":"Experience","experienceText":"Years of operation serving individual travelers and groups.","contactText":"Let us enrich your offerings with unparalleled journeys through Egypt.","contactUs":"Contact us"},
+  "privacyPolicy": {
     "title": "Privacy Policy",
     "effectiveDate": "Effective date: July 1, 2026",
     "intro": "This page informs you of our policies regarding the collection, use, and disclosure of personal data.",

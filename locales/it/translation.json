@@ -4,7 +4,9 @@
     "trips": "Viaggi",
     "about": "Chi siamo",
     "contact": "Contatto",
-    "admin": "Admin"
+    "admin": "Admin",
+    "Logout": "Esci",
+    "SignUp": "Registrati"
   },
   "home": {
     "FullName": "Nome completo",
@@ -119,8 +121,9 @@
   },
    "tripsId": {
      "submitReview": "Invia recensione",
-  "Average": "Media"
+  "average": "Media","additionalDetails":"Dettagli aggiuntivi","travelingWithChildren":"Viaggio con bambini","numberOfChildren":"Numero di bambini","travelingWithPets":"Viaggio con animali","selectPets":"Seleziona animali","cat":"Gatto","dog":"Cane","tourGuide":"Guida turistica","selectUpToTwoLanguages":"Seleziona fino a 2 lingue","groupSize":"Dimensione del gruppo","tripSchedule":"Programma del viaggio","alreadyInEgypt":"Sono già in Egitto","arrivalDate":"Data di arrivo","departureDate":"Data di partenza","bookingSummary":"Riepilogo della prenotazione","tearHere":"STRAPPA QUI","participants":"Partecipanti","children":"Bambini","total":"Totale","addToCart":"Aggiungi al carrello","processing":"Elaborazione...","bookNowPayLater":"Prenota ora (paga dopo)","paymentProcessing":"Pagamento in elaborazione...","payOnlineNow":"Paga online ora","loginToCompletePayment":"Accedi per completare il pagamento.","paymentTokenError":"Impossibile ottenere il token di pagamento.","paymentGatewayError":"Errore del gateway di pagamento.","tripBooked":"Viaggio prenotato con successo!","payLaterInfo":"Puoi pagare in seguito dalla tua dashboard.","bookingDetailsRequired":"Completa tutti i dettagli della prenotazione.","bookingRequestRecorded":"Richiesta registrata con successo.","loginToBook":"Devi accedere per prenotare il viaggio","selectTwoLanguages":"Puoi selezionare fino a 2 lingue."
   },
+  "b2b": {"title":"Il tuo partner di riferimento per la gestione dei viaggi in Egitto","intro":"Servizi completi per viaggi straordinari dei tuoi clienti.","whatWeProvide":"Cosa offriamo","provideText":"Creiamo esperienze personalizzate e indimenticabili.","expertise":"Competenza","expertiseText":"Egittologi esperti uniscono conoscenza e passione.","professionalism":"Professionalità","professionalismText":"Autisti e guide garantiscono sicurezza e comfort.","customization":"Personalizzazione","customizationText":"Itinerari adattati ai desideri dei tuoi clienti.","experience":"Esperienza","experienceText":"Anni di attività al servizio di viaggiatori e gruppi.","contactText":"Arricchisci la tua offerta con viaggi straordinari in Egitto.","contactUs":"Contattaci"},
     "privacyPolicy": {
     "title": "Informativa sulla privacy",
     "effectiveDate": "Data di entrata in vigore: 1 luglio 2026",

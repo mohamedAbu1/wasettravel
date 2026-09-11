@@ -8,6 +8,7 @@ import {
   FaLanguage,
 } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export default function AdditionalDetails({
   hasChildren,
@@ -26,6 +27,7 @@ export default function AdditionalDetails({
   setGuideLanguages,
 }) {
   const { themeName } = useTheme();
+  const { t } = useTranslation("tripsId");
 
   const availableLanguages = [
     "English",
@@ -43,7 +45,7 @@ export default function AdditionalDetails({
       if (guideLanguages.length < 2) {
         setGuideLanguages([...guideLanguages, lang]);
       } else {
-        alert("❌ You can select only up to 2 languages.");
+        alert(`❌ ${t("selectTwoLanguages")}`);
       }
     }
   };
@@ -58,7 +60,7 @@ export default function AdditionalDetails({
           themeName === "dark" ? "text-[#c9a34a]" : "text-[#11111194]"
         }`}
       >
-        Additional Details
+        {t("additionalDetails")}
       </h3>
 
       <div className="flex flex-row gap-8">
@@ -72,12 +74,12 @@ export default function AdditionalDetails({
               className="accent-[#c9a34a]"
             />
             <FaChild className="text-[#c9a34a]" />{" "}
-            <span>Traveling with children</span>
+            <span>{t("travelingWithChildren")}</span>
           </label>
 
           {hasChildren && (
             <div className="ml-6 mb-3 flex items-center gap-2">
-              <label className="font-medium">Number of children:</label>
+              <label className="font-medium">{t("numberOfChildren")}:</label>
               <select
                 value={childrenCount}
                 onChange={(e) => setChildrenCount(Number(e.target.value))}
@@ -103,12 +105,12 @@ export default function AdditionalDetails({
               className="accent-[#c9a34a]"
             />
             <FaDog className="text-[#c9a34a]" />{" "}
-            <span>Traveling with pets</span>
+            <span>{t("travelingWithPets")}</span>
           </label>
 
           {hasPets && (
             <div className="ml-6 mb-3">
-              <label className="font-medium block mb-2">Select pets:</label>
+              <label className="font-medium block mb-2">{t("selectPets")}:</label>
               <div className="flex gap-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -122,7 +124,7 @@ export default function AdditionalDetails({
                       )
                     }
                   />
-                  <FaCat className="text-[#c9a34a]" /> Cat
+                  <FaCat className="text-[#c9a34a]" /> {t("cat")}
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -137,7 +139,7 @@ export default function AdditionalDetails({
                       )
                     }
                   />
-                  <FaDog className="text-[#c9a34a]" /> Dog
+                  <FaDog className="text-[#c9a34a]" /> {t("dog")}
                 </label>
               </div>
             </div>
@@ -153,14 +155,13 @@ export default function AdditionalDetails({
               onChange={() => setHasGuide(!hasGuide)}
               className="accent-[#c9a34a]"
             />
-            <FaUserTie className="text-[#c9a34a]" /> <span>Tour Guide</span>
+            <FaUserTie className="text-[#c9a34a]" /> <span>{t("tourGuide")}</span>
           </label>
 
           {hasGuide && (
             <div className="ml-6 mb-3">
               <label className="font-medium block mb-2 flex items-center gap-2">
-                <FaLanguage className="text-[#c9a34a]" /> Select up to 2
-                languages:
+                <FaLanguage className="text-[#c9a34a]" /> {t("selectUpToTwoLanguages")}:
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {availableLanguages.map((lang) => (
@@ -185,7 +186,7 @@ export default function AdditionalDetails({
         <div className="flex flex-col items-center gap-2">
           <div className="flex flex-row items-center gap-2">
             <FaUsers className="text-[#c9a34a]" />
-            <label className="block mb-1 font-medium">Group Size</label>
+            <label className="block mb-1 font-medium">{t("groupSize")}</label>
           </div>
           <select
             value={groupSize}

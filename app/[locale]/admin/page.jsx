@@ -12,59 +12,42 @@ import MessagesList from "./components/MessagesList";
 import EditTrip from "./components/EditTrip"; 
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import UsersSection from "./components/UsersSection";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "./context/AuthContext";
 import CurrencyRates from "./components/CurrencyRates";
-
-const symbols = ["𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽","𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟"];
 
 export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const { theme, themeName } = useTheme();
-  const { userData } = useAuth(); // ✅ بيانات من الـ API
+  const { userData, loading } = useAuth();
   const router = useRouter();
+  const { locale } = useParams();
 
 
-  // ✅ تحقق من المستخدم وصلاحيته داخل useEffect
-  // useEffect(() => {
-  //   if (!userData || userData?.role?.toLowerCase() !== "admin") {
-  //     router.replace("/"); // رجعه للصفحة الرئيسية لو مش أدمن
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!loading && (!userData || userData?.role?.toLowerCase() !== "admin")) {
+      router.replace(`/${locale || "en"}`);
+    }
+  }, [loading, locale, router, userData]);
 
-  // // لو المستخدم مش Admin، ما تعرضش أي محتوى
-  // if (!userData || userData?.role?.toLowerCase() !== "admin") {
-  //   return null;
-  // }
+  if (loading || !userData || userData?.role?.toLowerCase() !== "admin") {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#0b0b0b] text-[#f4d58d]">
+        <p className="rounded-xl border border-[#c9a34a]/30 px-6 py-4">Checking administrator access…</p>
+      </main>
+    );
+  }
 
   return (
-    <main className={`relative flex min-h-screen ${theme.background} ${theme.text} overflow-hidden`}>
+    <main className={`relative flex min-h-screen ${theme.background} ${theme.text}`}>
       <EgyptianBackground />
 
-      <div className="absolute inset-0 pointer-events-none z-10">
-        {Array.from({ length: 25 }).map((_, i) => (
-          <span
-            key={i}
-            className={`absolute ${
-              themeName === "dark" ? "text-gray-700" : "text-[#c9a34a]"
-            } opacity-20 text-7xl animate-pulse`}
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              transform: `rotate(${Math.random() * 360}deg)`,
-            }}
-          >
-            {symbols[Math.floor(Math.random() * symbols.length)]}
-          </span>
-        ))}
-      </div>
-
       {/* Sidebar */}
-      <Sidebar setActiveSection={setActiveSection} activeSection={activeSection} themeName={themeName} />
+      <Sidebar setActiveSection={setActiveSection} activeSection={activeSection} themeName={themeName} locale={locale} />
 
       {/* Main Content */}
       <section
-        className={`flex-1 p-10 relative z-10 ${
+        className={`min-w-0 flex-1 p-4 sm:p-6 lg:p-10 relative z-10 ${
           themeName === "dark" ? "bg-black" : "bg-white"
         } rounded-tl-3xl`}
       >

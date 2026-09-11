@@ -3,8 +3,12 @@ import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
+import { requireAdmin } from "@/lib/auth/admin";
 
 export async function POST(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const contentType = req.headers.get("content-type") || "";
 
@@ -111,6 +115,9 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
@@ -142,6 +149,9 @@ export async function GET(req) {
 
 // ✅ تحديث حالة الرسالة
 export async function PUT(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     let body = {};
     try {
@@ -177,6 +187,9 @@ export async function PUT(req) {
 
 // ✅ حذف رسالة
 export async function DELETE(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     let body = {};
     try {

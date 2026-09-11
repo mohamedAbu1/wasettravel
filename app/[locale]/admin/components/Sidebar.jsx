@@ -13,14 +13,17 @@ import {
   FaEnvelope,
   FaEdit,
 } from "react-icons/fa";
-import EgyptianBackground from "@/components/layout/EgyptianBackground";
+import { useAuth } from "../context/AuthContext";
 
-export default function Sidebar({ activeSection, setActiveSection }) {
+export default function Sidebar({ activeSection, setActiveSection, locale = "en" }) {
+  const { logout } = useAuth();
   // ✅ دالة لتوليد زر مع حالة Active
   const NavButton = ({ section, icon, label }) => {
     const isActive = activeSection === section;
     return (
       <button
+        type="button"
+        aria-current={isActive ? "page" : undefined}
         onClick={() => setActiveSection(section)}
         className={`flex items-center gap-3 px-4 py-2 rounded-lg font-semibold transition-all duration-300 relative cursor-pointer
           ${
@@ -30,14 +33,7 @@ export default function Sidebar({ activeSection, setActiveSection }) {
           }`}
       >
         {/* ✅ خط جانبي يوضح الزر النشط */}
-        {isActive && (
-          <span className="absolute left-0 top-0 h-full w-1 bg-yellow-500 rounded-r"></span>
-        )}
-
-        {/* ✅ نقطة ذهبية صغيرة بجانب الزر النشط */}
-        {isActive && (
-          <span className="absolute -left-3 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
-        )}
+        {isActive && <span className="absolute inset-y-0 left-0 w-1 rounded-r bg-yellow-500" />}
 
         {/* ✅ أيقونة مع تأثير عند النشط */}
         <span
@@ -53,19 +49,18 @@ export default function Sidebar({ activeSection, setActiveSection }) {
   };
 
   return (
-    <aside className="w-64 p-6 flex flex-col gap-6 bg-black/0 border-r border-gold/30">
-      <EgyptianBackground />
+    <aside className="w-full shrink-0 border-b border-gold/30 bg-black/10 p-4 lg:w-64 lg:border-b-0 lg:border-r lg:p-6">
 
-      <h2 className="text-2xl font-bold mb-6 flex flex-row items-center justify-between">
+      <div className="mb-4 flex items-center justify-between gap-3 lg:mb-6">
         <span>WasetTravel</span> <ThemeToggle />
-      </h2>
+      </div>
 
-      <nav className="flex flex-col gap-3">
+      <nav aria-label="Admin navigation" className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-col lg:gap-3">
         <Link
-          href="/"
+          href={`/${locale}`}
           className="flex items-center gap-3 font-bold text-gold hover:text-yellow-500 transition"
         >
-          ⬅ Back to Home
+          <span aria-hidden="true">←</span> Back to Home
         </Link>
 
         <NavButton section="dashboard" icon={<FaHome />} label="Dashboard" />
@@ -77,6 +72,16 @@ export default function Sidebar({ activeSection, setActiveSection }) {
         <NavButton section="reports" icon={<FaChartBar />} label="Reports" />
         <NavButton section="messages" icon={<FaEnvelope />} label="Messages" />
         <NavButton section="currency" icon={<FaChartBar />} label="Currency Rates" />
+        <button
+          type="button"
+          onClick={() => {
+            logout();
+            window.location.assign(`/${locale}`);
+          }}
+          className="mt-2 flex items-center gap-3 rounded-lg px-4 py-2 font-semibold text-red-300 transition hover:bg-red-500/10 hover:text-red-200"
+        >
+          <span aria-hidden="true">↪</span> Sign out
+        </button>
       </nav>
     </aside>
   );

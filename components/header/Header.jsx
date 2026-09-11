@@ -4,15 +4,15 @@ import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import Logo from "./components/Logo";
 import NavBar from "./components/NavBar";
-import RightBar from "./components/RightBar";
-import Button from "@mui/material/Button";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { signOut } from "next-auth/react"; 
-import MobileHeaderAuth from "./components/MobileHeaderAuth";
 import MobileNav from "./components/MobileNav";
 import ThemeToggle from "../ThemeToggle";
 import dynamic from "next/dynamic";
+
+const RightBar = dynamic(() => import("./components/RightBar"), { ssr: false });
+const MobileHeaderAuth = dynamic(() => import("./components/MobileHeaderAuth"), { ssr: false });
 
 // ✅ Lazy load للأيقونات
 const FaSignOutAlt = dynamic(() => import("react-icons/fa").then(mod => mod.FaSignOutAlt), { ssr: false });
@@ -49,7 +49,8 @@ export default function Header() {
 
         {/* ✅ زر تسجيل الدخول/الخروج */}
         <motion.div whileHover={{ scale: 1.03 }} className="hidden lg:flex">
-          <Button
+          <button
+            type="button"
             aria-label={userData ? "Sign out" : "Sign in"} // ✅ تحسين الـ accessibility
             onClick={userData ? () => signOut() : () => handleLoginOpen()}
             style={{
@@ -68,7 +69,7 @@ export default function Header() {
             >
             {userData ? <FaSignOutAlt size={20} /> : <FaUserPlus size={20} />}
             <span>{userData ? "Sign out" : "Sign in"}</span>
-          </Button>
+          </button>
         </motion.div>
 
         <ThemeToggle scrolled={scrolled} />

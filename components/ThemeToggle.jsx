@@ -2,7 +2,6 @@
 import React from "react";
 import { BsSun, BsMoon } from "react-icons/bs";
 import { motion } from "framer-motion";
-import Button from '@mui/material/Button';
 import { useTheme } from "@/context/ThemeContext";
 import { usePathname } from "next/navigation";
 
@@ -18,11 +17,11 @@ const ThemeToggle = ({ scrolled }) => {
 
   return (
     <motion.div whileHover={{ scale: 1.1 }}>
-      <Button
-        sx={{ zIndex: 9999 }}
+      <button
+        type="button"
         onClick={toggleThemeFun}
         aria-label={themeName === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-        className={`
+        className={`relative z-50 flex h-11 w-11 items-center justify-center
           p-2 rounded-full border transition-all duration-300
           ${
             themeName === "dark"
@@ -38,7 +37,7 @@ const ThemeToggle = ({ scrolled }) => {
         ) : (
           <BsMoon size={20} aria-label="light mode" color={scrolled  ? "#999" : isHome  ? "#fff": "#999"} />
         )}
-      </Button>
+      </button>
     </motion.div>
   );
 };

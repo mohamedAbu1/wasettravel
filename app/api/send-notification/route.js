@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth/admin";
 
 export async function POST(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const body = await req.json();
     const { expoPushToken, title, bodyText } = body;

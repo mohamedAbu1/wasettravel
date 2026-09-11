@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth/admin";
 
-export async function GET() {
+export async function GET(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const db = await connectDB();
 

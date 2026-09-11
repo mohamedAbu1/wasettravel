@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth/admin";
 
 // ✅ جلب رسالة واحدة بالـ id
 export async function GET(req, { params }) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = params;
     const db = await connectDB();
@@ -21,6 +25,9 @@ export async function GET(req, { params }) {
 
 // ✅ تحديث حالة الرسالة بالـ id
 export async function PUT(req, { params }) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = params;
     const { status = "seen" } = await req.json();
@@ -43,6 +50,9 @@ export async function PUT(req, { params }) {
 
 // ✅ حذف رسالة بالـ id
 export async function DELETE(req, { params }) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const { id } = params;
     const db = await connectDB();

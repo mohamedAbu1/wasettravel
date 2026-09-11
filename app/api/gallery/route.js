@@ -1,8 +1,12 @@
 // api/gallery/route.js
 import fs from "fs";
 import path from "path";
+import { requireAdmin } from "@/lib/auth/admin";
 
 export async function POST(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const formData = await req.formData();
     const galleryFiles = formData.getAll("gallery_images");
@@ -13,7 +17,14 @@ export async function POST(req) {
 
     if (galleryFiles?.length > 0) {
       for (const file of galleryFiles) {
-        const originalName = file.name;
+        if (file.size > 5 * 1024 * 1024) {
+          return new Response(JSON.stringify({ success: false, error: "Each file must be 5MB or smaller" }), { status: 413 });
+        }
+        const extension = path.extname(file.name).toLowerCase();
+        if (![".jpg", ".jpeg", ".png", ".webp", ".avif"].includes(extension)) {
+          return new Response(JSON.stringify({ success: false, error: "Unsupported image type" }), { status: 415 });
+        }
+        const originalName = `${Date.now()}-${crypto.randomUUID()}${extension}`;
         const uploadPath = path.join(uploadDir, originalName);
 
         if (!fs.existsSync(uploadPath)) {

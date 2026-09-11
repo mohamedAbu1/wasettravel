@@ -47,6 +47,28 @@ export default function TripPage({ params }) {
     return <p className={`${theme.text}`}>Trip not found</p>;
   }
 
+  const tripTitle = trip.title?.[lang] || trip.title?.en || "Egypt tour";
+  const tripDescription =
+    trip.description?.[lang] ||
+    trip.description?.en ||
+    "Discover an unforgettable Egypt travel experience with WasetTravel.";
+  const tripSchema = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    name: tripTitle,
+    description: tripDescription,
+    url: `https://wasettravel.com/${lang}/trips/${id}`,
+    image: [trip.cover_image, ...(trip.gallery_images || [])].filter(Boolean),
+    touristType: ["Cultural tourism", "Nile cruises", "Egypt tours"],
+    offers: {
+      "@type": "Offer",
+      price: trip.group_price,
+      priceCurrency: trip.currency || "USD",
+      availability: "https://schema.org/InStock",
+      url: `https://wasettravel.com/${lang}/trips/${id}`,
+    },
+  };
+
   const hasActivePurchase = purchases.some(
     (p) =>
       p.trip_id === trip.id &&
@@ -56,11 +78,12 @@ export default function TripPage({ params }) {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tripSchema) }} />
       <Head>
-        <title>{trip.title?.[lang] || trip.title?.en}</title>
+        <title>{tripTitle}</title>
         <meta
           name="description"
-          content={trip.description?.[lang] || trip.description?.en}
+          content={tripDescription}
         />
       </Head>
       <main className={`min-h-screen relative ${theme.text}`}>

@@ -64,7 +64,6 @@ const CarBookingSection = () => {
           fill
           quality={75} // ضغط الصورة لتقليل الحجم
           sizes="100vw" // صور متجاوبة
-          priority
           placeholder="blur"
           blurDataURL="/HomePageImage/apple-touch-icon.png"
           className="object-cover opacity-20 rounded-lg"
@@ -114,7 +113,6 @@ const CarBookingSection = () => {
             fill
             quality={75}
             sizes="(max-width: 768px) 100vw, 600px"
-            priority
             placeholder="blur"
           blurDataURL="/HomePageImage/apple-touch-icon.png"
             className="object-contain drop-shadow-2xl"

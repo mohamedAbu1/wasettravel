@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { data: session } = useSession(); // ✅ جلب المستخدم من جوجل عبر NextAuth
@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
   // إدارة التوكين
   const saveToken = (token) => {
     localStorage.setItem("token", token);
-    document.cookie = `token=${token}; path=/; max-age=${2 * 24 * 60 * 60}`;
+      document.cookie = `token=${token}; path=/; max-age=${2 * 24 * 60 * 60}; SameSite=Lax`;
   };
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
@@ -60,6 +60,7 @@ export function AuthProvider({ children }) {
         setIsLoggedIn(false);
       }
     }
+    setLoading(false);
   }, []);
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 

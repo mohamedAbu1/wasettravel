@@ -1,8 +1,12 @@
 // /app/api/update-status/route.js
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db"; // ملف الاتصال بقاعدة بيانات MySQL
+import { requireAdmin } from "@/lib/auth/admin";
 
 export async function POST(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const { purchaseId, status } = await req.json();
     const db = await connectDB();

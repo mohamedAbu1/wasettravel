@@ -2,11 +2,16 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
-import Content from "./components/Content";
 import { useData } from "@/context/DataContext";
 import SocialMediaIcons from "./components/SocialMediaIcons";
 import LeftSocialIcons from "./components/LeftSocialIcons";
 import LogoLetter from "../LogoLetter";
+import dynamic from "next/dynamic";
+
+const Content = dynamic(() => import("./components/Content"), {
+  ssr: true,
+  loading: () => <div className="h-24 w-full max-w-6xl" aria-hidden="true" />,
+});
 
 export default function HeroSection() {
   const { theme } = useTheme();

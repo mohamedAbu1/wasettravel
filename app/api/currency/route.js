@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth/admin";
 
 // ✅ جلب كل أسعار الصرف
 export async function GET() {
@@ -15,6 +16,9 @@ export async function GET() {
 
 // ✅ إضافة سعر جديد (POST)
 export async function POST(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const { base_currency, target_currency, rate } = await req.json();
 
@@ -46,6 +50,9 @@ export async function POST(req) {
 
 // ✅ تعديل سعر موجود (PUT)
 export async function PUT(req) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
+
   try {
     const { base_currency, target_currency, rate } = await req.json();
 

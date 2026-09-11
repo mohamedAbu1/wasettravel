@@ -44,7 +44,7 @@ export async function POST(request) {
     });
 
     // ✅ تجهيز الرد بصيغة JSON واضحة للتطبيق
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         message: "تم تسجيل الدخول بنجاح",
         user: {
@@ -60,6 +60,16 @@ export async function POST(request) {
       },
       { status: 200 }
     );
+
+    response.cookies.set("token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+
+    return response;
   } catch (e) {
     console.error("💥 Internal error", e);
     return NextResponse.json({ error: "خطأ داخلي" }, { status: 500 });

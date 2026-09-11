@@ -1,9 +1,32 @@
 // middleware.js
 import { NextResponse } from "next/server";
+import { jwtVerify } from "jose";
 
-export function middleware(req) {
+const protectedAdminPattern = /^\/(en|es|fr|de|it|zh)\/admin(?:\/|$)/;
+
+async function isAdminRequest(req) {
+  const token = req.cookies.get("token")?.value || req.cookies.get("access-token")?.value;
+  if (!token || !process.env.JWT_SECRET) return false;
+
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    return String(payload.role || "").toLowerCase() === "admin";
+  } catch {
+    return false;
+  }
+}
+
+export async function middleware(req) {
   const url = req.nextUrl.clone();
   const segments = url.pathname.split("/").filter(Boolean);
+
+  if (protectedAdminPattern.test(url.pathname) && !(await isAdminRequest(req))) {
+    const locale = segments[0] || "en";
+    url.pathname = `/${locale}`;
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
 
   // استثناء مسارات النظام والملفات الثابتة
   if (
@@ -44,7 +67,8 @@ export function middleware(req) {
       ? browserLang
       : "en";
     url.pathname = `/${langToUse}${url.pathname}`;
-    return NextResponse.redirect(url);
+    // Rewrite internally so the first request does not pay for a second round trip.
+    return NextResponse.rewrite(url);
   }
 
   // لو اللغة موجودة بالفعل → لا تعمل أي إعادة توجيه

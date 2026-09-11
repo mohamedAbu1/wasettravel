@@ -4,6 +4,7 @@ import Providers from "./providers";
 
 export const metadata = {
   metadataBase: new URL("https://wasettravel.com"),
+  applicationName: "WasetTravel",
   title: "WasetTravel | Explore Egypt's Best Tours & Trips",
   description:
     "Discover Egypt with WasetTravel: luxury Nile cruises, desert safaris, Red Sea diving, historical tours, and personalized travel experiences.",
@@ -17,13 +18,17 @@ export const metadata = {
     url: "https://wasettravel.com/en",
     siteName: "WasetTravel",
     locale: "en_US",
+    images: [{ url: "/iamges/5fae16c5ab3f1921b620186c04e03b0ec685a8d3b8b40d72cf262f9573ceeb8b.webp", width: 1200, height: 630, alt: "WasetTravel Egypt travel experiences" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "WasetTravel | Explore Egypt's Best Tours & Trips",
     description:
       "Discover Egypt with WasetTravel through curated tours and personalized travel experiences.",
+    images: ["/iamges/5fae16c5ab3f1921b620186c04e03b0ec685a8d3b8b40d72cf262f9573ceeb8b.webp"],
   },
+  verification: { google: "google49366a773d42ea4a" },
+  icons: { icon: "/HomePageImage/apple-touch-icon.png", apple: "/HomePageImage/apple-touch-icon.png" },
   robots: {
     index: true,
     follow: true,

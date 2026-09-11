@@ -77,7 +77,7 @@ export default function TopReviewsSection() {
 
   return (
     <section
-      className={`py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-screen max-w-full flex flex-col items-center justify-center bg-[url('/HomePageImage/427421070_8ee61396-b440-41b5-af8d-619e23dd51b5.svg')] bg-cover bg-center`}
+      className={`py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-screen max-w-full flex flex-col items-center justify-center`}
     >
       <EgyptianBackground />
       <h2

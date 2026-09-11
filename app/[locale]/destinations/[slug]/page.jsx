@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 
 const locales = ["en", "de", "es", "fr", "it", "zh"];
 const destinations = {
@@ -15,6 +16,7 @@ const destinations = {
       "Private guided tours with comfortable transfers",
       "Nile cruises linking Luxor with Aswan",
     ],
+    image: "/Luxor/pexels-oualid-soussi-2150533856-35050672.webp",
   },
   aswan: {
     title: "Aswan Tours and Travel Guide",
@@ -28,6 +30,7 @@ const destinations = {
       "Abu Simbel day trips from Aswan",
       "Private transfers and tailored itineraries",
     ],
+    image: "/Aswan/pexels-furknsaglam-1596977-21348185.webp",
   },
 };
 
@@ -38,27 +41,51 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const destination = destinations[slug];
   if (!destination) return {};
+  const canonical = `/${locale}/destinations/${slug}`;
   return {
     title: `${destination.title} | WasetTravel Egypt`,
     description: destination.description,
     keywords: `${slug} tours, ${slug} travel guide, Egypt tours, Nile cruise Egypt, WasetTravel`,
-    alternates: { canonical: `/${(await params).locale}/destinations/${slug}` },
+    alternates: {
+      canonical,
+      languages: Object.fromEntries([
+        ...locales.map((supportedLocale) => [supportedLocale, `/${supportedLocale}/destinations/${slug}`]),
+        ["x-default", `/en/destinations/${slug}`],
+      ]),
+    },
     openGraph: {
       title: `${destination.title} | WasetTravel Egypt`,
       description: destination.description,
       type: "article",
-      url: `https://wasettravel.com/${(await params).locale}/destinations/${slug}`,
+      url: `https://wasettravel.com${canonical}`,
       images: [
         {
-          url: "https://wasettravel.com/iamges/5fae16c5ab3f1921b620186c04e03b0ec685a8d3b8b40d72cf262f9573ceeb8b.webp",
+          url: `https://wasettravel.com${destination.image}`,
           width: 1200,
           height: 630,
           alt: `${destination.title} with WasetTravel`,
         },
       ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${destination.title} | WasetTravel Egypt`,
+      description: destination.description,
+      images: [`https://wasettravel.com${destination.image}`],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
     },
   };
 }
@@ -75,6 +102,7 @@ export default async function DestinationPage({ params }) {
     name: destination.title,
     description: destination.description,
     url,
+    image: `https://wasettravel.com${destination.image}`,
     touristType: ["Cultural tourism", "Nile cruises", "Private Egypt tours"],
     containedInPlace: { "@type": "Country", name: "Egypt" },
   };
@@ -90,6 +118,16 @@ export default async function DestinationPage({ params }) {
         </nav>
         <p className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-[#c9a34a]">Egypt travel guide</p>
         <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl">{destination.title}</h1>
+        <figure className="relative mt-8 aspect-[16/7] overflow-hidden rounded-3xl border border-white/10">
+          <Image
+            src={destination.image}
+            alt={`${destination.title} with WasetTravel`}
+            fill
+            sizes="(max-width: 768px) 100vw, 1024px"
+            className="object-cover"
+            priority
+          />
+        </figure>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-white/75">{destination.intro}</p>
         <section aria-labelledby="highlights" className="mt-12 rounded-3xl border border-white/10 bg-white/[0.04] p-6 sm:p-10">
           <h2 id="highlights" className="text-2xl font-bold text-[#e6dcca]">What to experience</h2>

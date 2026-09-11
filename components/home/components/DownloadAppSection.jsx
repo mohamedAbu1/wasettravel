@@ -6,24 +6,25 @@ export default function DownloadAppSection() {
   const { t } = useTranslation("home");
 
   return (
-    <section className="w-full flex lg:hidden flex-col items-center justify-center gap-6 py-12 backdrop-blur-[2px] rounded-xl shadow-lg">
+    <section className="w-full border-y border-white/10 bg-[#121212] px-4 py-12 text-[#F5F5F5] sm:py-16">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 text-center">
       {/* Title */}
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 tracking-wide">
+      <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
         {t("DownloadOurAppNow")}
       </h2>
-      <p className="text-gray-600 text-center max-w-md">
+      <p className="max-w-xl text-center leading-7 text-white/70">
         {t("pPhone")}
       </p>
 
       {/* Store Links */}
-      <div className="flex flex-wrap justify-center gap-3 mt-4">
+      <div className="mt-2 grid w-full max-w-4xl grid-cols-1 justify-center gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {/* Google Play Button */}
         <a
           href="https://play.google.com/store/apps/details?id=your_app_id"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Download on Google Play"
-          className="flex items-center w-[280px] gap-2 px-6 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-all"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-green-700 px-4 py-3 font-semibold text-white shadow-md transition-colors hover:bg-green-800"
         >
           <FaGooglePlay size={22} />
           <span>{t("GooglePlay")}</span>
@@ -35,7 +36,7 @@ export default function DownloadAppSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Download on Apple App Store"
-          className="flex items-center w-[280px] gap-2 px-6 py-3 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 transition-all"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-black px-4 py-3 font-semibold text-white shadow-md transition-colors hover:bg-gray-900"
         >
           <FaApple size={22} />
           <span>{t("AppStore")}</span>
@@ -47,7 +48,7 @@ export default function DownloadAppSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Visit our Viator page"
-          className="flex items-center w-[280px] gap-2 px-6 py-3 bg-[#c9a34a] text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#c9a34a] px-4 py-3 font-semibold text-white shadow-md transition-colors hover:bg-[#a67c00]"
         >
           <FaGlobe size={22} />
           <span>{t("Viator")}</span>
@@ -59,11 +60,12 @@ export default function DownloadAppSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Read reviews on Tripadvisor"
-          className="flex items-center w-[280px] text-center gap-2 px-6 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow-md hover:bg-teal-700 transition-all"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 font-semibold text-white shadow-md transition-colors hover:bg-teal-800"
         >
           <FaMapMarkedAlt size={22} />
           <span>{t("Tripadvisor")}</span>
         </a>
+      </div>
       </div>
     </section>
   );

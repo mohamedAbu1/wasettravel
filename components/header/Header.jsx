@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { signOut } from "next-auth/react"; 
 import MobileHeaderAuth from "./components/MobileHeaderAuth";
+import MobileNav from "./components/MobileNav";
 import ThemeToggle from "../ThemeToggle";
 import dynamic from "next/dynamic";
 
@@ -41,18 +42,18 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-8xl container mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="container mx-auto flex max-w-8xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:py-4">
         <Logo scrolled={scrolled} />
         <NavBar scrolled={scrolled} />
         <RightBar scrolled={scrolled} />
 
         {/* ✅ زر تسجيل الدخول/الخروج */}
-        <motion.div whileHover={{ scale: 1.1 }} className="hidden lg:flex">
+        <motion.div whileHover={{ scale: 1.03 }} className="hidden lg:flex">
           <Button
             aria-label={userData ? "Sign out" : "Sign in"} // ✅ تحسين الـ accessibility
             onClick={userData ? () => signOut() : () => handleLoginOpen()}
             style={{
-              padding: "12px 24px",
+              padding: "10px 18px",
               background: "linear-gradient(to right, #c9a34a, #eab308)",
               color: "#fff",
               fontWeight: "600",
@@ -63,14 +64,16 @@ export default function Header() {
               display: "flex",
               alignItems: "center",
               gap: "8px",
-            }}
-          >
+              }}
+            >
             {userData ? <FaSignOutAlt size={20} /> : <FaUserPlus size={20} />}
+            <span>{userData ? "Sign out" : "Sign in"}</span>
           </Button>
         </motion.div>
 
         <ThemeToggle scrolled={scrolled} />
         <MobileHeaderAuth />
+        <MobileNav />
       </div>
     </motion.header>
   );

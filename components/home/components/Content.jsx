@@ -41,29 +41,30 @@ const Content = () => {
   };
 
   return (
-    <div className="hidden lg:flex flex-col items-center justify-center text-center px-6 z-30">
-      <div className="w-[70%]">
+    <div className="order-2 flex w-full flex-col items-center justify-center px-2 text-center">
+      <div className="w-full max-w-6xl">
         {/* Company Name */}
         <h1
-          className={theme.title}
-          style={{ fontSize: "4.4rem", opacity: "0" }}
+          className="sr-only"
         >
           WasetTravel
         </h1>
 
         <p
-          className={`text-xl lg:text-2xl mt-6 leading-relaxed ${theme.subText} animate-slideUp`}
-        ></p>
+          className="mx-auto mt-2 max-w-2xl text-sm font-medium uppercase tracking-[0.22em] text-white/80 sm:text-base"
+        >
+          {t("Discover")}
+        </p>
 
         {/* Trip Filter Form */}
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(5, 1fr)" },
-            gap: 2,
-            mt: 6,
-            p: 3,
-            borderRadius: 4,
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", lg: "repeat(5, 1fr)" },
+            gap: { xs: 1.5, sm: 2 },
+            mt: { xs: 3, sm: 4 },
+            p: { xs: 1.5, sm: 2.5 },
+            borderRadius: 3,
             backdropFilter: "blur(12px)",
             backgroundColor: theme.inputBg,
             border: `1px solid ${theme.inputBorder}`,
@@ -107,7 +108,8 @@ const Content = () => {
               borderRadius: "12px",
               px: 4,
               py: 1.5,
-              textTransform: "uppercase",
+              textTransform: "none",
+              minHeight: 64,
               boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
               "&:hover": {
                 backgroundColor: "#B9972F",

@@ -5,6 +5,7 @@ import CarBookingSection from "@/components/home/CarBookingSection";
 import CategoriesSection from "@/components/home/CategoriesSection";
 import CitiesSection from "@/components/home/CitiesSection";
 import HeroSection from "@/components/home/HeroSection";
+import DownloadAppSection from "@/components/home/components/DownloadAppSection";
 import OurSection from "@/components/home/OurSection";
 import TopTripsSection from "@/components/home/TopTripsSection";
 import TopReviewsSection from "@/components/home/components/TopReviewsSection";
@@ -31,7 +32,7 @@ export default function Home() {
       <main
         className={`
           w-full flex flex-col items-center justify-center
-          min-h-screen font-sans bg-white transition-colors duration-300
+          min-h-screen font-sans bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300
           overflow-hidden
         `}
       >
@@ -39,6 +40,7 @@ export default function Home() {
 
         {/* ================= HERO SECTION ================= */}
         <HeroSection />
+        <DownloadAppSection />
 
         {/* ================= CATEGORIES SECTION ================= */}
         <CategoriesSection />

@@ -40,10 +40,10 @@ export default function Logo({ scrolled }) {
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <Link href="/" className="flex items-center gap-2">
+      <Link href={`/${segments[0] || "en"}`} aria-label="WasetTravel home" className="flex shrink-0 items-center gap-2">
         <svg
           width={size}
-          height={(size * 260) / 800}
+          className="h-auto w-[180px] sm:w-[220px] lg:w-[250px]"
           viewBox="0 0 800 260"
           xmlns="http://www.w3.org/2000/svg"
         >

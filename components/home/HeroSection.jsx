@@ -3,7 +3,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import Content from "./components/Content";
-import DownloadAppSection from "./components/DownloadAppSection";
 import { useData } from "@/context/DataContext";
 import SocialMediaIcons from "./components/SocialMediaIcons";
 import LeftSocialIcons from "./components/LeftSocialIcons";
@@ -64,11 +63,8 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
-          className="relative z-20 flex flex-col items-center justify-center h-full gap-4"
+          className="relative z-20 flex flex-col items-center justify-center h-full gap-5 px-4 pt-20 lg:pt-24"
         >
-          <Content />
-          <DownloadAppSection />
-
           {/* Logo */}
           <motion.div
             role="heading"
@@ -76,7 +72,7 @@ export default function HeroSection() {
             aria-label="Waset Travel Hero Section"
             initial="hidden"
             animate="visible"
-            style={{ background: "rgba(0,0,0,0.4)", borderRadius: "6px" }}
+            style={{ background: "rgba(0,0,0,0.42)", borderRadius: "12px" }}
             variants={{
               hidden: { opacity: 0 },
               visible: {
@@ -84,7 +80,7 @@ export default function HeroSection() {
                 transition: { staggerChildren: 0.2 },
               },
             }}
-            className="flex flex-wrap gap-4 justify-center font-[Cinzel] text-[32px] lg:text-[34px] xl:text-[60px]"
+            className="order-1 flex max-w-full flex-wrap justify-center gap-2 sm:gap-3 lg:gap-4 px-4 py-3 font-serif text-[30px] sm:text-[38px] lg:text-[48px] xl:text-[60px]"
           >
             {["W", "A", "S", "E", "T", "𓂀", "T", "R", "A", "V", "E", "L"].map(
               (char, i) => (
@@ -92,6 +88,7 @@ export default function HeroSection() {
               )
             )}
           </motion.div>
+          <Content />
         </motion.div>
       </section>
     </>

@@ -21,6 +21,7 @@ const ThemeToggle = ({ scrolled }) => {
       <Button
         sx={{ zIndex: 9999 }}
         onClick={toggleThemeFun}
+        aria-label={themeName === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         className={`
           p-2 rounded-full border transition-all duration-300
           ${

@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
+import { createUniqueImageFilename } from "@/lib/imageFilename";
 
 export async function POST(req) {
   const auth = requireAdmin(req);
@@ -24,13 +25,12 @@ export async function POST(req) {
       if (![".jpg", ".jpeg", ".png", ".webp", ".avif"].includes(extension)) {
         return new Response(JSON.stringify({ success: false, error: "Unsupported image type" }), { status: 415 });
       }
-      const originalName = `${Date.now()}-${crypto.randomUUID()}${extension}`;
-      const uploadPath = path.join(uploadDir, originalName);
-
       fs.mkdirSync(uploadDir, { recursive: true });
+      const storedName = createUniqueImageFilename(coverFile.name, uploadDir);
+      const uploadPath = path.join(uploadDir, storedName);
       fs.writeFileSync(uploadPath, Buffer.from(await coverFile.arrayBuffer()));
 
-      coverImageUrl = toPublicImageUrl(`/${folder}/${originalName}`);
+      coverImageUrl = toPublicImageUrl(`/${folder}/${storedName}`);
     }
 
     return new Response(JSON.stringify({ success: true, cover_image: coverImageUrl }), { status: 201 });

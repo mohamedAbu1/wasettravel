@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
+import { createUniqueImageFilename } from "@/lib/imageFilename";
 
 export async function POST(req) {
   const auth = requireAdmin(req);
@@ -27,16 +28,15 @@ export async function POST(req) {
         if (![".jpg", ".jpeg", ".png", ".webp", ".avif"].includes(extension)) {
           return new Response(JSON.stringify({ success: false, error: "Unsupported image type" }), { status: 415 });
         }
-        const originalName = `${Date.now()}-${crypto.randomUUID()}${extension}`;
-        const uploadPath = path.join(uploadDir, originalName);
-
+        const storedName = createUniqueImageFilename(file.name, uploadDir);
+        const uploadPath = path.join(uploadDir, storedName);
         fs.writeFileSync(uploadPath, Buffer.from(await file.arrayBuffer()));
 
-        const fileUrl = toPublicImageUrl(`/${folder}/${originalName}`);
+        const fileUrl = toPublicImageUrl(`/${folder}/${storedName}`);
 
         // ✅ استقبل أسماء اللغات من الـ formData
         const nameTranslations = {
-          en: formData.get(`name_en_${index}`) || formData.get(`name_en_${file.name}`) || originalName,
+          en: formData.get(`name_en_${index}`) || formData.get(`name_en_${file.name}`) || file.name,
           ar: formData.get(`name_ar_${index}`) || formData.get(`name_ar_${file.name}`) || "",
           fr: formData.get(`name_fr_${index}`) || formData.get(`name_fr_${file.name}`) || "",
           de: formData.get(`name_de_${index}`) || formData.get(`name_de_${file.name}`) || "",

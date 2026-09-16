@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
+import { createUniqueImageFilename } from "@/lib/imageFilename";
 
 export async function POST(req) {
   const auth = requireAdmin(req);
@@ -32,7 +33,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "Unsupported image type" }, { status: 415 });
   }
 
-  const fileName = `${Date.now()}-${crypto.randomUUID()}${extension}`;
+  const fileName = createUniqueImageFilename(file.name, uploadDir);
   const filePath = path.join(uploadDir, fileName);
   fs.writeFileSync(filePath, buffer);
 

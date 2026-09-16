@@ -27,7 +27,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <main className="relative flex flex-col min-h-screen justify-center items-center">
+      <main className="about-page site-shell relative flex min-h-screen flex-col items-center justify-center bg-[var(--background)] text-[var(--foreground)]">
         <Header />
         <EgyptianBackground />
 

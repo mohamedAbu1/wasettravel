@@ -48,9 +48,22 @@ export async function POST(request) {
     const body = await request.json();
 
     const { name, email, password, gender } = body;
+    const normalizedName = typeof name === "string" ? name.trim() : "";
+    const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+    const normalizedGender = typeof gender === "string" ? gender.trim().toLowerCase() : "";
+
+    if (!normalizedName || normalizedName.length > 100 || !/^[\p{L}\p{M}\p{N}\s.'-]+$/u.test(normalizedName)) {
+      return NextResponse.json({ error: "الاسم غير صالح" }, { status: 400 });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      return NextResponse.json({ error: "البريد الإلكتروني غير صالح" }, { status: 400 });
+    }
+    if (!["male", "female"].includes(normalizedGender)) {
+      return NextResponse.json({ error: "يرجى اختيار النوع" }, { status: 400 });
+    }
 
     // ✅ تحقق من قوة كلمة المرور
-    if (!password || password.length < 8) {
+    if (typeof password !== "string" || password.length < 8 || password.length > 128) {
       return NextResponse.json(
         { error: "كلمة المرور يجب أن تكون 8 أحرف على الأقل" },
         { status: 400 }
@@ -60,7 +73,7 @@ export async function POST(request) {
     // ✅ تحقق من البريد إذا كان موجود مسبقًا (case-insensitive)
     const [existing] = await db.query(
       "SELECT * FROM users WHERE LOWER(email) = LOWER(?)",
-      [email]
+      [normalizedEmail]
     );
 
     if (existing.length > 0) {
@@ -74,12 +87,12 @@ export async function POST(request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // ✅ اختيار صورة عشوائية
-    const avatarUrl = getAvatarByGender(gender);
+    const avatarUrl = getAvatarByGender(normalizedGender);
 
     // ✅ إدخال المستخدم في قاعدة البيانات
     await db.query(
       "INSERT INTO users (id, name, email, password, gender, role, avatar_url, status, created_at, updated_at) VALUES (UUID(), ?, ?, ?, ?, ?, ?, 'ACTIVE', NOW(), NOW())",
-      [name, email, hashedPassword, gender, "USER", avatarUrl]
+      [normalizedName, normalizedEmail, hashedPassword, normalizedGender, "USER", avatarUrl]
     );
 
     // ✅ جلب بيانات المستخدم الجديد
@@ -91,14 +104,15 @@ export async function POST(request) {
       throw new Error("JWT_SECRET is not defined in environment variables");
     }
 
+    const tokenPayload = { id: newUser.id, email: newUser.email, role: newUser.role, name: newUser.name, avatar_url: newUser.avatar_url, gender: newUser.gender };
     const accessToken = jwt.sign(
-      { id: newUser.id, email: newUser.email, role: newUser.role },
+      tokenPayload,
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "30d" }
     );
-    console.log("🔵 [API REGISTER] التوكين تم إنشاؤه");
+    const refreshToken = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         user: {
           id: newUser.id,
@@ -109,10 +123,14 @@ export async function POST(request) {
           role: newUser.role,
           status: newUser.status,
         },
-        accessToken,
       },
       { status: 201 }
     );
+    const cookieOptions = { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 30 };
+    response.cookies.set("token", accessToken, cookieOptions);
+    response.cookies.set("access-token", accessToken, cookieOptions);
+    response.cookies.set("refresh-token", refreshToken, cookieOptions);
+    return response;
   } catch (e) {
     console.error("❌ [API REGISTER] خطأ داخلي:", e);
     return NextResponse.json({ error: "خطأ داخلي" }, { status: 500 });

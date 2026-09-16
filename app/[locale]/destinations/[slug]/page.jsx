@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Header from "@/components/header/Header";
+import Footer from "@/components/Footer/Footer";
 
 const locales = ["en", "de", "es", "fr", "it", "zh"];
 const destinations = {
@@ -108,15 +110,17 @@ export default async function DestinationPage({ params }) {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] px-5 pb-20 pt-32 text-white sm:px-8">
+    <main className="site-shell min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
+      <div className="px-5 pb-20 pt-32 sm:px-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <article className="mx-auto max-w-5xl">
-        <nav aria-label="Breadcrumb" className="mb-8 text-sm text-white/60">
-          <Link href={`/${locale}`} className="hover:text-[#c9a34a]">WasetTravel</Link>
+        <nav aria-label="Breadcrumb" className="mb-8 text-sm text-[var(--muted)]">
+          <Link href={`/${locale}`} className="hover:text-[var(--color)]">WasetTravel</Link>
           <span className="px-2">/</span>
           <span>{destination.title}</span>
         </nav>
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-[#c9a34a]">Egypt travel guide</p>
+        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-[var(--color)]">Egypt travel guide</p>
         <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl">{destination.title}</h1>
         <figure className="relative mt-8 aspect-[16/7] overflow-hidden rounded-3xl border border-white/10">
           <Image
@@ -128,18 +132,20 @@ export default async function DestinationPage({ params }) {
             priority
           />
         </figure>
-        <p className="mt-6 max-w-3xl text-lg leading-8 text-white/75">{destination.intro}</p>
-        <section aria-labelledby="highlights" className="mt-12 rounded-3xl border border-white/10 bg-white/[0.04] p-6 sm:p-10">
-          <h2 id="highlights" className="text-2xl font-bold text-[#e6dcca]">What to experience</h2>
+        <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--muted)]">{destination.intro}</p>
+        <section aria-labelledby="highlights" className="mt-12 rounded-3xl border border-[var(--line)] bg-[var(--surface)] p-6 shadow-[0_1rem_3rem_rgba(78,54,31,.08)] sm:p-10">
+          <h2 id="highlights" className="text-2xl font-bold text-[var(--foreground)]">What to experience</h2>
           <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-            {destination.highlights.map((item) => <li key={item} className="rounded-2xl border border-[#c9a34a]/25 bg-black/20 p-4 text-white/80">{item}</li>)}
+            {destination.highlights.map((item) => <li key={item} className="rounded-2xl border border-[var(--line)] bg-[var(--surface-raised)] p-4 text-[var(--muted)]">{item}</li>)}
           </ul>
         </section>
         <div className="mt-10 flex flex-wrap gap-3">
-          <Link href={`/${locale}/trips`} className="rounded-xl bg-[#c9a34a] px-6 py-3 font-semibold hover:bg-[#a67c00]">Explore Egypt tours</Link>
-          <Link href={`/${locale}/contact`} className="rounded-xl border border-white/20 px-6 py-3 font-semibold hover:border-[#c9a34a]">Plan a private itinerary</Link>
+          <Link href={`/${locale}/trips`} className="rounded-xl bg-[var(--color)] px-6 py-3 font-semibold text-white shadow-md hover:bg-[var(--color-hover)]">Explore Egypt tours</Link>
+          <Link href={`/${locale}/contact`} className="rounded-xl border border-[var(--line)] px-6 py-3 font-semibold text-[var(--foreground)] hover:border-[var(--color)]">Plan a private itinerary</Link>
         </div>
       </article>
+      </div>
+      <Footer />
     </main>
   );
 }

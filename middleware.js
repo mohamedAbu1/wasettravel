@@ -57,6 +57,13 @@ export async function middleware(req) {
   // اللغات المدعومة
   const supportedLangs = ["en", "es", "fr", "de", "it", "zh"];
 
+  // Arabic is not part of the available translation bundle yet. Redirect it
+  // to the default English storefront instead of allowing a locale 404.
+  if (segments[0] === "ar") {
+    url.pathname = `/en${segments.length > 1 ? `/${segments.slice(1).join("/")}` : ""}`;
+    return NextResponse.redirect(url);
+  }
+
   // اللغة المكتشفة من المتصفح
   const browserLang =
     req.headers.get("accept-language")?.split(",")[0].split("-")[0] || "en";

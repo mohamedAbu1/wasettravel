@@ -23,6 +23,15 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
 
   const { city, category, group_price, popular, updateValue } = useQueryFilters();
 
+  const toggleFilter = (key, current, value) => {
+    if (current === "all") return updateValue(key, [value]);
+    const values = Array.isArray(current) ? current : [current];
+    const next = values.includes(value)
+      ? values.filter((item) => item !== value)
+      : [...values, value];
+    updateValue(key, next.length ? next : "all");
+  };
+
   if (loading)
     return <p className="text-center text-gray-500">{t("Loading")}</p>;
 
@@ -72,14 +81,14 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
       className={`p-6 rounded-xl shadow-lg transition ${
         themeName === "dark"
           ? "bg-gradient-to-br from-[#0a0a0a] via-[#111] to-[#1a1a1a] text-[#b5892e] border border-[#c9a34a]/40"
-          : "bg-white/0 border border-[#c9a34a]/30 text-[#1a1a1a]"
+          : "bg-[var(--surface)] border border-[var(--line)] text-[var(--foreground)]"
       }`}
     >
       <h3
         role="heading"
         aria-level={3}
         aria-label={t("Filters")}
-        className="text-xl font-bold mb-6 text-[#c9a34a]"
+        className="text-xl font-bold mb-6 text-[var(--color)]"
       >
         {t("Filters")}
       </h3>
@@ -88,12 +97,16 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
         {/* المدن */}
         <div>
           <label
-            className="flex items-center gap-2 font-semibold mb-3 text-[#c9a34a]"
+            className="flex items-center gap-2 font-semibold mb-3 text-[var(--color)]"
             aria-label="Filter by cities"
           >
             <FaMapMarkerAlt /> {t("Cities")} :
           </label>
           <div className="grid grid-cols-2 gap-2 ml-6">
+            <label className="col-span-2 flex items-center gap-2 cursor-pointer font-medium">
+              <input type="checkbox" aria-label={t("All")} className="accent-[#c9a34a] cursor-pointer" checked={city === "all"} onChange={() => updateValue("city", "all")} />
+              {t("All")}
+            </label>
             {allCities.map((cityObj) => {
               const cityName =
                 cityObj.name?.[normalizedLang] ||
@@ -102,7 +115,7 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
               return (
                 <label
                   key={cityObj.id ?? cityName}
-                  className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
+                  className="flex items-center gap-2 cursor-pointer hover:text-[var(--color-hover)] transition"
                 >
                   <input
                     type="checkbox"
@@ -110,12 +123,12 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
                     className="accent-[#c9a34a] cursor-pointer"
                     checked={
                       city === "all"
-                        ? true
+                        ? false
                         : Array.isArray(city)
                         ? city.includes(cityName)
                         : city === cityName
                     }
-                    onChange={() => updateValue("city", cityName)}
+                    onChange={() => toggleFilter("city", city, cityName)}
                   />
                   {cityName}
                 </label>
@@ -129,12 +142,16 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
         {/* الكاتجري */}
         <div>
           <label
-            className="flex items-center gap-2 font-semibold mb-3 text-[#c9a34a]"
+            className="flex items-center gap-2 font-semibold mb-3 text-[var(--color)]"
             aria-label="Filter by categories"
           >
             <FaTags /> {t("Categories")} :
           </label>
           <div className="grid grid-cols-2 gap-2 ml-6">
+            <label className="col-span-2 flex items-center gap-2 cursor-pointer font-medium">
+              <input type="checkbox" aria-label={t("All")} className="accent-[#c9a34a] cursor-pointer" checked={category === "all"} onChange={() => updateValue("category", "all")} />
+              {t("All")}
+            </label>
             {allCategories.map((cat) => {
               const categoryName =
                 cat.name?.[normalizedLang] || cat.name?.["en"] || cat.name;
@@ -149,12 +166,12 @@ export default function TripsFilter({ allCities, allCategories, loading }) {
                     className="accent-[#c9a34a] cursor-pointer"
                     checked={
                       category === "all"
-                        ? true
+                        ? false
                         : Array.isArray(category)
                         ? category.includes(categoryName)
                         : category === categoryName
                     }
-                    onChange={() => updateValue("category", categoryName)}
+                    onChange={() => toggleFilter("category", category, categoryName)}
                   />
                   {categoryName}
                 </label>

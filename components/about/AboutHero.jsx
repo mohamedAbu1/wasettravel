@@ -22,7 +22,7 @@ export default function AboutHero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="space-y-5"
         >
-          <p className={`uppercase tracking-widest text-sm ${themeName === "dark" ? "text-white/60" : "text-[#6b4f1d]"}`}>
+          <p className={`uppercase tracking-widest text-sm ${themeName === "dark" ? "text-white/60" : "text-[#6e4523]"}`}>
             {t("AboutWasetTravel")}
           </p>
           <DividerWithIcon />
@@ -33,7 +33,7 @@ export default function AboutHero() {
             className={`text-4xl lg:text-5xl font-extrabold leading-tight ${
               themeName === "dark"
                 ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+                : "text-[#8f5d2e]"
             }`}
           >
             {t("h1")}
@@ -41,7 +41,7 @@ export default function AboutHero() {
           <DividerWithIcon />
           <p
             aria-label="About Waset Travel introduction"
-            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"} text-lg`}
+            className={`${themeName === "dark" ? "text-white/80" : "text-[#4f3d2d]"} text-lg`}
           >
             {/* النص الطويل كما هو */}
           </p>

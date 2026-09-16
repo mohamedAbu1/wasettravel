@@ -35,7 +35,7 @@ export default function HeritageSection() {
         className={`max-w-7xl mx-auto rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 border ${
           themeName === "dark"
             ? "border-gold/25 bg-black/40"
-            : "border-[#c9a34a]/25 bg-white/70"
+            : "border-[#8f5d2e]/20 bg-[#fffaf3] shadow-[0_1rem_2.5rem_rgba(78,54,31,.1)]"
         }`}
       >
         <motion.div variants={fadeLeft} className="flex-1">
@@ -46,7 +46,7 @@ export default function HeritageSection() {
             className={`text-2xl font-bold mb-3 ${
               themeName === "dark"
                 ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
+                : "text-[#8f5d2e]"
             }`}
           >
             {t("h5")}
@@ -54,7 +54,7 @@ export default function HeritageSection() {
           <DividerWithIcon />
           <p
             aria-label="Egyptian heritage description"
-            className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"}`}
+            className={`${themeName === "dark" ? "text-white/80" : "text-[#4f3d2d]"}`}
           >
             {t("p4")}
           </p>

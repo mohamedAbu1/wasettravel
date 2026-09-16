@@ -28,27 +28,27 @@ export default function CTASection() {
       <motion.div variants={staggerContainer} className="max-w-7xl mx-auto text-center">
         <motion.h4
           variants={fadeUp}
-          className={`text-xl font-semibold mb-3 ${themeName === "dark" ? "text-gold" : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}`}
+          className={`text-xl font-semibold mb-3 ${themeName === "dark" ? "text-gold" : "text-[#8f5d2e]"}`}
         >
           {t("h6")}
         </motion.h4>
 
         <motion.p
           variants={fadeUp}
-          className={`${themeName === "dark" ? "text-white/80" : "text-[#5c4520]"} mb-6`}
+          className={`${themeName === "dark" ? "text-white/80" : "text-[#4f3d2d]"} mb-6`}
         >
           {t("p5")}
         </motion.p>
 
         <motion.a
           variants={fadeUp}
-          href="/contact"
+          href={`/${typeof window !== "undefined" ? window.location.pathname.split("/")[1] || "en" : "en"}/contact`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className={`inline-block px-8 py-3 rounded-lg font-bold transition shadow-lg ${
             themeName === "dark"
               ? "bg-[#c9a34a] text-black hover:bg-yellow-500"
-              : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+              : "bg-[#8f5d2e] text-white hover:bg-[#6e4523]"
           }`}
         >
           {t("a")}

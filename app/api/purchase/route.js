@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
+import { notifyAdmins } from "@/lib/notifications";
+import { requireUser } from "@/lib/auth/admin";
 
 export async function POST(req) {
+  const auth = requireUser(req);
+  if (auth.response) return auth.response;
   try {
     const {
       tripId,
@@ -17,11 +21,11 @@ export async function POST(req) {
       hasGuide,
       selectedLanguages,
       arrivalDate,
-      userId,
       status,
       departureDate,
       platform,
     } = await req.json();
+    const userId = auth.user.id;
 
     const db = await connectDB();
 
@@ -63,6 +67,8 @@ export async function POST(req) {
           ],
         );
 
+        await notifyAdmins(db, { eventType: "purchase", message: `${user_name || "A customer"} requested a trip booking`, userId, userName: user_name, userEmail: user_email, userImage: user_image, tripId });
+
         return NextResponse.json(
           { message: "Trip re-purchased successfully!" },
           { status: 200 },
@@ -103,6 +109,8 @@ export async function POST(req) {
         status,
       ],
     );
+
+    await notifyAdmins(db, { eventType: "purchase", message: `${user_name || "A customer"} requested a trip booking`, userId, userName: user_name, userEmail: user_email, userImage: user_image, tripId });
 
     return NextResponse.json(
       { message: "Trip purchased successfully!" },

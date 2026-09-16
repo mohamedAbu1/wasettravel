@@ -1,145 +1,43 @@
-/* eslint-disable react-hooks/purity */
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
-import { sites } from "@/constants/images";
-import reactStringReplace from "react-string-replace";
+import { FaChevronLeft, FaChevronRight, FaStar } from "react-icons/fa";
 
 export default function TripHeader({ trip, lang }) {
-  const { themeName } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
-console.log("object",trip)
-  // تغيير تلقائي كل 3 ثواني
+  const images = useMemo(() => {
+    const gallery = Array.isArray(trip?.gallery_images) ? trip.gallery_images : [];
+    if (gallery.length) return gallery;
+    return trip?.cover_image ? [{ url: trip.cover_image }] : [];
+  }, [trip?.gallery_images, trip?.cover_image]);
+  const title = trip?.title?.[lang] || trip?.title?.en || "Egypt tour";
+  const description = trip?.description?.[lang] || trip?.description?.en || "Discover an unforgettable Egypt travel experience.";
+
   useEffect(() => {
-    if (!trip?.gallery_images || trip.gallery_images.length === 0) return;
-    const interval = setInterval(() => {
-      setActiveIndex((prevIndex) =>
-        prevIndex === trip.gallery_images.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [trip?.gallery_images?.length]);
+    setActiveIndex(0);
+    if (images.length < 2) return;
+    const timer = setInterval(() => setActiveIndex((current) => (current + 1) % images.length), 5500);
+    return () => clearInterval(timer);
+  }, [images.length]);
 
-  if (!trip?.gallery_images || trip.gallery_images.length === 0) {
-    return <div className="text-center py-10">No photos are available for this trip.</div>;
-  }
+  if (!images.length) return <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-white/60">No photos are available for this trip.</div>;
 
-  // الكلمات المراد تمييزها
-  const searchWords = sites.map((site) => site.name);
-  const tripDescription =
-    typeof trip?.description?.[lang] === "string"
-      ? trip.description[lang]
-      : trip?.description?.en || "";
-
-  const regex = new RegExp(`(${searchWords.join("|")})`, "gi");
-  const highlightedText = reactStringReplace(tripDescription, regex, (match, i) => (
-    <span key={i} className="highlighted-text">{match}</span>
-  ));
+  const activeImage = images[activeIndex];
+  const imageSrc = typeof activeImage === "string" ? activeImage : activeImage?.url || "/default.jpg";
+  const imageName = typeof activeImage === "object" ? activeImage?.name?.[lang] || activeImage?.name?.en : "";
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      className={`w-full p-6 rounded-xl shadow-lg transition ${
-        themeName === "dark"
-          ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
-          : "bg-white/90 text-[#3a2c0a]"
-      }`}
-    >
-      {/* العنوان */}
-      <motion.h1
-        initial={{ opacity: 0, x: -50 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className={`text-3xl font-extrabold mb-6 border-b pb-3 ${
-          themeName === "dark" ? "border-gold/50" : "border-[#c9a34a]/50"
-        }`}
-      >
-        {trip.title?.[lang] || trip.title?.en}
-      </motion.h1>
-
-      {/* الصورة الرئيسية */}
-      <motion.div
-        key={activeIndex}
-        initial={{ opacity: 0, scale: 0.9 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="overflow-hidden rounded-lg shadow-md mb-6 relative h-[500px]"
-      >
-        <Image
-          src={trip.gallery_images[activeIndex].url || "/default.jpg"}
-          alt={trip.gallery_images[activeIndex].name?.[lang] || trip.gallery_images[activeIndex].name?.en || "Trip image"}
-          fill
-          priority={activeIndex === 0} // ✅ فقط الصورة الأولى priority
-          quality={75}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-          placeholder="blur"
-          blurDataURL="/default-blur.jpg"
-          className="object-cover w-full h-[500px] rounded-lg aspect-[4/3]" // ✅ CSS class للـ aspectRatio
-        />
-
-        {trip.gallery_images[activeIndex].name && (
-          <div className="absolute bottom-4 left-4 text-xl font-bold px-4 py-2 rounded bg-black/50 text-white">
-            {trip.gallery_images[activeIndex].name?.[lang] || trip.gallery_images[activeIndex].name?.en}
-          </div>
-        )}
-      </motion.div>
-
-      {/* الصور الجانبية المصغرة */}
-      <div className="flex gap-4 flex-wrap">
-        {trip.gallery_images.map((img, index) => (
-          <div
-            key={index}
-            className={`relative w-[145px] h-[100px] rounded-lg cursor-pointer border-2`}
-            style={{
-              borderColor: index === activeIndex
-                ? themeName === "dark" ? "#FFD700" : "#c9a34a"
-                : "transparent",
-            }}
-            onClick={() => setActiveIndex(index)}
-          >
-            <Image
-              src={img.url || "/default.jpg"}
-              alt={img.name?.[lang] || img.name?.en || `Thumbnail ${index}`}
-              fill
-              quality={60}
-              sizes="150px"
-              loading="lazy"
-              className="object-cover rounded-lg"
-              placeholder="blur"
-              blurDataURL="/default-blur-thumb.jpg"
-            />
-          </div>
-        ))}
+    <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65 }} className="overflow-hidden rounded-[1.75rem] border border-[#e0b873]/25 bg-[#25211d] shadow-[0_2rem_4rem_rgba(0,0,0,.2)]">
+      <div className="relative aspect-[16/8] min-h-[19rem] overflow-hidden sm:min-h-[25rem] lg:min-h-[31rem]">
+        <motion.div key={activeIndex} initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .7 }} className="absolute inset-0"><Image src={imageSrc} alt={imageName || title} fill priority={activeIndex === 0} sizes="(max-width: 1024px) 100vw, 70vw" className="object-cover" /></motion.div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#151311] via-[#151311]/20 to-transparent" />
+        <div className="absolute left-5 top-5 rounded-full border border-white/20 bg-black/25 px-3 py-1.5 text-xs font-bold uppercase tracking-[.16em] text-white/80 backdrop-blur-md">Waset experience</div>
+        {images.length > 1 && <div className="absolute right-5 top-5 flex gap-2"><button type="button" aria-label="Previous image" onClick={() => setActiveIndex((current) => (current - 1 + images.length) % images.length)} className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-black/25 text-white backdrop-blur-md transition hover:bg-[#e0b873] hover:text-[#211a13]"><FaChevronLeft /></button><button type="button" aria-label="Next image" onClick={() => setActiveIndex((current) => (current + 1) % images.length)} className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-black/25 text-white backdrop-blur-md transition hover:bg-[#e0b873] hover:text-[#211a13]"><FaChevronRight /></button></div>}
+        <div className="absolute inset-x-5 bottom-6 max-w-3xl"><p className="mb-2 text-sm font-bold uppercase tracking-[.18em] text-[#e0b873]">Curated Egypt journey</p><h1 className="text-3xl font-bold leading-tight text-white sm:text-5xl">{title}</h1><p className="mt-3 line-clamp-3 max-w-2xl text-sm leading-6 text-white/70 sm:text-base">{description}</p><div className="mt-4 flex items-center gap-2 text-sm text-[#f0c979]"><FaStar /><strong>{trip.rating || "4.5"}</strong><span className="text-white/55">({trip.review_count ?? trip.reviews?.length ?? 0} reviews)</span></div></div>
       </div>
-
-      {/* الوصف مع تمييز الكلمات */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, delay: 0.3 }}
-        className="leading-relaxed text-lg mt-6"
-      >
-        {highlightedText}
-      </motion.div>
-
-      <style jsx>{`
-        .highlighted-text {
-          color: #c9a34a;
-          font-weight: bold;
-        }
-        .highlighted-text:hover {
-          text-decoration: underline;
-          color: #eab308;
-        }
-      `}</style>
+      {images.length > 1 && <div className="flex gap-2 overflow-x-auto border-t border-white/10 bg-[#211e1b] p-3">{images.map((image, index) => { const src = typeof image === "string" ? image : image?.url || "/default.jpg"; return <button key={`${src}-${index}`} type="button" aria-label={`View image ${index + 1}`} onClick={() => setActiveIndex(index)} className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition ${index === activeIndex ? "border-[#e0b873]" : "border-transparent opacity-55 hover:opacity-100"}`}><Image src={src} alt="" fill sizes="96px" className="object-cover" /></button>; })}</div>}
     </motion.section>
   );
 }

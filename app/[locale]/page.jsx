@@ -62,7 +62,7 @@ export default function Home() {
     <>
       <main
         className={`
-          w-full flex flex-col items-center justify-center
+          site-shell w-full flex flex-col items-center justify-center
           min-h-screen font-sans bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300
           overflow-hidden
         `}
@@ -74,29 +74,30 @@ export default function Home() {
         <DownloadAppSection />
 
         <section
+          id="discover"
           aria-labelledby="egypt-tourism-guide"
-          className="w-full border-y border-white/10 bg-[#121212] px-5 py-12 text-white sm:px-8 sm:py-16"
+          className="stone-section w-full border-y border-[var(--line)] bg-[var(--surface)] px-5 py-12 text-[var(--foreground)] sm:px-8 sm:py-16"
         >
           <div className="mx-auto max-w-5xl">
-            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.22em] text-[#c9a34a]">
+            <p className="stone-kicker mb-3 text-sm font-semibold uppercase tracking-[0.22em]">
               WasetTravel Egypt travel guide
             </p>
             <h2 id="egypt-tourism-guide" className="max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">
               Discover Egypt through Luxor, Aswan, and the Nile
             </h2>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-white/75 sm:text-lg">
+            <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
               Plan a richer Egypt holiday with local experiences in Luxor and Aswan. Explore ancient temples and tombs,
               enjoy Nile cruises between Upper Egypt destinations, and choose private tours designed around your time,
               comfort, and interests.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <a className="rounded-xl bg-[#c9a34a] px-5 py-3 font-semibold text-white transition hover:bg-[#a67c00]" href="/en/destinations/luxor">
+              <a className="stone-button rounded-xl px-5 py-3 font-semibold" href={`/${lang}/destinations/luxor`}>
                 Luxor tours and temples
               </a>
-              <a className="rounded-xl border border-[#c9a34a] px-5 py-3 font-semibold text-[#e6dcca] transition hover:bg-[#c9a34a]/10" href="/en/destinations/aswan">
+              <a className="rounded-xl border border-[var(--color)] px-5 py-3 font-semibold text-[var(--foreground)] transition hover:bg-[var(--color)]/10" href={`/${lang}/destinations/aswan`}>
                 Aswan tours and Nile trips
               </a>
-              <a className="rounded-xl border border-white/20 px-5 py-3 font-semibold text-white/85 transition hover:border-white/50" href="/en/trips">
+              <a className="rounded-xl border border-[var(--line)] px-5 py-3 font-semibold text-[var(--foreground)] transition hover:border-[var(--color)]" href={`/${lang}/trips`}>
                 Browse all Egypt tours
               </a>
             </div>

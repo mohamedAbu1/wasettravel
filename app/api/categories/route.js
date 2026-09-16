@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { fallbackCategories } from "@/lib/catalogFallback";
 
 export async function GET() {
   try {
@@ -10,7 +11,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, categories: rows });
   } catch (error) {
-    console.error("❌ Database error:", error.message);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error("Categories database unavailable; serving local catalog:", error.message);
+    return NextResponse.json({ success: true, categories: fallbackCategories, fallback: true });
   }
 }

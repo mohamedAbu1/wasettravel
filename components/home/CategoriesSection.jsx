@@ -1,128 +1,45 @@
 "use client";
+
 import Image from "next/image";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
+import { encodeBase64Json } from "@/lib/utils/base64";
 
-const encodeData = (obj) => btoa(JSON.stringify(obj));
-
-const optimize = (url) => {
-  if (!url || typeof url !== "string" || url.trim() === "") {
-    return "/fallback.jpg";
-  }
-  if (url.startsWith("http")) {
-    return `${url}?width=800&quality=70&format=webp`;
-  }
-  const cleanUrl = url.startsWith("/") ? url : `/${url}`;
-  return `${cleanUrl}?width=800&quality=70&format=webp`;
+const fallbackImage = "/HomePageImage/_16934_1.webp";
+const imageUrl = (url) => {
+  if (!url || typeof url !== "string" || !url.trim()) return fallbackImage;
+  return url.startsWith("http") ? `${url}?width=800&quality=75&format=webp` : (url.startsWith("/") ? url : `/${url}`);
 };
 
-function CategoryCard({ cat, themeName, language }) {
-  const [imgIndex, setImgIndex] = useState(0);
+function CategoryCard({ category, language, position }) {
   const router = useRouter();
-  const cardRef = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
+  const name = typeof category.name === "object" ? category.name?.[language] || category.name?.en || Object.values(category.name)[0] : category.name;
+  const images = category.images?.length ? category.images : [fallbackImage];
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) setVisible(true);
-      },
-      { threshold: 0.2 },
-    );
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, []);
+    if (images.length < 2) return;
+    const timer = setInterval(() => setImageIndex((current) => (current + 1) % images.length), 5000);
+    return () => clearInterval(timer);
+  }, [images.length]);
 
-  useEffect(() => {
-    if (!visible || !cat.images?.length) return;
-    const interval = setInterval(() => {
-      setImgIndex((prev) => (prev + 1) % cat.images.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [visible, cat.images]);
-
-  const displayName =
-    typeof cat.name === "object"
-      ? cat.name?.[language] || cat.name?.en || Object.values(cat.name)[0]
-      : cat.name;
-
-  const handleClick = () => {
-    const queryObj = {
-      city: "all",
-      category: [displayName],
-      price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(
-        displayName,
-      )
-        ? "Luxury"
-        : "All",
-      popular: false,
-    };
-    const encoded = encodeData(queryObj);
-    router.push(`/trips?data=${encoded}`);
+  const explore = () => {
+    const query = { city: "all", category: [name], price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(name) ? "Luxury" : "All", popular: false };
+    router.push(`/trips?data=${encodeBase64Json(query)}`);
   };
 
   return (
-    <div
-      ref={cardRef}
-      onClick={handleClick}
-      aria-label={`View trips in category ${displayName}`} // ✅ اسم واضح
-      role="button" // ✅ يوضح إنها زر
-      tabIndex={0} // ✅ يخليها قابلة للتركيز بالكيبورد
-      className={`relative rounded-2xl overflow-hidden group cursor-pointer h-[280px] sm:h-[320px]
-    transition-all duration-500 hover:scale-[1.06] hover:shadow-2xl
-    ${
-      themeName === "dark"
-        ? "bg-[#1a1a1a] border border-gold/20 shadow-lg"
-        : "bg-[#fff8e1] border border-[#c9a34a]/30 shadow-md"
-    }`}
-    >
-      <AnimatePresence mode="sync">
-        {visible && (
-          <motion.div
-            key={imgIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            className="absolute inset-0"
-          >
-            <Image
-              src={optimize(cat.images[imgIndex])}
-              alt={displayName}
-              fill
-              quality={75} // ضغط الصورة لتقليل الحجم
-              sizes="(max-width: 768px) 100vw, 220px" // صور متجاوبة حسب حجم الكارد
-              loading="lazy"
-              placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
-              blurDataURL="/fallback-blur.jpg" // نسخة مصغرة للتحميل التدريجي
-              className="object-cover rounded-lg"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div
-        className={`absolute inset-0 bg-gradient-to-t ${
-          themeName === "dark" ? "from-black/60" : "from-[#fdf6e3]/70"
-        } via-transparent to-transparent flex items-end justify-center pb-4`}
-      >
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className={`text-lg font-bold tracking-wide drop-shadow-lg ${
-            themeName === "dark" ? "text-white" : "text-[#3a2c0a]"
-          }`}
-        >
-          {displayName}
-        </motion.p>
-      </div>
-    </div>
+    <motion.article initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: position * 0.06 }} viewport={{ once: true, amount: 0.18 }} onClick={explore} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") explore(); }} role="button" tabIndex={0} aria-label={`View trips in category ${name}`} className="stone-card group relative min-h-[15rem] cursor-pointer overflow-hidden rounded-[1.25rem] outline-none focus-visible:ring-2 focus-visible:ring-[#e0b873] sm:min-h-[17rem]">
+      <Image src={imageUrl(images[imageIndex])} alt={name} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 260px" className="object-cover transition duration-700 group-hover:scale-110" loading="lazy" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#121110] via-[#121110]/35 to-transparent" />
+      <div className="absolute left-4 top-4 flex items-center gap-2"><span className="rounded-full border border-white/20 bg-black/25 px-2.5 py-1 text-[10px] font-bold tracking-[0.15em] text-white/80 backdrop-blur-md">{String(position + 1).padStart(2, "0")}</span>{images.length > 1 && <span className="h-1.5 w-1.5 rounded-full bg-[#e0b873]" />}</div>
+      <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3"><h3 className="text-xl font-bold leading-tight text-white drop-shadow-lg">{name}</h3><span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#e0b873]/60 bg-[#e0b873]/15 text-lg text-[#f0c979] transition group-hover:bg-[#e0b873] group-hover:text-[#211a13]">↗</span></div>
+    </motion.article>
   );
 }
 
@@ -130,95 +47,16 @@ const CategoriesSection = () => {
   const { themeName } = useTheme();
   const { t, i18n } = useTranslation("home");
   const { categories = [], loading } = useCitiesCategories();
-  const [index, setIndex] = useState(0);
-  const normalizedLang = i18n.language.split("-")[0];
-  const containerRef = useRef(null);
+  const language = i18n.language.split("-")[0];
 
-  const cardWidth = 220;
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  useEffect(() => {
-    if (containerRef.current) {
-      setContainerWidth(containerRef.current.offsetWidth);
-    }
-    const handleResize = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // ✅ سلايدر تلقائي دائري
-  useEffect(() => {
-    if (!categories.length) return;
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % categories.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [categories.length]);
-
-  if (loading) {
-    return <p className="text-center text-gray-500">Loading categories...</p>;
-  }
-
-  const looped = [...categories, ...categories, ...categories];
-
-  // حساب الإزاحة بحيث الكارد الحالي يكون في منتصف الشاشة
-  const offset =
-    containerWidth / 2 -
-    cardWidth / 2 -
-    (index % categories.length) * cardWidth;
+  if (loading) return <section className="stone-section flex min-h-80 items-center justify-center"><p className="text-white/60">Loading categories...</p></section>;
+  if (!categories.length) return <section className="stone-section flex min-h-80 items-center justify-center"><p className="text-white/60">No categories available right now.</p></section>;
 
   return (
-    <section
-      className={`flex flex-col py-16 px-4 sm:px-6 w-full mx-auto relative transition-colors duration-500
-        ${themeName === "dark" ? "bg-[#0f0f0f] text-white" : "bg-[#fdf6e3] text-[#3a2c0a]"}
-      `}
-    >
-      <div className="max-w-7xl mx-auto mb-10 text-start">
-        <h2
-          role="heading"
-          aria-level={2}
-          aria-label={t("ExploreCategories")}
-          className={`text-3xl sm:text-5xl font-extrabold tracking-wide drop-shadow-md text-left
-    ${
-      themeName === "dark"
-        ? "text-gold"
-        : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-    }
-  `}
-        >{t("ExploreCategories")}</h2>
-        <p className="mt-4 text-base sm:text-lg opacity-80 text-start">
-          {t("Discover")}
-        </p>
-        <DividerWithIcon />
-      </div>
-
-      <div
-        ref={containerRef}
-        className="relative overflow-hidden w-full max-w-7xl mx-auto"
-      >
-        <motion.div
-          className="flex h-full cursor-grab active:cursor-grabbing"
-          animate={{ x: offset }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-        >
-          {looped.map((cat, i) => (
-            <div
-              key={i}
-              className="min-w-[220px] p-3"
-              style={{ width: cardWidth }}
-            >
-              <CategoryCard
-                cat={cat}
-                themeName={themeName}
-                language={normalizedLang}
-              />
-            </div>
-          ))}
-        </motion.div>
+    <section className={`stone-section w-full px-5 sm:px-8 ${themeName === "light" ? "text-[#30271d]" : "text-white"}`}>
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-9 flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><p className="stone-kicker mb-3">Find your way</p><h2 className="text-4xl font-bold tracking-tight sm:text-5xl">{t("ExploreCategories")}</h2><DividerWithIcon /></div><p className="max-w-md text-sm leading-6 text-white/55 md:text-right">{t("Discover")}</p></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{categories.map((category, position) => <CategoryCard key={category.id || position} category={category} language={language} position={position} />)}</div>
       </div>
     </section>
   );

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth/admin";
 
 
 export async function DELETE(req, { params }) {
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
   try {
     const db = await connectDB();
     const { id } = params; // نأخذ id من الرابط مثل /api/notifications/[id]

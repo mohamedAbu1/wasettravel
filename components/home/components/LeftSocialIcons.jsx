@@ -2,12 +2,9 @@
 import { motion } from "framer-motion";
 import React from "react";
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaTiktok } from "react-icons/fa";
-import { useTheme } from "@/context/ThemeContext";
 import { MdEmail } from "react-icons/md";
 
 const LeftSocialIcons = () => {
-  const { theme } = useTheme();
-
   const socialLinks = [
     { Icon: FaFacebookF, url: "https://www.facebook.com/share/1BTkjPD5Sd/", label: "Visit our Facebook page" },
     { Icon: FaInstagram, url: "https://www.instagram.com/kader.mohameda?igsh=MXZkd3VvOTNhanJoZA==", label: "Visit our Instagram page" },
@@ -18,22 +15,25 @@ const LeftSocialIcons = () => {
 
   return (
     <motion.div
-      initial={{ x: -100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 1, delay: 0.7 }}
-      className="absolute left-[30px] bottom-0 lg:top-[55%] -translate-y-1/2 flex flex-row lg:flex-col gap-6 z-30"
+      initial={{ y: 8, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: .35, delay: 0.15 }}
+      className="hero-social-links"
+      role="list"
     >
+      <span className="hero-social-links__label">Follow our journey</span>
       {socialLinks.map(({ Icon, url, label }, i) => (
         <motion.a
           whileHover={{ scale: 1.2, rotate: -5 }}
           key={i}
           href={url}
           aria-label={label} // ✅ اسم واضح لكل رابط
+          role="listitem"
           target="_blank"
           rel="noopener noreferrer"
-          className={`p-3 rounded-full ${theme.card} ${theme.shadow}`}
+          className="hero-social-links__icon"
         >
-          <Icon size={22} className={theme.icon} />
+          <Icon aria-hidden="true" />
         </motion.a>
       ))}
     </motion.div>

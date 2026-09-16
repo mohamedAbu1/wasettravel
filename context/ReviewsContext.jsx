@@ -132,7 +132,7 @@ const addLike = async (reviewId, userId) => {
 
   // ✅ إزالة لايك
   const removeLike = async (reviewId) => {
-    if (!user?.id) return;
+    if (!userData?.id) return;
 
     try {
       const res = await axios.delete(`/api/reviews/${reviewId}/like`, {
@@ -184,10 +184,7 @@ const deleteReview = async (reviewId) => {
     const data = res.data;
     if (data.success) {
       // تحديث التعليقات الخاصة بالرحلة
-      setReviewsByTrip((prev) => ({
-        ...prev,
-        [tripId]: (prev[tripId] || []).filter((review) => review.id !== reviewId),
-      }));
+      setReviewsByTrip((prev) => Object.fromEntries(Object.entries(prev).map(([key, reviews]) => [key, reviews.filter((review) => review.id !== reviewId)])));
 
       // تحديث جميع التعليقات
       setAllReviews((prev) => prev.filter((review) => review.id !== reviewId));

@@ -8,21 +8,25 @@ export async function POST(request) {
   try {
     const db = await connectDB();
     const { email, password } = await request.json();
+    const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+
+    if (!normalizedEmail || typeof password !== "string" || password.length < 8) {
+      return NextResponse.json({ error: "بيانات الدخول غير صحيحة" }, { status: 400 });
+    }
 
 
     // ✅ البحث عن المستخدم
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    const [rows] = await db.query("SELECT * FROM users WHERE LOWER(email) = ?", [normalizedEmail]);
     if (rows.length === 0) {
-      return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 401 });
+      return NextResponse.json({ error: "البريد الإلكتروني أو كلمة المرور غير صحيحة" }, { status: 401 });
     }
 
     const user = rows[0];
-    console.log("👤 Step 2: User retrieved", { user });
 
     // ✅ التحقق من كلمة المرور
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-      return NextResponse.json({ error: "كلمة المرور غير صحيحة" }, { status: 401 });
+      return NextResponse.json({ error: "البريد الإلكتروني أو كلمة المرور غير صحيحة" }, { status: 401 });
     }
 
     // ✅ إنشاء التوكينات
@@ -55,13 +59,25 @@ export async function POST(request) {
           gender: user.gender,
           avatar_url: user.avatar_url,
         },
-        accessToken,
-        refreshToken,
       },
       { status: 200 }
     );
 
     response.cookies.set("token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    response.cookies.set("access-token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    response.cookies.set("refresh-token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

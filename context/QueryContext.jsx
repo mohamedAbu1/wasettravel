@@ -1,11 +1,12 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { encodeBase64Json, decodeBase64Json } from "@/lib/utils/base64";
 
-const encodeData = (obj) => btoa(JSON.stringify(obj));
+const encodeData = encodeBase64Json;
 const decodeData = (encoded) => {
   try {
-    return JSON.parse(atob(encoded));
+    return decodeBase64Json(encoded);
   } catch {
     return null;
   }

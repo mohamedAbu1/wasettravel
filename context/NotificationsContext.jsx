@@ -7,35 +7,38 @@ export function NotificationsProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // استدعاء API لجلب الإشعارات
-  useEffect(() => {
-    async function fetchNotifications() {
+  const fetchNotifications = async (silent = false) => {
+      if (!silent) setLoading(true);
       try {
         const res = await fetch("/api/notifications");
+        if (!res.ok) return;
         const data = await res.json();
         if (data.success) {
-          setNotifications(data.notifications);
+          setNotifications(Array.isArray(data.notifications) ? data.notifications : []);
         }
       } catch (err) {
         console.error("خطأ في جلب الإشعارات:", err);
       } finally {
-        setLoading(false);
+        if (!silent) setLoading(false);
       }
-    }
+  };
+
+  useEffect(() => {
     fetchNotifications();
+    const interval = setInterval(() => fetchNotifications(true), 30000);
+    return () => clearInterval(interval);
   }, []);
   // تحديث حالة الإشعار إلى مقروء
   const markAsRead = async (id) => {
     try {
-      await fetch(`/api/notifications/read/${id}`, { method: "PUT" });
+      const response = await fetch(`/api/notifications/read/${id}`, { method: "PUT" });
+      if (!response.ok) return;
       // تحديث محلي
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n)),
       );
       // إعادة جلب من السيرفر للتأكد
-      const res = await fetch("/api/notifications");
-      const data = await res.json();
-      if (data.success) setNotifications(data.notifications);
+      await fetchNotifications(true);
     } catch (err) {
       console.error("خطأ في تحديث الإشعار:", err);
     }
@@ -43,6 +46,7 @@ export function NotificationsProvider({ children }) {
   const deleteNotification = async (id) => {
     try {
       const res = await fetch(`/api/notifications/${id}`, { method: "DELETE" });
+      if (!res.ok) return;
       const data = await res.json();
 
       if (data.success) {

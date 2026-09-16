@@ -36,7 +36,7 @@ const OurSection = () => {
       {/* ✅ نسخة الشاشات الكبيرة */}
       <section
         id="section-four"
-        className={`hidden lg:flex relative w-full min-h-screen px-4 py-12 flex-col items-center justify-start ${theme.background} ${theme.text}`}
+        className={`stone-section hidden lg:flex relative w-full min-h-screen px-4 py-12 flex-col items-center justify-start ${theme.background} ${theme.text}`}
       >
         <div className="w-full max-w-screen-xl flex flex-row items-center justify-between gap-10 relative z-10">
           {/* Slider */}
@@ -97,7 +97,7 @@ const OurSection = () => {
             <button
               onClick={() => router.push("/about")}
               aria-label="Learn more about Waset Travel" // ✅ اسم واضح
-              className="px-6 py-3 rounded-lg font-semibold transition shadow-lg bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+              className="stone-button px-6 py-3 rounded-lg font-semibold transition shadow-lg bg-[#c9a34a] text-white hover:bg-[#b5892e]"
             >
               {t("LearnMoreAboutUs")}
             </button>
@@ -143,7 +143,7 @@ const OurSection = () => {
 
       {/* ✅ نسخة الموبايل */}
       <section
-        className={`flex lg:hidden flex-col w-full px-4 py-12 items-center justify-start ${theme.background} ${theme.text}`}
+        className={`stone-section flex lg:hidden flex-col w-full px-4 py-12 items-center justify-start ${theme.background} ${theme.text}`}
       >
         {/* Slider full width */}
         <div className="w-full rounded-2xl overflow-hidden shadow-lg mb-8">
@@ -204,7 +204,7 @@ const OurSection = () => {
 
           <button
             onClick={() => router.push("/about")}
-            className="px-5 py-2 rounded-lg font-medium transition shadow-md bg-[#c9a34a] text-white hover:bg-[#b5892e]"
+            className="stone-button px-5 py-2 rounded-lg font-medium transition shadow-md bg-[#c9a34a] text-white hover:bg-[#b5892e]"
           >
             {t("LearnMoreAboutUs")}
           </button>

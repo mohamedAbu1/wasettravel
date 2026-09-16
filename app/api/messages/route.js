@@ -3,10 +3,11 @@ import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
-import { requireAdmin } from "@/lib/auth/admin";
+import { requireUser, requireAdmin } from "@/lib/auth/admin";
+import { notifyAdmins } from "@/lib/notifications";
 
 export async function POST(req) {
-  const auth = requireAdmin(req);
+  const auth = requireUser(req);
   if (auth.response) return auth.response;
 
   try {
@@ -45,11 +46,14 @@ export async function POST(req) {
       const user_id = formData.get("user_id");
       if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
 
-      const sender_type = formData.get("sender_type") || "admin";
+      const requestedSenderType = formData.get("sender_type") || "user";
+      const sender_type = auth.user.role?.toLowerCase() === "admin" ? "admin" : "user";
+      if (requestedSenderType !== sender_type) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
       const user_name = formData.get("user_name") || "Admin";
       const user_image = formData.get("user_image") || "/default-avatar.png";
       const reply_to = formData.get("reply_to");
-      const admin_id = formData.get("admin_id") || null;
+      const admin_id = sender_type === "admin" ? auth.user.id : null;
+      if (sender_type === "user" && user_id !== auth.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
       const db = await connectDB();
       const messagesId = uuidv4();
@@ -74,15 +78,24 @@ export async function POST(req) {
         created_at: new Date(),
       };
 
+      if (sender_type === "user") {
+        await notifyAdmins(db, { eventType: "message", message: contentType.includes("multipart") ? "New image message" : "New message", userId: auth.user.id, userName: auth.user.name || user_name, userEmail: auth.user.email, userImage: auth.user.avatar_url || user_image });
+      }
+
       return NextResponse.json(newMessage, { status: 201 });
     }
 
     // 📌 لو الرسالة نصية
     const body = await req.json();
-    const { user_id, content, sender_type = "user", user_name = "Unknown User", user_image = "/default-avatar.png", reply_to = null, admin_id = null } = body;
+    const { user_id, content, sender_type = "user", user_name = "Unknown User", user_image = "/default-avatar.png", reply_to = null } = body;
 
     if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
     if (!content) return NextResponse.json({ error: "Content cannot be null" }, { status: 400 });
+
+    const isAdmin = auth.user.role?.toLowerCase() === "admin";
+    if (sender_type !== (isAdmin ? "admin" : "user")) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
+    if (!isAdmin && user_id !== auth.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const admin_id = isAdmin ? auth.user.id : null;
 
     const db = await connectDB();
     const messagesId = uuidv4();
@@ -107,6 +120,10 @@ export async function POST(req) {
       created_at: new Date(),
     };
 
+    if (!isAdmin) {
+      await notifyAdmins(db, { eventType: "message", message: content.slice(0, 180), userId: auth.user.id, userName: auth.user.name || user_name, userEmail: auth.user.email, userImage: auth.user.avatar_url || user_image });
+    }
+
     return NextResponse.json(newMessage, { status: 201 });
   } catch (err) {
     console.error("❌ Error inserting message:", err.message);
@@ -115,7 +132,7 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
-  const auth = requireAdmin(req);
+  const auth = requireUser(req);
   if (auth.response) return auth.response;
 
   try {
@@ -128,12 +145,17 @@ export async function GET(req) {
                  FROM messages`;
     let params = [];
 
+    const isAdmin = auth.user.role?.toLowerCase() === "admin";
     if (messageId) {
-      query += ` WHERE id = ?`;
+      query += isAdmin ? ` WHERE id = ?` : ` WHERE id = ? AND user_id = ?`;
       params.push(messageId);
+      if (!isAdmin) params.push(auth.user.id);
     } else if (userId) {
       query += ` WHERE user_id = ?`;
-      params.push(userId);
+      params.push(isAdmin ? userId : auth.user.id);
+    } else if (!isAdmin) {
+      query += ` WHERE user_id = ?`;
+      params.push(auth.user.id);
     }
 
     query += ` ORDER BY created_at ASC`;
@@ -149,7 +171,7 @@ export async function GET(req) {
 
 // ✅ تحديث حالة الرسالة
 export async function PUT(req) {
-  const auth = requireAdmin(req);
+  const auth = requireUser(req);
   if (auth.response) return auth.response;
 
   try {
@@ -164,11 +186,15 @@ export async function PUT(req) {
     }
 
     const { messageId, status = "seen" } = body;
+    if (!messageId) return NextResponse.json({ error: "messageId is required" }, { status: 400 });
 
     const db = await connectDB();
+    const isAdmin = auth.user.role?.toLowerCase() === "admin";
     const [result] = await db.query(
-      `UPDATE messages SET status = ?, updated_at = NOW() WHERE id = ?`,
-      [status, messageId],
+      isAdmin
+        ? `UPDATE messages SET status = ?, updated_at = NOW() WHERE id = ?`
+        : `UPDATE messages SET status = ?, updated_at = NOW() WHERE id = ? AND user_id = ? AND sender_type = 'admin'`,
+      isAdmin ? [status, messageId] : [status, messageId, auth.user.id],
     );
 
     if (result.affectedRows === 0) {

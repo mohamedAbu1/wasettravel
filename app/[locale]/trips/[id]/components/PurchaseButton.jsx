@@ -1,33 +1,16 @@
 "use client";
-import { useState } from "react";
-import { FaShoppingCart } from "react-icons/fa";
-import PurchaseModal from "./components/PurchaseModal";
-import { useTheme } from "@/context/ThemeContext";
+import { FaWhatsapp } from "react-icons/fa";
+import { openWhatsAppBooking } from "@/lib/whatsappBooking";
 
 export default function PurchaseButton({ trip }) {
-  const [open, setOpen] = useState(false);
-  const { themeName } = useTheme();
-
   return (
-    <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => openWhatsAppBooking(`🧾 Booking request\n\nTrip: ${trip?.title?.en || trip?.title || trip?.id || "Egypt tour"}\n\nPlease confirm availability and the final price.`)}
         aria-label="Open purchase modal to buy this trip"
-        className="fixed bottom-6 left-6 px-6 py-3 rounded-xl font-semibold shadow-lg flex items-center gap-2 transition transform hover:scale-105 hover:shadow-2xl z-40 text-white bg-gradient-to-r from-green-500 to-green-600"
+        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 font-semibold text-white shadow-lg transition hover:scale-105 hover:bg-[#1da851] hover:shadow-2xl"
       >
-        <FaShoppingCart className="w-5 h-5 animate-bounce" aria-hidden="true" />
-        Buy Trip
+        <FaWhatsapp className="h-5 w-5" aria-hidden="true" />
+        Book via WhatsApp
       </button>
-
-      {open && (
-        <PurchaseModal
-          trip={trip}
-          onClose={() => setOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Purchase trip modal"
-        />
-      )}
-    </>
   );
 }

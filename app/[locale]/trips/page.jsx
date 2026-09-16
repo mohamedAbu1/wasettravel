@@ -19,6 +19,7 @@ import CurrencySelector from "../../../components/layout/CurrencySelector";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import AdminChatWindow from "@/components/layout/AdminChatWindow";
 import { usePurchase } from "@/context/PurchaseContext";
+import { useTranslation } from "react-i18next";
 export default function TripsPage() {
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const {
@@ -29,6 +30,7 @@ export default function TripsPage() {
   const { lang } = useLanguage();
   const { userData, chatUser, setChatUser } = useAuth();
   const { purchases } = usePurchase(); // ✅ استدعاء الدالة
+  const { t } = useTranslation("trips");
   const [currentPage, setCurrentPage] = useState(1);
   const [cardStyle, setCardStyle] = useState("vertical");
   const tripsPerPage = cardStyle === "vertical" ? 6 : 8;
@@ -41,7 +43,7 @@ export default function TripsPage() {
   }, []);
 
   if (loadingTrips)
-    return <p className="text-center text-gray-500">Loading trips...</p>;
+    return <p className="min-h-[40vh] pt-32 text-center text-[var(--muted)]">Loading trips...</p>;
   // فلترة الرحلات
   const filteredTrips = trips.filter((trip) => {
     const lowerSearch = search.trim().toLowerCase();
@@ -170,7 +172,13 @@ export default function TripsPage() {
                 cardStyle={cardStyle}
                 setCardStyle={setCardStyle}
               />
-              <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
+              {currentTrips.length ? (
+                <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
+              ) : (
+                <div className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-6 py-16 text-center text-[var(--muted)] shadow-sm" role="status">
+                  {t("NoTrips", { defaultValue: "No trips match your current filters yet." })}
+                </div>
+              )}
 
               {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-4">
@@ -204,7 +212,7 @@ export default function TripsPage() {
           <AdminChatWindow
             user={chatUser}
             admin={userData}
-            messages={messages}
+            messages={[]}
             onClose={() => setChatUser(null)}
           />
         )}

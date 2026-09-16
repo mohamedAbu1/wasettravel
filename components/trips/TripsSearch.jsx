@@ -17,13 +17,14 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
       }`}
     >
       {/* أيقونة البحث + input */}
-      <FaSearch className={` hidden lg:flex text-xl ${themeName === "dark" ? "text-gold" : "text-[#3a2c0a]"}`} />
+      <FaSearch aria-hidden="true" className={`text-xl shrink-0 ${themeName === "dark" ? "text-gold" : "text-[#3a2c0a]"}`} />
       <input
         type="text"
         placeholder={t("Searchtrips")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className={` hidden lg:flex flex-1 p-2 rounded-lg border outline-none transition ${
+        aria-label={t("Searchtrips")}
+        className={`min-w-0 flex-1 p-2 rounded-lg border outline-none transition ${
           themeName === "dark"
             ? "bg-[#1a1a1a] text-white border-gold/30 focus:border-gold"
             : "bg-white text-[#3a2c0a] border-[#c9a34a]/30 focus:border-[#c9a34a]"
@@ -38,7 +39,7 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
             cardStyle === "vertical"
               ? themeName === "dark"
                 ? "bg-[#C2A878] text-black hover:bg-yellow-500"
-                : "bg-[#C2A878] text-white hover:bg-[#b5892e]"
+                : "bg-[#8f5d2e] text-white hover:bg-[#70451f]"
               : themeName === "dark"
                 ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -53,7 +54,7 @@ export default function TripsSearch({ search, setSearch, cardStyle, setCardStyle
             cardStyle === "horizontal"
               ? themeName === "dark"
                 ? "bg-[#C2A878] text-black hover:bg-yellow-500"
-                : "bg-[#C2A878] text-white hover:bg-[#b5892e]"
+                : "bg-[#8f5d2e] text-white hover:bg-[#70451f]"
               : themeName === "dark"
                 ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"

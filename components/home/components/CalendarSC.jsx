@@ -5,17 +5,16 @@ import React, { forwardRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useData } from "@/context/DataContext.jsx";
-import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { MdDateRange } from "react-icons/md"; // أيقونة احترافية للتقويم
 // Custom Input Component
 const CustomInput = forwardRef(({ value, onClick, placeholder }, ref) => (
-  <button className="luxury-input w-full text-left" onClick={onClick} ref={ref}>
-    <span className={`luxury-label ${value ? "active" : ""}`}>
-      {placeholder}
+  <button type="button" aria-label={placeholder} aria-haspopup="dialog" className="travel-date-input w-full text-left" onClick={onClick} ref={ref}>
+    <span className="travel-date-input__content">
+      <span className="luxury-label">{placeholder}</span>
+      <span className="luxury-value">{value || "Choose a date"}</span>
     </span>
-    <span className="luxury-value">{value || ""}</span>
-    <MdDateRange size={20} />
+    <span className="travel-date-input__icon" aria-hidden="true"><MdDateRange size={19} /></span>
   </button>
 ));
 
@@ -26,10 +25,8 @@ const CalendarSC = () => {
     departure,
     setDeparture,
     addDays,
-    startDate,
     specialDates,
   } = useData();
-  const { themeName } = useTheme();
   const { t } = useTranslation("home");
 
   return (
@@ -57,7 +54,7 @@ const CalendarSC = () => {
         <DatePicker
           selected={departure}
           onChange={(date) => setDeparture(date)}
-          minDate={startDate ? addDays(startDate, 7) : addDays(new Date(), 4)}
+          minDate={arrival ? addDays(arrival, 1) : addDays(new Date(), 4)}
           dateFormat="dd/MM/yyyy"
           placeholderText={t("Checkout")}
           customInput={<CustomInput />}

@@ -52,7 +52,7 @@ const localizedCities = cities.map((city) => {
   try {
     parsedImages = JSON.parse(city.images);
   } catch {
-    parsedImages = ["/fallback.jpg"];
+    parsedImages = ["/HomePageImage/_16934_1.webp"];
   }
 
   return {
@@ -62,7 +62,7 @@ const localizedCities = cities.map((city) => {
       parsedName?.["en"] ||
       Object.values(parsedName)[0] ||
       city.name,
-    images: Array.isArray(parsedImages) ? parsedImages : ["/fallback.jpg"],
+    images: Array.isArray(parsedImages) ? parsedImages : ["/HomePageImage/_16934_1.webp"],
   };
 });
 
@@ -81,7 +81,7 @@ const localizedCities = cities.map((city) => {
     try {
       parsedImages = JSON.parse(cat.images);
     } catch {
-      parsedImages = ["/fallback.jpg"];
+    parsedImages = ["/HomePageImage/_16934_1.webp"];
     }
 
     return {
@@ -91,7 +91,7 @@ const localizedCities = cities.map((city) => {
         parsedName?.["en"] ||
         Object.values(parsedName)[0] ||
         cat.name,
-      images: Array.isArray(parsedImages) ? parsedImages : ["/fallback.jpg"],
+    images: Array.isArray(parsedImages) ? parsedImages : ["/HomePageImage/_16934_1.webp"],
     };
   });
 

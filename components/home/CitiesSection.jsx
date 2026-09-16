@@ -1,191 +1,50 @@
 "use client";
+
 import Image from "next/image";
-import React, { useRef, useState, useEffect } from "react";
+import React from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
+import { encodeBase64Json } from "@/lib/utils/base64";
 
-// ✅ دالة لتشفير الكويري
-const encodeData = (obj) => btoa(JSON.stringify(obj));
-
-// ✅ دالة تحسين الصور مع fallback
-const optimize = (url) => {
-  if (!url || typeof url !== "string" || url.trim() === "") {
-    return "/fallback.jpg"; // صورة افتراضية
-  }
-
-  // لو الرابط يبدأ بـ http أو https → أضف الـ query
-  if (url.startsWith("http")) {
-    return `${url}?width=800&quality=70&format=webp`;
-  }
-
-  // لو مجرد اسم ملف → ضيف "/" في البداية فقط لو مش موجود
-  const cleanUrl = url.startsWith("/") ? url : `/${url}`;
-  return `${cleanUrl}?width=800&quality=70&format=webp`;
+const fallbackImage = "/HomePageImage/_16934_1.webp";
+const imageUrl = (url) => {
+  if (!url || typeof url !== "string" || !url.trim()) return fallbackImage;
+  return url.startsWith("http") ? `${url}?width=1000&quality=75&format=webp` : (url.startsWith("/") ? url : `/${url}`);
 };
 
-function CityCard({ city, themeName, theme, language, t }) {
+function CityCard({ city, language, position, t }) {
   const router = useRouter();
-  const cityName =
-    typeof city.name === "object"
-      ? city.name?.[language] ||
-        city.name?.["en"] ||
-        Object.values(city.name)[0]
-      : city.name;
-
-  const cardRef = useRef(null);
-  const [visible, setVisible] = useState(false);
-
-  // ✅ Lazy Loading عبر Intersection Observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) setVisible(true);
-      },
-      { threshold: 0.2 },
-    );
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  const handleExplore = () => {
-    const queryObj = {
-      city: [cityName],
-      category: "all",
-      group_price: "All",
-      popular: false,
-    };
-    const encoded = encodeData(queryObj);
-    router.push(`/trips?data=${encoded}`);
-  };
+  const name = typeof city.name === "object" ? city.name?.[language] || city.name?.en || Object.values(city.name)[0] : city.name;
+  const explore = () => router.push(`/trips?data=${encodeBase64Json({ city: [name], category: "all", group_price: "All", popular: false })}`);
 
   return (
-    <div
-      ref={cardRef}
-      role="group"
-      aria-label={`City card for ${cityName}`}
-      tabIndex={0}
-      className="min-w-[250px] p-4"
-    >
-      <div
-        className={`
-          relative h-72 rounded-2xl overflow-hidden group cursor-pointer
-          ${theme.card} ${theme.border} ${theme.shadow}
-          transition-all duration-500
-          hover:scale-[1.05] hover:shadow-2xl hover:-rotate-1
-        `}
-      >
-        {visible && (
-          <Image
-            src={optimize(city?.images?.[0])}
-            alt={`City view of ${cityName}`}
-            fill
-            quality={75} // ضغط الصورة لتقليل الحجم
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            loading="lazy"
-            placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
-            blurDataURL="/fallback-blur.jpg" // نسخة مصغرة للتحميل التدريجي
-            className="object-cover rounded-lg"
-          />
-        )}
-        <div
-          className={`
-            absolute inset-0 
-            ${theme.overlay}
-            flex flex-col items-center justify-end pb-6
-          `}
-        >
-          <p className="text-lg font-bold text-white drop-shadow-lg mb-2">
-            {cityName}
-          </p>
-          <button
-            onClick={handleExplore}
-            aria-label={`Explore trips in ${cityName}`} // ✅ اسم واضح
-            className={`
-    opacity-0 group-hover:opacity-100 px-4 py-2 rounded-lg text-sm font-medium transition text-white cursor-pointer
-    ${
-      themeName === "dark"
-        ? "bg-[#c9a34a] hover:bg-yellow-500"
-        : "bg-[#c9a34a] hover:bg-[#b5892e]"
-    }
-  `}
-          >
-            {t("Explore")}
-          </button>
-        </div>
-      </div>
-    </div>
+    <motion.article initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: position * 0.07 }} viewport={{ once: true, amount: 0.15 }} onClick={explore} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") explore(); }} role="button" tabIndex={0} aria-label={`Explore trips in ${name}`} className={`group relative min-h-[19rem] cursor-pointer overflow-hidden rounded-[1.35rem] border border-white/10 outline-none focus-visible:ring-2 focus-visible:ring-[#e0b873] ${position === 0 ? "sm:col-span-2 sm:min-h-[24rem]" : ""}`}>
+      <Image src={imageUrl(city.images?.[0])} alt={`City view of ${name}`} fill sizes={position === 0 ? "(max-width: 640px) 92vw, 66vw" : "(max-width: 640px) 92vw, 33vw"} className="object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#11100e] via-[#11100e]/15 to-transparent" />
+      <div className="absolute left-5 top-5 rounded-full border border-white/20 bg-black/25 px-3 py-1 text-xs font-semibold text-white/80 backdrop-blur-md">0{position + 1}</div>
+      <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-4"><div><p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#e0b873]">Destination</p><h3 className={`${position === 0 ? "text-3xl" : "text-2xl"} font-bold leading-tight text-white`}>{name}</h3></div><button onClick={(event) => { event.stopPropagation(); explore(); }} className="rounded-full bg-[#e0b873] px-4 py-2 text-xs font-bold text-[#211a13] opacity-100 transition hover:bg-[#f0c979] sm:opacity-0 sm:group-hover:opacity-100">{t("Explore")}</button></div>
+    </motion.article>
   );
 }
 
 const CitiesSection = () => {
-  const { theme, themeName } = useTheme();
+  const { themeName } = useTheme();
   const { t, i18n } = useTranslation("home");
   const { cities = [], loading } = useCitiesCategories();
-  const normalizedLang = i18n.language.split("-")[0];
+  const language = i18n.language.split("-")[0];
 
-  if (loading) {
-    return <p className="text-center text-gray-500">Loading cities...</p>;
-  }
-
-  // كرر المدن مرتين علشان تعمل loop سلس
-  const looped = [...cities, ...cities];
+  if (loading) return <section className="stone-section flex min-h-80 items-center justify-center"><p className="text-white/60">Loading cities...</p></section>;
+  if (!cities.length) return <section className="stone-section flex min-h-80 items-center justify-center"><p className="text-white/60">No cities available right now.</p></section>;
 
   return (
-    <section
-      className={`
-    flex py-12 px-6 flex-col w-full mx-auto relative
-     ${
-       themeName === "dark"
-         ? "bg-[#0f0f0f] text-white"
-         : "bg-[#fdf6e3] text-[#3a2c0a]"
-     }
-  `}
-    >
-      <div className="max-w-2xl mx-auto mb-16 w-full">
-        <h2
-          role="heading"
-          aria-level={2}
-          aria-label={t("ExploreCities")}
-          className={`
-    text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-wide drop-shadow-md text-center
-    ${
-      themeName === "dark"
-        ? "text-gold"
-        : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-    }
-  `}
-        >
-          {t("ExploreCities")}
-        </h2>
-        <DividerWithIcon />
-      </div>
-
-      {/* ✅ Marquee Animation */}
-      <div className="relative overflow-hidden w-full max-w-7xl mx-auto h-[410px]">
-        <motion.div
-          className="flex h-full"
-          animate={{ x: ["0%", "-100%"] }}
-          transition={{
-            duration: 20,
-            ease: "linear",
-            repeat: Infinity,
-          }}
-        >
-          {looped.map((city, i) => (
-            <CityCard
-              key={i}
-              city={city}
-              t={t}
-              themeName={themeName}
-              theme={theme}
-              language={normalizedLang}
-            />
-          ))}
-        </motion.div>
+    <section className={`stone-section w-full px-5 sm:px-8 ${themeName === "light" ? "text-[#30271d]" : "text-white"}`}>
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-9 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end"><div><p className="stone-kicker mb-3">Start somewhere memorable</p><h2 className="text-4xl font-bold tracking-tight sm:text-5xl">{t("ExploreCities")}</h2><DividerWithIcon /></div><p className="max-w-sm text-sm leading-6 text-white/55 sm:text-right">From timeless temples to calm Nile horizons, choose the place that speaks to you.</p></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{cities.map((city, position) => <CityCard key={city.id || position} city={city} language={language} position={position} t={t} />)}</div>
       </div>
     </section>
   );

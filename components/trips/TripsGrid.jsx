@@ -49,7 +49,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
     >
       {trips.map((trip, i) => {
         const avgStars = getRandomStars();
-        const displayedPrice = convertPrice(trip.group_price, trip.currency);
+        const displayedPrice = convertPrice(trip.group_price || 0, trip.currency || "USD");
 
         const hasPurchased =
           userData &&
@@ -86,7 +86,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
             }}
             className={`flex ${
               cardStyle === "vertical" ? "w-full flex-col" : "flex-row"
-            } bg-white dark:bg-transparent rounded-xl shadow-lg overflow-hidden`}
+            } stone-card rounded-xl shadow-lg overflow-hidden`}
           >
             {/* قسم الصور بسليدر */}
             <div
@@ -102,12 +102,12 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 pagination={{ clickable: true }}
                 navigation
                 modules={[Autoplay, Pagination, Navigation]}
-                className="h-[300px] lg:h-[480px] bg-amber-700"
+                className="h-[300px] bg-[#ead9c7] lg:h-[480px]"
               >
                 {(trip.images || [trip.cover_image]).map((img, idx) => (
                   <SwiperSlide key={idx}>
                     <Image
-                      src={img || "/default.jpg"}
+                      src={img || "/HomePageImage/_16934_1.webp"}
                       alt={`Trip image: ${trip.title?.[lang] || trip.title?.en || "Untitled"}`}
                       fill
                       quality={75} // ✅ ضغط الصورة بدون فقدان واضح للجودة
@@ -117,7 +117,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                       className="object-cover w-full h-full rounded-lg"
                       style={{ aspectRatio: "4/3" }} // ✅ يمنع تغير الأبعاد أثناء التحميل (يقلل CLS)
                       placeholder="blur" // ✅ تحسين تجربة التحميل
-                      blurDataURL="/default-blur.jpg" // ✅ صورة منخفضة الجودة أثناء التحميل
+                      blurDataURL="/HomePageImage/_16934_1.webp" // ✅ صورة منخفضة الجودة أثناء التحميل
                     />
                   </SwiperSlide>
                 ))}
@@ -134,14 +134,14 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 role="heading"
                 aria-level={3}
                 aria-label={trip.title?.[lang] || trip.title?.en || "Untitled"}
-                className="text-1xl font-bold text-[#C2A878]"
+                className="text-1xl font-bold text-[var(--color)]"
               >
                 {trip.title?.[lang] || trip.title?.en || "Untitled"}
               </h3>
 
               <p
                 aria-label="Trip cities"
-                className="text-gray-600 dark:text-gray-500 text-sm"
+                className="text-[var(--muted)] text-sm"
               >
                 {Array.isArray(trip.cities) && trip.cities.length > 0
                   ? trip.cities
@@ -159,7 +159,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
 
               <p
                 aria-label="Trip categories"
-                className="text-gray-600 dark:text-gray-500 text-sm"
+                className="text-[var(--muted)] text-sm"
               >
                 {Array.isArray(trip.categories) && trip.categories.length > 0
                   ? trip.categories

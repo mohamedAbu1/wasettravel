@@ -70,6 +70,7 @@ export default function PurchaseModal({ trip, onClose }) {
         <TripDetails trip={trip} groupSize={groupSize} />
         <ConfirmButton
           trip={trip.id}
+          tripTitle={trip.title?.en || trip.title || "Egypt tour"}
           onClose={onClose}
           arrivalDate={arrivalDate}
           departureDate={departureDate}

@@ -10,7 +10,6 @@ import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
 import { useChat } from "@/context/ChatContext";
-import { useTranslation } from "react-i18next";
 
 export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const { theme, themeName } = useTheme();
@@ -28,14 +27,16 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     setTo,
     setBookingMode,
     setMessageses,
+    openChatWithCarBooking,
   } = useChat();
-  const { t } = useTranslation("home");
 
   useEffect(() => {
-    if (userData?.id) {
-      fetchMessages(userData.id);
-    }
-  }, [userData]);
+    if (!userData?.id) return;
+    fetchMessages(userData.id);
+    if (!open) return;
+    const interval = setInterval(() => fetchMessages(userData.id), 8000);
+    return () => clearInterval(interval);
+  }, [userData?.id, open]);
 
   useEffect(() => {
     if (userData?.id && messages.length > 0) {
@@ -48,24 +49,10 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   }, [userData, messages]);
 
   useEffect(() => {
-    if (userData?.id) {
-      const timer = setTimeout(async () => {
-        setOpen(true);
-        await sendMessage({
-          user_id: "c7674367-18c9-4d2a-b94c-eb80ac716005",
-          user_name: "👑 Waset Travel 👑",
-          user_image: "/HomePageImage/Copilot_20260613_134423.webp",
-          content: t("welcomeMessage", {
-            defaultValue:
-              "👋 Hello and welcome! The Waset Travel team is excited to help you plan your next unforgettable journey. How can we assist you today?",
-          }),
-          sender_type: "admin",
-          status: "sent",
-        });
-      }, 30000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
+    const handleCarBooking = () => openChatWithCarBooking();
+    window.addEventListener("openCarBookingChat", handleCarBooking);
+    return () => window.removeEventListener("openCarBookingChat", handleCarBooking);
+  }, [openChatWithCarBooking]);
 
   useEffect(() => {
     if (!userData?.id) return;
@@ -77,17 +64,17 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     return () => clearInterval(interval);
   }, [userData?.id]);
 
-  const handleSend = async () => {
-    if (text.trim() !== "") {
-      await sendMessage({
+  const handleSend = async (message = text) => {
+    if (message.trim() !== "") {
+      const result = await sendMessage({
         user_id: userData?.id,
         user_name: userData?.name,
         user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
-        content: text,
+        content: message,
         sender_type: "user",
         status: "sent",
       });
-      setText("");
+      if (!result?.error) setText("");
     }
   };
 
@@ -104,16 +91,8 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
 
     const res = await fetch("/api/messages", { method: "POST", body: formData });
     const data = await res.json();
-    if (!data.url) return;
-
-    await sendMessage({
-      user_id: userData?.id,
-      user_name: userData?.name,
-      user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
-      content: data.url,
-      sender_type: "user",
-      status: "sent",
-    });
+    if (!res.ok || !data.content) return;
+    await fetchMessages(userData.id);
   };
 
   return (
@@ -125,7 +104,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Open chat widget"
-          className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg flex items-center justify-center ${theme.buttonPrimary}`}
+          className="fixed bottom-5 right-5 z-[90] grid h-14 w-14 place-items-center rounded-2xl border border-[#e0b873]/40 bg-[#8f5d2e] text-white shadow-[0_1rem_2.5rem_rgba(78,54,31,.28)] transition hover:-translate-y-1 hover:bg-[#6e4523] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#8f5d2e]/30 sm:bottom-6 sm:right-6"
         >
           <FaComments size={22} color="#fff" />
         </motion.button>
@@ -139,7 +118,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className={`fixed overflow-x-hidden bottom-20 right-2 lg:right-6 w-90 lg:w-110 h-125 rounded-xl shadow-xl flex flex-col z-50 ${theme.card} ${theme.text}`}
+            className="chat-widget-panel fixed bottom-24 right-3 z-[89] flex h-[min(40rem,calc(100dvh-7rem))] w-[calc(100vw-1.5rem)] max-w-[27rem] flex-col overflow-hidden rounded-[1.5rem] border border-[#8f5d2e]/20 bg-[var(--surface)] text-[var(--foreground)] shadow-[0_1.5rem_4rem_rgba(32,24,17,.25)] sm:right-6"
           >
             <EgyptianBackground />
             <ChatHeader onClose={() => setOpen(false)} theme={theme} />
@@ -172,10 +151,11 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                 />
 
                 <button
-                  onClick={() => {
+                  disabled={!from.trim() || !to.trim()}
+                  onClick={async () => {
+                    if (!from.trim() || !to.trim()) return;
                     const bookingMessage = `🚗 Car booking request from ${from} to ${to}`;
-                    setText(bookingMessage);
-                    handleSend();
+                    await handleSend(bookingMessage);
                     setMessageses((prev) => [
                       ...prev,
                       {
@@ -186,9 +166,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
                     setBookingMode(false);
                   }}
                   aria-label="Confirm car booking request"
-                  className="mt-4 w-full px-6 py-3 rounded-lg font-bold text-white 
-                  bg-gradient-to-r from-[#C2A878] to-[#eab308] 
-                  shadow-md hover:scale-105 transition-transform duration-300"
+                  className="mt-4 w-full rounded-xl bg-[#8f5d2e] px-6 py-3 font-bold text-white shadow-md transition hover:bg-[#6e4523] disabled:cursor-not-allowed disabled:opacity-45 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#8f5d2e]/30"
                 >
                   Confirm Booking
                 </button>

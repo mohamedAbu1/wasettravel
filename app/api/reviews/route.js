@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid"; 
+import { notifyAdmins } from "@/lib/notifications";
+import { requireUser } from "@/lib/auth/admin";
 
 // ✅ جلب التعليقات
 export async function GET(req) {
@@ -29,13 +31,16 @@ export async function GET(req) {
 
 // ✅ إضافة تعليق جديد
 export async function POST(req) {
+    const auth = requireUser(req);
+    if (auth.response) return auth.response;
   try {
     console.log("📩 Request received at /api/reviews");
 
     const body = await req.json();
     console.log("📌 Parsed body:", body);
 
-    const { trip_id, user_id, rating, comment, name, avatar_url, time } = body;
+    const { trip_id, rating, comment, name, avatar_url, time } = body;
+    const user_id = auth.user.id;
     console.log("✅ Extracted values:", {
       trip_id,
       user_id,
@@ -62,6 +67,7 @@ export async function POST(req) {
     console.log("📊 With params:", params);
 
     await db.query(query, params);
+    await notifyAdmins(db, { eventType: "review", message: `${name || "A traveler"} submitted a new review`, userId: user_id, userName: name, userImage: avatar_url, tripId: trip_id });
     console.log("✅ Insert successful");
 
     return NextResponse.json(

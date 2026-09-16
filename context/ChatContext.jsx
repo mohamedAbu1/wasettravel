@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 
 const ChatContext = createContext();
 
@@ -16,7 +16,7 @@ export function ChatProvider({ children }) {
   const [checkInPrice, setCheckInPrice] = useState(null);
   const [checkIn, setCheckIn] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
-  const openChatWithCarBooking = () => {
+  const openChatWithCarBooking = useCallback(() => {
     setOpen(true);
     setBookingMode(true);
     setMessageses([
@@ -25,6 +25,13 @@ export function ChatProvider({ children }) {
         content: "👋 مرحباً! من أين إلى أين تريد حجز السيارة؟",
       },
     ]);
+  }, []);
+
+  const closeChat = () => {
+    setOpen(false);
+    setBookingMode(false);
+    setFrom("");
+    setTo("");
   };
 
   return (
@@ -41,6 +48,7 @@ export function ChatProvider({ children }) {
         to,
         setTo,
         openChatWithCarBooking,
+        closeChat,
         participants,
         setParticipants,
         childrenCount,

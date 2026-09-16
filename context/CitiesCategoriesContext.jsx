@@ -2,13 +2,14 @@
 "use client"
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { fallbackCities, fallbackCategories } from "@/lib/catalogFallback";
 
 const CitiesCategoriesContext = createContext();
 
 export function CitiesCategoriesProvider({ children }) {
-  const [cities, setCities] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [cities, setCities] = useState(fallbackCities);
+  const [categories, setCategories] = useState(fallbackCategories);
+  const [loading, setLoading] = useState(false);
 
   const { i18n } = useTranslation(); // اللغة الحالية للموقع
   const getLangKey = (lang) => lang.split("-")[0];
@@ -16,21 +17,23 @@ export function CitiesCategoriesProvider({ children }) {
 
   useEffect(() => {
     const fetchData = async () => {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 5000);
       try {
         const [citiesRes, categoriesRes] = await Promise.all([
-          fetch("/api/cities"),
-          fetch("/api/categories"),
+          fetch("/api/cities", { signal: controller.signal }),
+          fetch("/api/categories", { signal: controller.signal }),
         ]);
 
         const citiesData = await citiesRes.json();
         const categoriesData = await categoriesRes.json();
 
         if (citiesData.success) setCities(citiesData.cities);
-        if (categoriesData.success) setCategories(categoriesData.categories);
+        if (categoriesData.success && categoriesData.categories?.length) setCategories(categoriesData.categories);
       } catch (err) {
-        console.error("Error fetching cities/categories:", err);
+        if (err.name !== "AbortError") console.error("Error fetching cities/categories:", err);
       } finally {
-        setLoading(false);
+        window.clearTimeout(timeout);
       }
     };
 
@@ -52,7 +55,7 @@ const localizedCities = cities.map((city) => {
   try {
     parsedImages = JSON.parse(city.images);
   } catch {
-    parsedImages = ["/fallback.jpg"];
+    parsedImages = ["/HomePageImage/_16934_1.webp"];
   }
 
   return {
@@ -62,7 +65,7 @@ const localizedCities = cities.map((city) => {
       parsedName?.["en"] ||
       Object.values(parsedName)[0] ||
       city.name,
-    images: Array.isArray(parsedImages) ? parsedImages : ["/fallback.jpg"],
+    images: Array.isArray(parsedImages) ? parsedImages : ["/HomePageImage/_16934_1.webp"],
   };
 });
 
@@ -81,7 +84,7 @@ const localizedCities = cities.map((city) => {
     try {
       parsedImages = JSON.parse(cat.images);
     } catch {
-      parsedImages = ["/fallback.jpg"];
+    parsedImages = ["/HomePageImage/_16934_1.webp"];
     }
 
     return {
@@ -91,7 +94,7 @@ const localizedCities = cities.map((city) => {
         parsedName?.["en"] ||
         Object.values(parsedName)[0] ||
         cat.name,
-      images: Array.isArray(parsedImages) ? parsedImages : ["/fallback.jpg"],
+    images: Array.isArray(parsedImages) ? parsedImages : ["/HomePageImage/_16934_1.webp"],
     };
   });
 

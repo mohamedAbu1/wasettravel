@@ -20,7 +20,7 @@ export default function ChatInput({
     const { t } = useTranslation("home");
 
   return (
-    <div className={`p-3 border-t flex gap-2 items-center ${theme.border}`}>
+    <div className="relative flex items-center gap-2 border-t border-[var(--line)] bg-[var(--surface-raised)] p-3">
       {/* <label className="cursor-pointer">
         <FaImage size={20} className={theme.icon} />
         <input
@@ -51,11 +51,13 @@ export default function ChatInput({
             handleSend();
           }
         }}
-        className={`flex-1 rounded px-2 py-1 border ${theme.border}`}
+        aria-label="Type your message"
+        className="min-w-0 flex-1 rounded-xl border border-[var(--line)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[#8f5d2e] focus:ring-2 focus:ring-[#8f5d2e]/20"
       />
       <button
         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-        className={`flex items-center justify-center w-10 h-10 rounded-md transition-all duration-300 ${
+        aria-label="Choose emoji"
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
           themeName === "dark"
             ? "bg-gray-700 text-white hover:bg-gray-600"
             : "bg-gray-200 text-black hover:bg-gray-300"
@@ -65,8 +67,8 @@ export default function ChatInput({
       </button>
       {showEmojiPicker && (
         <div
-          className="absolute right-30 bottom-25 z-50 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg"
-          style={{ width: "300px", height: "400px" }}
+          className="absolute bottom-16 right-2 z-50 overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-2 shadow-2xl"
+          style={{ width: "min(300px, calc(100vw - 2rem))", height: "min(400px, 55dvh)" }}
         >
           <Picker
             data={data}
@@ -81,7 +83,8 @@ export default function ChatInput({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleSend}
-        className={`${theme.buttonPrimary} text-white flex items-center gap-1`}
+        aria-label="Send message"
+        className={`${theme.buttonPrimary} flex h-10 shrink-0 items-center gap-1 rounded-xl px-3 text-white`}
       >
         <FaPaperPlane /> {t("Send")}
       </motion.button>

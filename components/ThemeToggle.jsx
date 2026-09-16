@@ -3,17 +3,9 @@ import React from "react";
 import { BsSun, BsMoon } from "react-icons/bs";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
-import { usePathname } from "next/navigation";
 
-const ThemeToggle = ({ scrolled }) => {
+const ThemeToggle = () => {
   const { themeName, toggleThemeFun } = useTheme();
-  const pathname = usePathname();
-
-  const segments = pathname.split("/").filter(Boolean);
-  const isHome =
-    segments.length === 0 ||
-    (segments.length === 1 &&
-      ["en", "fr", "de", "it", "es", "pt"].includes(segments[0]));
 
   return (
     <motion.div whileHover={{ scale: 1.1 }}>
@@ -21,21 +13,14 @@ const ThemeToggle = ({ scrolled }) => {
         type="button"
         onClick={toggleThemeFun}
         aria-label={themeName === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-        className={`relative z-50 flex h-11 w-11 items-center justify-center
-          p-2 rounded-full border transition-all duration-300
-          ${
-            themeName === "dark"
-              ? "bg-yellow-500 border-yellow-600 hover:bg-yellow-600 hover:text-white"
-              : isHome
-                ? "bg-gray-200 border-gray-300 hover:bg-gray-300 hover:text-black" // ✅ ستايل قديم للهوم
-                : "bg-white border-gray-300 hover:bg-gray-100 hover:text-black" // ✅ ستايل جديد لغير الهوم
-          }
-        `}
+        aria-pressed={themeName === "light"}
+        title={themeName === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+        className={`theme-toggle ${themeName === "dark" ? "theme-toggle--dark" : "theme-toggle--light"}`}
       >
         {themeName === "dark" ? (
-          <BsSun size={20} aria-label="dark mode" color="#fff" />
+          <BsSun size={20} aria-label="dark mode" />
         ) : (
-          <BsMoon size={20} aria-label="light mode" color={scrolled  ? "#999" : isHome  ? "#fff": "#999"} />
+          <BsMoon size={20} aria-label="light mode" />
         )}
       </button>
     </motion.div>

@@ -6,18 +6,14 @@ export async function POST() {
     // ✅ مسح الكوكيز الخاصة بالجلسة
     const response = NextResponse.json({ message: "Logged out successfully" });
 
-    response.cookies.set("access-token", "", {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
       maxAge: 0,
-    });
-
-    response.cookies.set("refresh-token", "", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 0,
+    };
+    ["token", "access-token", "refresh-token", "sb-access-token", "sb-refresh-token"].forEach((name) => {
+      response.cookies.set(name, "", cookieOptions);
     });
 
     return response;

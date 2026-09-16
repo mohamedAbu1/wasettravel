@@ -7,12 +7,14 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [themeName, setThemeName] = useState("dark");
-  const [theme, setTheme] = useState(lightTheme);
+  const [theme, setTheme] = useState(darkTheme);
+  const [siteTheme] = useState("stone");
 
   // ✅ تحميل الثيم المحفوظ
   useEffect(() => {
     const saved = localStorage.getItem("theme") || "dark";
     applyTheme(saved);
+    document.documentElement.setAttribute("data-site-theme", "stone");
   }, []);
 
   // ✅ دالة لتطبيق الثيم
@@ -33,16 +35,20 @@ export function ThemeProvider({ children }) {
     // تحديث بعض الـ CSS variables العامة
     document.documentElement.style.setProperty(
       "--color",
-      mode === "dark" ? "#c9a34a" : "#ffffff"
+      mode === "dark" ? "#e0b873" : "#8f5d2e"
     );
     document.documentElement.style.setProperty(
       "--foreground",
-      mode === "dark" ? "#ededed" : "#171717"
+      mode === "dark" ? "#f1eadc" : "#30271d"
     );
     document.documentElement.style.setProperty(
       "--background",
-      mode === "dark" ? "#0a0a0a" : "#ffffff"
+      mode === "dark" ? "#171615" : "#f4eee6"
     );
+    document.documentElement.style.setProperty("--surface", mode === "dark" ? "#282522" : "#fffaf3");
+    document.documentElement.style.setProperty("--surface-raised", mode === "dark" ? "#332d27" : "#ffffff");
+    document.documentElement.style.setProperty("--muted", mode === "dark" ? "#b7a991" : "#6f5c49");
+    document.documentElement.style.setProperty("--line", mode === "dark" ? "rgba(224,184,115,.22)" : "rgba(112,69,31,.2)");
   };
 
   // ✅ دالة لتبديل الثيم
@@ -53,7 +59,7 @@ export function ThemeProvider({ children }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, themeName, toggleThemeFun }}>
+    <ThemeContext.Provider value={{ theme, themeName, toggleThemeFun, siteTheme }}>
       {children}
     </ThemeContext.Provider>
   );

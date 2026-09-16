@@ -3,15 +3,13 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { addDays } from "date-fns";
 import { desktopImages, mobileImages } from "@/constants/images";
-import { useTranslation } from "react-i18next";
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 const DataContext = createContext();
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 export function DataProvider({ children }) {
-    const { t } = useTranslation("home");
-  const [city, setCity] = useState(t("Luxor"));
+  const [city, setCity] = useState("");
   const [price, setPrice] = useState("Economy");
-  const [tripType, setTripType] = useState(t("OneDayTrips"));
+  const [tripType, setTripType] = useState("");
   const [arrival, setArrival] = useState(addDays(new Date(), 2));
   const [departure, setDeparture] = useState(addDays(new Date(), 9));
   const [startDate, setStartDate] = useState(null);

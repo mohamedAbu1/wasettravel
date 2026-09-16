@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export async function GET(request) {
   try {
-    const accessToken = request.cookies.get("access-token")?.value;
+    const accessToken = request.cookies.get("access-token")?.value || request.cookies.get("token")?.value;
 
     if (!accessToken) {
       return NextResponse.json({ error: "No token found" }, { status: 401 });

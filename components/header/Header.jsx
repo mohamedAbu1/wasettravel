@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useTheme } from "@/context/ThemeContext";
 import Logo from "./components/Logo";
 import NavBar from "./components/NavBar";
 import { useAuth } from "@/context/AuthContext";
@@ -18,9 +17,8 @@ const MobileHeaderAuth = dynamic(() => import("./components/MobileHeaderAuth"), 
 const FaSignOutAlt = dynamic(() => import("react-icons/fa").then(mod => mod.FaSignOutAlt), { ssr: false });
 const FaUserPlus = dynamic(() => import("react-icons/fa").then(mod => mod.FaUserPlus), { ssr: false });
 
-export default function Header() {
+export default function Header({ overlay = true }) {
   const [scrolled, setScrolled] = useState(false);
-  const { theme } = useTheme();
   const { userData } = useAuth();
   const { handleLoginOpen } = useData();
 
@@ -33,39 +31,23 @@ export default function Header() {
   return (
     <motion.header
       role="banner" // ✅ تحسين الـ accessibility
-      initial={{ y: -80, opacity: 0 }}
+      initial={false}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className={`fixed top-0 left-0 w-full z-45 transition-all duration-500 ${
-        scrolled
-          ? `${theme.background} ${theme.border} ${theme.shadow}`
-          : "bg-transparent"
-      }`}
+      className={`site-header ${overlay ? "fixed" : "relative"} top-0 left-0 z-45 w-full ${scrolled ? "site-header--scrolled" : "site-header--top"}`}
     >
-      <div className="container mx-auto flex max-w-8xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:py-4">
+      <div className="site-header__inner mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-12">
         <Logo scrolled={scrolled} />
         <NavBar scrolled={scrolled} />
         <RightBar scrolled={scrolled} />
 
         {/* ✅ زر تسجيل الدخول/الخروج */}
-        <motion.div whileHover={{ scale: 1.03 }} className="hidden lg:flex">
+        <motion.div whileHover={{ scale: 1.03 }} className="header-auth-wrap hidden lg:flex">
           <button
             type="button"
             aria-label={userData ? "Sign out" : "Sign in"} // ✅ تحسين الـ accessibility
             onClick={userData ? () => signOut() : () => handleLoginOpen()}
-            style={{
-              padding: "10px 18px",
-              background: "linear-gradient(to right, #c9a34a, #eab308)",
-              color: "#fff",
-              fontWeight: "600",
-              letterSpacing: "0.05em",
-              borderRadius: "0.5rem",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-              transition: "all 0.3s ease",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              }}
+            className="header-auth-btn"
             >
             {userData ? <FaSignOutAlt size={20} /> : <FaUserPlus size={20} />}
             <span>{userData ? "Sign out" : "Sign in"}</span>

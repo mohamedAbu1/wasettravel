@@ -9,7 +9,7 @@ import ChatInput from "./components/ChatInput";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 
 const ChatSection = ({ activeUser, theme, themeName }) => {
-  const { messages, fetchMessages, sendMessage, markMessageSeen } = useMessages();
+  const { messages, setMessages, fetchMessages, sendMessage, markMessageSeen } = useMessages();
   const { userData } = useAuth(); // الأدمن الحالي من التوكين
   const [newMessage, setNewMessage] = useState("");
   const [replyTo, setReplyTo] = useState(null);
@@ -96,8 +96,9 @@ const handleSendImage = async (file) => {
     return;
   }
 
-  const uploadedUrl = data.url;
+  const uploadedUrl = data.content || data.url;
   console.log("✅ Step 4: Image uploaded successfully, URL:", uploadedUrl);
+  if (uploadedUrl) setMessages((prev) => [...prev, data]);
 };
 
 

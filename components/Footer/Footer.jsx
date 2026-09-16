@@ -1,156 +1,41 @@
-/* eslint-disable react-hooks/purity */
 "use client";
-import React, { useMemo } from "react";
+
+import React from "react";
 import { useTheme } from "@/context/ThemeContext";
-import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { FaFacebookF, FaInstagram, FaWhatsapp, FaTiktok, FaBlogger } from "react-icons/fa";
+import { MdEmail, MdArrowOutward } from "react-icons/md";
 
-// ✅ Lazy load للأيقونات
-const FaFacebookF = dynamic(() => import("react-icons/fa").then(mod => mod.FaFacebookF), { ssr: false });
-const FaInstagram = dynamic(() => import("react-icons/fa").then(mod => mod.FaInstagram), { ssr: false });
-const FaWhatsapp = dynamic(() => import("react-icons/fa").then(mod => mod.FaWhatsapp), { ssr: false });
-const FaTiktok = dynamic(() => import("react-icons/fa").then(mod => mod.FaTiktok), { ssr: false });
-const FaBlogger = dynamic(() => import("react-icons/fa").then(mod => mod.FaBlogger), { ssr: false });
-const MdEmail = dynamic(() => import("react-icons/md").then(mod => mod.MdEmail), { ssr: false });
-
-// ✅ دالة لتشفير الكويري
-const encodeQuery = (queryObj) => {
-  const str = JSON.stringify(queryObj);
-  return Buffer.from(str).toString("base64");
-};
+const encodeQuery = (query) => typeof window === "undefined" ? "" : window.btoa(JSON.stringify(query));
 
 const Footer = () => {
-  const { theme, themeName } = useTheme();
-  const { t } = useTranslation("footer","cancellationPolicy");
-
-  const symbols = [
-    "𓂀","𓋹","𓆣","𓇼","𓇯","𓏏","𓎛","𓊽","𓃾","𓅓","𓈇","𓉐","𓊹","𓌙","𓍿","𓎟",
+  const { themeName } = useTheme();
+  const { t } = useTranslation("footer", "cancellationPolicy");
+  const pathname = usePathname();
+  const locale = pathname?.split("/").filter(Boolean)[0] || "en";
+  const tripsQuery = encodeQuery({ city: "all", category: "all", price: "All", popular: false });
+  const socials = [
+    ["Facebook", "https://www.facebook.com/share/1BTkjPD5Sd/", FaFacebookF],
+    ["Instagram", "https://www.instagram.com/kader.mohameda", FaInstagram],
+    ["WhatsApp", "https://wa.me/qr/WIFIQJUBO2PJH1", FaWhatsapp],
+    ["Email", "mailto:info@wasettravel.com", MdEmail],
+    ["TikTok", "https://www.tiktok.com/@mohamedakader25", FaTiktok],
   ];
 
-  const fadeUp = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
-  };
-
-  const staggerContainer = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.2 } },
-  };
-
-  // ✅ كويري افتراضي للـ Trips
-  const tripsQuery = encodeQuery({
-    city: "all",
-    category: "all",
-    price: "All",
-    popular: false,
-  });
-
-  // ✅ خلفية الرموز ثابتة باستخدام useMemo
-  const positions = useMemo(() =>
-    Array.from({ length: 20 }).map(() => ({
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      rotate: `${Math.random() * 360}deg`,
-    })), []
-  );
-
   return (
-    <motion.footer
-      role="contentinfo"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
-      variants={staggerContainer}
-      className={`
-        flex flex-col items-center justify-center
-        py-12 px-6 w-full relative overflow-hidden
-        transition-colors duration-500
-        ${theme.background} ${theme.text}
-      `}
-    >
-      {/* خلفية الرموز */}
-      <div className="absolute inset-0 pointer-events-none -z-10">
-        {positions.map((pos, i) => (
-          <span
-            key={i}
-            className={`absolute ${themeName === "dark" ? "text-gray-700" : "text-[#c9a34a]"} opacity-20 text-6xl animate-pulse`}
-            style={{
-              top: pos.top,
-              left: pos.left,
-              transform: `rotate(${pos.rotate})`,
-            }}
-          >
-            {symbols[Math.floor(Math.random() * symbols.length)]}
-          </span>
-        ))}
+    <footer className={`stone-footer w-full border-t px-5 pb-6 pt-14 sm:px-8 ${themeName === "light" ? "text-[#30271d]" : "text-white"}`}>
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-10 border-b border-white/10 pb-12 md:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
+          <div className="max-w-sm"><Link href={`/${locale}`} className="flex items-center gap-3" aria-label="Waset Travel home"><span className="grid h-12 w-12 place-items-center rounded-2xl border border-[#e0b873]/40 bg-[#e0b873]/10 text-2xl text-[#e0b873]">𓂀</span><span><span className="block text-xl font-bold text-white">Waset<span className="text-[#e0b873]">Travel</span></span><span className="text-[10px] uppercase tracking-[0.2em] text-white/45">Curated Egypt journeys</span></span></Link><p className="mt-5 text-sm leading-7 text-white/55">{t("p")}</p><div className="mt-5 flex gap-2">{socials.map(([label, href, Icon]) => <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/5 text-white/60 transition hover:-translate-y-1 hover:border-[#e0b873]/60 hover:bg-[#e0b873]/15 hover:text-[#e0b873]"><Icon /></a>)}</div></div>
+          <div><p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#e0b873]">Explore</p><nav className="grid gap-3 text-sm text-white/65"><Link href={`/${locale}`} className="transition hover:text-[#f0c979]">{t("Home")}</Link><Link href={`/${locale}/about`} className="transition hover:text-[#f0c979]">{t("AboutUs")}</Link><Link href={`/${locale}/trips?data=${tripsQuery}`} className="transition hover:text-[#f0c979]">{t("Tours")}</Link></nav></div>
+          <div><p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#e0b873]">Support</p><nav className="grid gap-3 text-sm text-white/65"><Link href={`/${locale}/contact`} className="transition hover:text-[#f0c979]">{t("Contact")}</Link><Link href={`/${locale}/privacyPolicy`} className="transition hover:text-[#f0c979]">{t("privacyPolicy")}</Link><Link href={`/${locale}/cancellationPolicy`} className="transition hover:text-[#f0c979]">{t("cancellationPolicy")}</Link></nav></div>
+        <div className="rounded-2xl border border-[#e0b873]/20 bg-[#e0b873]/[.06] p-5"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#e0b873]">Plan your next escape</p><h3 className="mt-3 text-xl font-bold text-white">Egypt is waiting.</h3><p className="mt-2 text-sm leading-6 text-white/55">Tell us what you want to discover and we will shape the perfect journey.</p><Link href={`/${locale}/contact`} className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-[#f0c979]">Talk to our team <MdArrowOutward /></Link></div>
+        </div>
+        <div className="flex flex-col gap-2 pt-5 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between"><p>© {new Date().getFullYear()} WasetTravel. All rights reserved.</p><p>Made for meaningful journeys across Egypt.</p></div>
       </div>
-
-      {/* اسم البراند */}
-      <motion.p
-        variants={fadeUp}
-        aria-label="Waset Travel brand name"
-        className={`
-          text-2xl font-extrabold tracking-wide drop-shadow-md relative z-10
-          ${themeName === "dark" 
-            ? "text-gold" 
-            : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"}
-        `}
-      >
-        WasetTravel
-      </motion.p>
-
-      {/* الوصف */}
-      <motion.p
-        variants={fadeUp}
-        aria-label="Footer description"
-        className="mt-2 text-sm opacity-80 text-center max-w-xl relative z-10"
-      >
-        {t("p")}
-      </motion.p>
-
-      {/* روابط سريعة */}
-      <motion.div
-        variants={fadeUp}
-        className="flex flex-wrap gap-6 mt-6 text-sm font-medium relative z-10 justify-center"
-      >
-        <Link href="/" aria-label="Go to Home page" className="hover:underline" prefetch={false}>{t("Home")}</Link>
-        <Link href="/about" aria-label="Learn more about Waset Travel" className="hover:underline" prefetch={false}>{t("AboutUs")}</Link>
-        <Link href={`/trips?data=${tripsQuery}`} aria-label="Browse available tours" className="hover:underline">{t("Tours")}</Link>
-        <Link href="/contact" aria-label="Contact Waset Travel" className="hover:underline" prefetch={false}>{t("Contact")}</Link>
-        <Link href="/privacyPolicy" aria-label="Read our privacy policy" className="hover:underline" prefetch={false}>{t("privacyPolicy")}</Link>
-        <Link href="/cancellationPolicy" aria-label="Read our cancellation policy" className="hover:underline" prefetch={false}>{t("cancellationPolicy")}</Link>
-      </motion.div>
-
-      {/* أيقونات السوشيال ميديا */}
-      <motion.div variants={fadeUp} className="flex gap-5 mt-8 relative z-10">
-        <a href="https://www.facebook.com/share/1BTkjPD5Sd/" target="_blank" rel="noopener noreferrer" aria-label="Visit our Facebook page"
-          className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
-          <FaFacebookF />
-        </a>
-        <a href="https://www.instagram.com/kader.mohameda" target="_blank" rel="noopener noreferrer" aria-label="Visit our Instagram page"
-          className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
-          <FaInstagram />
-        </a>
-        <a href="https://wa.me/qr/WIFIQJUBO2PJH1" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp"
-          className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
-          <FaWhatsapp />
-        </a>
-        <a href="mailto:info@wasettravel.com" target="_blank" rel="noopener noreferrer" aria-label="Send us an email"
-          className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
-          <MdEmail />
-        </a>
-        <a href="https://www.tiktok.com/@mohamedakader25" target="_blank" rel="noopener noreferrer" aria-label="Follow us on TikTok"
-          className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
-          <FaTiktok />
-        </a>
-        <a href="https://wasettravel.blogspot.com" target="_blank" rel="noopener noreferrer" aria-label="Read our blog on Blogger"
-          className={`p-3 rounded-full transition ${themeName === "dark" ? "bg-gold/20 hover:bg-gold/40 text-gold" : "bg-[#c9a34a]/20 hover:bg-[#c9a34a]/40 text-[#c9a34a]"}`}>
-          <FaBlogger />
-        </a>
-      </motion.div>
-    </motion.footer>
+    </footer>
   );
 };
 

@@ -13,6 +13,8 @@ import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import { useNotifications } from "@/context/NotificationsContext";
 import DividerWithIcon from "@/components/layout/DividerWithIcon";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function NotificationsDrawer({
   open,
@@ -35,8 +37,8 @@ export default function NotificationsDrawer({
     })
     .sort((a, b) => {
       // غير مقروءة أولاً
-      if (a.is_read === 0 && b.is_read !== 0) return -1;
-      if (a.is_read !== 0 && b.is_read === 0) return 1;
+      if (Number(a.is_read) === 0 && Number(b.is_read) !== 0) return -1;
+      if (Number(a.is_read) !== 0 && Number(b.is_read) === 0) return 1;
       // لو الاتنين نفس الحالة، رتب حسب التاريخ (الأحدث أولاً)
       return new Date(b.created_at) - new Date(a.created_at);
     });
@@ -49,45 +51,36 @@ export default function NotificationsDrawer({
       TransitionComponent={Slide}
       TransitionProps={{ direction: "left" }}
     >
-      <div
-        style={{
-          width: 400,
-          padding: "16px",
-          color: themeName === "dark" ? "#fff" : "#333",
-          backgroundColor: themeName === "dark" ? "#121212" : "#f9f9f9",
-          minHeight: "100%",
-        }}
-      >
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: "600" }}>
-          Notifications
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <List>
+      <div className="stone-drawer" style={{ "--drawer-bg": themeName === "dark" ? "#211d19" : "#fffaf3", "--drawer-text": themeName === "dark" ? "#f8f1e7" : "#30271d", "--drawer-muted": themeName === "dark" ? "rgba(248,241,231,.62)" : "#6f5c49", "--drawer-line": themeName === "dark" ? "rgba(224,184,115,.18)" : "rgba(112,69,31,.16)" }}>
+        <div className="stone-drawer__header">
+          <div className="flex items-center gap-3"><span className="stone-drawer__icon"><NotificationsNoneIcon /></span><div><Typography variant="h6" sx={{ fontWeight: 800, color: "var(--drawer-text)" }}>Notifications</Typography><Typography variant="caption" sx={{ color: "var(--drawer-muted)" }}>{filteredNotifications.length} recent updates</Typography></div></div>
+          <IconButton aria-label="Close notifications" onClick={onClose} sx={{ color: "var(--drawer-muted)" }}><CloseIcon /></IconButton>
+        </div>
+        <Divider sx={{ borderColor: "var(--drawer-line)" }} />
+        <List sx={{ p: 0, mt: 2 }}>
+          {!filteredNotifications.length && <div className="stone-drawer__empty"><NotificationsNoneIcon /><strong>No new notifications</strong><span>You are all caught up.</span></div>}
           {filteredNotifications.map((n) => (
             <Fade in={true} timeout={500} key={n.id}>
-              <Box sx={{ mb: 3 }}>
-                <DividerWithIcon />
-
+              <Box sx={{ mb: 1.5 }}>
                 <ListItem
                   button
                   onClick={() => handleNotificationClick(n)}
                   sx={{
                     alignItems: "flex-start",
                     backgroundColor:
-                      n.is_read === 1
+                        Number(n.is_read) !== 0
                         ? "transparent"
                         : themeName === "dark"
                         ? "rgba(255,255,255,0.08)"
-                        : "rgba(0,0,0,0.05)",
-                    borderRadius: "12px",
-                    padding: "12px",
-                    boxShadow: n.is_read
-                      ? "none"
-                      : "0 2px 6px rgba(0,0,0,0.15)",
+                        : "rgba(143,93,46,0.08)",
+                    border: "1px solid var(--drawer-line)",
+                    borderRadius: "16px",
+                    padding: "14px",
+                    boxShadow: Number(n.is_read) !== 0 ? "none" : "0 8px 20px rgba(78,54,31,.08)",
                     transition: "0.3s",
                     "&:hover": {
                       backgroundColor:
-                        themeName === "dark" ? "#333" : "#eaeaea",
+                        themeName === "dark" ? "rgba(255,255,255,.08)" : "rgba(143,93,46,.12)",
                     },
                   }}
                 >
@@ -95,7 +88,7 @@ export default function NotificationsDrawer({
                   <Avatar
                     src={n.user_image}
                     alt={n.user_name}
-                    sx={{ width: 48, height: 48, mr: 2 }}
+                    sx={{ width: 42, height: 42, mr: 1.5, border: "2px solid #8f5d2e" }}
                   />
 
                   {/* النصوص */}
@@ -105,8 +98,9 @@ export default function NotificationsDrawer({
                         <Typography
                           variant="subtitle1"
                           sx={{
-                            fontWeight: n.is_read ? "normal" : "bold",
+                            fontWeight: Number(n.is_read) !== 0 ? 600 : 800,
                             textTransform: "capitalize",
+                            color: "var(--drawer-text)",
                           }}
                         >
                           {n.user_name}
@@ -120,7 +114,7 @@ export default function NotificationsDrawer({
                             sx={{
                               fontStyle: "italic",
                               fontWeight: 500,
-                              filter: `drop-shadow(0 0 4px ${theme.logoBorder || "#C2A878"})`,
+                              color: "var(--drawer-muted)",
                             }}
                           >
                             {n.user_email}
@@ -130,9 +124,9 @@ export default function NotificationsDrawer({
                             variant="body2"
                             sx={{
                               mt: 0.5,
-                              fontWeight: "bold",
+                              fontWeight: 600,
                               letterSpacing: "0.5px",
-                                                          color:"#C2A878"
+                              color:"var(--drawer-text)"
 
                             }}
                           >
@@ -145,7 +139,7 @@ export default function NotificationsDrawer({
                               mt: 0.5,
                               fontWeight: 400,
                               opacity: 0.8,
-                                                          color:"#C2A878"
+                              color:"var(--drawer-muted)"
 
                             }}
                           >
@@ -163,13 +157,12 @@ export default function NotificationsDrawer({
                     edge="end"
                     aria-label="delete"
                     onClick={() => deleteNotification(n.id)}
-                    sx={{ color: "red", ml: 1 }}
+                    sx={{ color: themeName === "dark" ? "#ed9a8c" : "#a34e42", ml: 1 }}
                   >
                     <DeleteIcon />
                   </IconButton>
                 </ListItem>
 
-                <DividerWithIcon />
               </Box>
             </Fade>
           ))}

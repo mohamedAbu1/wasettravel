@@ -12,14 +12,14 @@ export default function EgyptianBackground() {
   const { theme, themeName } = useTheme();
 
   useEffect(() => {
-    const count = window.innerWidth < 768 ? 25 : 50; // أقل في الموبايل
+    const count = window.innerWidth < 768 ? 8 : 14;
     const generated = Array.from({ length: count }).map((_, i) => ({
       id: i,
       symbol: symbols[Math.floor(Math.random() * symbols.length)],
       top: Math.random() * 100,
       left: Math.random() * 100,
       size: 18 + Math.random() * 35,
-      opacity: 0.1 + Math.random() * 0.4,
+      opacity: 0.04 + Math.random() * 0.08,
       rotate: Math.random() * 360,
       delay: Math.random() * 5,
     }));
@@ -37,7 +37,7 @@ export default function EgyptianBackground() {
             left: `${item.left}%`,
             fontSize: `${item.size}px`,
             transform: `rotate(${item.rotate}deg)`,
-            color: theme.icon,
+            color: themeName === "light" ? "#8f5d2e" : theme.icon,
             filter: "blur(0.5px)",
             animation: "egyptian-float 10s ease-in-out infinite",
             animationDelay: `${item.delay}s`,

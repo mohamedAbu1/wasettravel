@@ -24,13 +24,13 @@ export default function NavBar({ scrolled }) {
 
   return (
     <motion.nav
-      initial="hidden"
+      initial={false}
       animate="visible"
       variants={{
         hidden: { opacity: 0 },
         visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
       }}
-      className="hidden lg:flex items-center gap-10 font-medium text-lg"
+      className="site-nav hidden lg:flex items-center gap-1 font-medium"
     >
       {navItems.map((item) => {
         let path;
@@ -63,9 +63,9 @@ export default function NavBar({ scrolled }) {
           >
             <Link
               href={`/${langPrefix}${path}`}
-              className={`relative uppercase group px-4 py-2 rounded-lg transition-all duration-300 ${
+              className={`site-nav__link relative uppercase group px-4 py-2.5 rounded-full transition-all duration-300 ${
                 isActive
-                  ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold shadow-md scale-105 border-b-4 border-yellow-600"
+                  ? "site-nav__link--active font-bold"
                   : themeName === "dark"
                   ? "text-gray-200 hover:text-yellow-400"
                   : normalizedPath !== "/"
@@ -76,14 +76,6 @@ export default function NavBar({ scrolled }) {
               }`}
             >
               <span>{t(item)}</span>
-              <span
-                className={`absolute left-0 -bottom-1 h-[3px] bg-yellow-400 rounded-full transition-all duration-300 ${
-                  isActive ? "w-full" : "w-0 group-hover:w-full"
-                }`}
-              />
-              {isActive && (
-                <span className="absolute -top-2 -right-2 w-3 h-3 bg-yellow-500 rounded-full shadow-md animate-pulse"></span>
-              )}
             </Link>
           </motion.div>
         );

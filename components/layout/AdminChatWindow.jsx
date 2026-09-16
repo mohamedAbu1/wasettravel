@@ -85,24 +85,25 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
     <AnimatePresence>
       {user && (
         <motion.div
-          className={`fixed bottom-20 right-6 w-110 h-125 rounded-xl shadow-xl flex flex-col z-50 ${theme.card} ${theme.text}`}
+          className="admin-chat-panel fixed bottom-24 right-3 z-[89] flex h-[min(40rem,calc(100dvh-7rem))] w-[calc(100vw-1.5rem)] max-w-[27rem] flex-col overflow-hidden rounded-[1.5rem] border border-[#8f5d2e]/20 bg-[var(--surface)] text-[var(--foreground)] shadow-[0_1.5rem_4rem_rgba(32,24,17,.25)] sm:right-6"
         >
           <EgyptianBackground />
 
-          <div className="flex items-center justify-between p-3 border-b-#d4af37 border-b-2">
+          <div className="flex items-center justify-between border-b border-[var(--line)] bg-[#30271d] px-4 py-3 text-[#f8f1e7]">
             <div className="flex items-center gap-2">
               <img
                 src={user.image || "/default-avatar.png"}
                 alt={user.name}
                 width={40}
                 height={40}
-                style={{ borderRadius: "50%", border: "2px solid #d4af37" }}
+                style={{ borderRadius: "50%", border: "2px solid #e0b873" }}
               />
               <span className="font-bold capitalize">{user.name}</span>
             </div>
             <button
               onClick={onClose}
-              className="text-red-500 hover:text-red-600 transition-colors duration-300 cursor-pointer"
+              aria-label="Close admin chat"
+              className="grid h-9 w-9 place-items-center rounded-xl text-white/65 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e0b873]"
             >
               <motion.div
                 whileHover={{ rotate: 90, scale: 1.2 }}

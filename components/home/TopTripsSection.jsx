@@ -1,8 +1,9 @@
 "use client";
+
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useTrip } from "@/context/TripContext";
@@ -10,249 +11,67 @@ import { usePurchase } from "@/context/PurchaseContext";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
+const fallbackImage = "/Luxor/pexels-axp-photography-500641970-18934598.webp";
+
 const TopTripsSection = () => {
   const { themeName } = useTheme();
   const { t, i18n } = useTranslation("home");
   const router = useRouter();
   const { user } = useAuth();
-  const normalizedLang = i18n.language.split("-")[0];
-
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const { currency, purchases } = usePurchase();
-
   const [index, setIndex] = useState(0);
-  const cardWidth = 300;
+  const language = i18n.language.split("-")[0];
 
+  useEffect(() => { fetchTrips("?summary=1"); }, [fetchTrips]);
   useEffect(() => {
-      fetchTrips("?summary=1");
-  }, []);
-
-  useEffect(() => {
-    if (!trips.length) return;
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % trips.length);
-    }, 4000);
+    if (trips.length < 2) return;
+    const interval = setInterval(() => setIndex((previous) => (previous + 1) % trips.length), 5000);
     return () => clearInterval(interval);
   }, [trips.length]);
 
-  if (loadingTrips) {
-    return <p className="text-center text-gray-500">Loading top trips...</p>;
-  }
+  if (loadingTrips) return <section className="stone-section flex min-h-96 items-center justify-center"><p className="text-white/60">Loading top trips...</p></section>;
 
-  const topTrips = [...trips]
-    .sort(
-      (a, b) =>
-        (b.review_count ?? b.reviews?.length ?? 0) -
-        (a.review_count ?? a.reviews?.length ?? 0),
-    )
-    .slice(0, 6);
+  const topTrips = [...trips].sort(
+    (a, b) =>
+      (b.review_count ?? b.reviews?.length ?? 0) -
+      (a.review_count ?? a.reviews?.length ?? 0),
+  );
 
-  const convertPrice = (group_price, tripCurrency) => {
-    let converted = group_price;
-    if (currency === "EUR" && tripCurrency === "USD") {
-      converted = (group_price * 0.85).toFixed(2);
-    } else if (currency === "USD" && tripCurrency === "EUR") {
-      converted = (group_price * 1.18).toFixed(2);
-    } else if (currency === "EGP" && tripCurrency === "USD") {
-      converted = (group_price * 49.1).toFixed(2);
-    } else if (currency === "USD" && tripCurrency === "EGP") {
-      converted = (group_price / 49.1).toFixed(2);
-    }
-    return converted;
+  const convertPrice = (price, tripCurrency) => {
+    if (currency === "EUR" && tripCurrency === "USD") return (price * 0.85).toFixed(2);
+    if (currency === "USD" && tripCurrency === "EUR") return (price * 1.18).toFixed(2);
+    if (currency === "EGP" && tripCurrency === "USD") return (price * 49.1).toFixed(2);
+    if (currency === "USD" && tripCurrency === "EGP") return (price / 49.1).toFixed(2);
+    return price;
+  };
+
+  const TripCard = ({ trip, position }) => {
+    const title = trip.title?.[language] || trip.title?.en || "Untitled Trip";
+    const hasPurchased = user && purchases.some((purchase) => purchase.user_id?.toString() === user.id?.toString() && purchase.trip_id?.toString() === trip.id?.toString() && purchase.status !== "Cancelled");
+    return (
+      <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: position * 0.08 }} viewport={{ once: true, amount: 0.2 }} className="stone-card group relative min-w-0 overflow-hidden rounded-[1.35rem]">
+        <div className="relative aspect-[1.15] overflow-hidden">
+          <Image src={trip.cover_image || fallbackImage} alt={title} fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 31vw, 360px" className="object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#151311] via-[#151311]/15 to-transparent" />
+          <span className="absolute left-4 top-4 rounded-full border border-white/20 bg-black/30 px-3 py-1 text-xs font-semibold text-white/90 backdrop-blur-md">{String(position + 1).padStart(2, "0")}</span>
+          <div className="absolute inset-x-5 bottom-4"><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#e0b873]">Waset experience</p><h3 className="line-clamp-2 text-xl font-bold leading-tight text-white">{title}</h3></div>
+        </div>
+        <div className="flex items-center justify-between gap-3 px-5 py-4">
+          <div><div className="flex items-center gap-1.5 text-sm text-[#e0b873]"><span>★</span><span className="font-bold">{trip.rating || "4.5"}</span><span className="text-white/45">({trip.review_count ?? trip.reviews?.length ?? 0} {t("reviews")})</span></div><p className="mt-1 text-lg font-bold text-[#f3d18f]">{convertPrice(trip.group_price, trip.currency)} <span className="text-xs font-medium text-white/50">{currency}</span></p></div>
+          <button onClick={() => router.push(`/trips/${trip.id}`)} className={`rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 ${hasPurchased ? "bg-[#83b995] text-[#13251a]" : "stone-button"}`}>{hasPurchased ? t("Tripdetails") : t("BookNow")}</button>
+        </div>
+      </motion.article>
+    );
   };
 
   return (
-    <>
-      {/* ✅ نسخة الشاشات الكبيرة */}
-      <section
-        className={`hidden lg:flex w-full flex-col relative py-24 px-6 transition-colors duration-500 ${
-          themeName === "dark"
-            ? "bg-[#0f0f0f] text-white"
-            : "bg-[#fdf6e3] text-[#3a2c0a]"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto mb-12 text-center">
-          <h2
-            className={`text-5xl font-extrabold tracking-wide drop-shadow-md ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }`}
-          >
-            {t("TopTrips")}
-          </h2>
-          <DividerWithIcon />
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-8 max-w-7xl w-full mx-auto">
-          {topTrips.map((trip, i) => {
-            const hasPurchased =
-              user &&
-              purchases.some(
-                (p) =>
-                  p.user_id?.toString() === user.id?.toString() &&
-                  p.trip_id?.toString() === trip.id?.toString() &&
-                  p.status !== "Cancelled",
-              );
-
-            return (
-              <motion.div
-                key={`${trip.id}-${i}`}
-                role="group"
-                aria-label={`Trip card for ${trip.title?.[normalizedLang] || "Untitled Trip"}`}
-                tabIndex={0}
-                initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.8, delay: i * 0.2 }}
-                viewport={{ once: true }}
-                className="flex-1 basis-full sm:basis-[48%] lg:basis-[30%] xl:basis-[22%] relative rounded-2xl overflow-hidden group transition-all duration-500 hover:scale-[1.05] hover:shadow-2xl hover:-rotate-1"
-              >
-                <div className="relative h-72">
-                  <Image
-                    src={trip.cover_image || "/Luxor/pexels-axp-photography-500641970-18934598.webp"}
-                    alt={`Cover image for ${trip.title?.[normalizedLang] || "Trip"}`}
-                    fill
-                    quality={75} // ضغط الصورة لتقليل الحجم
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
-                    loading="lazy"
-                    className="object-cover group-hover:scale-110 transition duration-700 rounded-lg"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                </div>
-
-                <div className="absolute inset-0 flex flex-col justify-end p-6">
-                  <h3 className="text-xl font-bold tracking-wide mb-1 text-white">
-                    {trip.title?.[normalizedLang] || "Untitled Trip"}
-                  </h3>
-
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-yellow-400 text-lg font-semibold">
-                      ⭐ {trip.rating || "4.5"}
-                    </span>
-                    <span className="text-sm opacity-80 text-white">
-                      ({trip.review_count ?? trip.reviews?.length ?? 0}{" "}
-                      {t("reviews")})
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <p
-                      className={`text-lg font-semibold ${
-                        themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
-                      }`}
-                    >
-                      {convertPrice(trip.group_price, trip.currency)} {currency}
-                    </p>
-                    <button
-                      onClick={() => router.push(`/trips/${trip.id}`)}
-                      aria-label={
-                        hasPurchased
-                          ? `View details for ${trip.title?.[normalizedLang]}`
-                          : `Book trip ${trip.title?.[normalizedLang]}`
-                      }
-                      className={`px-5 py-2 rounded-lg font-medium transition text-white ${
-                        hasPurchased
-                          ? "bg-green-500 hover:bg-green-600"
-                          : "bg-[#c9a34a] hover:bg-yellow-500"
-                      }`}
-                    >
-                      {hasPurchased ? t("Tripdetails") : t("BookNow")}
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ✅ نسخة الموبايل (سلايدر تلقائي مع لوب) */}
-      <section
-        className={`flex lg:hidden w-full flex-col relative py-16 px-4 transition-colors duration-500 ${
-          themeName === "dark"
-            ? "bg-[#0f0f0f] text-white"
-            : "bg-[#fdf6e3] text-[#3a2c0a]"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto mb-8 text-center">
-          <h2
-            role="heading"
-            aria-level={2}
-            aria-label={t("TopTrips")}
-            className={`text-5xl font-extrabold tracking-wide drop-shadow-md ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }`}
-          >
-            {t("TopTrips")}
-          </h2>
-          <DividerWithIcon />
-        </div>
-
-        <div className="relative overflow-hidden w-full max-w-7xl mx-auto">
-          <motion.div
-            className="flex h-full"
-            animate={{ x: -(index % topTrips.length) * cardWidth }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-          >
-            {[...topTrips, ...topTrips, ...topTrips].map((trip, i) => (
-              <div
-                key={`${trip.id}-${i}`}
-                className="min-w-[100%] p-3 relative rounded-2xl overflow-hidden group"
-              >
-                <div className="relative h-72">
-                  <Image
-                    src={trip.cover_image || "/Luxor/pexels-axp-photography-500641970-18934598.webp"}
-                    alt={`Cover image for ${trip.title?.[normalizedLang] || "Trip"}`}
-                    fill
-                    quality={75} // ضغط الصورة لتقليل الحجم
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 300px"
-                    loading="lazy"
-                    className="object-cover group-hover:scale-110 transition duration-700 rounded-lg"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                </div>
-
-                <div className="absolute inset-0 flex flex-col justify-end p-6">
-                  <h3 className="text-lg font-bold mb-1 text-white">
-                    {trip.title?.[normalizedLang] || "Untitled Trip"}
-                  </h3>
-
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-yellow-400 text-base font-semibold">
-                      ⭐ {trip.rating || "4.5"}
-                    </span>
-                    <span className="text-sm opacity-80 text-white">
-                      ({trip.review_count ?? trip.reviews?.length ?? 0}{" "}
-                      {t("reviews")})
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <p
-                      className={`text-base font-semibold ${
-                        themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
-                      }`}
-                    >
-                      {convertPrice(trip.group_price, trip.currency)} {currency}
-                    </p>
-                    <button
-                      onClick={() => router.push(`/trips/${trip.id}`)}
-                      className="px-4 py-2 rounded-lg font-medium transition text-white bg-[#c9a34a] hover:bg-yellow-500"
-                    >
-                      {t("BookNow")}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-    </>
+    <section className={`stone-section w-full px-5 sm:px-8 ${themeName === "light" ? "text-[#30271d]" : "text-white"}`}>
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end"><div><p className="stone-kicker mb-3">Curated journeys</p><h2 className="max-w-xl text-4xl font-bold tracking-tight sm:text-5xl">{t("TopTrips")}</h2><DividerWithIcon /></div><div className="hidden max-w-xs text-right text-sm leading-6 text-white/55 sm:block">Handpicked experiences designed to make every moment in Egypt feel effortless.</div></div>
+        {topTrips.length ? <><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{topTrips.map((trip, position) => <TripCard key={`${trip.id}-${position}`} trip={trip} position={position} />)}</div><div className="mt-6 flex justify-center gap-2 lg:hidden" aria-label="Trip carousel position">{topTrips.map((trip, position) => <span key={trip.id} className={`h-1.5 rounded-full transition-all ${position === index % topTrips.length ? "w-8 bg-[#e0b873]" : "w-1.5 bg-white/25"}`} />)}</div></> : <p className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-white/60">No trips available yet.</p>}
+      </div>
+    </section>
   );
 };
 

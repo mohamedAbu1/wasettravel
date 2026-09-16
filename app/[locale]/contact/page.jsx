@@ -60,8 +60,8 @@ export default function ContactPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          name: user?.name || formData.name,
-          email: user?.email || formData.email,
+          name: userData?.name || formData.name,
+          email: userData?.email || formData.email,
         }),
       });
       const data = await res.json();
@@ -83,10 +83,10 @@ export default function ContactPage() {
         <>
           {/* خلفية الرموز الفرعونية */}
           <div className="absolute inset-0 pointer-events-none mt-9">
-            {Array.from({ length: 25 }).map((_, i) => (
+            {Array.from({ length: 12 }).map((_, i) => (
               <span
                 key={i}
-                className={`absolute ${themeName === "dark" ? "text-gray-700" : "text-[#c9a34a]"} opacity-20 text-7xl animate-pulse`}
+                className={`absolute ${themeName === "dark" ? "text-gray-700" : "text-[#8f5d2e]"} opacity-[0.06] text-5xl animate-pulse`}
                 style={{
                   top: `${Math.random() * 100}%`,
                   left: `${Math.random() * 100}%`,
@@ -110,7 +110,7 @@ export default function ContactPage() {
                 className={`rounded-2xl p-8 shadow-xl ${
                   themeName === "dark"
                     ? "bg-black/40 border border-gold/30"
-                    : "bg-white/70 border border-[#c9a34a]/30 backdrop-blur-sm"
+                    : "bg-[#fffaf3] border border-[#8f5d2e]/20 backdrop-blur-sm"
                 }`}
               >
                 <h2 className="text-3xl font-bold mb-6">{t("h1")}</h2>
@@ -163,7 +163,7 @@ export default function ContactPage() {
                 className={`rounded-2xl p-8 shadow-xl space-y-6 ${
                   themeName === "dark"
                     ? "bg-black/40 border border-gold/30"
-                    : "bg-white/70 border border-[#c9a34a]/30 backdrop-blur-sm"
+                    : "bg-[#fffaf3] border border-[#8f5d2e]/20 backdrop-blur-sm"
                 }`}
               >
                 <h2 className="text-3xl font-bold mb-6">{t("h2")}</h2>

@@ -77,7 +77,7 @@ export default function TopReviewsSection() {
 
   return (
     <section
-      className={`py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-screen max-w-full flex flex-col items-center justify-center`}
+      className={`stone-section py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-screen max-w-full flex flex-col items-center justify-center`}
     >
       <EgyptianBackground />
       <h2
@@ -131,7 +131,7 @@ export default function TopReviewsSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className={`flex flex-col justify-between gap-4 ml-3 p-4 md:p-6 rounded-2xl min-h-[260px] ${theme.card}`}
+        className={`stone-card flex flex-col justify-between gap-4 ml-3 p-4 md:p-6 rounded-2xl min-h-[260px] ${theme.card}`}
         style={{
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",

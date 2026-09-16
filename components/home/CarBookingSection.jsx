@@ -1,179 +1,34 @@
-/* eslint-disable react-hooks/purity */
 "use client";
+
 import React from "react";
-import { useTheme } from "@/context/ThemeContext";
-import { FaCarSide } from "react-icons/fa";
 import Image from "next/image";
+import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { FaCarSide, FaCheck, FaWhatsapp } from "react-icons/fa";
 import DividerWithIcon from "../layout/DividerWithIcon";
-import { useAuth } from "@/context/AuthContext";
-import {} from "next-auth/react"; // ✅ إضافة NextAuth
+import { openWhatsAppBooking } from "@/lib/whatsappBooking";
 
 const CarBookingSection = () => {
   const { themeName } = useTheme();
   const { t } = useTranslation("home");
-  const { userData } = useAuth();
-
-  const symbols = [
-    "𓂀",
-    "𓋹",
-    "𓆣",
-    "𓇼",
-    "𓇯",
-    "𓏏",
-    "𓎛",
-    "𓊽",
-    "𓃾",
-    "𓅓",
-    "𓈇",
-    "𓉐",
-    "𓊹",
-    "𓌙",
-    "𓍿",
-    "𓎟",
-  ];
-
-  // ✨ إعدادات الأنيميشن
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 60 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8, ease: "easeOut" },
-    },
-  };
+  const benefits = ["Professional driver", "Comfortable premium vehicle", "On-time airport pickup"];
 
   return (
-    <motion.section
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
-      variants={fadeInUp}
-      className={`hidden lg:flex relative w-full items-center justify-center py-24 px-6 transition-colors duration-500 overflow-hidden ${
-        themeName === "dark"
-          ? "bg-[#0f0f0f] text-white"
-          : "bg-[#fdf6e3] text-[#3a2c0a]"
-      }`}
-    >
-      {/* Background Car Image */}
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src="/HomePageImage/car-png-39057.png"
-          alt="Background image showing luxury car transfer"
-          fill
-          quality={75} // ضغط الصورة لتقليل الحجم
-          sizes="100vw" // صور متجاوبة
-          placeholder="blur"
-          blurDataURL="/HomePageImage/apple-touch-icon.png"
-          className="object-cover opacity-20 rounded-lg"
-        />
-
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${
-            themeName === "dark"
-              ? "from-black/30 via-transparent to-black/10"
-              : "from-[#fdf6e3]/80 via-transparent to-[#c9a34a]/20"
-          }`}
-        ></div>
-      </div>
-
-      {/* Hieroglyphic Symbols Background */}
-      <div className="absolute inset-0 pointer-events-none -z-0">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <span
-            key={i}
-            className={`absolute ${
-              themeName === "dark" ? "text-[#c9a34a]" : "text-[#c9a34a]"
-            } opacity-30 text-6xl animate-pulse`}
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              transform: `rotate(${Math.random() * 360}deg)`,
-            }}
-          >
-            {symbols[Math.floor(Math.random() * symbols.length)]}
-          </span>
-        ))}
-      </div>
-
-      {/* Content with Car beside text */}
-      <motion.div
-        variants={fadeInUp}
-        className="flex flex-col lg:flex-row items-center gap-12 max-w-7xl w-full mx-auto"
-      >
-        {/* Car Image beside text */}
-        <motion.div
-          variants={fadeInUp}
-          className="flex-1 relative w-full h-80 lg:h-[400px]"
-        >
-          <Image
-            src="/HomePageImage/car-png-39057.png"
-            alt="Luxury car illustration"
-            fill
-            quality={75}
-            sizes="(max-width: 768px) 100vw, 600px"
-            placeholder="blur"
-          blurDataURL="/HomePageImage/apple-touch-icon.png"
-            className="object-contain drop-shadow-2xl"
-          />
-        </motion.div>
-
-        {/* Text Section */}
-        <motion.div
-          variants={fadeInUp}
-          className="flex-1 text-center lg:text-left"
-        >
-          <h2
-            role="heading"
-            aria-level={2}
-            aria-label={t("PremiumCarTransfer")}
-            className={`text-5xl font-extrabold tracking-wide drop-shadow-md flex items-center gap-3 justify-center lg:justify-start ${
-              themeName === "dark"
-                ? "text-gold"
-                : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-            }`}
-          >
-            {t("PremiumCarTransfer")}
-          </h2>
-
+    <motion.section initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} className="stone-section w-full px-5 sm:px-8">
+      <div className={`car-booking-card relative mx-auto flex max-w-7xl flex-col overflow-hidden rounded-[1.75rem] border shadow-[0_2rem_5rem_rgba(78,54,31,.14)] lg:min-h-[28rem] lg:flex-row ${themeName === "dark" ? "border-[#e0b873]/25 bg-[#27231f]" : "border-[#8f5d2e]/20 bg-[#fffaf3]"}`}>
+        <div className={`absolute inset-0 ${themeName === "dark" ? "bg-[radial-gradient(circle_at_15%_20%,rgba(224,184,115,.16),transparent_32%),linear-gradient(115deg,#302920,#1b1917)]" : "bg-[radial-gradient(circle_at_15%_20%,rgba(143,93,46,.10),transparent_35%),linear-gradient(115deg,#fffaf3,#eadbca)]"}`} />
+        <div className="relative order-2 flex w-full items-end justify-center px-5 pb-6 pt-2 sm:px-12 lg:order-1 lg:w-1/2 lg:pb-0"><Image src="/HomePageImage/car-png-39057.png" alt="Luxury car transfer" width={760} height={460} className="w-full max-w-[42rem] object-contain drop-shadow-[0_1.5rem_2rem_rgba(0,0,0,.5)]" /></div>
+        <div className="relative order-1 flex w-full flex-col justify-center px-6 py-10 sm:px-12 lg:order-2 lg:w-1/2 lg:py-14">
+          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-[#e0b873]/35 bg-[#e0b873]/10 text-xl text-[#e0b873]"><FaCarSide /></div>
+          <p className="stone-kicker mb-3">Arrive in comfort</p>
+          <h2 className={`max-w-lg text-3xl font-bold leading-tight sm:text-5xl ${themeName === "dark" ? "text-[#f6eddf]" : "text-[#30271d]"}`}>{t("PremiumCarTransfer")}</h2>
           <DividerWithIcon />
-
-          <p
-            aria-label="Description of premium car transfer service"
-            className="mt-6 text-lg opacity-80 leading-relaxed max-w-xl"
-          >
-            {t("Experience")}
-          </p>
-
-          {userData ? (
-            // ✅ زر الحجز يظهر فقط إذا كان فيه مستخدم
-            <motion.button
-              variants={fadeInUp}
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent("openCarBookingChat"));
-              }}
-              aria-label="Book your premium car transfer" // ✅ اسم واضح
-              className={`mt-8 inline-block px-10 py-4 rounded-full font-bold text-lg shadow-xl transition-transform transform hover:scale-105 ${
-                themeName === "dark"
-                  ? "bg-amber-300 text-black hover:bg-yellow-500"
-                  : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
-              }`}
-            >
-              {t("Book")}
-            </motion.button>
-          ) : (
-            // ✅ رسالة أنيقة بدل الزر لو ما فيش مستخدم
-            <motion.p
-              variants={fadeInUp}
-              className="mt-8 text-lg font-semibold opacity-80 italic text-center lg:text-left"
-            >
-              Please log in and book your car now ✨
-            </motion.p>
-          )}
-        </motion.div>
-      </motion.div>
+          <p className={`mt-5 max-w-xl text-base leading-7 ${themeName === "dark" ? "text-white/65" : "text-[#5f4c3a]"}`}>{t("Experience")}</p>
+          <ul className={`mt-5 grid gap-2 text-sm sm:grid-cols-3 lg:grid-cols-1 ${themeName === "dark" ? "text-white/75" : "text-[#4f3d2d]"}`}>{benefits.map((benefit) => <li key={benefit} className="flex items-center gap-2"><FaCheck className="text-[#8f5d2e]" />{benefit}</li>)}</ul>
+          <motion.button whileHover={{ y: -2 }} onClick={() => openWhatsAppBooking("🚗 Car transfer request\n\nFrom: \nTo: \nDate and time: \nPassengers: \n\nPlease confirm availability and the final price.")} className="stone-button mt-8 inline-flex w-fit items-center gap-2 rounded-full px-7 py-3.5 font-bold"><FaWhatsapp /> Book via WhatsApp</motion.button>
+        </div>
+      </div>
     </motion.section>
   );
 };

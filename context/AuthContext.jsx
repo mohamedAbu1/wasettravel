@@ -4,10 +4,20 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useQueryFilters } from "./QueryContext";
 import { useRouter } from "next/navigation";
-import { useSession, signIn } from "next-auth/react"; // ✅ NextAuth
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useData } from "./DataContext";
 
 const AuthContext = createContext();
+
+const normalizeUser = (value) => {
+  if (!value || typeof value !== "object") return null;
+  return {
+    ...value,
+    id: value.id || value.userId,
+    role: String(value.role || "USER").toUpperCase(),
+    avatar_url: value.avatar_url || value.image || value.avatar,
+  };
+};
 
 export function AuthProvider({ children }) {
   const router = useRouter();
@@ -23,28 +33,39 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { handleSignUpClose } = useData();
-  const { updateValue, getEncodedQuery } = useQueryFilters();
+  const { handleSignUpClose, handleLoginClose } = useData();
+  const { getEncodedQuery } = useQueryFilters();
 
   const fetchUserFromServer = async () => {
     try {
       const res = await axios.get("/api/auth/me", { withCredentials: true });
-      setUserToken(res.data.user);
-      setIsLoggedIn(true);
+      const authenticatedUser = normalizeUser(res.data.user);
+      if (!authenticatedUser?.id) throw new Error("Invalid session");
+      setUser(authenticatedUser);
+      setUserToken(authenticatedUser);
+      setIsLoggedIn(Boolean(authenticatedUser));
+      return authenticatedUser;
     } catch (err) {
-      console.warn("⚠️ Token expired or invalid, trying refresh...");
       try {
         const retry = await axios.post(
           "/api/auth/refresh",
           {},
           { withCredentials: true },
         );
-        setUserToken(retry.data.user);
+        const refreshedUser = normalizeUser(retry.data.user);
+        if (!refreshedUser?.id) throw new Error("Invalid refreshed session");
+        setUser(refreshedUser);
+        setUserToken(refreshedUser);
         setIsLoggedIn(true);
+        return refreshedUser;
       } catch (refreshErr) {
-        console.error("💥 Refresh failed:", refreshErr.message);
+        if (refreshErr?.response?.status !== 401) {
+          console.error("💥 Refresh failed:", refreshErr.message);
+        }
+        setUser(null);
         setUserToken(null);
         setIsLoggedIn(false);
+        return null;
       }
     }
   };
@@ -68,12 +89,18 @@ export function AuthProvider({ children }) {
       if (res.status !== 201)
         throw new Error(data.error || "Registration failed");
 
+      const registeredUser = normalizeUser(data.user);
+      setUser(registeredUser);
+      setUserToken(registeredUser);
+      setIsLoggedIn(Boolean(registeredUser));
       toast.success("✅ Account created successfully!");
       handleSignUpClose();
-      return data;
+      return registeredUser;
     } catch (err) {
-      setError(err.message);
-      toast.error("❌ Error: " + err.message);
+      const message = err.response?.data?.error || err.message || "Registration failed";
+      setError(message);
+      toast.error("❌ Error: " + message);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -98,9 +125,9 @@ export function AuthProvider({ children }) {
         throw new Error(data.error || "Login failed");
       }
 
-      const user = data.user;
+      const authenticatedUser = normalizeUser(data.user);
 
-      setUser(user);
+      setUser(authenticatedUser);
 
       // ✅ جلب بيانات المستخدم من السيرفر بعد تسجيل الدخول
       await fetchUserFromServer();
@@ -112,14 +139,17 @@ export function AuthProvider({ children }) {
       }
 
       const encodedQuery = getEncodedQuery();
-      router.push(`/?data=${encodedQuery}`);
+      const firstSegment = typeof window !== "undefined" ? window.location.pathname.split("/").filter(Boolean)[0] : "en";
+      const locale = ["en", "es", "fr", "de", "it", "zh"].includes(firstSegment) ? firstSegment : "en";
+      router.push(`/${locale}?data=${encodedQuery}`);
 
       toast.success("✅ Logged in successfully!");
-      return user;
+      return authenticatedUser;
     } catch (err) {
-      console.error("💥 خطأ أثناء تسجيل الدخول:", err.message);
-      setError(err.message);
-      toast.error("❌ Error: " + err.message);
+      const message = err.response?.data?.error || err.message || "Login failed";
+      setError(message);
+      toast.error("❌ Error: " + message);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -149,9 +179,14 @@ export function AuthProvider({ children }) {
         name: userData.name,
       });
 
-      setUser(dbRes.data);
-      setIsLoggedIn(true);
+      const authenticatedUser = normalizeUser(dbRes.data.user || dbRes.data);
+      setUser(authenticatedUser);
+      setUserToken(authenticatedUser);
+      setIsLoggedIn(Boolean(authenticatedUser));
+      await fetchUserFromServer();
+      handleLoginClose();
       toast.success("✅ تم تسجيل الدخول بجوجل!");
+      return authenticatedUser;
     } catch (err) {
       console.error("OAuth Error:", err);
       toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول بجوجل.");
@@ -168,10 +203,14 @@ export function AuthProvider({ children }) {
     setUser(null);
     setUserToken(null);
     setIsLoggedIn(false);
+    setChatUser(null);
+    if (session) {
+      await signOut({ redirect: false });
+    }
     toast.info("🚪 Logged out successfully");
   };
 
-  const userData = user || session?.user;
+  const userData = user || normalizeUser(session?.user);
   return (
     <AuthContext.Provider
       value={{

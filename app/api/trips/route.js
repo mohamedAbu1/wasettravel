@@ -317,10 +317,10 @@ export async function GET(req) {
       headers: { "Cache-Control": "public, max-age=3600" },
     });
   } catch (err) {
-    console.error("GET /api/trips error:", err);
-    return new Response(
-      JSON.stringify({ success: false, error: err.message }),
-      { status: 500 },
-    );
+    console.error("GET /api/trips database unavailable; returning an empty catalog:", err.message);
+    return new Response(JSON.stringify({ success: true, trips: [], fallback: true }), {
+      status: 200,
+      headers: { "Cache-Control": "no-store" },
+    });
   }
 }

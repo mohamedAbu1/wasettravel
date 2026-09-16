@@ -1,12 +1,10 @@
 import React from "react";
 import { useTheme } from "@/context/ThemeContext";
-import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
-import { useData } from "@/context/DataContext";
-import { useChat } from "@/context/ChatContext";
+import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useMessages } from "@/context/MessageContext";
 import { useTranslation } from "react-i18next";
+import { openWhatsAppBooking } from "@/lib/whatsappBooking";
 
 const BookingSummaryCard = ({
   tourName,
@@ -17,10 +15,6 @@ const BookingSummaryCard = ({
   checkOut,
 }) => {
   const { themeName } = useTheme();
-  const { userData } = useAuth();
-  const { handleLoginOpen } = useData();
-  const { open, setOpen } = useChat(); // ✅ أضفت setMessageses هنا
-  const { setMessageses,sendMessage } = useMessages(); // ✅ أضفت setMessageses هنا
   const { t } = useTranslation("tripsId");
   // حساب سعر الأطفال (مثال: نصف السعر)
   const childrenPrice = (checkInPrice * childrenCount) / 2;
@@ -38,16 +32,7 @@ const handleBookingClick = async () => {
     return;
   }
 
-  if (userData) {
-    setOpen(true);
-
-    // ✅ إرسال الرسالة للـ Admin عبر sendMessage
-await sendMessage({
-  user_id: userData?.id,
-  user_name: userData?.name,
-  user_image:
-    userData?.avatar_url || userData?.image || "/default-avatar.png",
-  content: `
+  const message = `
 🧾 **Booking Summary**
 
 ---
@@ -68,22 +53,9 @@ await sendMessage({
 ---
 
 ✅ **Please confirm availability and assist the guest.**
-  `,
-  sender_type: "user",
-  status: "sent",
-});
-
-
-
-    // ✅ إضافة رسالة تأكيد داخل الدردشة
-    setMessageses((prev) => [
-      ...prev,
-      { sender: "assistant", content: `✅ ${t("bookingRequestRecorded")}` },
-    ]);
-  } else {
-    handleLoginOpen();
-    toast.error(t("loginToBook"));
-  }
+  `;
+  openWhatsAppBooking(message);
+  toast.success("WhatsApp opened. Send the message to confirm your request.");
 };
 
 
@@ -137,8 +109,8 @@ await sendMessage({
           : "bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:shadow-lg"
       }`}
         >
-          <span className="text-xl">🛒</span>
-          <span>{t("addToCart")}</span>
+          <FaWhatsapp className="text-xl" />
+          <span>Continue on WhatsApp</span>
 
           {/* إيفيكت خلفي متحرك */}
           <span className="absolute inset-0 rounded-lg bg-white/10 blur-sm animate-pulse"></span>

@@ -1,86 +1,79 @@
 "use client";
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import StyledEngineProvider from '@mui/material/StyledEngineProvider';
-import { useTheme } from "@/context/ThemeContext";
+
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import { useData } from "@/context/DataContext";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
-import CalendarClient from "./CalendarWrapper";
+import CalendarSC from "./CalendarSC";
 import CitySelect from "./CitySelect";
 import CategorySelect from "./CategorySelect";
-import PriceSelect from "./PriceSelect";
 import { useRouter } from "next/navigation";
+import { FiSearch } from "react-icons/fi";
+import { encodeBase64Json } from "@/lib/utils/base64";
 
-const Content = () => {
-  const { theme } = useTheme();
-  const { setCity, city, setPrice,price, group_price , tripType, setTripType } = useData();
-
+export default function Content() {
+  const {
+    city,
+    setCity,
+    group_price,
+    tripType,
+    setTripType,
+    arrival,
+    departure,
+  } = useData();
   const { i18n, t } = useTranslation("home");
-  const currentLang = i18n.language || "en";
-  const { cities: allCities, categories: allCategories } =
-    useCitiesCategories();
-
+  const { cities: allCities, categories: allCategories } = useCitiesCategories();
   const router = useRouter();
+  const currentLang = i18n.language || "en";
+  const isFormValid = Boolean(city && tripType && arrival && departure);
 
-  const isFormValid = city && price  && tripType;
-  const handleSearch = () => {
-    // نبني الكويري مباشرة من القيم الحالية في الانبوتات
-    const queryObj = {
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const query = {
       city: [city],
       category: [tripType],
-      group_price : group_price ,
+      group_price,
+      arrival,
+      departure,
       popular: false,
     };
-
-    const encoded = btoa(JSON.stringify(queryObj));
-
-    // التحويل إلى صفحة الرحلات مع الكويري الجديد
-    router.push(`/trips?data=${encoded}`);
+    router.push(`/trips?data=${encodeBase64Json(query)}`);
   };
 
   return (
-    <div className="order-2 flex w-full flex-col items-center justify-center px-2 text-center">
-      <div className="w-full max-w-6xl">
-        {/* Company Name */}
-        <h1
-          className="sr-only"
-        >
-          WasetTravel
-        </h1>
+    <div className="hero-search-content travel-search-content">
+      <div className="hero-filter-intro">
+        <div className="hero-filter-intro__icon" aria-hidden="true"><FiSearch /></div>
+        <div>
+          <p className="hero-filter-intro__eyebrow">
+            {t("SearchEyebrow", { defaultValue: "Your journey, your way" })}
+          </p>
+          <p className="hero-filter-intro__title">
+            {t("SearchTitle", { defaultValue: "Build your perfect Egypt trip" })}
+          </p>
+        </div>
+      </div>
 
-        <p
-          className="mx-auto mt-2 max-w-2xl text-sm font-medium uppercase tracking-[0.22em] text-white/80 sm:text-base"
-        >
-          {t("Discover")}
-        </p>
-
-        {/* Trip Filter Form */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", lg: "repeat(5, 1fr)" },
-            gap: { xs: 1.5, sm: 2 },
-            mt: { xs: 3, sm: 4 },
-            p: { xs: 1.5, sm: 2.5 },
-            borderRadius: 3,
-            backdropFilter: "blur(12px)",
-            backgroundColor: theme.inputBg,
-            border: `1px solid ${theme.inputBorder}`,
-            boxShadow: theme.shadow,
-          }}
-        >
-          {/* Inputs Filter */}
+      <Box
+        component="form"
+        className="hero-filter-form"
+        onSubmit={handleSearch}
+        aria-label={t("TripSearch", { defaultValue: "Find an Egypt trip" })}
+      >
+        <div className="hero-filter-control">
+          <span className="hero-filter-control__label">{t("SelectCity")}</span>
           <CitySelect
             allCities={allCities}
             currentLang={currentLang}
             city={city}
             setCity={setCity}
             t={t}
-            theme={theme}
           />
+        </div>
 
+        <div className="hero-filter-control">
+          <span className="hero-filter-control__label">{t("SelectCategory")}</span>
           <CategorySelect
             allCategories={allCategories}
             currentLang={currentLang}
@@ -88,41 +81,30 @@ const Content = () => {
             setTripType={setTripType}
             t={t}
           />
+        </div>
 
-          <PriceSelect group_price={group_price} setPrice={setPrice} t={t} theme={theme} />
+        <div className="hero-filter-control hero-filter-control--dates">
+          <span className="hero-filter-control__label">{t("TravelDates", { defaultValue: "Travel dates" })}</span>
+          <CalendarSC />
+        </div>
 
-          {/* Calendar */}
-          <StyledEngineProvider injectFirst>
-            <CalendarClient />
-          </StyledEngineProvider>
+        <Button
+          className="hero-filter-submit"
+          variant="contained"
+          type="submit"
+          disabled={!isFormValid}
+          aria-label={isFormValid ? t("Search") : t("CompleteSearchFilters", { defaultValue: "Select a city, category and travel dates to continue" })}
+        >
+          <span>{t("Search")}</span>
+          <span className="hero-filter-submit__arrow" aria-hidden="true">↗</span>
+        </Button>
+      </Box>
 
-          {/* Search Button */}
-          <Button
-            variant="contained"
-            onClick={handleSearch}
-            disabled={!isFormValid}
-            sx={{
-              backgroundColor: "#C9A34A",
-              color: "#fff",
-              fontWeight: "600",
-              borderRadius: "12px",
-              px: 4,
-              py: 1.5,
-              textTransform: "none",
-              minHeight: 64,
-              boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-              "&:hover": {
-                backgroundColor: "#B9972F",
-                boxShadow: "0 6px 14px rgba(0,0,0,0.25)",
-              },
-            }}
-          >
-            {t("Search")}
-          </Button>
-        </Box>
+      <div className="hero-filter-footer">
+        <span><i aria-hidden="true" /> {t("LocalPlanning", { defaultValue: "Local planning support" })}</span>
+        <span>{t("FlexibleBooking", { defaultValue: "Flexible booking" })}</span>
+        <span>{t("SecureCheckout", { defaultValue: "Secure checkout" })}</span>
       </div>
     </div>
   );
-};
-
-export default Content;
+}

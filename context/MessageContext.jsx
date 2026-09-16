@@ -23,6 +23,7 @@ export function MessageProvider({ children }) {
         return;
       }
       const data = await res.json();
+      if (!Array.isArray(data)) return;
       setMessages((prev) => {
         const ids = new Set(prev.map((m) => m.id));
         const merged = [...prev, ...data.filter((m) => !ids.has(m.id))];
@@ -36,17 +37,14 @@ export function MessageProvider({ children }) {
   };
   const fetchUserMessagesById = async (id) => {
     try {
-      const res = await fetch(`/api/messages?id=${id}`);
+      const res = await fetch(`/api/messages?userId=${encodeURIComponent(id)}`);
       if (!res.ok) {
         const text = await res.text();
         console.error("❌ خطأ في الاتصال بالسيرفر:", text);
         return [];
       }
       const data = await res.json();
-      const filtered = Array.isArray(data)
-        ? data.filter((msg) => msg.user_id === id)
-        : [];
-      return filtered;
+      return Array.isArray(data) ? data.filter((msg) => msg.user_id === id) : [];
     } catch (err) {
       console.error("❌ خطأ أثناء جلب الرسائل:", err.message);
       return [];
@@ -121,6 +119,7 @@ export function MessageProvider({ children }) {
       return data;
     } catch (err) {
       console.error("❌ Error sending message:", err.message);
+      setMessages((prev) => prev.map((msg) => msg.id === tempMessage.id ? { ...msg, status: "error" } : msg));
       return { error: err.message };
     }
   };

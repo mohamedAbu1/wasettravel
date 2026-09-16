@@ -43,17 +43,17 @@ function AnimatedStat({ stat, themeName }) {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
-      className={`rounded-2xl p-6 text-center border ${themeName === "dark" ? "border-gold/30 bg-black/30" : "border-[#c9a34a]/30 bg-white/70"}`}
+      className={`rounded-2xl p-6 text-center border ${themeName === "dark" ? "border-gold/30 bg-black/30" : "border-[#8f5d2e]/25 bg-[#fffaf3] shadow-[0_.8rem_2rem_rgba(78,54,31,.1)]"}`}
     >
       <motion.div
         animate={controls}
         initial={{ count: 0 }}
         onUpdate={(latest) => setCount(Math.floor(latest.count))}
-        className={`text-3xl font-extrabold ${themeName === "dark" ? "text-gold" : "text-[#c9a34a]"}`}
+        className={`text-3xl font-extrabold ${themeName === "dark" ? "text-gold" : "text-[#8f5d2e]"}`}
       >
         {count}+
       </motion.div>
-      <div className={`${themeName === "dark" ? "text-white/70" : "text-[#5c4520]"}`}>
+      <div className={`${themeName === "dark" ? "text-white/70" : "text-[#4f3d2d]"}`}>
         {stat.label}
       </div>
     </motion.div>

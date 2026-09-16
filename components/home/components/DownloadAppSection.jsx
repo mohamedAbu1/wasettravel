@@ -1,33 +1,35 @@
 "use client";
-import { FaGooglePlay, FaApple, FaGlobe, FaMapMarkedAlt } from "react-icons/fa";
+import { FaGooglePlay, FaApple, FaGlobe, FaMapMarkedAlt, FaArrowRight } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 export default function DownloadAppSection() {
   const { t } = useTranslation("home");
 
   return (
-    <section className="w-full border-y border-white/10 bg-[#121212] px-4 py-12 text-[#F5F5F5] sm:py-16">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 text-center">
-      {/* Title */}
-      <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
-        {t("DownloadOurAppNow")}
-      </h2>
-      <p className="max-w-xl text-center leading-7 text-white/70">
-        {t("pPhone")}
-      </p>
+    <section className="stone-section w-full border-y border-[var(--line)] px-5 py-14 sm:px-8 sm:py-20">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[.9fr_1.1fr]">
+        <div className="max-w-xl">
+          <p className="stone-kicker mb-3">Stay close to every journey</p>
+          <h2 className="text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl">
+            {t("DownloadOurAppNow")}
+          </h2>
+          <p className="mt-5 max-w-lg leading-8 text-[var(--muted)]">{t("pPhone")}</p>
+          <div className="mt-7 flex flex-wrap gap-3 text-sm font-semibold text-[var(--muted)]">
+            <span className="rounded-full border border-[var(--line)] bg-[var(--surface-raised)] px-4 py-2">Curated trips</span>
+            <span className="rounded-full border border-[var(--line)] bg-[var(--surface-raised)] px-4 py-2">Local support</span>
+            <span className="rounded-full border border-[var(--line)] bg-[var(--surface-raised)] px-4 py-2">Easy planning</span>
+          </div>
+        </div>
 
-      {/* Store Links */}
-      <div className="mt-2 grid w-full max-w-4xl grid-cols-1 justify-center gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Google Play Button */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <a
           href="https://play.google.com/store/apps/details?id=your_app_id"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Download on Google Play"
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-green-700 px-4 py-3 font-semibold text-white shadow-md transition-colors hover:bg-green-800"
+          className="stone-card group flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--foreground)] transition hover:-translate-y-1"
         >
-          <FaGooglePlay size={22} />
-          <span>{t("GooglePlay")}</span>
+          <span className="flex items-center gap-3"><FaGooglePlay className="text-2xl text-[var(--color)]" /><span><span className="block text-xs text-[var(--muted)]">Available on</span><strong>{t("GooglePlay")}</strong></span></span><FaArrowRight className="text-xs text-[var(--muted)] transition group-hover:translate-x-1" />
         </a>
 
         {/* Apple App Store Button */}
@@ -36,10 +38,9 @@ export default function DownloadAppSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Download on Apple App Store"
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-black px-4 py-3 font-semibold text-white shadow-md transition-colors hover:bg-gray-900"
+          className="stone-card group flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--foreground)] transition hover:-translate-y-1"
         >
-          <FaApple size={22} />
-          <span>{t("AppStore")}</span>
+          <span className="flex items-center gap-3"><FaApple className="text-2xl text-[var(--color)]" /><span><span className="block text-xs text-[var(--muted)]">Available on</span><strong>{t("AppStore")}</strong></span></span><FaArrowRight className="text-xs text-[var(--muted)] transition group-hover:translate-x-1" />
         </a>
 
         {/* Viator Button */}
@@ -48,10 +49,9 @@ export default function DownloadAppSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Visit our Viator page"
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#c9a34a] px-4 py-3 font-semibold text-white shadow-md transition-colors hover:bg-[#a67c00]"
+          className="stone-card group flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--foreground)] transition hover:-translate-y-1"
         >
-          <FaGlobe size={22} />
-          <span>{t("Viator")}</span>
+          <span className="flex items-center gap-3"><FaGlobe className="text-2xl text-[var(--color)]" /><span><span className="block text-xs text-[var(--muted)]">Explore us on</span><strong>{t("Viator")}</strong></span></span><FaArrowRight className="text-xs text-[var(--muted)] transition group-hover:translate-x-1" />
         </a>
 
         {/* Tripadvisor Button */}
@@ -60,12 +60,11 @@ export default function DownloadAppSection() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Read reviews on Tripadvisor"
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 font-semibold text-white shadow-md transition-colors hover:bg-teal-800"
+          className="stone-card group flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--foreground)] transition hover:-translate-y-1"
         >
-          <FaMapMarkedAlt size={22} />
-          <span>{t("Tripadvisor")}</span>
+          <span className="flex items-center gap-3"><FaMapMarkedAlt className="text-2xl text-[var(--color)]" /><span><span className="block text-xs text-[var(--muted)]">Read reviews on</span><strong>{t("Tripadvisor")}</strong></span></span><FaArrowRight className="text-xs text-[var(--muted)] transition group-hover:translate-x-1" />
         </a>
-      </div>
+        </div>
       </div>
     </section>
   );

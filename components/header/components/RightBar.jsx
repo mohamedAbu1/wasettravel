@@ -23,6 +23,8 @@ export default function RightBar({ scrolled }) {
   const router = useRouter();
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
+  const locale = ["en", "fr", "de", "it", "es", "pt", "zh"].includes(segments[0]) ? segments[0] : "en";
+  const isAdmin = userData?.role?.toLowerCase() === "admin";
 
   const now = Date.now();
   const twelveHours = 12 * 60 * 60 * 1000;
@@ -40,13 +42,13 @@ export default function RightBar({ scrolled }) {
       return now - createdTime < twoDays; // إشعار أقل من يومين
     })
     .sort((a, b) => {
-      if (a.is_read === 0 && b.is_read !== 0) return -1;
-      if (a.is_read !== 0 && b.is_read === 0) return 1;
+      if (Number(a.is_read) === 0 && Number(b.is_read) !== 0) return -1;
+      if (Number(a.is_read) !== 0 && Number(b.is_read) === 0) return 1;
       return new Date(b.created_at) - new Date(a.created_at);
     });
 
   const unreadCount = filteredNotifications.filter(
-    (n) => n.is_read === 0 && n.event_type !== "message",
+    (n) => Number(n.is_read) === 0 && n.event_type !== "message",
   ).length;
 
   const [open, setOpen] = useState(false);
@@ -60,13 +62,13 @@ export default function RightBar({ scrolled }) {
       return now - createdTime < twelveHours; // مقروءة لكن أقل من 12 ساعة
     })
     .sort((a, b) => {
-      if (a.is_read === 0 && b.is_read !== 0) return -1;
-      if (a.is_read !== 0 && b.is_read === 0) return 1;
+      if (Number(a.is_read) === 0 && Number(b.is_read) !== 0) return -1;
+      if (Number(a.is_read) !== 0 && Number(b.is_read) === 0) return 1;
       return new Date(b.created_at) - new Date(a.created_at);
     });
 
   const unreadMessages = messageNotifications.filter(
-    (n) => n.is_read === 0,
+    (n) => Number(n.is_read) === 0,
   ).length;
   const [openMessages, setOpenMessages] = useState(false);
 
@@ -74,18 +76,18 @@ export default function RightBar({ scrolled }) {
     markAsRead(notification.id);
 
     if (notification.event_type === "purchase" && notification.trip_id) {
-      router.push(`/trips/${notification.trip_id}`);
+      router.push(`/${locale}/trips/${notification.trip_id}`);
     }
 
     if (notification.event_type === "review" && notification.trip_id) {
       router.push(
-        `/trips/${notification.trip_id}?highlightReview=${notification.review_id}`,
+        `/${locale}/trips/${notification.trip_id}?highlightReview=${notification.review_id}`,
       );
     }
 
     if (notification.event_type === "review_like" && notification.trip_id) {
       router.push(
-        `/trips/${notification.trip_id}?highlightReview=${notification.review_id}`,
+        `/${locale}/trips/${notification.trip_id}?highlightReview=${notification.review_id}`,
       );
     }
   };
@@ -106,11 +108,11 @@ export default function RightBar({ scrolled }) {
   return (
     <div className="hidden lg:flex items-center gap-4">
       {/* ✅ أيقونة الإشعارات العامة */}
-      {userData?.role === "ADMIN" && (
+      {isAdmin && (
         <Badge
           badgeContent={unreadCount}
           color="error"
-          className="hidden lg:flex"
+          className="stone-header-action hidden lg:flex"
         >
           <NotificationsIcon
             onClick={() => setOpen(true)}
@@ -130,11 +132,11 @@ export default function RightBar({ scrolled }) {
       )}
 
       {/* ✅ أيقونة الرسائل */}
-      {userData?.role === "ADMIN" && messageNotifications.length > 0 && (
+      {isAdmin && (
         <Badge
           badgeContent={unreadMessages}
           color="error"
-          className="hidden lg:flex"
+          className="stone-header-action hidden lg:flex"
         >
           <MailIcon
             onClick={() => setOpenMessages(true)}

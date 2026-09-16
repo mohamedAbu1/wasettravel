@@ -14,12 +14,13 @@ import { useCurrency } from "@/context/CurrencyContext";
 import { useLanguage } from "@/context/LanguageContext";
 
 const fallbackImage = "/Luxor/pexels-axp-photography-500641970-18934598.webp";
+const MAX_TOP_TRIPS = 6;
 
 const TopTripsSection = () => {
   const { themeName } = useTheme();
   const { t, i18n } = useTranslation("home");
   const router = useRouter();
-  const { user } = useAuth();
+  const { userData } = useAuth();
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const { currency, purchases } = usePurchase();
   const { convertPrice } = useCurrency();
@@ -27,24 +28,34 @@ const TopTripsSection = () => {
   const [index, setIndex] = useState(0);
   const language = i18n.language.split("-")[0];
 
-  useEffect(() => { fetchTrips("?summary=1"); }, [fetchTrips]);
+  useEffect(() => {
+    let cancelled = false;
+    const loadTopTrips = async () => {
+      const summaryTrips = await fetchTrips("?summary=1");
+      if (!cancelled && !summaryTrips?.length) await fetchTrips();
+    };
+    loadTopTrips();
+    return () => { cancelled = true; };
+  }, [fetchTrips]);
   useEffect(() => {
     if (trips.length < 2) return;
-    const interval = setInterval(() => setIndex((previous) => (previous + 1) % trips.length), 5000);
+    const interval = setInterval(() => setIndex((previous) => (previous + 1) % Math.min(trips.length, MAX_TOP_TRIPS)), 5000);
     return () => clearInterval(interval);
   }, [trips.length]);
 
   if (loadingTrips) return <section className="stone-section flex min-h-96 items-center justify-center"><p className="text-white/60">Loading top trips...</p></section>;
 
-  const topTrips = [...trips].sort(
-    (a, b) =>
-      (b.review_count ?? b.reviews?.length ?? 0) -
-      (a.review_count ?? a.reviews?.length ?? 0),
-  );
+  const topTrips = [...trips]
+    .sort((a, b) => {
+      const reviewDifference = Number(b.review_count ?? b.reviews?.length ?? 0) - Number(a.review_count ?? a.reviews?.length ?? 0);
+      if (reviewDifference !== 0) return reviewDifference;
+      return Number(b.rating || 0) - Number(a.rating || 0);
+    })
+    .slice(0, MAX_TOP_TRIPS);
 
   const TripCard = ({ trip, position }) => {
     const title = trip.title?.[language] || trip.title?.en || "Untitled Trip";
-    const hasPurchased = user && purchases.some((purchase) => purchase.user_id?.toString() === user.id?.toString() && purchase.trip_id?.toString() === trip.id?.toString() && purchase.status !== "Cancelled");
+    const hasPurchased = userData && purchases.some((purchase) => purchase.user_id?.toString() === userData.id?.toString() && purchase.trip_id?.toString() === trip.id?.toString() && purchase.status !== "Cancelled");
     return (
       <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: position * 0.08 }} viewport={{ once: true, amount: 0.2 }} className="stone-card group relative min-w-0 overflow-hidden rounded-[1.35rem]">
         <div className="relative aspect-[1.15] overflow-hidden">

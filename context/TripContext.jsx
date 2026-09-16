@@ -131,6 +131,7 @@ export function TripProvider({ children }) {
       if (!res.ok || !result.success) throw new Error(result.error || "Failed to load trips");
       setTrips(Array.isArray(result.trips) ? result.trips : []);
       localStorage.setItem("trips", JSON.stringify(result.trips || []));
+      return Array.isArray(result.trips) ? result.trips : [];
     } catch (err) {
       setError(err.message);
     } finally {

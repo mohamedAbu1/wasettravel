@@ -4,7 +4,6 @@ import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useReviews } from "@/context/ReviewsContext";
 import { useAuth } from "@/context/AuthContext";
-import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import ReviewsHeader from "./components/ReviewsHeader";
 import StarRating from "./components/StarRating";
 import ReviewForm from "./components/ReviewForm";
@@ -148,33 +147,24 @@ export default function TripReviews({ trip, lang }) {
   }, [highlightReviewId]);
 
   return (
-    <section
-      className={`trip-detail-panel p-6 rounded-xl shadow-lg transition ${
-        themeName === "dark"
-          ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
-          : "bg-white/90 text-[#3a2c0a]"
-      }`}
-    >
-      <EgyptianBackground />
+    <section className="trip-detail-panel trip-reviews-section p-5 sm:p-7">
 
       {/* العنوان + المتوسط */}
       <ReviewsHeader
         title={tr.title}
-        t={t}
         averageRating={averageRating}
         reviewsCount={tripReviews.length}
-        themeName={themeName}
       />
 
       {userData && (
-        <>
+        <div className="trip-review-composer mt-6">
+          <div className="mb-4"><p className="font-semibold">Share your experience</p><p className="text-sm text-[var(--muted)]">A quick rating helps future travelers choose with confidence.</p></div>
           {/* تقييم النجوم */}
           <StarRating
             rating={rating}
             setRating={setRating}
             hover={hover}
             setHover={setHover}
-            themeName={themeName}
           />
 
           {/* نموذج إضافة تعليق */}
@@ -189,19 +179,16 @@ export default function TripReviews({ trip, lang }) {
             submitLabel={tr.submit}
             themeName={themeName}
           />
-        </>
+        </div>
       )}
 
       {/* عرض التعليقات */}
-      <div className="flex flex-row flex-wrap mt-6 gap-6 space-y-4">
-        <EgyptianBackground />
+      <div className="mt-7 grid gap-4 md:grid-cols-2">
         {currentComments.map((rev, idx) => (
           <div
             key={rev.id || idx}
             id={`review-${rev.id}`}
-            className={`w-full transition ${
-              highlighted === rev.id ? "bg-green-200" : ""
-            }`}
+            className={`transition ${highlighted === rev.id ? "rounded-2xl ring-2 ring-[var(--color)] ring-offset-2 ring-offset-[var(--surface)]" : ""}`}
           >
             <ReviewCard
               rev={rev}
@@ -218,27 +205,25 @@ export default function TripReviews({ trip, lang }) {
         ))}
 
         {tripReviews.length === 0 && (
-          <p className="text-center w-full opacity-70">
+          <div className="col-span-full rounded-2xl border border-dashed border-[var(--line)] p-8 text-center text-[var(--muted)]">
             {!userData
               ? "Please log in to write your review"
               : "Be the first to review this trip ✨"}
-          </p>
+          </div>
         )}
       </div>
 
       {/* الباجينيشن */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-6 gap-2">
+        <div className="mt-7 flex justify-center gap-2">
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => prev - 1)}
-            style={{ cursor: "pointer" }}
-            className={`px-3 py-1 rounded-lg font-semibold transition ${
+            aria-label="Previous reviews"
+            className={`trip-detail-pagination ${
               currentPage === 1
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : themeName === "dark"
-                  ? "bg-[#c9a34a] text-black hover:bg-yellow-300"
-                  : "bg-[#c9a34a] text-white hover:bg-[#a67c00]"
+                ? "opacity-40 cursor-not-allowed"
+                : ""
             }`}
           >
             Prev
@@ -248,13 +233,11 @@ export default function TripReviews({ trip, lang }) {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              style={{ cursor: "pointer" }}
-              className={`px-3 py-1 rounded-lg font-semibold transition text-black ${
+              aria-label={`Go to review page ${i + 1}`}
+              className={`trip-detail-pagination ${
                 currentPage === i + 1
-                  ? themeName === "dark"
-                    ? "bg-[#c9a34a] text-black"
-                    : "bg-[#c9a34a] text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
+                  ? "trip-detail-pagination--active"
+                  : ""
               }`}
             >
               {i + 1}
@@ -264,13 +247,11 @@ export default function TripReviews({ trip, lang }) {
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((prev) => prev + 1)}
-            style={{ cursor: "pointer" }}
-            className={`px-3 py-1 rounded-lg font-semibold transition ${
+            aria-label="Next reviews"
+            className={`trip-detail-pagination ${
               currentPage === totalPages
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : themeName === "dark"
-                  ? "bg-[#c9a34a] text-black hover:bg-yellow-300"
-                  : "bg-[#c9a34a] text-white hover:bg-[#a67c00]"
+                ? "opacity-40 cursor-not-allowed"
+                : ""
             }`}
           >
             Next

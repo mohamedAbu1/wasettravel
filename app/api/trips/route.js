@@ -318,7 +318,7 @@ export async function GET(req) {
     }));
     return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {
       status: 200,
-      headers: { "Cache-Control": "public, max-age=3600" },
+      headers: { "Cache-Control": summary ? "no-store" : "public, max-age=3600" },
     });
   } catch (err) {
     console.error("GET /api/trips database unavailable; returning an empty catalog:", err.message);

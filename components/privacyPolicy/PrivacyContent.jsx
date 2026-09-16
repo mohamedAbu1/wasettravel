@@ -31,12 +31,7 @@ export default function PrivacyContent({ theme }) {
         </h1>
         <DividerWithIcon />
 
-        <p>
-          <strong className="capitalize">
-            {t("effectiveDate", { defaultValue: "Effective date:" })}
-          </strong>{" "}
-          {t("effectiveDate")}
-        </p>
+        <p>{t("effectiveDate")}</p>
         <p>{t("intro")}</p>
         <p>
           {t("dataUsage")} {t("consent")}{" "}

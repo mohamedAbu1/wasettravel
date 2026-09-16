@@ -40,7 +40,7 @@ export default function CancellationPolicyContent({ theme }) {
             <li key={i}>{rule}</li>
           ))}
         </ul>
-        <p><strong>{t("noteLabel", { defaultValue: "Note:" })}</strong> {t("note")}</p>
+        <p>{t("note")}</p>
         <DividerWithIcon />
 
         {/* Refunds */}

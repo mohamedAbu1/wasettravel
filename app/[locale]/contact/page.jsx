@@ -171,9 +171,10 @@ export default function ContactPage() {
 
                 {/* الاسم */}
                 <div>
-                  <label className="block mb-2 font-semibold">{t("lb")}</label>
+                  <label htmlFor="contact-name" className="block mb-2 font-semibold">{t("lb")}</label>
                   <input
                     type="text"
+                    id="contact-name"
                     name="name"
                     value={userData?.name || formData.name}
                     onChange={handleChange}
@@ -191,9 +192,10 @@ export default function ContactPage() {
 
                 {/* الهاتف */}
                 <div>
-                  <label className="block mb-2 font-semibold">{t("lb2")}</label>
+                  <label htmlFor="contact-phone" className="block mb-2 font-semibold">{t("lb2")}</label>
                   <input
                     type="tel"
+                    id="contact-phone"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
@@ -209,9 +211,10 @@ export default function ContactPage() {
 
                 {/* البريد */}
                 <div>
-                  <label className="block mb-2 font-semibold">{t("lb3")}</label>
+                  <label htmlFor="contact-email" className="block mb-2 font-semibold">{t("lb3")}</label>
                   <input
                     type="email"
+                    id="contact-email"
                     name="email"
                     value={userData?.email || formData.email}
                     onChange={handleChange}
@@ -229,9 +232,10 @@ export default function ContactPage() {
 
                 {/* الرسالة */}
                 <div>
-                  <label className="block mb-2 font-semibold">{t("lb4")}</label>
+                  <label htmlFor="contact-message" className="block mb-2 font-semibold">{t("lb4")}</label>
                   <textarea
                     name="message"
+                    id="contact-message"
                     value={formData.message}
                     onChange={handleChange}
                     required

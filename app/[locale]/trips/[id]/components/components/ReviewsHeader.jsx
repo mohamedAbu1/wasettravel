@@ -1,31 +1,11 @@
 "use client";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaRegCommentDots } from "react-icons/fa";
 
-export default function ReviewsHeader({ title, averageRating, reviewsCount, themeName,t }) {
+export default function ReviewsHeader({ title, averageRating, reviewsCount }) {
   return (
-    <div className="flex items-center justify-between mb-6 border-b pb-2">
-      <h2 className="text-2xl font-bold flex items-center gap-2">{title}</h2>
-      {reviewsCount > 0 && (
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">{t("average")}</span>
-          <div className="flex">
-            {[...Array(5)].map((_, i) => (
-              <FaStar
-                key={i}
-                size={20}
-                className={
-                  i < Math.round(averageRating)
-                    ? themeName === "dark"
-                      ? "text-yellow-400"
-                      : "text-[#c9a34a]"
-                    : "text-gray-400"
-                }
-              />
-            ))}
-          </div>
-          <span className="ml-2">({averageRating})</span>
-        </div>
-      )}
+    <div className="trip-reviews__header">
+      <div><p className="stone-kicker mb-2 flex items-center gap-2"><FaRegCommentDots /> Guest perspective</p><h2 className="font-display text-2xl font-bold sm:text-3xl">{title}</h2><p className="mt-2 text-sm text-[var(--muted)]">Real feedback from travelers who explored Egypt with us.</p></div>
+      <div className="trip-reviews__score" aria-label={`${averageRating} out of 5 from ${reviewsCount} reviews`}><strong>{reviewsCount ? averageRating : "—"}</strong><div className="flex gap-1" aria-hidden="true">{[...Array(5)].map((_, i) => <FaStar key={i} className={i < Math.round(Number(averageRating)) ? "text-[var(--color)]" : "text-[var(--line)]"} />)}</div><span>{reviewsCount} {reviewsCount === 1 ? "review" : "reviews"}</span></div>
     </div>
   );
 }

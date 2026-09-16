@@ -1,26 +1,19 @@
 "use client";
 import { FaStar } from "react-icons/fa";
 
-export default function StarRating({ rating, setRating, hover, setHover, themeName }) {
+export default function StarRating({ rating, setRating, hover, setHover }) {
   return (
-    <div className="flex gap-2 mb-4">
+    <div className="flex gap-2" role="radiogroup" aria-label="Choose a rating">
       {[...Array(5)].map((_, index) => {
         const starValue = index + 1;
         return (
+          <button type="button" role="radio" aria-checked={rating === starValue} aria-label={`${starValue} star${starValue > 1 ? "s" : ""}`} onClick={() => setRating(starValue)} onMouseEnter={() => setHover(starValue)} onMouseLeave={() => setHover(0)} className="rounded p-1 text-2xl transition hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[var(--color)]">
           <FaStar
             key={starValue}
             size={28}
-            className={`cursor-pointer transition ${
-              starValue <= (hover || rating)
-                ? themeName === "dark"
-                  ? "text-yellow-400"
-                  : "text-[#c9a34a]"
-                : "text-gray-400"
-            }`}
-            onClick={() => setRating(starValue)}
-            onMouseEnter={() => setHover(starValue)}
-            onMouseLeave={() => setHover(0)}
+            className={starValue <= (hover || rating) ? "text-[var(--color)]" : "text-[var(--line)]"}
           />
+          </button>
         );
       })}
     </div>

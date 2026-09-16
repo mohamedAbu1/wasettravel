@@ -14,6 +14,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const TestimonialsSection = dynamic(() => import("@/components/b2b/TestimonialsSection"), { ssr: false });
 const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr: false });
+const LoginModal = dynamic(() => import("@/components/home/components/LoginModal"), { ssr: false });
 
 const services = [
   { icon: FaGlobeAfrica, title: "expertise", description: "expertiseText" },
@@ -53,6 +54,7 @@ const B2bPage = () => {
         <section className="stone-section w-full px-5 sm:px-8"><div className="mx-auto max-w-5xl"><div className="mb-8 text-center"><p className="stone-kicker mb-3">Partner confidence</p><h2 className="text-3xl font-bold sm:text-4xl">What our travelers say</h2></div><TestimonialsSection /></div></section>
         <Footer />
         <ChatWidget />
+        <LoginModal />
       </main>
     </>
   );

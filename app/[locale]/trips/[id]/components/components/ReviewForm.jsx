@@ -13,42 +13,26 @@ export default function ReviewForm({
   themeName,
 }) {
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="w-[100%] flex items-center gap-2">
+    <form onSubmit={onSubmit} className="trip-review-form space-y-4">
+      <div className="flex flex-col gap-3">
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder={placeholder}
-          className={`w-[70%] p-3 rounded-lg border focus:outline-none ${
-            themeName === "dark"
-              ? "bg-black/60 border-gold/50 text-gold"
-              : "bg-[#fdf6e3] border-[#c9a34a]/50 text-[#3a2c0a]"
-          }`}
+          className="min-h-32 w-full resize-y rounded-xl border bg-[var(--surface)] p-4 text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--color)] focus:ring-2 focus:ring-[var(--color)]/20"
           rows={3}
+          required
         />
-
-        <button
-          type="button"
-          style={{ cursor: "pointer" }}
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className={`px-3 py-2 rounded-lg hover:bg-gray-300 ${themeName === "dark" ? "bg-gray-800" : "bg-gray-200"}`}
-        >
-          😀
-        </button>
-        {showEmojiPicker && <EmojiPicker onEmojiClick={onEmojiClick} theme={themeName === "dark" ? "dark" : "light"}/>}
       </div>
+      <div className="flex flex-wrap items-center justify-between gap-3"><div className="relative"><button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} aria-expanded={showEmojiPicker} className="trip-detail-icon-button"><span aria-hidden="true">😀</span> Add feeling</button>{showEmojiPicker && <div className="absolute bottom-12 left-0 z-20"><EmojiPicker onEmojiClick={onEmojiClick} theme={themeName === "dark" ? "dark" : "light"}/></div>}</div>
 
       <button
         type="submit"
-        style={{ cursor: "pointer" }}
-        className={`px-6 py-2 rounded-lg font-semibold transition bg-[#c9a34a] text-white ${
-          themeName === "dark"
-            ? "hover:bg-yellow-300"
-            : "hover:bg-[#a67c00]"
-        }`}
+        className="trip-detail-action"
       >
         {submitLabel}
       </button>
+      </div>
     </form>
   );
 }

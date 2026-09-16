@@ -44,11 +44,7 @@ export default function ReviewCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, delay: idx * 0.1 }}
-      className={`w-[100%] lg:w-[47%] p-5 rounded-xl shadow-lg border ${
-        themeName === "dark"
-          ? "bg-gradient-to-br from-black/70 to-black/40 text-gold border-yellow-700"
-          : "bg-gradient-to-br from-[#fffaf0] to-[#fdf6e3] text-[#3a2c0a] border-[#e0c97f]"
-      }`}
+      className="trip-review-card"
     >
       {/* رأس البطاقة */}
       <div className="flex items-center gap-4 mb-3">
@@ -61,26 +57,26 @@ export default function ReviewCard({
               "/default-avatar.png"
             }
             alt={rev.name}
-            className="w-16 h-16 rounded-full object-cover border-2 border-yellow-500"
+            className="h-12 w-12 rounded-full border-2 border-[var(--color)] object-cover"
           />
         ) : (
-          <FaUserCircle size={64} className="text-gray-400" />
+          <FaUserCircle size={48} className="text-[var(--muted)]" />
         )}
 
         <div className="flex flex-col">
-          <span className="font-bold text-lg capitalize">{rev.name}</span>
-          <span className="text-xs opacity-70">{rev.date || rev.time}</span>
+          <span className="font-bold text-lg capitalize">{rev.name || "Traveler"}</span>
+          <span className="text-xs text-[var(--muted)]">{rev.date || rev.time}</span>
         </div>
       </div>
 
       {/* التقييم */}
       <div className="flex items-center gap-1 mb-2">
-        {[...Array(rev.rating)].map((_, i) => (
+        {[...Array(5)].map((_, i) => (
           <FaStar
             key={i}
             size={20}
             className={
-              themeName === "dark" ? "text-yellow-400" : "text-[#c9a34a]"
+              i < Number(rev.rating) ? "text-[var(--color)]" : "text-[var(--line)]"
             }
           />
         ))}
@@ -118,7 +114,7 @@ export default function ReviewCard({
           </div>
         </div>
       ) : (
-        <p className="italic mb-4">{rev.comment}</p>
+        <p className="mb-5 whitespace-pre-wrap leading-7 text-[var(--foreground)]">{rev.comment}</p>
       )}
 
       {/* أزرار التحكم */}
@@ -128,7 +124,7 @@ export default function ReviewCard({
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.1 }}
           onClick={() => addLike(rev.id)}
-          className="flex items-center gap-1 px-3 py-1 rounded-md text-sm bg-blue-100 text-blue-700 hover:bg-blue-200"
+          className="trip-review-control"
         >
           <FaThumbsUp /> {likes[rev.id]?.count || 0}
         </motion.button>
@@ -138,8 +134,7 @@ export default function ReviewCard({
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.1 }}
           onClick={() => removeLike(rev.id)}
-          style={{ cursor: "pointer" }}
-          className="flex items-center gap-1 px-3 py-1 rounded-md text-sm bg-red-100 text-red-700 hover:bg-red-200 cursor-pointe"
+          className="trip-review-control"
         >
           <FaThumbsDown /> Unlike
         </motion.button>
@@ -150,8 +145,7 @@ export default function ReviewCard({
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.1 }}
             onClick={() => deleteReview(rev.id)}
-            style={{ cursor: "pointer" }}
-            className="flex items-center gap-1 px-3 py-1 rounded-md text-sm bg-red-200 text-red-800 hover:bg-red-300 cursor-pointe"
+            className="trip-review-control trip-review-control--danger"
           >
             <FaTrash /> Delete
           </motion.button>
@@ -165,8 +159,7 @@ export default function ReviewCard({
                 whileTap={{ scale: 0.9 }}
                 whileHover={{ scale: 1.1 }}
                 onClick={() => setIsEditing(true)}
-                style={{ cursor: "pointer" }}
-                className="flex items-center gap-1 px-3 py-1 rounded-md text-sm bg-green-100 text-green-700 hover:bg-green-200 cursor-pointe"
+                className="trip-review-control trip-review-control--success"
               >
                 <FaEdit /> Edit
               </motion.button>
@@ -177,7 +170,7 @@ export default function ReviewCard({
               whileHover={{ scale: 1.1 }}
               onClick={() => deleteReview(rev.id)}
               style={{ cursor: "pointer" }}
-              className="flex items-center gap-1 px-3 py-1 rounded-md text-sm bg-red-200 text-red-800 hover:bg-red-300 cursor-pointer"
+              className="trip-review-control trip-review-control--danger"
             >
               <FaTrash /> Delete
             </motion.button>

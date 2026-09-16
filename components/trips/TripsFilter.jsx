@@ -29,7 +29,7 @@ function Choice({ checked, label, onChange, type = "checkbox", name }) {
   );
 }
 
-export default function TripsFilter({ allCities = [], allCategories = [], loading, mobileOpen = false, onClose }) {
+export default function TripsFilter({ allCities = [], allCategories = [], loading, mobileOpen = false, mobileOnly = false, onClose }) {
   const { i18n, t } = useTranslation("trips");
   const language = i18n.language?.split("-")[0] || "en";
   const { city, category, group_price, popular, updateValue, resetFilters } = useQueryFilters();
@@ -50,12 +50,12 @@ export default function TripsFilter({ allCities = [], allCategories = [], loadin
     { label: "600+ USD", value: "Luxury" },
   ];
 
-  if (loading) return <div className="trip-filter trip-filter--loading" aria-busy="true">{t("Loading", { defaultValue: "Loading filters…" })}</div>;
+  if (loading) return <div className={`trip-filter ${mobileOnly ? "trip-filter--mobile-only" : ""} trip-filter--loading`} aria-busy="true">{t("Loading", { defaultValue: "Loading filters…" })}</div>;
 
   return (
     <>
       {mobileOpen ? <button className="trip-filter-backdrop" type="button" aria-label="Close filters" onClick={onClose} /> : null}
-      <aside className={`trip-filter ${mobileOpen ? "trip-filter--mobile-open" : ""}`} aria-label={t("Filters", { defaultValue: "Trip filters" })}>
+      <aside className={`trip-filter ${mobileOnly ? "trip-filter--mobile-only" : ""} ${mobileOpen ? "trip-filter--mobile-open" : ""}`} aria-label={t("Filters", { defaultValue: "Trip filters" })}>
         <div className="trip-filter__header">
           <div><span className="trip-filter__eyebrow">WasetTravel</span><h2>{t("Filters", { defaultValue: "Refine your journey" })}</h2></div>
           {mobileOpen ? <button className="trip-filter__close" type="button" onClick={onClose} aria-label="Close filters"><FaTimes /></button> : null}

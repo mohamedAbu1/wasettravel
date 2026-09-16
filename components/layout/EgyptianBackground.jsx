@@ -31,6 +31,7 @@ export default function EgyptianBackground() {
       {items.map((item) => (
         <span
           key={item.id}
+          aria-hidden="true"
           style={{
             position: "absolute",
             top: `${item.top}%`,

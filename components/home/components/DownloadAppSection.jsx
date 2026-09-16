@@ -4,6 +4,13 @@ import { useTranslation } from "react-i18next";
 
 export default function DownloadAppSection() {
   const { t } = useTranslation("home");
+  const comingSoon = t("ComingSoon", { defaultValue: "Coming soon" });
+
+  const ComingSoonCard = ({ icon: Icon, title }) => (
+    <div aria-label={`${title} - ${comingSoon}`} className="stone-card flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--muted)] opacity-80">
+      <span className="flex items-center gap-3"><Icon className="text-2xl text-[var(--color)]" /><span><span className="block text-xs text-[var(--muted)]">{comingSoon}</span><strong>{title}</strong></span></span>
+    </div>
+  );
 
   return (
     <section className="stone-section w-full border-y border-[var(--line)] px-5 py-14 sm:px-8 sm:py-20">
@@ -22,37 +29,9 @@ export default function DownloadAppSection() {
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <a
-          href="https://play.google.com/store/apps/details?id=your_app_id"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Download on Google Play"
-          className="stone-card group flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--foreground)] transition hover:-translate-y-1"
-        >
-          <span className="flex items-center gap-3"><FaGooglePlay className="text-2xl text-[var(--color)]" /><span><span className="block text-xs text-[var(--muted)]">Available on</span><strong>{t("GooglePlay")}</strong></span></span><FaArrowRight className="text-xs text-[var(--muted)] transition group-hover:translate-x-1" />
-        </a>
-
-        {/* Apple App Store Button */}
-        <a
-          href="https://apps.apple.com/app/your_app_id"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Download on Apple App Store"
-          className="stone-card group flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--foreground)] transition hover:-translate-y-1"
-        >
-          <span className="flex items-center gap-3"><FaApple className="text-2xl text-[var(--color)]" /><span><span className="block text-xs text-[var(--muted)]">Available on</span><strong>{t("AppStore")}</strong></span></span><FaArrowRight className="text-xs text-[var(--muted)] transition group-hover:translate-x-1" />
-        </a>
-
-        {/* Viator Button */}
-        <a
-          href="https://www.viator.com/your_page_link"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Visit our Viator page"
-          className="stone-card group flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--foreground)] transition hover:-translate-y-1"
-        >
-          <span className="flex items-center gap-3"><FaGlobe className="text-2xl text-[var(--color)]" /><span><span className="block text-xs text-[var(--muted)]">Explore us on</span><strong>{t("Viator")}</strong></span></span><FaArrowRight className="text-xs text-[var(--muted)] transition group-hover:translate-x-1" />
-        </a>
+        <ComingSoonCard icon={FaGooglePlay} title={t("GooglePlay")} />
+        <ComingSoonCard icon={FaApple} title={t("AppStore")} />
+        <ComingSoonCard icon={FaGlobe} title={t("Viator")} />
 
         {/* Tripadvisor Button */}
         <a

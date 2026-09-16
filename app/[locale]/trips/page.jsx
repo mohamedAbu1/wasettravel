@@ -186,7 +186,7 @@ export default function TripsPage() {
               />
             </div>
 
-            <TripsFilter allCities={allCities} allCategories={allCategories} loading={loading} mobileOpen={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)} />
+            <TripsFilter allCities={allCities} allCategories={allCategories} loading={loading} mobileOnly mobileOpen={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)} />
 
             <div className="flex-1 flex flex-col gap-6">
               <TripsSearch

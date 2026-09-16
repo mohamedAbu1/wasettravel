@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
+import AuthModalPortal from "@/components/layout/AuthModalPortal";
 
 const locales = ["en", "de", "es", "fr", "it", "zh"];
 const destinations = {
@@ -146,6 +147,7 @@ export default async function DestinationPage({ params }) {
       </article>
       </div>
       <Footer />
+      <AuthModalPortal />
     </main>
   );
 }

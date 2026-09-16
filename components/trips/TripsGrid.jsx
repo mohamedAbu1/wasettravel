@@ -8,11 +8,28 @@ import { usePurchase } from "@/context/PurchaseContext";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useCurrency } from "@/context/CurrencyContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+
+function localizedValue(value, lang, fallback = "") {
+  if (!value) return fallback;
+  if (typeof value === "object") return value[lang] || value.en || Object.values(value)[0] || fallback;
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === "object" && parsed !== null
+        ? parsed[lang] || parsed.en || Object.values(parsed)[0] || fallback
+        : value;
+    } catch {
+      return value;
+    }
+  }
+  return String(value);
+}
 
 export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const router = useRouter();
@@ -88,7 +105,9 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 modules={[Autoplay, Pagination, Navigation]}
                 className="h-[300px] bg-[#ead9c7] lg:h-[480px]"
               >
-                {(Array.isArray(trip.images) && trip.images.length ? trip.images : [trip.cover_image]).map((img, idx) => (
+                {(Array.isArray(trip.gallery_images) && trip.gallery_images.length ? trip.gallery_images : [trip.cover_image]).map((image, idx) => {
+                  const img = typeof image === "string" ? image : image?.url;
+                  return (
                   <SwiperSlide key={idx}>
                     <Image
                       src={img || "/HomePageImage/_16934_1.webp"}
@@ -104,7 +123,8 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                       blurDataURL="/HomePageImage/_16934_1.webp" // ✅ صورة منخفضة الجودة أثناء التحميل
                     />
                   </SwiperSlide>
-                ))}
+                  );
+                })}
               </Swiper>
             </div>
 
@@ -118,10 +138,10 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               <h3
                 role="heading"
                 aria-level={3}
-                aria-label={trip.title?.[lang] || trip.title?.en || "Untitled"}
+                aria-label={localizedValue(trip.title, lang, "Untitled")}
                 className="text-1xl font-bold text-[var(--color)]"
               >
-                {trip.title?.[lang] || trip.title?.en || "Untitled"}
+                {localizedValue(trip.title, lang, "Untitled")}
               </h3>
               {trip.duration ? <span className="trips-card__duration">{trip.duration} {trip.duration_unit || "days"}</span> : null}
               </div>
@@ -135,10 +155,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                       .filter(Boolean)
                       .map(
                         (c) =>
-                          c.name?.[lang] ||
-                          c.name?.["en"] ||
-                          Object.values(c.name)[0] ||
-                          "Unknown City",
+                          localizedValue(c?.name, lang, "Unknown City"),
                       )
                       .join(", ")
                   : "Unknown City"}
@@ -153,10 +170,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                       .filter(Boolean)
                       .map(
                         (cat) =>
-                          cat.name?.[lang] ||
-                          cat.name?.["en"] ||
-                          Object.values(cat.name)[0] ||
-                          "Unknown Category",
+                          localizedValue(cat?.name, lang, "Unknown Category"),
                       )
                       .join(", ")
                   : t("NoCategory")}

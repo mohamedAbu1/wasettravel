@@ -37,7 +37,7 @@ function localizedValue(value, lang) {
 }
 
 export default function TripsPage() {
-  const { trips, fetchTrips, loadingTrips } = useTrip();
+  const { trips, fetchTrips, loadingTrips, error } = useTrip();
   const {
     cities: allCities,
     categories: allCategories,
@@ -45,7 +45,7 @@ export default function TripsPage() {
   } = useCitiesCategories();
   const { lang } = useLanguage();
   const { userData, chatUser, setChatUser } = useAuth();
-  const { purchases } = usePurchase(); // ✅ استدعاء الدالة
+  const { purchases } = usePurchase();
   const { t } = useTranslation("trips");
   const [currentPage, setCurrentPage] = useState(1);
   const [cardStyle, setCardStyle] = useState("vertical");
@@ -65,6 +65,8 @@ export default function TripsPage() {
 
   if (loadingTrips)
     return <p className="min-h-[40vh] pt-32 text-center text-[var(--muted)]">Loading trips...</p>;
+  if (error)
+    return <p className="min-h-[40vh] px-6 pt-32 text-center text-[var(--muted)]" role="alert">Unable to load journeys right now. Please try again shortly.</p>;
   // فلترة الرحلات
   const filteredTrips = trips.filter((trip) => {
     const lowerSearch = search.trim().toLowerCase();
@@ -142,9 +144,9 @@ export default function TripsPage() {
 
     // نربط الرحلات بالمشتريات مرة واحدة فقط
     finalTrips = filteredTrips.map((trip) => {
-      const count = purchaseMap.get(trip.id) || 0;
+      const count = Number(trip.purchase_count) || purchaseMap.get(trip.id) || 0;
       return { ...trip, purchase_count: count };
-    });
+    }).sort((a, b) => b.purchase_count - a.purchase_count);
   } else {
     finalTrips = filteredTrips;
   }

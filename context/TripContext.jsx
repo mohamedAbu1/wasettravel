@@ -128,10 +128,9 @@ export function TripProvider({ children }) {
     try {
       const res = await fetch(`/api/trips${query}`);
       const result = await res.json();
-      if (result.success) {
-        setTrips(result.trips);
-        localStorage.setItem("trips", JSON.stringify(result.trips));
-      }
+      if (!res.ok || !result.success) throw new Error(result.error || "Failed to load trips");
+      setTrips(Array.isArray(result.trips) ? result.trips : []);
+      localStorage.setItem("trips", JSON.stringify(result.trips || []));
     } catch (err) {
       setError(err.message);
     } finally {

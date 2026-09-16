@@ -180,12 +180,15 @@ export async function GET(req) {
         t.cover_image,
         t.group_price,
         t.rating,
-        COALESCE((SELECT COUNT(*) FROM reviews r WHERE r.trip_id = t.id), 0) AS review_count
+        COALESCE((SELECT COUNT(*) FROM reviews r WHERE r.trip_id = t.id), 0) AS review_count,
+        COALESCE((SELECT COUNT(*) FROM purchases p WHERE p.trip_id = t.id), 0) AS purchase_count
       FROM trips t
     `
       : `
       SELECT 
         t.*,
+        COALESCE((SELECT COUNT(*) FROM reviews r WHERE r.trip_id = t.id), 0) AS review_count,
+        COALESCE((SELECT COUNT(*) FROM purchases p WHERE p.trip_id = t.id), 0) AS purchase_count,
         COALESCE(
           CAST(
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'name', c.name, 'images', c.images)) 
@@ -309,6 +312,7 @@ export async function GET(req) {
       itinerary: safeParse(trip.days),
       reviews: safeParse(trip.reviews),
       review_count: Number(trip.review_count ?? 0),
+      purchase_count: Number(trip.purchase_count ?? 0),
       trip_details: safeParse(trip.trip_details),
       discountPercent: Number(trip.discount_percent ?? 0),
     }));
@@ -318,9 +322,9 @@ export async function GET(req) {
     });
   } catch (err) {
     console.error("GET /api/trips database unavailable; returning an empty catalog:", err.message);
-    return new Response(JSON.stringify({ success: true, trips: [], fallback: true }), {
-      status: 200,
-      headers: { "Cache-Control": "no-store" },
+    return new Response(JSON.stringify({ success: false, error: "Trips catalog is temporarily unavailable" }), {
+      status: 503,
+      headers: { "Cache-Control": "no-store", "Retry-After": "30" },
     });
   }
 }

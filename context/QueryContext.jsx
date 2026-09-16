@@ -88,7 +88,7 @@ export function QueryProvider({ children }) {
         !(trip.group_price > 199 && trip.group_price <= 599)
       )
         return false;
-      if (queryState.group_price === "Luxury" && !(trip.group_price > 600))
+      if (queryState.group_price === "Luxury" && !(trip.group_price >= 600))
         return false;
 
       return true;

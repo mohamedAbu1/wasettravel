@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
+import { normalizeGalleryImages } from "@/lib/galleryImages";
 
 // دالة آمنة لتحويل أي قيمة إلى JSON نصي
 const safeStringify = (value) => {
@@ -39,7 +40,7 @@ export async function POST(req) {
         body.duration,
         body.duration_unit,
         body.cover_image,
-        JSON.stringify(body.gallery_images),
+        JSON.stringify(normalizeGalleryImages(body.gallery_images)),
         body.priceLevel,
         body.group_price,
         body.solo_price,
@@ -320,10 +321,7 @@ export async function GET(req) {
       duration: Number(trip.duration),
       priceLevel: trip.priceLevel,
       duration_unit: trip.duration_unit || "",
-      gallery_images:
-        typeof trip.gallery_images === "string"
-          ? JSON.parse(trip.gallery_images)
-          : trip.gallery_images || [],
+      gallery_images: normalizeGalleryImages(trip.gallery_images),
       cities: safeParse(trip.cities),
       categories: safeParse(trip.categories),
       includes: safeParse(trip.includes),
@@ -335,13 +333,6 @@ export async function GET(req) {
       trip_details: safeParse(trip.trip_details),
       discountPercent: Number(trip.discount_percent ?? 0),
     }));
-    parsedTrips.forEach((trip) => {
-      trip.gallery_images = Array.isArray(trip.gallery_images)
-        ? trip.gallery_images.map((image) => typeof image === "string"
-          ? toPublicImageUrl(image)
-          : { ...image, url: toPublicImageUrl(image?.url || image?.path) })
-        : [];
-    });
     return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {
       status: 200,
       headers: { "Cache-Control": summary ? "no-store" : "public, max-age=3600" },

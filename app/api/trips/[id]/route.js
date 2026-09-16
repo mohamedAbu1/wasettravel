@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
+import { normalizeGalleryImages } from "@/lib/galleryImages";
 
 const parseJson = (value, fallback) => {
   if (value == null) return fallback;
@@ -115,9 +116,7 @@ export async function GET(req, context) {
           ...trip,
           title: parseJson(trip.title, {}),
           description: parseJson(trip.description, {}),
-          gallery_images: parseJson(trip.gallery_images, []).map((image) => typeof image === "string"
-            ? toPublicImageUrl(image)
-            : { ...image, url: toPublicImageUrl(image?.url || image?.path) }),
+          gallery_images: normalizeGalleryImages(trip.gallery_images),
           cover_image: toPublicImageUrl(trip.cover_image),
           solo_price: Number(trip.solo_price || 0),
           group_price: Number(trip.group_price || 0),
@@ -170,7 +169,7 @@ export async function PUT(req, context) {
         body.duration_unit || "days",
         body.priceLevel,
         body.cover_image,
-        JSON.stringify(body.gallery_images),
+        JSON.stringify(normalizeGalleryImages(body.gallery_images)),
         String(body.discountPercent ?? "0"),
         id,
       ]

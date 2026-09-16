@@ -1,14 +1,24 @@
 "use client";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 
-const UsersSidebar = ({ users,userData, activeUser, setActiveUser, theme, themeName, markMessageSeen, messages }) => {
+const UsersSidebar = ({ users = [], activeUser, setActiveUser, messages = [] }) => {
+  const [query, setQuery] = useState("");
   const sameId = (left, right) => left != null && right != null && String(left) === String(right);
   // فلترة المستخدمين بحيث نستبعد الـ Admin
   const nonAdminUsers = users.filter(
     (user) => String(user?.role || "").trim().toLowerCase() !== "admin"
   );
-console.log(users)
+  const visibleUsers = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return [...nonAdminUsers]
+      .filter((user) => !normalizedQuery || `${user?.name || ""} ${user?.email || ""}`.toLowerCase().includes(normalizedQuery))
+      .sort((left, right) => {
+        const leftUnread = messages.filter((message) => sameId(message.user_id, left.id) && message.sender_type === "user" && message.status === "sent").length;
+        const rightUnread = messages.filter((message) => sameId(message.user_id, right.id) && message.sender_type === "user" && message.status === "sent").length;
+        return rightUnread - leftUnread;
+      });
+  }, [messages, nonAdminUsers, query]);
   return (
     <aside className="admin-message-sidebar">
       {/* العنوان */}
@@ -18,9 +28,9 @@ console.log(users)
         Users
       </h3>
 
-      {/* قائمة المستخدمين */}
-      {nonAdminUsers.length > 0 ? (
-        nonAdminUsers.map((user) => {
+      <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search users…" aria-label="Search users" className="admin-message-search" />
+      {visibleUsers.length > 0 ? (
+        visibleUsers.map((user) => {
           // عدد الرسائل الجديدة غير المقروءة
           const unreadCount = messages.filter(
             (msg) =>
@@ -32,28 +42,17 @@ console.log(users)
           return (
             <div
               key={user.id}
-              onClick={() => {
-                setActiveUser(user);
-                // تحديث حالة الرسائل إلى "seen" عند فتح المحادثة
-                messages
-                  .filter((msg) => sameId(msg.user_id, user.id) && msg.status === "sent")
-                  .forEach((msg) => markMessageSeen(msg.id));
-              }}
-              className={`admin-message-user
-                ${
-                  activeUser?.id === user.id
-                    ? themeName === "dark"
-                      ? "is-active"
-                      : ""
-                    : themeName === "dark"
-                    ? ""
-                    : ""
-                }`}
+              onClick={() => setActiveUser(user)}
+              onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setActiveUser(user); }}
+              role="button"
+              tabIndex={0}
+              aria-current={sameId(activeUser?.id, user.id) ? "true" : undefined}
+              className={`admin-message-user ${sameId(activeUser?.id, user.id) ? "is-active" : ""}`}
             >
               {/* صورة المستخدم أو أيقونة افتراضية */}
-              {user?.avatar_url ? (
+              {user?.avatar_url || user?.image ? (
                 <img
-                  src={user?.avatar_url}
+                  src={user?.avatar_url || user?.image}
                   alt={user.name}
                   className="admin-message-user__avatar"
                 />
@@ -62,7 +61,7 @@ console.log(users)
               )}
 
               {/* الاسم */}
-              <span className="admin-message-user__name">{user?.name}</span>
+              <span className="admin-message-user__details"><span className="admin-message-user__name">{user?.name || user?.email || "Guest"}</span><small>{user?.email || ""}</small></span>
 
               {/* Badge لو فيه رسائل جديدة */}
               {unreadCount > 0 && (

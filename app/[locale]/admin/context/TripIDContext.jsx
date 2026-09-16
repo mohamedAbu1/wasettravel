@@ -123,11 +123,11 @@ export function TripIDProvider({ children }) {
       const data = await res.json();
 
       if (data.success) {
-        setTripsList((prev) => prev.filter((trip) => trip.id !== id));
-        localStorage.setItem(
-          "tripsList",
-          JSON.stringify(tripsList.filter((trip) => trip.id !== id)),
-        );
+        setTripsList((prev) => {
+          const nextTrips = prev.filter((trip) => String(trip.id) !== String(id));
+          localStorage.setItem("tripsList", JSON.stringify(nextTrips));
+          return nextTrips;
+        });
       }
       return data;
     } catch (err) {

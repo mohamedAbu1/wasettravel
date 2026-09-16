@@ -35,7 +35,7 @@ export default function NotificationsDrawer({ open, onClose, themeName, handleNo
   return (
     <Drawer anchor="right" open={open} onClose={onClose} TransitionComponent={Slide} TransitionProps={{ direction: "left" }}>
       <div className="stone-drawer stone-drawer--notifications" data-theme={themeName}>
-        <header className="stone-drawer__header"><div className="stone-drawer__title-group"><span className="stone-drawer__icon"><NotificationsNoneIcon /></span><div><span className="stone-drawer__eyebrow">Activity center</span><h2>{t("notifications")}</h2><p>{filteredNotifications.length} recent updates</p></div></div><IconButton aria-label="Close notifications" onClick={onClose} className="stone-drawer__close"><CloseIcon /></IconButton></header>
+        <header className="stone-drawer__header"><div className="stone-drawer__title-group"><span className="stone-drawer__icon"><NotificationsNoneIcon /></span><div><span className="stone-drawer__eyebrow">Activity center</span><h2>{t("notifications")}</h2><p><strong>{filteredNotifications.filter((item) => Number(item.is_read) === 0).length}</strong> unread · {filteredNotifications.length} recent updates</p></div></div><IconButton aria-label="Close notifications" onClick={onClose} className="stone-drawer__close"><CloseIcon /></IconButton></header>
         <div className="stone-drawer__list">
           {!filteredNotifications.length && <div className="stone-drawer__empty"><NotificationsNoneIcon /><strong>{t("noNewNotifications")}</strong><span>{t("caughtUp")}</span></div>}
           {filteredNotifications.map((notification) => {

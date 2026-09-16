@@ -266,6 +266,15 @@ export async function DELETE(req, context) {
     const { id } = context.params;
     const db = await connectDB();
 
+    // Remove dependent records first so reviews and purchases cannot leave
+    // orphaned rows or block the trip deletion through foreign keys.
+    const [reviews] = await db.query("SELECT id FROM reviews WHERE trip_id = ?", [id]);
+    for (const review of reviews) {
+      await db.query("DELETE FROM review_likes WHERE review_id = ?", [review.id]);
+    }
+    await db.query("DELETE FROM reviews WHERE trip_id = ?", [id]);
+    await db.query("DELETE FROM purchases WHERE trip_id = ?", [id]);
+
     // ✅ جلب الأيام المرتبطة بالرحلة
     const [days] = await db.query("SELECT id FROM trip_days WHERE trip_id = ?", [id]);
     for (const day of days) {

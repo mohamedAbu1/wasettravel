@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useMessages } from "@/context/MessageContext";
 import { useAuth } from "@/context/AuthContext";
 import ChatHeader from "./components/ChatHeader";
@@ -9,34 +9,36 @@ import ChatInput from "./components/ChatInput";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 
 const ChatSection = ({ activeUser, theme, themeName }) => {
-  const { messages, setMessages, fetchMessages, sendMessage, markMessageSeen } = useMessages();
+  const { messages, setMessages, sendMessage, markMessageSeen } = useMessages();
   const { userData } = useAuth(); // الأدمن الحالي من التوكين
   const [newMessage, setNewMessage] = useState("");
   const [replyTo, setReplyTo] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
+  const markedSeenRef = useRef(new Set());
 
-  // ✅ جلب رسائل المستخدم
-  useEffect(() => {
-    if (activeUser) {
-      fetchMessages(activeUser.id);
-    }
-  }, [activeUser]);
+  const activeMessages = useMemo(
+    () => activeUser
+      ? messages.filter((message) => String(message.user_id) === String(activeUser.id))
+      : [],
+    [activeUser, messages],
+  );
 
   // ✅ تحديث حالة الرسائل إلى "seen"
   useEffect(() => {
-    if (activeUser && messages.length > 0) {
-      messages.forEach((msg) => {
+    if (activeUser && activeMessages.length > 0) {
+      activeMessages.forEach((msg) => {
         if (
-          String(msg.user_id) === String(activeUser.id) &&
           msg.sender_type === "user" &&
-          msg.status === "sent"
+          msg.status === "sent" &&
+          !markedSeenRef.current.has(String(msg.id))
         ) {
+          markedSeenRef.current.add(String(msg.id));
           markMessageSeen(msg.id);
         }
       });
     }
-  }, [activeUser, messages]);
+  }, [activeUser, activeMessages, markMessageSeen]);
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;
@@ -44,7 +46,7 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
     await sendMessage({
       user_id: activeUser.id,
       user_name: userData?.name || "Admin",
-      user_image: userData?.image || "/default-avatar.png",
+      user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
       content: newMessage,
       sender_type: "admin",
       reply_to: replyTo ? replyTo.id : null,
@@ -75,7 +77,6 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
   }, [activeUser]);
 
 const handleSendImage = async (file) => {
-  console.log("📤 Step 1: Preparing FormData for image upload...");
   const formData = new FormData();
   formData.append("file", file);
 
@@ -83,25 +84,20 @@ const handleSendImage = async (file) => {
   formData.append("user_id", activeUser.id);
   formData.append("sender_type", "admin");
   formData.append("user_name", userData?.name || "Admin");
-  formData.append("user_image", userData?.image || "/default-avatar.png");
+  formData.append("user_image", userData?.avatar_url || userData?.image || "/default-avatar.png");
   formData.append("admin_id", userData.id);
 
-  console.log("📤 Step 2: Sending image to /api/messages...");
   const res = await fetch("/api/messages", {
     method: "POST",
     body: formData,
   });
 
   const data = await res.json();
-  console.log("📥 Step 3: Response from API:", data);
-
   if (data.error) {
-    console.error("❌ Error uploading image:", data.error);
     return;
   }
 
   const uploadedUrl = data.content || data.url;
-  console.log("✅ Step 4: Image uploaded successfully, URL:", uploadedUrl);
   if (uploadedUrl) setMessages((prev) => [...prev, data]);
 };
 
@@ -112,7 +108,7 @@ const handleSendImage = async (file) => {
       <ChatHeader activeUser={activeUser} theme={theme} themeName={themeName} />
 
       <ChatMessages
-        messages={messages}
+        messages={activeMessages}
         userTyping={userTyping}
         themeName={themeName}
       />

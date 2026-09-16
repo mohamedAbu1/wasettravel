@@ -14,7 +14,7 @@ import { useMessages } from "@/context/MessageContext";
 import NotificationsDrawer from "./components/NotificationsDrawer";
 import MessagesDrawer from "./components/MessagesDrawer";
 
-export default function RightBar({ scrolled }) {
+export default function RightBar() {
   const { userData, setChatUser } = useAuth();
   const { themeName, theme } = useTheme();
   const { t } = useTranslation("header");
@@ -29,11 +29,6 @@ export default function RightBar({ scrolled }) {
   const now = Date.now();
   const twelveHours = 12 * 60 * 60 * 1000;
   const twoDays = 2 * 24 * 60 * 60 * 1000;
-
-  const isHome =
-    segments.length === 0 ||
-    (segments.length === 1 &&
-      ["en", "fr", "de", "it", "es", "pt"].includes(segments[0]));
 
   // ✅ إشعارات عامة (فلترة + ترتيب)
   const filteredNotifications = notifications
@@ -116,17 +111,12 @@ export default function RightBar({ scrolled }) {
           className="stone-header-action hidden lg:flex"
         >
           <NotificationsIcon
+            aria-label={t("notifications")}
+            title={t("notifications")}
             onClick={() => setOpen(true)}
             sx={{
               cursor: "pointer",
-              color:
-                themeName === "dark"
-                  ? "#fff"
-                  : !isHome
-                    ? "#333"
-                    : scrolled
-                      ? "#333"
-                      : "#fff",
+              color: "var(--header-foreground)",
             }}
           />
         </Badge>
@@ -140,17 +130,12 @@ export default function RightBar({ scrolled }) {
           className="stone-header-action hidden lg:flex"
         >
           <MailIcon
+            aria-label={t("messages")}
+            title={t("messages")}
             onClick={() => setOpenMessages(true)}
             sx={{
               cursor: "pointer",
-              color:
-                themeName === "dark"
-                  ? "#fff"
-                  : !isHome
-                    ? "#333"
-                    : scrolled
-                      ? "#333"
-                      : "#fff",
+              color: "var(--header-foreground)",
             }}
           />
         </Badge>
@@ -191,14 +176,7 @@ export default function RightBar({ scrolled }) {
             sx={{
               textTransform: "capitalize",
               fontWeight: "600",
-              color:
-                themeName === "dark"
-                  ? "#fff"
-                  : !isHome
-                    ? "#333"
-                    : scrolled
-                      ? "#333"
-                      : "#fff",
+              color: "var(--header-foreground)",
             }}
           >
             {userData?.name}

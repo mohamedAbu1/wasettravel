@@ -1,24 +1,55 @@
 "use client";
-import React, { useEffect } from "react";
-import { FaTrash, FaMapMarkedAlt } from "react-icons/fa";
+import React, { useEffect, useMemo, useState } from "react";
+import { FaExclamationTriangle, FaMapMarkedAlt, FaRedo, FaTrash } from "react-icons/fa";
+import { useParams } from "next/navigation";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import { useTrip } from "../context/TripContext";
 import { useTripID } from "../context/TripIDContext";
-import DividerWithIcon from "@/components/layout/DividerWithIcon";
 import { motion } from "framer-motion";
 
+const sameId = (left, right) => left != null && right != null && String(left) === String(right);
+const parseValue = (value, fallback = null) => {
+  if (value == null) return fallback;
+  if (typeof value !== "string") return value;
+  try { return JSON.parse(value); } catch { return value; }
+};
+const localizedValue = (value, locale) => {
+  const parsed = parseValue(value, "");
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return parsed || "";
+  return parsed[locale] || parsed.en || Object.values(parsed).find(Boolean) || "";
+};
+const cityLabel = (city, locale) => {
+  const parsed = parseValue(city, city);
+  if (typeof parsed === "number" || typeof parsed === "string") return String(parsed);
+  return localizedValue(parsed?.name, locale) || parsed?.city_name || parsed?.cityName || parsed?.id || "Unknown";
+};
+
 export default function TripsList() {
-  const { trips, fetchTrips, setTrips } = useTrip();
+  const { locale = "en" } = useParams();
+  const { trips, fetchTrips, setTrips, loadingTrips, error } = useTrip();
   const { deleteTrip } = useTripID();
+  const [deletingId, setDeletingId] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     fetchTrips();
-  }, []);
+  }, [fetchTrips]);
+
+  const orderedTrips = useMemo(() => (Array.isArray(trips) ? trips : []), [trips]);
 
   const handleDelete = async (id) => {
-    const result = await deleteTrip(id);
-    if (result.success) {
-      setTrips((prevTrips) => prevTrips.filter((trip) => trip.id !== id));
+    if (deletingId) return;
+    if (typeof window !== "undefined" && !window.confirm("Delete this trip and its related content?")) return;
+    setActionError(null);
+    setDeletingId(id);
+    try {
+      const result = await deleteTrip(id);
+      if (!result?.success) throw new Error(result?.error || "Unable to delete this trip.");
+      setTrips((previous) => previous.filter((trip) => !sameId(trip.id, id)));
+    } catch (deleteError) {
+      setActionError(deleteError.message);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -26,7 +57,6 @@ export default function TripsList() {
     <section className="admin-panel admin-section-panel">
       <EgyptianBackground />
 
-      {/* ✅ عدد الرحلات */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -40,15 +70,22 @@ export default function TripsList() {
         </div>
       </motion.div>
 
+      {(error || actionError) && (
+        <div className="admin-empty-state admin-empty-state--error" role="alert">
+          <FaExclamationTriangle />
+          <strong>Trips could not be loaded</strong>
+          <span>{actionError || error}</span>
+          <button type="button" className="admin-action-button" onClick={() => { setActionError(null); fetchTrips(); }}><FaRedo /> Try again</button>
+        </div>
+      )}
+      {loadingTrips && orderedTrips.length === 0 ? (
+        <div className="admin-loading-state" aria-live="polite"><span className="admin-loading-state__spinner" /> Loading trips…</div>
+      ) : !loadingTrips && !error && orderedTrips.length === 0 ? (
+        <div className="admin-empty-state"><strong>No trips yet</strong><span>Create a journey to see it here.</span></div>
+      ) : (
       <div className="admin-table-shell"><table className="admin-table min-w-[44rem]">
         <thead>
-          <tr
-            className={`${
-              themeName === "dark"
-                ? "bg-gold/20 text-gold"
-                : "bg-[#fdf6e3] text-[#3a2c0a]"
-            }`}
-          >
+          <tr>
             <th className="p-3">Title</th>
             <th className="p-3">City</th>
             <th className="p-3">Price</th>
@@ -56,70 +93,35 @@ export default function TripsList() {
           </tr>
         </thead>
         <tbody>
-          {trips.map((trip) => (
-            <React.Fragment key={trip.id}>
+          {orderedTrips.map((trip) => {
+            const cities = parseValue(trip.cities, []);
+            const cityList = Array.isArray(cities) ? cities : [];
+            const title = localizedValue(trip.title, locale) || "Untitled trip";
+            return (
               <motion.tr
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className={`transition hover:scale-[1.01] ${
-                  themeName === "dark"
-                    ? "hover:bg-gold/10"
-                    : "hover:bg-[#fdf6e3]/50"
-                }`}
               >
-                <td className="p-3">{trip.title?.en || trip.title}</td>
+                <td className="p-3">{title}</td>
                 <td className="p-3">
-                  {Array.isArray(trip.cities)
-                    ? trip.cities
-                        .map((c) => {
-                          // ✅ اطبع بيانات المدينة في الـ console
-
-                          // ✅ استخرج الـ id
-                          const cityId =
-                            typeof c === "number"
-                              ? c
-                              : c?.id || c?.city_id || c?.cityId;
-
-                          // ✅ ابحث عن المدينة في قائمة allCities (لو عندك Context للمدن)
-                          // const cityObj = allCities.find((city) => city.id === cityId);
-
-                          // ✅ الاسم النهائي
-                          const cityName =
-                            typeof c?.name === "object"
-                              ? c.name.en ||
-                                c.name.ar ||
-                                Object.values(c.name)[0]
-                              : c?.name || "Unknown";
-
-                          return cityName;
-                        })
-                        .join("  𓋹  ")
-                    : "—"}
+                  {cityList.length ? cityList.map((city) => cityLabel(city, locale)).join("  𓋹  ") : "—"}
                 </td>
 
                 <td className="p-3 font-semibold">
-                  {trip.solo_price} {trip.currency}
+                  {trip.solo_price ?? "—"} {trip.currency || ""}
                 </td>
-                <td className="p-3 flex gap-3">
-                  <button
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleDelete(trip.id)}
-                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-sm font-bold transition ${
-                      themeName === "dark"
-                        ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-red-500 text-white hover:bg-red-600"
-                    }`}
-                  >
-                    <FaTrash /> Delete
+                <td className="p-3">
+                  <button type="button" onClick={() => handleDelete(trip.id)} disabled={deletingId != null} className="admin-action-button admin-action-button--danger">
+                    <FaTrash /> {sameId(deletingId, trip.id) ? "Deleting…" : "Delete"}
                   </button>
                 </td>
               </motion.tr>
-              <DividerWithIcon />
-            </React.Fragment>
-          ))}
+            );
+          })}
         </tbody>
       </table></div>
+      )}
     </section>
   );
 }

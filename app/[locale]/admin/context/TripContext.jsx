@@ -164,12 +164,12 @@ const saveTrip = async () => {
     setLoadingTrips(true);
     setError(null);
     try {
-      const res = await fetch("/api/trips");
+      const res = await fetch("/api/trips", { cache: "no-store" });
       const result = await res.json();
-      if (result.success) {
-        setTrips(result.trips);
-        localStorage.setItem("trips", JSON.stringify(result.trips));
-      }
+      if (!res.ok || !result.success) throw new Error(result.error || "Unable to load trips.");
+      const nextTrips = Array.isArray(result.trips) ? result.trips : [];
+      setTrips(nextTrips);
+      localStorage.setItem("trips", JSON.stringify(nextTrips));
     } catch (err) {
       setError(err.message);
     } finally {

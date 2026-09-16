@@ -54,7 +54,7 @@ const handleGalleryImages = async (e) => {
     const updatedImages = [...(tripData?.gallery_images || [])];
     updatedImages[index] = {
       ...updatedImages[index],
-      name: { ...updatedImages[index].name, [lang]: newName },
+      name: { ...(updatedImages[index].name || {}), [lang]: newName },
     };
     updateTripField("gallery_images", updatedImages);
   };
@@ -98,7 +98,7 @@ const handleGalleryImages = async (e) => {
           {tripData.gallery_images.map((img, i) => (
             <div key={i} className="flex flex-col items-center">
               <Image
-                src={img.preview || img.url} // ✅ عرض مؤقت أو دائم
+                src={img.preview || img.url || img.src || img.image || img.image_url} // ✅ عرض مؤقت أو دائم
                 alt={`Gallery ${i}`}
                 width={80}
                 height={80}

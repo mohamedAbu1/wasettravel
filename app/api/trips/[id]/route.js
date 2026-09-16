@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth/admin";
+import { toPublicImageUrl } from "@/lib/publicImageUrl";
 
 const parseJson = (value, fallback) => {
   if (value == null) return fallback;
@@ -114,7 +115,10 @@ export async function GET(req, context) {
           ...trip,
           title: parseJson(trip.title, {}),
           description: parseJson(trip.description, {}),
-          gallery_images: parseJson(trip.gallery_images, []),
+          gallery_images: parseJson(trip.gallery_images, []).map((image) => typeof image === "string"
+            ? toPublicImageUrl(image)
+            : { ...image, url: toPublicImageUrl(image?.url || image?.path) }),
+          cover_image: toPublicImageUrl(trip.cover_image),
           solo_price: Number(trip.solo_price || 0),
           group_price: Number(trip.group_price || 0),
           duration: Number(trip.duration || 0),

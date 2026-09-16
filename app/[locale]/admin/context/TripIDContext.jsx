@@ -72,9 +72,22 @@ export function TripIDProvider({ children }) {
             typeof data.trip.description === "string"
               ? JSON.parse(data.trip.description)
               : data.trip.description,
-          gallery_images: Array.isArray(data.trip.gallery_images)
-            ? data.trip.gallery_images
-            : JSON.parse(data.trip.gallery_images || "[]"),
+          gallery_images: (() => {
+            let images = data.trip.gallery_images;
+            if (typeof images === "string") {
+              try { images = JSON.parse(images); } catch { images = []; }
+            }
+            return (Array.isArray(images) ? images : []).map((image) => {
+              if (typeof image === "string") {
+                return { url: image, name: { en: "", es: "", fr: "", de: "", it: "", zh: "" } };
+              }
+              return {
+                ...image,
+                url: image?.url || image?.src || image?.image || image?.image_url || image?.path || "",
+                name: image?.name || { en: "", es: "", fr: "", de: "", it: "", zh: "" },
+              };
+            }).filter((image) => image.url);
+          })(),
           includes: Array.isArray(data.trip.includes)
             ? data.trip.includes.map((inc) => ({
                 id: inc.id,

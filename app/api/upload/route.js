@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { requireAdmin } from "@/lib/auth/admin";
+import { toPublicImageUrl } from "@/lib/publicImageUrl";
 
 export async function POST(req) {
   const auth = requireAdmin(req);
@@ -35,8 +36,7 @@ export async function POST(req) {
   const filePath = path.join(uploadDir, fileName);
   fs.writeFileSync(filePath, buffer);
 
-  // Same-origin URL works in local, staging, and production.
-  const publicUrl = `/iamges/${fileName}`;
+  const publicUrl = toPublicImageUrl(`/iamges/${fileName}`);
 
   return NextResponse.json({ url: publicUrl });
 }

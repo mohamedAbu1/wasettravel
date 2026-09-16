@@ -2,6 +2,7 @@
 import fs from "fs";
 import path from "path";
 import { requireAdmin } from "@/lib/auth/admin";
+import { toPublicImageUrl } from "@/lib/publicImageUrl";
 
 export async function POST(req) {
   const auth = requireAdmin(req);
@@ -29,8 +30,7 @@ export async function POST(req) {
       fs.mkdirSync(uploadDir, { recursive: true });
       fs.writeFileSync(uploadPath, Buffer.from(await coverFile.arrayBuffer()));
 
-      // Same-origin URL works in local, staging, and production.
-      coverImageUrl = `/${folder}/${originalName}`;
+      coverImageUrl = toPublicImageUrl(`/${folder}/${originalName}`);
     }
 
     return new Response(JSON.stringify({ success: true, cover_image: coverImageUrl }), { status: 201 });

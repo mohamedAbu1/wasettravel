@@ -2,6 +2,7 @@
 import fs from "fs";
 import path from "path";
 import { requireAdmin } from "@/lib/auth/admin";
+import { toPublicImageUrl } from "@/lib/publicImageUrl";
 
 export async function POST(req) {
   const auth = requireAdmin(req);
@@ -31,7 +32,7 @@ export async function POST(req) {
 
         fs.writeFileSync(uploadPath, Buffer.from(await file.arrayBuffer()));
 
-        const fileUrl = `/${folder}/${originalName}`;
+        const fileUrl = toPublicImageUrl(`/${folder}/${originalName}`);
 
         // ✅ استقبل أسماء اللغات من الـ formData
         const nameTranslations = {

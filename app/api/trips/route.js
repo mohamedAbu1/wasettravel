@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth/admin";
+import { toPublicImageUrl } from "@/lib/publicImageUrl";
 
 // دالة آمنة لتحويل أي قيمة إلى JSON نصي
 const safeStringify = (value) => {
@@ -312,7 +313,7 @@ export async function GET(req) {
         typeof trip.description === "string"
           ? JSON.parse(trip.description)
           : trip.description,
-      cover_image: trip.cover_image,
+      cover_image: toPublicImageUrl(trip.cover_image),
       solo_price: Number(trip.solo_price),
       group_price: Number(trip.group_price),
       currency: trip.currency,
@@ -334,6 +335,13 @@ export async function GET(req) {
       trip_details: safeParse(trip.trip_details),
       discountPercent: Number(trip.discount_percent ?? 0),
     }));
+    parsedTrips.forEach((trip) => {
+      trip.gallery_images = Array.isArray(trip.gallery_images)
+        ? trip.gallery_images.map((image) => typeof image === "string"
+          ? toPublicImageUrl(image)
+          : { ...image, url: toPublicImageUrl(image?.url || image?.path) })
+        : [];
+    });
     return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {
       status: 200,
       headers: { "Cache-Control": summary ? "no-store" : "public, max-age=3600" },

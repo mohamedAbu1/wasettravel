@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-import { FaPaperPlane, FaImage, FaSmile } from "react-icons/fa";
+"use client";
+
+import { FaPaperPlane, FaImage, FaSmile, FaTimes } from "react-icons/fa";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
-import { useState } from "react";
-
-<Picker onSelect={(emoji) => setNewMessage(newMessage + emoji.native)} />;
+import { useEffect, useRef, useState } from "react";
 
 export default function ChatInput({
   activeUser,
@@ -15,80 +14,124 @@ export default function ChatInput({
   handleSendImage,
   themeName,
 }) {
-  if (!activeUser) return null;
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
+  const [uploading, setUploading] = useState(false);
+  const typingTimer = useRef(null);
+  const emojiPanel = useRef(null);
+
+  useEffect(() => () => clearTimeout(typingTimer.current), []);
+
+  useEffect(() => {
+    const closePicker = (event) => {
+      if (emojiPanel.current && !emojiPanel.current.contains(event.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", closePicker);
+    return () => document.removeEventListener("mousedown", closePicker);
+  }, []);
+
+  if (!activeUser) return null;
+
+  const notifyTyping = (value) => {
+    const isTyping = value.trim().length > 0;
+    setIsTyping(isTyping);
+    clearTimeout(typingTimer.current);
+    typingTimer.current = setTimeout(() => {
+      fetch("/api/typing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: activeUser.id, adminTyping: isTyping }),
+      }).catch(() => {});
+    }, 250);
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
-    handleSendImage(file); // ✅ نرسل الملف نفسه
+    setUploading(true);
+    try {
+      await handleSendImage(file);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const submitMessage = (event) => {
+    event.preventDefault();
+    if (!newMessage?.trim() || uploading) return;
+    handleSend();
   };
 
   return (
-    <div className="admin-chat-input">
-      <div className="admin-chat-input__row">
-        {/* زر رفع صورة كأيقونة */}
-        <label
-          className="admin-chat-tool"
-        >
-          <FaImage className="text-lg" />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="hidden"
-          />
-        </label>
+    <form className="admin-chat-input" onSubmit={submitMessage}>
+      <div className="admin-chat-input__composer">
+        <div className="admin-chat-input__row">
+          <label className="admin-chat-tool" title="Attach an image">
+            <FaImage aria-hidden="true" />
+            <span className="sr-only">Attach an image</span>
+            <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+          </label>
 
-        {/* إدخال النص */}
-        <input
-          type="text"
-          placeholder="Type a message..."
-          value={newMessage}
-          onChange={(e) => {
-            setNewMessage(e.target.value);
-            setIsTyping(e.target.value.length > 0);
-            fetch("/api/typing", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                userId: activeUser.id,
-                adminTyping: e.target.value.length > 0,
-              }),
-            });
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleSend();
-            }
-          }}
-          className="admin-chat-textbox"
-        />
-        <button
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="admin-chat-tool"
-        >
-          <FaSmile className="text-lg" />
-        </button>
-        {showEmojiPicker && (
-          <div className="mt-2">
-            <Picker
-              data={data}
-              onEmojiSelect={(emoji) =>
-                setNewMessage(newMessage + emoji.native)
+          <textarea
+            rows={1}
+            value={newMessage}
+            placeholder="Write a thoughtful reply…"
+            aria-label="Message text"
+            className="admin-chat-textbox"
+            onChange={(event) => {
+              setNewMessage(event.target.value);
+              notifyTyping(event.target.value);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                submitMessage(event);
               }
-              theme={themeName === "dark" ? "dark" : "light"}
-            />
+            }}
+          />
+
+          <div className="admin-chat-emoji-wrap" ref={emojiPanel}>
+            <button
+              type="button"
+              className={`admin-chat-tool ${showEmojiPicker ? "is-active" : ""}`}
+              onClick={() => setShowEmojiPicker((visible) => !visible)}
+              aria-label="Choose an emoji"
+              aria-expanded={showEmojiPicker}
+            >
+              <FaSmile aria-hidden="true" />
+            </button>
+            {showEmojiPicker ? (
+              <div className="admin-chat-emoji-picker">
+                <button type="button" className="admin-chat-emoji-close" onClick={() => setShowEmojiPicker(false)} aria-label="Close emoji picker">
+                  <FaTimes />
+                </button>
+                <Picker
+                  data={data}
+                  onEmojiSelect={(emoji) => setNewMessage((current) => `${current}${emoji.native}`)}
+                  theme={themeName === "dark" ? "dark" : "light"}
+                  previewPosition="none"
+                  skinTonePosition="none"
+                />
+              </div>
+            ) : null}
           </div>
-        )}
-        {/* زر إرسال النص مع أيقونة */}
-        <button
-          onClick={handleSend}
-          className="admin-chat-send"
-        >
-          <FaPaperPlane className="text-sm" /> Send
-        </button>
+
+          <button
+            type="submit"
+            className="admin-chat-send"
+            disabled={!newMessage?.trim() || uploading}
+          >
+            <FaPaperPlane aria-hidden="true" />
+            <span>{uploading ? "Uploading…" : "Send"}</span>
+          </button>
+        </div>
+        <div className="admin-chat-input__footer">
+          <span>{activeUser.name ? `Replying to ${activeUser.name}` : "Private reply"}</span>
+          <span>Enter to send · Shift + Enter for a new line</span>
+        </div>
       </div>
-    </div>
+    </form>
   );
 }

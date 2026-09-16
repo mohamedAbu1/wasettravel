@@ -72,7 +72,12 @@ export async function middleware(req) {
     req.headers.get("accept-language")?.split(",")[0].split("-")[0] || "en";
 
   // لو أول جزء من المسار مش لغة مدعومة → أضف اللغة المكتشفة
-  if (!segments.length || !supportedLangs.includes(segments[0])) {
+  if (!segments.length) {
+    url.pathname = "/en";
+    return NextResponse.redirect(url);
+  }
+
+  if (!supportedLangs.includes(segments[0])) {
     const langToUse = supportedLangs.includes(browserLang)
       ? browserLang
       : "en";

@@ -7,8 +7,9 @@ import { useTheme } from "@/context/ThemeContext";
 import Content from "./components/Content";
 import LeftSocialIcons from "./components/LeftSocialIcons";
 import { usePathname } from "next/navigation";
+import catalog from "@/lib/imageCatalog";
 
-const heroImage = "/Luxor/pexels-axp-photography-500641970-18934598.webp";
+const heroImage = catalog.hero;
 
 export default function HeroSection() {
   const { theme } = useTheme();

@@ -134,6 +134,16 @@ export function TripProvider({ children }) {
       return Array.isArray(result.trips) ? result.trips : [];
     } catch (err) {
       setError(err.message);
+      try {
+        const cachedTrips = JSON.parse(localStorage.getItem("trips") || "[]");
+        if (Array.isArray(cachedTrips) && cachedTrips.length) {
+          setTrips(cachedTrips);
+          return cachedTrips;
+        }
+      } catch {
+        // Ignore malformed local cache and keep the API error for the UI.
+      }
+      return [];
     } finally {
       setLoadingTrips(false);
     }

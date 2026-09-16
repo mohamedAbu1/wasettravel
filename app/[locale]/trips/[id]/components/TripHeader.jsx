@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { FaChevronLeft, FaChevronRight, FaStar } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { resolveTripImage } from "@/lib/imageCatalog";
 
 export default function TripHeader({ trip, lang }) {
   const { t } = useTranslation("ui");
@@ -30,6 +31,11 @@ export default function TripHeader({ trip, lang }) {
   }, [trip?.gallery_images, trip?.cover_image]);
   const title = trip?.title?.[lang] || trip?.title?.en || "Egypt tour";
   const description = trip?.description?.[lang] || trip?.description?.en || "Discover an unforgettable Egypt travel experience.";
+  const fallbackImage = resolveTripImage({
+    title,
+    cities: trip?.cities?.map((city) => city?.name?.[lang] || city?.name?.en || city?.name),
+    categories: trip?.categories?.map((category) => category?.name?.[lang] || category?.name?.en || category?.name),
+  });
 
   useEffect(() => {
     setActiveIndex((current) => Math.min(current, Math.max(images.length - 1, 0)));
@@ -38,10 +44,10 @@ export default function TripHeader({ trip, lang }) {
     return () => clearInterval(timer);
   }, [images.length]);
 
-  if (!images.length) return <div className="trip-detail-hero rounded-3xl border p-10 text-center">No photos are available for this trip.</div>;
+  if (!images.length) return <div className="trip-detail-hero overflow-hidden rounded-[1.75rem] border shadow-[0_2rem_4rem_rgba(0,0,0,.2)]"><div className="relative aspect-[16/9] min-h-[18rem] sm:min-h-[25rem] lg:min-h-[32rem]"><Image src={fallbackImage} alt={title} fill priority sizes="(max-width: 1024px) 100vw, 70vw" className="object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#151311] via-transparent to-transparent" /><div className="absolute inset-x-5 bottom-6"><h1 className="text-3xl font-bold text-white sm:text-5xl">{title}</h1></div></div></div>;
 
   const activeImage = images[activeIndex];
-  const imageSrc = activeImage?.url || "/default.jpg";
+  const imageSrc = activeImage?.url || fallbackImage;
   const imageName = typeof activeImage === "object" ? activeImage?.name?.[lang] || activeImage?.name?.en : "";
 
   return (

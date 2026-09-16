@@ -11,6 +11,7 @@ import Footer from "@/components/Footer/Footer";
 import SeoHead from "@/components/layout/SeoHead";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/context/LanguageContext";
+import catalog from "@/lib/imageCatalog";
 
 const TestimonialsSection = dynamic(() => import("@/components/b2b/TestimonialsSection"), { ssr: false });
 const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr: false });
@@ -29,12 +30,12 @@ const B2bPage = () => {
 
   return (
     <>
-      <SeoHead title="B2B Travel Management Partner in Egypt" description="Discover Waset Travel B2B services for your clients across Egypt." image="/cover.jpg" />
+      <SeoHead title="B2B Travel Management Partner in Egypt" description="Discover Waset Travel B2B services for your clients across Egypt." image={catalog.hero} />
       <main className="site-shell min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
         <Header />
 
         <section className="stone-hero relative overflow-hidden border-b border-[#e0b873]/15">
-          <div className="absolute inset-0"><Image src="/iamges/5fae16c5ab3f1921b620186c04e03b0ec685a8d3b8b40d72cf262f9573ceeb8b.webp" alt="Egyptian travel landscape" fill priority sizes="100vw" className="object-cover object-center opacity-45" /><div className="absolute inset-0 bg-[linear-gradient(90deg,#171615_8%,rgba(23,22,21,.86)_42%,rgba(23,22,21,.28),#171615_100%)]" /></div>
+          <div className="absolute inset-0"><Image src={catalog.hero} alt="Egyptian travel landscape" fill priority sizes="100vw" className="object-cover object-center opacity-45" /><div className="absolute inset-0 bg-[linear-gradient(90deg,#171615_8%,rgba(23,22,21,.86)_42%,rgba(23,22,21,.28),#171615_100%)]" /></div>
           <div className="relative mx-auto grid min-h-[min(700px,86vh)] max-w-7xl items-center gap-10 px-5 py-28 sm:px-8 lg:grid-cols-[1.1fr_.9fr] lg:px-12">
             <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7 }} className="max-w-3xl">
               <p className="hero-eyebrow flex items-center gap-3"><span className="hero-eyebrow-line" />Business travel partnerships</p>

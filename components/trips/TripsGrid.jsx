@@ -14,6 +14,7 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import { resolveTripImage } from "@/lib/imageCatalog";
 
 function localizedValue(value, lang, fallback = "") {
   if (!value) return fallback;
@@ -49,6 +50,11 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
       } `}
     >
       {trips.map((trip, i) => {
+        const fallbackImage = resolveTripImage({
+          title: localizedValue(trip.title, lang),
+          cities: trip.cities?.map((city) => localizedValue(city?.name, lang)),
+          categories: trip.categories?.map((category) => localizedValue(category?.name, lang)),
+        });
         const avgStars = Math.max(0, Math.min(5, Number(trip.rating) || 4));
         const displayedPrice = convertPrice(trip.group_price || 0, trip.currency || "USD", currency);
 
@@ -110,7 +116,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                   return (
                   <SwiperSlide key={idx}>
                     <Image
-                      src={img || "/HomePageImage/_16934_1.webp"}
+                      src={img || fallbackImage}
                       alt={`Trip image: ${trip.title?.[lang] || trip.title?.en || "Untitled"}`}
                       fill
                       quality={75} // ✅ ضغط الصورة بدون فقدان واضح للجودة
@@ -120,7 +126,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                       className="object-cover w-full h-full rounded-lg"
                       style={{ aspectRatio: "4/3" }} // ✅ يمنع تغير الأبعاد أثناء التحميل (يقلل CLS)
                       placeholder="blur" // ✅ تحسين تجربة التحميل
-                      blurDataURL="/HomePageImage/_16934_1.webp" // ✅ صورة منخفضة الجودة أثناء التحميل
+                      blurDataURL={fallbackImage} // ✅ صورة منخفضة الجودة أثناء التحميل
                     />
                   </SwiperSlide>
                   );

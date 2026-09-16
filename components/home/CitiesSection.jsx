@@ -10,10 +10,10 @@ import DividerWithIcon from "../layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
 import { encodeBase64Json } from "@/lib/utils/base64";
 import { useLanguage } from "@/context/LanguageContext";
+import { resolveCityImage } from "@/lib/imageCatalog";
 
-const fallbackImage = "/HomePageImage/_16934_1.webp";
-const imageUrl = (url) => {
-  if (!url || typeof url !== "string" || !url.trim()) return fallbackImage;
+const imageUrl = (url, name) => {
+  if (!url || typeof url !== "string" || !url.trim()) return resolveCityImage(name);
   return url.startsWith("http") ? `${url}?width=1000&quality=75&format=webp` : (url.startsWith("/") ? url : `/${url}`);
 };
 
@@ -25,7 +25,7 @@ function CityCard({ city, language, position, t }) {
 
   return (
     <motion.article initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: position * 0.07 }} viewport={{ once: true, amount: 0.15 }} onClick={explore} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") explore(); }} role="button" tabIndex={0} aria-label={`Explore trips in ${name}`} className={`group relative min-h-[19rem] cursor-pointer overflow-hidden rounded-[1.35rem] border border-white/10 outline-none focus-visible:ring-2 focus-visible:ring-[#e0b873] ${position === 0 ? "sm:col-span-2 sm:min-h-[24rem]" : ""}`}>
-      <Image src={imageUrl(city.images?.[0])} alt={`City view of ${name}`} fill sizes={position === 0 ? "(max-width: 640px) 92vw, 66vw" : "(max-width: 640px) 92vw, 33vw"} className="object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
+      <Image src={imageUrl(city.images?.[0], name)} alt={`City view of ${name}`} fill sizes={position === 0 ? "(max-width: 640px) 92vw, 66vw" : "(max-width: 640px) 92vw, 33vw"} className="object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#11100e] via-[#11100e]/15 to-transparent" />
       <div className="absolute left-5 top-5 rounded-full border border-white/20 bg-black/25 px-3 py-1 text-xs font-semibold text-white/80 backdrop-blur-md">0{position + 1}</div>
       <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-4"><div><p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#e0b873]">Destination</p><h3 className={`${position === 0 ? "text-3xl" : "text-2xl"} font-bold leading-tight text-white`}>{name}</h3></div><button onClick={(event) => { event.stopPropagation(); explore(); }} className="rounded-full bg-[#e0b873] px-4 py-2 text-xs font-bold text-[#211a13] opacity-100 transition hover:bg-[#f0c979] sm:opacity-0 sm:group-hover:opacity-100">{t("Explore")}</button></div>

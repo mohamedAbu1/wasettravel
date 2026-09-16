@@ -9,6 +9,7 @@ import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import SeoHead from "@/components/layout/SeoHead";
+import catalog from "@/lib/imageCatalog";
 
 // ✅ Lazy load components غير حرجة
 const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr: false });
@@ -29,7 +30,7 @@ const CancellationPolicyPage = () => {
       <SeoHead
         title="Cancellation Policy - Waset Travel"
         description="Read Waset Travel's cancellation policy to understand terms, conditions, and refund options for your bookings."
-        image="/cover.jpg"
+        image={catalog.journey}
       />
 
       <main

@@ -4,6 +4,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import catalog from "@/lib/imageCatalog";
 
 // ✅ Lazy load للمكون DividerWithIcon
 const DividerWithIcon = dynamic(() => import("../layout/DividerWithIcon"), { ssr: false });
@@ -62,7 +63,7 @@ export default function HeritageSection() {
 
         <motion.div variants={fadeRight} className="flex-1 relative w-full h-56">
           <Image
-            src="/iamges/pexels-axp-photography-500641970-18934598.webp"
+            src={catalog.about}
             alt="Ancient Egyptian heritage site with Waset Travel"
             fill
             quality={75}

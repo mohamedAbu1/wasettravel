@@ -2,6 +2,7 @@
 "use client"
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import catalog from "@/lib/imageCatalog";
 
 const CitiesCategoriesContext = createContext();
 
@@ -52,7 +53,7 @@ const localizedCities = cities.map((city) => {
   try {
     parsedImages = JSON.parse(city.images);
   } catch {
-    parsedImages = ["/HomePageImage/_16934_1.webp"];
+    parsedImages = [catalog.journey];
   }
 
   return {
@@ -62,7 +63,7 @@ const localizedCities = cities.map((city) => {
       parsedName?.["en"] ||
       Object.values(parsedName)[0] ||
       city.name,
-    images: Array.isArray(parsedImages) ? parsedImages : ["/HomePageImage/_16934_1.webp"],
+    images: Array.isArray(parsedImages) ? parsedImages : [catalog.journey],
   };
 });
 
@@ -81,7 +82,7 @@ const localizedCities = cities.map((city) => {
     try {
       parsedImages = JSON.parse(cat.images);
     } catch {
-    parsedImages = ["/HomePageImage/_16934_1.webp"];
+    parsedImages = [catalog.journey];
     }
 
     return {
@@ -91,7 +92,7 @@ const localizedCities = cities.map((city) => {
         parsedName?.["en"] ||
         Object.values(parsedName)[0] ||
         cat.name,
-    images: Array.isArray(parsedImages) ? parsedImages : ["/HomePageImage/_16934_1.webp"],
+    images: Array.isArray(parsedImages) ? parsedImages : [catalog.journey],
     };
   });
 

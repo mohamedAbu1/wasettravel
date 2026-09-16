@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import dynamic from "next/dynamic";
+import catalog from "@/lib/imageCatalog";
 
 // ✅ Lazy load للمكون DividerWithIcon
 const DividerWithIcon = dynamic(() => import("../layout/DividerWithIcon"), { ssr: false });
@@ -54,7 +55,7 @@ export default function AboutHero() {
           className="about-hero__media relative h-80 w-full overflow-hidden rounded-[1.5rem] shadow-2xl lg:h-[460px]"
         >
           <Image
-            src="/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp"
+            src={catalog.hero}
             alt="Travelers exploring Egypt with Waset Travel"
             fill
             quality={75}

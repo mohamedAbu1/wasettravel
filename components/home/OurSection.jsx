@@ -12,6 +12,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/context/LanguageContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
+import catalog from "@/lib/imageCatalog";
 
 const OurSection = () => {
   const router = useRouter();
@@ -26,11 +27,11 @@ const OurSection = () => {
   if (!hasMounted) return null;
 
   const images = [
-    "/Aswan/pexels-furknsaglam-1596977-21348185.webp",
-    "/Luxor/pexels-oualid-soussi-2150533856-35050672.webp",
-    "/Cairo/pexels-ozgomz-7566890.webp",
-    "/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp",
-    "/Luxor/pexels-yasmine-qasem-1054896-2034684.webp",
+    "/Aswan/chrysanthe-gomree-_nubht5aO2w-unsplash.webp",
+    "/Luxor/pexels-axp-photography-500641970-18934596.webp",
+    "/Cairo/pexels-alexazabache-3290075.webp",
+    catalog.about,
+    "/Nile%20Cruise/0222p12000k6c5981109F_W_1280_853_R5.webp",
   ];
 
   return (

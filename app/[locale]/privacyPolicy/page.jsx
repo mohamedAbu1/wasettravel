@@ -9,6 +9,7 @@ import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import SeoHead from "@/components/layout/SeoHead";
+import catalog from "@/lib/imageCatalog";
 
 // ✅ Lazy load components غير حرجة
 const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr: false });
@@ -29,7 +30,7 @@ export default function PrivacyPolicyPage() {
       <SeoHead
         title="Privacy Policy"
         description="Learn about our privacy practices and how we protect your data."
-        image="/cover.jpg"
+        image={catalog.journey}
       />
 
       <main

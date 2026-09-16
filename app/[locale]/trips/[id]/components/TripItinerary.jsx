@@ -51,13 +51,15 @@ export default function TripItinerary({ trip, lang }) {
     return result;
   };
 
-  // ✅ تأكد إن الأيام Array حتى لو جاية كـ string
+  // The detail API exposes the collection as `itinerary`; keep `days` as a
+  // backwards-compatible fallback for older responses.
   let tripDays = [];
   try {
-    if (Array.isArray(trip.days)) {
-      tripDays = trip.days;
-    } else if (typeof trip.days === "string") {
-      const parsed = JSON.parse(trip.days);
+    const rawDays = trip?.itinerary ?? trip?.days;
+    if (Array.isArray(rawDays)) {
+      tripDays = rawDays;
+    } else if (typeof rawDays === "string") {
+      const parsed = JSON.parse(rawDays);
       tripDays = Array.isArray(parsed) ? parsed : [parsed];
     }
   } catch {
@@ -130,7 +132,9 @@ export default function TripItinerary({ trip, lang }) {
                   transition={{ duration: 0.5, delay: actIdx * 0.1 }}
                   className={`flex items-center gap-3 text-sm md:text-base ${theme.subText}`}
                 >
-                 
+                  <time className="shrink-0 font-semibold text-[#c9a34a]">
+                    {formatTime(act.time)}
+                  </time>
                   <span>{getLocalizedText(act.activity_translations)}</span>
                 </motion.li>
               ))}
@@ -139,10 +143,15 @@ export default function TripItinerary({ trip, lang }) {
         ))}
       </motion.div>
 
+      {dayGroups.length === 0 ? (
+        <p className={`mt-4 text-sm ${theme.subText}`}>No itinerary has been added yet.</p>
+      ) : null}
+
       {/* ✅ Pagination */}
-      <div className="flex justify-center mt-6 gap-2">
+      {dayGroups.length > 1 ? <div className="flex justify-center mt-6 gap-2">
         {dayGroups.map((_, idx) => (
           <button
+            type="button"
             key={idx}
             onClick={() => setCurrentPage(idx)}
             style={{ cursor: "pointer" }}
@@ -155,7 +164,7 @@ export default function TripItinerary({ trip, lang }) {
             {idx + 1}
           </button>
         ))}
-      </div>
+      </div> : null}
     </motion.section>
   );
 }

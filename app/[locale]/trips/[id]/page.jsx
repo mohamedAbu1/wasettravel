@@ -44,7 +44,11 @@ export default function TripPage({ params }) {
   const { t: ui } = useTranslation("ui");
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setLoadingTrip(false);
+      setTripError("Missing trip identifier");
+      return undefined;
+    }
     let cancelled = false;
     const loadTrip = async () => {
       setLoadingTrip(true);

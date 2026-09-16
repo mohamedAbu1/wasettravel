@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { FaImage, FaTrash } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
@@ -8,13 +8,28 @@ import { useTripID } from "../../context/TripIDContext";
 const EditTripCoverImageUpload = () => {
   const { themeName } = useTheme();
   const { tripData, updateTripField } = useTripID();
+  const [uploading, setUploading] = useState(false);
 
   // ✅ اختيار صورة الغلاف
-  const handleCoverImage = (e) => {
+  const handleCoverImage = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      updateTripField("cover_image", URL.createObjectURL(file));
+    if (!file) return;
+    setUploading(true);
+    try {
+      updateTripField("cover_upload_error", "");
+      const formData = new FormData();
+      formData.append("cover_image", file);
+      const response = await fetch("/api/cover", { method: "POST", body: formData });
+      const result = await response.json();
+      if (!response.ok || !result.success || !result.cover_image) {
+        throw new Error(result.error || "Unable to upload cover image");
+      }
+      updateTripField("cover_image", result.cover_image);
       updateTripField("cover_name", file.name);
+    } catch (error) {
+      updateTripField("cover_upload_error", error.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -22,6 +37,7 @@ const EditTripCoverImageUpload = () => {
   const removeCoverImage = () => {
     updateTripField("cover_image", "");
     updateTripField("cover_name", "");
+    updateTripField("cover_upload_error", "");
   };
 
   return (
@@ -42,11 +58,12 @@ const EditTripCoverImageUpload = () => {
             : "bg-[#c9a34a] text-white hover:bg-[#b5892e]"
         }`}
       >
-        <FaImage /> Choose Cover Image
+        <FaImage /> {uploading ? "Uploading…" : "Choose Cover Image"}
         <input
           type="file"
           accept="image/*"
           onChange={handleCoverImage}
+          disabled={uploading}
           className="hidden"
         />
       </label>
@@ -96,6 +113,7 @@ const EditTripCoverImageUpload = () => {
           </button>
         </div>
       )}
+      {tripData?.cover_upload_error ? <p className="mt-2 text-red-500" role="alert">{tripData.cover_upload_error}</p> : null}
     </div>
   );
 };

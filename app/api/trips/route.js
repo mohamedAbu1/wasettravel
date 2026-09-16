@@ -15,11 +15,14 @@ export async function POST(req) {
   const auth = requireAdmin(req);
   if (auth.response) return auth.response;
 
+  let db;
   try {
     const body = await req.json();
     const tripId = uuidv4();
 
-    const db = await connectDB();
+    const pool = await connectDB();
+    db = await pool.getConnection();
+    await db.beginTransaction();
 
     // ✅ إدخال بيانات الرحلة الأساسية
     console.log("➡️ Saving trip base data:", body);
@@ -164,15 +167,21 @@ export async function POST(req) {
       console.log("✅ Trip details inserted:", detailsData.length);
     }
 
+    await db.commit();
     return new Response(JSON.stringify({ success: true, tripId }), {
       status: 201,
     });
   } catch (err) {
+    if (db) {
+      try { await db.rollback(); } catch (rollbackError) { console.error("Rollback failed:", rollbackError.message); }
+    }
     console.error("❌ API Error:", err);
     return new Response(
       JSON.stringify({ success: false, error: err.message }),
       { status: 500 },
     );
+  } finally {
+    if (db) db.release();
   }
 }
 

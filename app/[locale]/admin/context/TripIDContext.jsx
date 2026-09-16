@@ -182,9 +182,11 @@ export function TripIDProvider({ children }) {
     if (!tripData?.id) return { success: false, error: "No trip ID" };
 
     const tripPayload = {
-      title: tripData.title,
-      description: tripData.description,
+        title: tripData.title,
+        description: tripData.description,
+      currency: tripData.currency,
       duration: tripData.duration,
+      duration_unit: tripData.duration_unit,
       priceLevel: tripData.priceLevel,
       cover_image: tripData.cover_image,
       gallery_images: tripData.gallery_images,

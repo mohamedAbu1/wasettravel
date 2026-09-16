@@ -3,6 +3,12 @@ import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth/admin";
 
+const parseJson = (value, fallback) => {
+  if (value == null) return fallback;
+  if (typeof value !== "string") return value;
+  try { return JSON.parse(value); } catch { return fallback; }
+};
+
 // ================== GET ==================
 export async function GET(req, context) {
   try {
@@ -25,7 +31,7 @@ export async function GET(req, context) {
     );
     const parsedCities = cities.map((c) => ({
       ...c,
-      name: typeof c.name === "string" ? JSON.parse(c.name) : c.name,
+      name: parseJson(c.name, {}),
     }));
 
     // ✅ جلب الفئات
@@ -38,7 +44,7 @@ export async function GET(req, context) {
     );
     const parsedCategories = categories.map((cat) => ({
       ...cat,
-      name: typeof cat.name === "string" ? JSON.parse(cat.name) : cat.name,
+      name: parseJson(cat.name, {}),
     }));
 
     // ✅ جلب الـ includes
@@ -50,9 +56,7 @@ export async function GET(req, context) {
     const parsedIncludes = includes.map((inc) => ({
       ...inc,
       include_translations:
-        typeof inc.include_translations === "string"
-          ? JSON.parse(inc.include_translations)
-          : inc.include_translations,
+        parseJson(inc.include_translations, {}),
     }));
 
     // ✅ جلب الـ exclusions
@@ -64,9 +68,7 @@ export async function GET(req, context) {
     const parsedExclusions = exclusions.map((exc) => ({
       ...exc,
       exclusions_translations:
-        typeof exc.exclusions_translations === "string"
-          ? JSON.parse(exc.exclusions_translations)
-          : exc.exclusions_translations,
+        parseJson(exc.exclusions_translations, {}),
     }));
 
     // ✅ جلب الأيام والأنشطة
@@ -83,10 +85,7 @@ export async function GET(req, context) {
       );
       day.activities = activities.map((act) => ({
         ...act,
-        activity_translations:
-          typeof act.activity_translations === "string"
-            ? JSON.parse(act.activity_translations)
-            : act.activity_translations,
+        activity_translations: parseJson(act.activity_translations, {}),
       }));
     }
 
@@ -98,21 +97,36 @@ export async function GET(req, context) {
     );
     const parsedDetails = details.map((d) => ({
       ...d,
-      translations: typeof d.translations === "string" ? JSON.parse(d.translations) : d.translations,
-      detail_values: typeof d.detail_values === "string" ? JSON.parse(d.detail_values) : d.detail_values,
+      translations: parseJson(d.translations, {}),
+      detail_values: parseJson(d.detail_values, {}),
     }));
+
+    const [reviews] = await db.query(
+      `SELECT id, trip_id, user_id, rating, comment, name, avatar_url, time, created_at
+       FROM reviews WHERE trip_id = ? ORDER BY created_at DESC`,
+      [id],
+    );
 
     return NextResponse.json(
       {
         success: true,
         trip: {
           ...trip,
+          title: parseJson(trip.title, {}),
+          description: parseJson(trip.description, {}),
+          gallery_images: parseJson(trip.gallery_images, []),
+          solo_price: Number(trip.solo_price || 0),
+          group_price: Number(trip.group_price || 0),
+          duration: Number(trip.duration || 0),
+          discountPercent: Number(trip.discount_percent || 0),
           cities: parsedCities,
           categories: parsedCategories,
           includes: parsedIncludes,
           exclusions: parsedExclusions,
           itinerary: days,
           trip_details: parsedDetails,
+          reviews,
+          review_count: reviews.length,
         },
       },
       { status: 200 }
@@ -128,23 +142,28 @@ export async function PUT(req, context) {
   const auth = requireAdmin(req);
   if (auth.response) return auth.response;
 
+  let db;
   try {
     const { id } = await context.params;
     const body = await req.json();
-    const db = await connectDB();
+    const pool = await connectDB();
+    db = await pool.getConnection();
+    await db.beginTransaction();
 
     // ✅ تحديث بيانات الرحلة الأساسية
     await db.query(
       `UPDATE trips SET 
-        title = ?, description = ?, solo_price = ?, group_price = ?, 
-        duration = ?, priceLevel = ?, cover_image = ?, gallery_images = ?, discount_percent = ?
+        title = ?, description = ?, currency = ?, solo_price = ?, group_price = ?,
+        duration = ?, duration_unit = ?, priceLevel = ?, cover_image = ?, gallery_images = ?, discount_percent = ?
        WHERE id = ?`,
       [
         JSON.stringify(body.title),
         JSON.stringify(body.description),
+        body.currency || "USD",
         Number(body.solo_price),
         Number(body.group_price),
         body.duration,
+        body.duration_unit || "days",
         body.priceLevel,
         body.cover_image,
         JSON.stringify(body.gallery_images),
@@ -197,38 +216,26 @@ export async function PUT(req, context) {
       }
     }
 
-    // ✅ تحديث الأيام والأنشطة
+    // Replace the complete itinerary snapshot so removed days and activities
+    // cannot remain orphaned in the database.
     if (Array.isArray(body.itinerary)) {
-      for (const day of body.itinerary) {
-        if (day.id) {
-          await db.query(
-            "UPDATE trip_days SET day_number = ? WHERE id = ? AND trip_id = ?",
-            [day.day_number, day.id, id]
-          );
-        } else {
-          const newDayId = uuidv4();
-          await db.query(
-            "INSERT INTO trip_days (id, trip_id, day_number) VALUES (?, ?, ?)",
-            [newDayId, id, day.day_number]
-          );
-          day.id = newDayId;
-        }
+      const [existingDays] = await db.query("SELECT id FROM trip_days WHERE trip_id = ?", [id]);
+      for (const day of existingDays) {
+        await db.query("DELETE FROM day_activities WHERE day_id = ?", [day.id]);
+      }
+      await db.query("DELETE FROM trip_days WHERE trip_id = ?", [id]);
 
-        if (Array.isArray(day.activities)) {
-          for (const act of day.activities) {
-            if (act.id) {
-              await db.query(
-                "UPDATE day_activities SET time = ?, activity_translations = ? WHERE id = ? AND day_id = ?",
-                [act.time, JSON.stringify(act.activity_translations), act.id, day.id]
-              );
-            } else {
-              const newActId = uuidv4();
-              await db.query(
-                "INSERT INTO day_activities (id, day_id, time, activity_translations) VALUES (?, ?, ?, ?)",
-                [newActId, day.id, act.time, JSON.stringify(act.activity_translations)]
-              );
-            }
-          }
+      for (const [index, day] of body.itinerary.entries()) {
+        const newDayId = uuidv4();
+        await db.query(
+          "INSERT INTO trip_days (id, trip_id, day_number) VALUES (?, ?, ?)",
+          [newDayId, id, Number(day.day_number) || index + 1]
+        );
+        for (const act of Array.isArray(day.activities) ? day.activities : []) {
+          await db.query(
+            "INSERT INTO day_activities (id, day_id, time, activity_translations) VALUES (?, ?, ?, ?)",
+            [uuidv4(), newDayId, act.time || null, JSON.stringify(act.activity_translations || {})]
+          );
         }
       }
     }
@@ -250,10 +257,16 @@ export async function PUT(req, context) {
       }
     }
 
+    await db.commit();
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (err) {
+    if (db) {
+      try { await db.rollback(); } catch (rollbackError) { console.error("Rollback failed:", rollbackError.message); }
+    }
     console.error("❌ [PUT] Exception:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } finally {
+    if (db) db.release();
   }
 }
 

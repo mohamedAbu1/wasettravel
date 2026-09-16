@@ -49,7 +49,6 @@ const EditTripDetailsTable = () => {
       trip_details: prev.trip_details.filter((d) => d.option_key !== optionKey),
     }));
   };
-console.log("1231313232object",tripData?.trip_details)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -88,6 +87,7 @@ console.log("1231313232object",tripData?.trip_details)
           <div className="flex justify-between items-center mb-2">
             <h4 className="font-semibold">{detail.option_key}</h4>
             <button
+              type="button"
               onClick={() => handleRemoveDetail(detail.option_key)}
               className="text-red-500 hover:text-red-700 font-bold"
             >

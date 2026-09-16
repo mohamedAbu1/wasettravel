@@ -81,6 +81,7 @@ const TripDetailsTable = () => {
           <div className="flex justify-between items-center mb-2">
             <h4 className="font-semibold">{detail.option_key}</h4>
             <button
+              type="button"
               onClick={() => handleRemoveRow(detail.option_key)}
               className="text-red-500 hover:text-red-700 font-bold"
             >

@@ -1,7 +1,7 @@
 "use client";
 import { v4 as uuidv4 } from "uuid";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useRef } from "react";
 
 const TripContext = createContext();
 
@@ -33,6 +33,7 @@ export function TripProvider({ children }) {
   const [trips, setTrips] = useState([]);
   const [loadingTrips, setLoadingTrips] = useState(false);
   const [error, setError] = useState(null);
+  const savingRef = useRef(false);
 
   const updateTripField = (field, value) => {
     setTripData((prev) => ({ ...prev, [field]: value }));
@@ -59,14 +60,14 @@ export function TripProvider({ children }) {
     tripData.gallery_files.forEach((file, index) => {
       formData.append("gallery_images", file);
 
-      const names = tripData.gallery_images[index].name;
-      formData.append(`name_en_${file.name}`, names.en);
-      formData.append(`name_ar_${file.name}`, names.ar);
-      formData.append(`name_fr_${file.name}`, names.fr);
-      formData.append(`name_de_${file.name}`, names.de);
-      formData.append(`name_it_${file.name}`, names.it);
-      formData.append(`name_zh_${file.name}`, names.zh);
-      formData.append(`name_es_${file.name}`, names.es);
+      const names = tripData.gallery_images[index]?.name || {};
+      formData.append(`name_en_${index}`, names.en || file.name);
+      formData.append(`name_ar_${index}`, names.ar || "");
+      formData.append(`name_fr_${index}`, names.fr || "");
+      formData.append(`name_de_${index}`, names.de || "");
+      formData.append(`name_it_${index}`, names.it || "");
+      formData.append(`name_zh_${index}`, names.zh || "");
+      formData.append(`name_es_${index}`, names.es || "");
     });
 
     const res = await fetch("/api/gallery", {
@@ -80,21 +81,24 @@ export function TripProvider({ children }) {
     return result.gallery_images; // ✅ رجّع المصفوفة مباشرة
   };
   const addDetail = (optionKey, translations) => {
-    setTripData((prev) => ({
-      ...prev,
-      details: [
-        ...(prev.details || []),
-        {
-          id: uuidv4(),
-          option_key: optionKey,
-          translations,
-          values: Object.keys(translations).reduce((acc, lang) => {
-            acc[lang] = "";
-            return acc;
-          }, {}),
-        },
-      ],
-    }));
+    setTripData((prev) => {
+      if ((prev.details || []).some((detail) => detail.option_key === optionKey)) return prev;
+      return {
+        ...prev,
+        details: [
+          ...(prev.details || []),
+          {
+            id: uuidv4(),
+            option_key: optionKey,
+            translations,
+            values: Object.keys(translations).reduce((acc, lang) => {
+              acc[lang] = "";
+              return acc;
+            }, {}),
+          },
+        ],
+      };
+    });
   };
 
   const updateDetail = (optionKey, lang, value) => {
@@ -115,6 +119,10 @@ export function TripProvider({ children }) {
     }));
   };
 const saveTrip = async () => {
+  if (savingRef.current) {
+    return { success: false, error: "A trip is already being saved. Please wait." };
+  }
+  savingRef.current = true;
   try {
     setError(null);
 
@@ -123,7 +131,9 @@ const saveTrip = async () => {
       coverUrl = await uploadCover(tripData.cover_file);
     }
 
-    let galleryData = tripData.gallery_images;
+    let galleryData = (tripData.gallery_images || [])
+      .filter((image) => image && image.url && !String(image.url).startsWith("blob:"))
+      .map(({ url, name }) => ({ url, name: name || {} }));
     if (tripData.gallery_files?.length > 0) {
       galleryData = await uploadGallery();
     }
@@ -154,6 +164,8 @@ const saveTrip = async () => {
   } catch (err) {
     setError(err.message);
     return { success: false, error: err.message };
+  } finally {
+    savingRef.current = false;
   }
 };
 

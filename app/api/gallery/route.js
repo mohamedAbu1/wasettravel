@@ -16,7 +16,9 @@ export async function POST(req) {
     let galleryImageObjects = [];
 
     if (galleryFiles?.length > 0) {
-      for (const file of galleryFiles) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+      for (const [index, file] of galleryFiles.entries()) {
+        if (!file || typeof file.arrayBuffer !== "function") continue;
         if (file.size > 5 * 1024 * 1024) {
           return new Response(JSON.stringify({ success: false, error: "Each file must be 5MB or smaller" }), { status: 413 });
         }
@@ -27,21 +29,19 @@ export async function POST(req) {
         const originalName = `${Date.now()}-${crypto.randomUUID()}${extension}`;
         const uploadPath = path.join(uploadDir, originalName);
 
-        if (!fs.existsSync(uploadPath)) {
-          fs.writeFileSync(uploadPath, Buffer.from(await file.arrayBuffer()));
-        }
+        fs.writeFileSync(uploadPath, Buffer.from(await file.arrayBuffer()));
 
-        const fileUrl = `https://wasettravel.com/${folder}/${originalName}`;
+        const fileUrl = `/${folder}/${originalName}`;
 
         // ✅ استقبل أسماء اللغات من الـ formData
         const nameTranslations = {
-          en: formData.get(`name_en_${originalName}`) || originalName,
-          ar: formData.get(`name_ar_${originalName}`) || "",
-          fr: formData.get(`name_fr_${originalName}`) || "",
-          de: formData.get(`name_de_${originalName}`) || "",
-          it: formData.get(`name_it_${originalName}`) || "",
-          zh: formData.get(`name_zh_${originalName}`) || "",
-          es: formData.get(`name_es_${originalName}`) || "",
+          en: formData.get(`name_en_${index}`) || formData.get(`name_en_${file.name}`) || originalName,
+          ar: formData.get(`name_ar_${index}`) || formData.get(`name_ar_${file.name}`) || "",
+          fr: formData.get(`name_fr_${index}`) || formData.get(`name_fr_${file.name}`) || "",
+          de: formData.get(`name_de_${index}`) || formData.get(`name_de_${file.name}`) || "",
+          it: formData.get(`name_it_${index}`) || formData.get(`name_it_${file.name}`) || "",
+          zh: formData.get(`name_zh_${index}`) || formData.get(`name_zh_${file.name}`) || "",
+          es: formData.get(`name_es_${index}`) || formData.get(`name_es_${file.name}`) || "",
         };
 
         galleryImageObjects.push({

@@ -15,7 +15,7 @@ export async function POST(req) {
 
     let coverImageUrl = null;
 
-    if (coverFile) {
+    if (coverFile && typeof coverFile.arrayBuffer === "function") {
       if (coverFile.size > 5 * 1024 * 1024) {
         return new Response(JSON.stringify({ success: false, error: "File must be 5MB or smaller" }), { status: 413 });
       }
@@ -26,11 +26,11 @@ export async function POST(req) {
       const originalName = `${Date.now()}-${crypto.randomUUID()}${extension}`;
       const uploadPath = path.join(uploadDir, originalName);
 
-      if (!fs.existsSync(uploadPath)) {
-        fs.writeFileSync(uploadPath, Buffer.from(await coverFile.arrayBuffer()));
-      }
+      fs.mkdirSync(uploadDir, { recursive: true });
+      fs.writeFileSync(uploadPath, Buffer.from(await coverFile.arrayBuffer()));
 
-      coverImageUrl = `https://wasettravel.com/${folder}/${originalName}`;
+      // Same-origin URL works in local, staging, and production.
+      coverImageUrl = `/${folder}/${originalName}`;
     }
 
     return new Response(JSON.stringify({ success: true, cover_image: coverImageUrl }), { status: 201 });

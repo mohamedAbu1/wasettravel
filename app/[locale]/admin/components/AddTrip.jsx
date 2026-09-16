@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { useTrip } from "../context/TripContext";
 
@@ -16,13 +16,11 @@ import TripExclusions from "./components/TripExclusions";
 import TripDetailsTable from "./components/TripDetailsTable";
 
 export default function AddTrip() {
-  const { tripData, updateTripField, saveTrip } = useTrip();
-  const [tripDetails, setTripDetails] = useState([]);
+  const { tripData, updateTripField } = useTrip();
   return (
     <motion.form
-      onSubmit={async (e) => {
+      onSubmit={(e) => {
         e.preventDefault();
-        const result = await saveTrip();
       }}
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
@@ -74,7 +72,7 @@ export default function AddTrip() {
 
       <section className="admin-form-section">
         <div className="admin-form-section__header"><span>04</span><div><h3>Guest experience</h3><p>Set expectations and shape the itinerary.</p></div></div>
-        <div className="admin-form-stack"><TripIncludes /><TripExclusions /><DailyItinerary /><TripDetailsTable tripDetails={tripDetails} setTripDetails={setTripDetails} /></div>
+        <div className="admin-form-stack"><TripIncludes /><TripExclusions /><DailyItinerary /><TripDetailsTable /></div>
       </section>
 
       <footer className="admin-form-footer"><p>Review all language fields before publishing.</p><SaveButton /></footer>

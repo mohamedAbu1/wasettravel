@@ -5,14 +5,18 @@ import { useTripID } from "../../context/TripIDContext";
 const EditTripSaveButton = () => {
   const { tripData, saveTrip, loading } = useTripID();
   const [status, setStatus] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   // ✅ حفظ التعديلات
   const handleSave = async () => {
-    const result = await saveTrip();
-    if (result.success) {
-      setStatus("success");
-    } else {
-      setStatus("error");
+    if (saving || loading) return;
+    setSaving(true);
+    setStatus(null);
+    try {
+      const result = await saveTrip();
+      setStatus(result.success ? "success" : "error");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -21,16 +25,17 @@ const EditTripSaveButton = () => {
       <button
         type="button"
         onClick={handleSave}
+        disabled={loading || saving}
        
         className={`w-full py-3 rounded-lg font-bold transition shadow-lg 
           ${
-            loading
+            loading || saving
               ? "bg-gray-400 text-gray-700 cursor-not-allowed"
               : "bg-[#c9a34a] text-black hover:bg-yellow-500"
           }
         `}
       >
-        {loading ? "Saving..." : "Save Trip"}
+        {loading || saving ? "Saving..." : "Save Trip"}
       </button>
 
       {status === "success" && (

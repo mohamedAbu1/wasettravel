@@ -112,7 +112,9 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 className="h-[300px] bg-[#ead9c7] lg:h-[480px]"
               >
                 {(Array.isArray(trip.gallery_images) && trip.gallery_images.length ? trip.gallery_images : [trip.cover_image]).map((image, idx) => {
-                  const img = typeof image === "string" ? image : image?.url;
+                  const img = typeof image === "string"
+                    ? image
+                    : image?.url || image?.src || image?.image || image?.image_url || image?.path;
                   return (
                   <SwiperSlide key={idx}>
                     <Image
@@ -121,8 +123,8 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                       fill
                       quality={75} // ✅ ضغط الصورة بدون فقدان واضح للجودة
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" // ✅ صور متجاوبة
-                      priority={i === 0} // ✅ تحميل الصورة الأولى بسرعة لتحسين LCP
-                      loading={i === 0 ? "eager" : "lazy"} // ✅ تحميل كسول لباقي الصور
+                      priority={idx === 0} // ✅ تحميل الصورة الأولى بسرعة لتحسين LCP
+                      loading={idx === 0 ? "eager" : "lazy"} // ✅ تحميل كسول لباقي الصور
                       className="object-cover w-full h-full rounded-lg"
                       style={{ aspectRatio: "4/3" }} // ✅ يمنع تغير الأبعاد أثناء التحميل (يقلل CLS)
                       placeholder="blur" // ✅ تحسين تجربة التحميل

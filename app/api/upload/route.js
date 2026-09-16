@@ -35,8 +35,8 @@ export async function POST(req) {
   const filePath = path.join(uploadDir, fileName);
   fs.writeFileSync(filePath, buffer);
 
-  // رابط دائم على موقعك
-  const publicUrl = `https://basttettravel.com/iamges/${fileName}`;
+  // Same-origin URL works in local, staging, and production.
+  const publicUrl = `/iamges/${fileName}`;
 
   return NextResponse.json({ url: publicUrl });
 }

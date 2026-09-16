@@ -24,7 +24,7 @@ export default function TripHeader({ trip, lang }) {
       return item;
     }).map((item) => ({
       ...item,
-      url: item?.url || item?.src || item?.image || item?.image_url || item?.cover_image,
+      url: item?.url || item?.src || item?.image || item?.image_url || item?.path || item?.cover_image,
     })).filter((item) => item.url);
     if (normalized.length) return normalized;
     return trip?.cover_image ? [{ url: trip.cover_image }] : [];

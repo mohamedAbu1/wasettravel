@@ -9,6 +9,13 @@ export default function TripOverviewTable({ trip }) {
 
   // تأكد إن البيانات موجودة
   const overviewData = trip?.trip_details || [];
+  const languages = { en: "Tour Overview", es: "Resumen del tour", fr: "Aperçu du tour", de: "Tourübersicht", it: "Panoramica del tour", zh: "行程概览" };
+
+  const parseObject = (value) => {
+    if (!value) return {};
+    if (typeof value === "object") return value;
+    try { return JSON.parse(value); } catch { return {}; }
+  };
 
   return (
     <section
@@ -21,7 +28,7 @@ export default function TripOverviewTable({ trip }) {
       <h2
         className={`text-2xl font-bold flex items-center gap-2 mb-4 border-b p-2 ${theme.border}`}
       >
-        Tour Overview
+        {languages[lang] || languages.en}
       </h2>
 
       <div className={`overflow-x-auto border ${theme.border}`}>
@@ -29,19 +36,15 @@ export default function TripOverviewTable({ trip }) {
           <tbody>
             {overviewData.map((item, index) => {
               // تحويل النص داخل detail_values من JSON string إلى كائن
-              let details = {};
-              try {
-                details = JSON.parse(item.detail_values);
-              } catch (error) {
-                console.error("Error parsing detail_values:", error);
-              }
+              const details = parseObject(item.detail_values);
+              const translations = parseObject(item.translations);
 
               // عرض النص حسب اللغة الحالية أو الإنجليزية كـ fallback
-              const value = details[lang] || details["en"];
+              const value = details[lang] || details.en || Object.values(details).find(Boolean) || "—";
 
               // عرض الترجمة المناسبة للعنوان
               const label =
-                item.translations?.[lang] || item.translations?.["en"];
+                translations[lang] || translations.en || Object.values(translations).find(Boolean) || item.option_key;
 
               return (
                 <tr key={index} className={`border-b ${theme.border}`}>

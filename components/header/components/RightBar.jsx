@@ -94,6 +94,7 @@ export default function RightBar({ scrolled }) {
 
   const handleMessageClick = async (notification) => {
     await markAsRead(notification.id);
+    setOpenMessages(false);
 
     setChatUser({
       id: notification.user_id,

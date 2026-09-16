@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useTheme } from "@/context/ThemeContext";
 import { useTrip } from "../context/TripContext";
 
 // استدعاء الكومبوننتات
@@ -17,7 +16,6 @@ import TripExclusions from "./components/TripExclusions";
 import TripDetailsTable from "./components/TripDetailsTable";
 
 export default function AddTrip() {
-  const { themeName } = useTheme();
   const { tripData, updateTripField, saveTrip } = useTrip();
   const [tripDetails, setTripDetails] = useState([]);
   return (
@@ -29,63 +27,57 @@ export default function AddTrip() {
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className={`space-y-8 max-w-3xl mx-auto p-8 rounded-2xl shadow-2xl ${
-        themeName === "dark"
-          ? "bg-black/40 border border-gold/30"
-          : "bg-white/70 border border-[#c9a34a]/30 backdrop-blur-sm"
-      }`}
+      className="admin-form-shell"
     >
       <EgyptianBackground />
 
-      {/* العنوان */}
-      <h2
-        className={`text-3xl font-extrabold text-center ${
-          themeName === "dark"
-            ? "text-gold"
-            : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-        }`}
-      >
-        Add New Trip
-      </h2>
+      <header className="admin-section-header">
+        <div>
+          <p className="admin-section-eyebrow">Journey studio</p>
+          <h2 className="admin-section-title">Add a new trip</h2>
+          <p className="admin-section-description">Create a complete itinerary with localized content, media, pricing and inclusions.</p>
+        </div>
+        <span className="admin-section-badge">Draft</span>
+      </header>
 
-      {/* معلومات أساسية */}
-      <BasicInfo />
+      <section className="admin-form-section">
+        <div className="admin-form-section__header"><span>01</span><div><h3>Basic information</h3><p>Titles, descriptions and commercial details.</p></div></div>
+        <BasicInfo />
+      </section>
 
-      {/* التصنيف (مدن + فئات + مستوى السعر) */}
-      <TripClassification
-        category={tripData.categories}
-        setCategory={(val) => updateTripField("categories", val)}
-        city={tripData.cities}
-        setCity={(val) => updateTripField("cities", val)}
-        priceLevel={tripData.priceLevel}
-        setPriceLevel={(val) => updateTripField("priceLevel", val)}
-      />
+      <section className="admin-form-section">
+        <div className="admin-form-section__header"><span>02</span><div><h3>Classification</h3><p>Help guests discover the right experience.</p></div></div>
+        <TripClassification
+          category={tripData.categories}
+          setCategory={(val) => updateTripField("categories", val)}
+          city={tripData.cities}
+          setCity={(val) => updateTripField("cities", val)}
+          setPriceLevel={(val) => updateTripField("priceLevel", val)}
+        />
+      </section>
 
-      {/* صورة الغلاف */}
-      <CoverImageUpload
-        coverImage={tripData.cover_file}
-        setCoverImage={(file) => updateTripField("cover_file", file)}
-        coverName={tripData.cover_name}
-        setCoverName={(name) => updateTripField("cover_name", name)}
-      />
+      <section className="admin-form-section">
+        <div className="admin-form-section__header"><span>03</span><div><h3>Visual identity</h3><p>Choose a strong cover and supporting gallery.</p></div></div>
+        <div className="admin-form-grid">
+          <CoverImageUpload
+            coverImage={tripData.cover_file}
+            setCoverImage={(file) => updateTripField("cover_file", file)}
+            coverName={tripData.cover_name}
+            setCoverName={(name) => updateTripField("cover_name", name)}
+          />
+          <GalleryUpload
+            galleryImages={tripData.gallery_files}
+            setGalleryImages={(files) => updateTripField("gallery_files", files)}
+          />
+        </div>
+      </section>
 
-      {/* صور المعرض */}
-      <GalleryUpload
-        galleryImages={tripData.gallery_files}
-        setGalleryImages={(files) => updateTripField("gallery_files", files)}
-      />
+      <section className="admin-form-section">
+        <div className="admin-form-section__header"><span>04</span><div><h3>Guest experience</h3><p>Set expectations and shape the itinerary.</p></div></div>
+        <div className="admin-form-stack"><TripIncludes /><TripExclusions /><DailyItinerary /><TripDetailsTable tripDetails={tripDetails} setTripDetails={setTripDetails} /></div>
+      </section>
 
-      {/* ما تحتوي عليه الرحلة */}
-      <TripIncludes />
-      <TripExclusions />
-      {/* البرنامج اليومي */}
-      <DailyItinerary />
-      <TripDetailsTable
-        tripDetails={tripDetails}
-        setTripDetails={setTripDetails}
-      />
-      {/* زر الحفظ */}
-      <SaveButton />
+      <footer className="admin-form-footer"><p>Review all language fields before publishing.</p><SaveButton /></footer>
     </motion.form>
   );
 }

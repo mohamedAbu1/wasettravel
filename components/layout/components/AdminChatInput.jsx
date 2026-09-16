@@ -11,7 +11,6 @@ export default function AdminChatInput({
   text,
   setText,
   handleSend,
-  theme,
   themeName,
   handleSendImage,
   user,
@@ -19,7 +18,7 @@ export default function AdminChatInput({
 const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   return (
-    <div className={`p-3 border-t flex gap-2 items-center ${theme.border}`}>
+    <div className="conversation-input">
       {/* <label className="cursor-pointer">
         <FaImage size={20} className={theme.icon} />
         <input
@@ -50,15 +49,11 @@ const [showEmojiPicker, setShowEmojiPicker] = useState(false);
             handleSend();
           }
         }}
-        className={`flex-1 rounded px-2 py-1 border ${theme.border}`}
+        className="conversation-input__field"
       />
       <button
         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-        className={`flex items-center justify-center w-10 h-10 rounded-md transition-all duration-300 ${
-          themeName === "dark"
-            ? "bg-gray-700 text-white hover:bg-gray-600"
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
+        className="conversation-input__tool"
       >
         <FaSmile className="text-lg" />
       </button>
@@ -80,7 +75,7 @@ const [showEmojiPicker, setShowEmojiPicker] = useState(false);
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleSend}
-        className={`${theme.buttonPrimary} text-white flex items-center gap-1`}
+        className="conversation-input__send"
       >
         <FaPaperPlane /> Send
       </motion.button>

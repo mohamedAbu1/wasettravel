@@ -38,7 +38,7 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
   };
 
   return (
-    <div className="flex-1 overflow-x-hidden p-4 overflow-y-auto space-y-4">
+    <div className="conversation-messages">
       <AnimatePresence>
         {messages.length > 0 ? (
           messages.map((msg) => (
@@ -48,10 +48,10 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className={`flex items-start gap-3 max-w-[100%] ${
+              className={`conversation-message-row ${
                 msg.sender_type === "user"
-                  ? "self-start"
-                  : "self-end flex-row-reverse"
+                  ? "conversation-message-row--incoming"
+                  : "conversation-message-row--outgoing"
               }`}
             >
               <img
@@ -61,22 +61,16 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
                 : "/HomePageImage/Copilot_20260613_134550.webp" :
                   msg.user_image}
                 alt={msg.user_name}
-                className={`w-12 h-12 rounded-full border ${
-                  msg.sender_type === "admin" ? "border-yellow-500" : "border-[#41707e]"
-                } object-cover`}
+                className="conversation-message-avatar"
               />
               <div
-                className={`p-3 rounded-lg shadow-md max-w-[70%] flex flex-col ${
+                className={`conversation-message-bubble ${
                   msg.sender_type === "user"
-                    ? themeName === "dark"
-                      ? "bg-gray-700 text-white"
-                      : "bg-gray-200 text-black"
-                    : themeName === "dark"
-                    ? "bg-yellow-500 text-black"
-                    : "bg-[#41707e] text-white"
+                    ? "conversation-message-bubble--incoming"
+                    : "conversation-message-bubble--outgoing"
                 }`}
               >
-                <p className="text-sm font-semibold mb-1 capitalize">
+                <p className="conversation-message-sender">
                   {msg.sender_type === "admin" ? "👑 Basttet Travel 👑" : msg.user_name} 
                 </p>
 
@@ -88,34 +82,26 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
                       alt="uploaded"
                       className="w-full rounded-lg object-cover"
                     />
-                    <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="conversation-message-media-actions">
                       <button
                         onClick={() => handleDownload(msg.content, msg.id)}
-                        className={`flex items-center gap-2 px-3 py-1 text-xs font-medium rounded shadow ${
-                          themeName === "dark"
-                            ? "bg-gray-700 text-white hover:bg-gray-600"
-                            : "bg-blue-500 text-white hover:bg-blue-600"
-                        } transition`}
+                        className="conversation-message-media-action"
                       >
                         <FaDownload className="text-sm" /> Download
                       </button>
                       <button
                         onClick={() => window.open(msg.content, "_blank")}
-                        className={`flex items-center gap-2 px-3 py-1 text-xs font-medium rounded shadow ${
-                          themeName === "dark"
-                            ? "bg-gray-700 text-white hover:bg-gray-600"
-                            : "bg-green-500 text-white hover:bg-green-600"
-                        } transition`}
+                        className="conversation-message-media-action"
                       >
                         <FaExpand className="text-sm" /> View
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <p>{msg.content}</p>
+                  <p className="conversation-message-content">{msg.content}</p>
                 )}
 
-                <div className="flex items-center gap-1 mt-1 text-xs opacity-70">
+                <div className="conversation-message-meta">
                   <FaClock className="text-xs" />
                   <span className="italic">
                     {msg.created_at
@@ -125,7 +111,7 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
                       : ""}
                   </span>
                   {msg.status && (
-                    <span className="ml-2">
+                    <span className="conversation-message-status">
                       {msg.status === "sent" ? "✅ Sent" : "👀 Seen"}
                     </span>
                   )}
@@ -134,10 +120,10 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
             </motion.div>
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center h-full text-gray-500 opacity-80">
-            <FaComments className="text-3xl mb-2 text-yellow-500" />
-            <p className="font-semibold">{t("noMessagesYet")}</p>
-            <p className="text-sm">{t("startConversation")}</p>
+          <div className="conversation-empty">
+            <FaComments />
+            <p>{t("noMessagesYet")}</p>
+            <span>{t("startConversation")}</span>
           </div>
         )}
       </AnimatePresence>

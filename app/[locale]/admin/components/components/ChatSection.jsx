@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState, useEffect } from "react";
-import { useMessages } from "../../context/MessageContext";
+import { useMessages } from "@/context/MessageContext";
 import { useAuth } from "@/context/AuthContext";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
@@ -27,7 +27,11 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
   useEffect(() => {
     if (activeUser && messages.length > 0) {
       messages.forEach((msg) => {
-        if (msg.sender_type === "user" && msg.status === "sent") {
+        if (
+          String(msg.user_id) === String(activeUser.id) &&
+          msg.sender_type === "user" &&
+          msg.status === "sent"
+        ) {
           markMessageSeen(msg.id);
         }
       });
@@ -103,7 +107,7 @@ const handleSendImage = async (file) => {
 
 
   return (
-    <section className="flex-1 flex flex-col">
+    <section className="admin-chat-panel">
       <EgyptianBackground />
       <ChatHeader activeUser={activeUser} theme={theme} themeName={themeName} />
 

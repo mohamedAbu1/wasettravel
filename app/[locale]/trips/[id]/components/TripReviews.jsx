@@ -21,6 +21,8 @@ export default function TripReviews({ trip, lang }) {
     addLike,
     fetchReviewsByTrip,
     removeLike,
+    isLiked,
+    likePending,
   } = useReviews();
   const { userData } = useAuth();
   const { t } = useTranslation("tripsId");
@@ -96,6 +98,10 @@ export default function TripReviews({ trip, lang }) {
     .slice(indexOfFirstComment, indexOfLastComment);
 
   const totalPages = Math.ceil(tripReviews.length / commentsPerPage);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.max(1, Math.min(page, Math.max(totalPages, 1))));
+  }, [totalPages]);
 
   // ✅ دالة إضافة تعليق
   const handleSubmit = async (e) => {
@@ -201,6 +207,8 @@ export default function TripReviews({ trip, lang }) {
               likes={likes}
               addLike={addLike}
               removeLike={removeLike}
+              isLiked={isLiked}
+              likePending={likePending}
             />
           </div>
         ))}

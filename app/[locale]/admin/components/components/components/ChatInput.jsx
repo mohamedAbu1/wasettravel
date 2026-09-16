@@ -12,8 +12,6 @@ export default function ChatInput({
   setNewMessage,
   handleSend,
   setIsTyping,
-  theme,
-  themeName,
   handleSendImage,
 }) {
   if (!activeUser) return null;
@@ -25,17 +23,11 @@ export default function ChatInput({
   };
 
   return (
-    <div className={`p-3 border-t ${theme.border} flex flex-col gap-2`}>
-      <div className="flex gap-2 items-center">
+    <div className="admin-chat-input">
+      <div className="admin-chat-input__row">
         {/* زر رفع صورة كأيقونة */}
         <label
-          className={`flex items-center justify-center w-10 h-10 rounded-md cursor-pointer transition-all duration-300
-    ${
-      themeName === "dark"
-        ? "bg-gray-700 text-white hover:bg-gray-600"
-        : "bg-gray-200 text-black hover:bg-gray-300"
-    }
-    ${theme.border} ${theme.shadow}`}
+          className="admin-chat-tool"
         >
           <FaImage className={`text-lg ${theme.icon}`} />
           <input
@@ -69,19 +61,11 @@ export default function ChatInput({
               handleSend();
             }
           }}
-          className={`flex-1 rounded px-2 py-1 border ${theme.border} ${
-            themeName === "dark"
-              ? "bg-gray-800 text-white"
-              : "bg-white text-black"
-          }`}
+          className="admin-chat-textbox"
         />
         <button
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className={`flex items-center justify-center w-10 h-10 rounded-md transition-all duration-300 ${
-            themeName === "dark"
-              ? "bg-gray-700 text-white hover:bg-gray-600"
-              : "bg-gray-200 text-black hover:bg-gray-300"
-          }`}
+          className="admin-chat-tool"
         >
           <FaSmile className="text-lg" />
         </button>
@@ -99,11 +83,7 @@ export default function ChatInput({
         {/* زر إرسال النص مع أيقونة */}
         <button
           onClick={handleSend}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-300 ${
-            themeName === "dark"
-              ? "bg-yellow-500 text-black hover:bg-yellow-400"
-              : "bg-yellow-500 text-white hover:bg-yellow-600"
-          }`}
+          className="admin-chat-send"
         >
           <FaPaperPlane className="text-sm" /> Send
         </button>

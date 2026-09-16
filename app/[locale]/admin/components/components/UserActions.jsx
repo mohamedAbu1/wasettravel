@@ -1,10 +1,8 @@
 import React from "react";
 import { FaHeart, FaCommentDots, FaStar } from "react-icons/fa";
-import { useTheme } from "@/context/ThemeContext";
 import { useReviews } from "@/context/ReviewsContext";
 
 const UserActions = ({ user, handleToggle }) => {
-  const { theme } = useTheme();
   const { getUserLikes } = useReviews();
 
   const averageRating =
@@ -16,15 +14,15 @@ const UserActions = ({ user, handleToggle }) => {
       : 0;
 
   return (
-    <div className="flex gap-4 mt-3">
-      <button onClick={() => handleToggle(user.id, "likes")} className={theme.buttonDanger}>
+    <div className="admin-user-actions">
+      <button onClick={() => handleToggle(user.id, "likes")} className="admin-user-action admin-user-action--danger">
         <FaHeart /> {getUserLikes(user.id).reduce((sum, r) => sum + r.likes, 0)} Likes
       </button>
-      <button onClick={() => handleToggle(user.id, "comments")} className={theme.buttonSuccess}>
+      <button onClick={() => handleToggle(user.id, "comments")} className="admin-user-action admin-user-action--success">
         <FaCommentDots /> {user.reviews?.length || 0} Comments
       </button>
-      <div className={theme.buttonWarning}>
-        <FaStar className="text-yellow-500" /> {averageRating} / 5 ⭐
+      <div className="admin-user-action admin-user-action--rating">
+        <FaStar /> {averageRating} / 5
       </div>
     </div>
   );

@@ -14,13 +14,30 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
   const [text, setText] = useState("");
   const [adminTyping, setAdminTyping] = useState(false);
 
-  const { setMessages, setActiveChatUserId } = useMessages();
+  const { setMessages, setActiveChatUserId, fetchUserMessagesById } = useMessages();
 
   // ✅ تحديد المستخدم النشط
   useEffect(() => {
     setActiveChatUserId(user.id);
     return () => setActiveChatUserId(null);
   }, [user.id]);
+
+  // Keep an open conversation live. Closed conversations are handled by the
+  // notification polling, while this window refreshes only the active user.
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    const syncConversation = async () => {
+      const nextMessages = await fetchUserMessagesById(user.id);
+      if (!cancelled && Array.isArray(nextMessages)) setMessages(nextMessages);
+    };
+    syncConversation();
+    const interval = window.setInterval(syncConversation, 3000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [user?.id, fetchUserMessagesById, setMessages]);
 
   // ✅ استعلام حالة الكتابة للأدمن
   useEffect(() => {
@@ -89,7 +106,7 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
         >
           <EgyptianBackground />
 
-          <div className="flex items-center justify-between border-b border-[var(--line)] bg-[#30271d] px-4 py-3 text-[#f8f1e7]">
+          <div className="conversation-header">
             <div className="flex items-center gap-2">
               <img
                 src={user.image || "/default-avatar.png"}
@@ -103,7 +120,7 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
             <button
               onClick={onClose}
               aria-label="Close admin chat"
-              className="grid h-9 w-9 place-items-center rounded-xl text-white/65 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e0b873]"
+              className="conversation-close-button"
             >
               <motion.div
                 whileHover={{ rotate: 90, scale: 1.2 }}
@@ -116,7 +133,7 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
           </div>
 
           <AdminChatMessages
-            messages={messages.filter((msg) => msg.user_id === user.id)}
+            messages={messages.filter((msg) => String(msg.user_id) === String(user.id))}
             themeName={themeName}
             adminTyping={adminTyping}
           />

@@ -10,16 +10,10 @@ const UsersSidebar = ({ users,userData, activeUser, setActiveUser, theme, themeN
   );
 console.log(users)
   return (
-    <aside
-      style={{ marginRight: "5px" }}
-      className={`w-72 border-r ${theme.border} p-4 space-y-4 
-      ${themeName === "dark" ? "bg-gray-950 text-gray-100" : "bg-white text-gray-900"} 
-      shadow-lg`}
-    >
+    <aside className="admin-message-sidebar">
       {/* العنوان */}
       <h3
-        className={`mb-4 text-lg font-bold tracking-wide 
-        ${themeName === "dark" ? "text-yellow-400" : theme.title}`}
+        className="admin-message-sidebar__title"
       >
         Users
       </h3>
@@ -45,15 +39,15 @@ console.log(users)
                   .filter((msg) => sameId(msg.user_id, user.id) && msg.status === "sent")
                   .forEach((msg) => markMessageSeen(msg.id));
               }}
-              className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-300
+              className={`admin-message-user
                 ${
                   activeUser?.id === user.id
                     ? themeName === "dark"
-                      ? "bg-yellow-500 text-black shadow-md"
-                      : "bg-yellow-400 text-white shadow-md"
+                      ? "is-active"
+                      : ""
                     : themeName === "dark"
-                    ? "hover:bg-gray-800"
-                    : "hover:bg-gray-100"
+                    ? ""
+                    : ""
                 }`}
             >
               {/* صورة المستخدم أو أيقونة افتراضية */}
@@ -61,18 +55,18 @@ console.log(users)
                 <img
                   src={user?.avatar_url}
                   alt={user.name}
-                  className="w-10 h-10 rounded-full border object-cover"
+                  className="admin-message-user__avatar"
                 />
               ) : (
-                <FaUserCircle className="w-10 h-10 text-gray-400" />
+                  <FaUserCircle className="admin-message-user__avatar admin-message-user__avatar--fallback" />
               )}
 
               {/* الاسم */}
-              <span className="flex-1 font-medium capitalize">{user?.name}</span>
+              <span className="admin-message-user__name">{user?.name}</span>
 
               {/* Badge لو فيه رسائل جديدة */}
               {unreadCount > 0 && (
-                <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full shadow-sm">
+                <span className="admin-unread-badge">
                   {unreadCount}
                 </span>
               )}

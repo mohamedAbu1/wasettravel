@@ -1,6 +1,7 @@
 // src/app/api/reviews/[id]/route.js
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { requireUser } from "@/lib/auth/admin";
 
 // ✅ GET: جلب تعليق واحد
 export async function GET(req, { params }) {
@@ -22,6 +23,9 @@ export async function GET(req, { params }) {
 
 // ✅ DELETE: حذف تعليق
 export async function DELETE(req, { params }) {
+  const auth = requireUser(req);
+  if (auth.response) return auth.response;
+
   try {
     const reviewId = params.id;
     const db = await connectDB();
@@ -32,10 +36,15 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ ok: false, error: "Review not found" }, { status: 404 });
     }
 
-    // ⚠️ هنا تقدر تضيف تحقق من المستخدم الحالي (role أو id) لو عندك نظام Auth مبني على JWT/MySQL
+    const isAdmin = String(auth.user.role || "").trim().toLowerCase() === "admin";
+    if (!isAdmin && String(rows[0].user_id) !== String(auth.user.id)) {
+      return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+    }
+
+    await db.query("DELETE FROM review_likes WHERE review_id = ?", [reviewId]);
     await db.query("DELETE FROM reviews WHERE id = ?", [reviewId]);
 
-    return NextResponse.json({ ok: true, message: "Review deleted successfully" }, { status: 200 });
+    return NextResponse.json({ ok: true, success: true, reviewId, message: "Review deleted successfully" }, { status: 200 });
   } catch (err) {
     return NextResponse.json({ ok: false, error: err.message }, { status: 400 });
   }

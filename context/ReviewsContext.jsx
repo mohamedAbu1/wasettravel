@@ -11,6 +11,7 @@ export function ReviewsProvider({ children }) {
   const [allReviews, setAllReviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [likes, setLikes] = useState({});
+  const [likePending, setLikePending] = useState({});
   // ✅ جلب التعليقات الخاصة برحلة معينة
   const fetchReviewsByTrip = async (tripId) => {
     if (!tripId) return;
@@ -98,8 +99,8 @@ export function ReviewsProvider({ children }) {
       setLikes((prev) => ({
         ...prev,
         [reviewId]: {
-          count: res.data?.count || 0,
-          users: res.data?.users || [],
+          count: Number(res.data?.count || 0),
+          users: Array.isArray(res.data?.users) ? res.data.users : [],
         },
       }));
     } catch (err) {
@@ -107,32 +108,37 @@ export function ReviewsProvider({ children }) {
     }
   };
 
-const addLike = async (reviewId, userId) => {
-  if (!reviewId || !userId) return;
+  const addLike = async (reviewId) => {
+    if (!reviewId || !userData?.id || likePending[reviewId]) return { error: "Login required or request pending" };
+    const currentUsers = likes[reviewId]?.users || [];
+    if (currentUsers.some((id) => sameId(id, userData.id))) return { ok: true, alreadyLiked: true };
+    setLikePending((prev) => ({ ...prev, [reviewId]: true }));
 
-  try {
-    const res = await axios.post(`/api/reviews/${reviewId}/like`, {
-      user_id: userId, // ✅ استخدم الباراميتر المرسل
-    });
-
-    if (!res.data?.error) {
-      setLikes((prev) => ({
-        ...prev,
-        [reviewId]: {
-          count: (prev[reviewId]?.count || 0) + 1,
-          users: [...(prev[reviewId]?.users || []), userId],
-        },
-      }));
+    try {
+      const res = await axios.post(`/api/reviews/${reviewId}/like`, { user_id: userData.id });
+      if (res.data?.ok) {
+        setLikes((prev) => ({
+          ...prev,
+          [reviewId]: {
+            count: Number(res.data.count ?? (prev[reviewId]?.count || 0) + 1),
+            users: res.data.users || [...(prev[reviewId]?.users || []), userData.id],
+          },
+        }));
+      }
+      return res.data;
+    } catch (err) {
+      console.error("❌ Error adding like:", err);
+      return { error: err.response?.data?.error || err.message };
+    } finally {
+      setLikePending((prev) => ({ ...prev, [reviewId]: false }));
     }
-  } catch (err) {
-    console.error("❌ Error adding like:", err);
-  }
-};
+  };
 
 
   // ✅ إزالة لايك
   const removeLike = async (reviewId) => {
-    if (!userData?.id) return;
+    if (!userData?.id || !reviewId || likePending[reviewId]) return { error: "Login required or request pending" };
+    setLikePending((prev) => ({ ...prev, [reviewId]: true }));
 
     try {
       const res = await axios.delete(`/api/reviews/${reviewId}/like`, {
@@ -143,15 +149,22 @@ const addLike = async (reviewId, userId) => {
         setLikes((prev) => ({
           ...prev,
           [reviewId]: {
-            count: Math.max((prev[reviewId]?.count || 1) - 1, 0),
-            users: (prev[reviewId]?.users || []).filter((id) => id !== userData.id),
+            count: Number(res.data.count ?? Math.max((prev[reviewId]?.count || 1) - 1, 0)),
+            users: res.data.users || (prev[reviewId]?.users || []).filter((id) => !sameId(id, userData.id)),
           },
         }));
       }
+      return res.data;
     } catch (err) {
       console.error("❌ Error removing like:", err);
+      return { error: err.response?.data?.error || err.message };
+    } finally {
+      setLikePending((prev) => ({ ...prev, [reviewId]: false }));
     }
   };
+
+  const isLiked = (reviewId, userId = userData?.id) =>
+    Boolean(userId && likes[reviewId]?.users?.some((id) => sameId(id, userId)));
 
   // ✅ جلب لايكات المستخدم
   const getUserLikes = (userId) => {
@@ -182,12 +195,12 @@ const deleteReview = async (reviewId) => {
     });
 
     const data = res.data;
-    if (data.success) {
+    if (data.success || data.ok) {
       // تحديث التعليقات الخاصة بالرحلة
-      setReviewsByTrip((prev) => Object.fromEntries(Object.entries(prev).map(([key, reviews]) => [key, reviews.filter((review) => review.id !== reviewId)])));
+      setReviewsByTrip((prev) => Object.fromEntries(Object.entries(prev).map(([key, reviews]) => [key, reviews.filter((review) => !sameId(review.id, reviewId))])));
 
       // تحديث جميع التعليقات
-      setAllReviews((prev) => prev.filter((review) => review.id !== reviewId));
+      setAllReviews((prev) => prev.filter((review) => !sameId(review.id, reviewId)));
 
       // إزالة اللايكات الخاصة بالتعليق المحذوف
       setLikes((prev) => {
@@ -197,7 +210,7 @@ const deleteReview = async (reviewId) => {
       });
     }
 
-    return data;
+    return { ...data, success: Boolean(data.success || data.ok) };
   } catch (err) {
     console.error("❌ Error deleting review:", err);
     return { success: false, error: err.message };
@@ -218,6 +231,8 @@ const deleteReview = async (reviewId) => {
         fetchLikes,
         addLike,
         removeLike,
+        isLiked,
+        likePending,
         getUserLikes,
         deleteReview,
       }}

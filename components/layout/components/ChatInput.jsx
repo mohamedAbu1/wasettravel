@@ -12,7 +12,6 @@ export default function ChatInput({
   setText,
   handleSend,
   handleSendImage,
-  theme,
   themeName,
   user,
 }) {
@@ -21,7 +20,7 @@ export default function ChatInput({
     const { t: ui } = useTranslation("ui");
 
   return (
-    <div className="relative flex items-center gap-2 border-t border-[var(--line)] bg-[var(--surface-raised)] p-3">
+    <div className="conversation-input">
       {/* <label className="cursor-pointer">
         <FaImage size={20} className={theme.icon} />
         <input
@@ -53,16 +52,12 @@ export default function ChatInput({
           }
         }}
         aria-label="Type your message"
-        className="min-w-0 flex-1 rounded-xl border border-[var(--line)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:border-[#8f5d2e] focus:ring-2 focus:ring-[#8f5d2e]/20"
+        className="conversation-input__field"
       />
       <button
         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
         aria-label="Choose emoji"
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
-          themeName === "dark"
-            ? "bg-gray-700 text-white hover:bg-gray-600"
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
+        className="conversation-input__tool"
       >
         <FaSmile className="text-lg" />
       </button>
@@ -85,7 +80,7 @@ export default function ChatInput({
         whileTap={{ scale: 0.95 }}
         onClick={handleSend}
         aria-label="Send message"
-        className={`${theme.buttonPrimary} flex h-10 shrink-0 items-center gap-1 rounded-xl px-3 text-white`}
+        className="conversation-input__send"
       >
         <FaPaperPlane /> {t("Send")}
       </motion.button>

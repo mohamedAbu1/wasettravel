@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useAuth } from "./AuthContext";
 
 const MessageContext = createContext();
@@ -18,7 +18,10 @@ export function MessageProvider({ children }) {
   const fetchMessages = async (userId) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/messages?userId=${userId}`);
+      const endpoint = isAdminRole(userData?.role)
+        ? "/api/messages"
+        : `/api/messages?userId=${encodeURIComponent(userId)}`;
+      const res = await fetch(endpoint, { cache: "no-store" });
       if (!res.ok) {
         const text = await res.text();
         console.error("❌ Error fetching messages:", text);
@@ -38,7 +41,7 @@ export function MessageProvider({ children }) {
       setLoading(false);
     }
   };
-  const fetchUserMessagesById = async (id) => {
+  const fetchUserMessagesById = useCallback(async (id) => {
     try {
       const res = await fetch(`/api/messages?userId=${encodeURIComponent(id)}`);
       if (!res.ok) {
@@ -52,7 +55,7 @@ export function MessageProvider({ children }) {
       console.error("❌ خطأ أثناء جلب الرسائل:", err.message);
       return [];
     }
-  };
+  }, []);
 
   // ✅ إرسال رسالة جديدة
   const sendMessage = async ({
@@ -165,7 +168,7 @@ export function MessageProvider({ children }) {
     if (userData?.id) {
       fetchMessages(userData.id);
     }
-  }, [userData?.id,open]);
+  }, [userData?.id, userData?.role, open]);
 
   return (
     <MessageContext.Provider

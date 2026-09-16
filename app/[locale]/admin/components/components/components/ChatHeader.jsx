@@ -1,14 +1,9 @@
-export default function ChatHeader({ activeUser, theme, themeName }) {
+export default function ChatHeader({ activeUser }) {
   return (
-    <div
-      className={`p-3 border-b ${theme.border} font-bold ${
-        themeName === "dark"
-          ? "text-yellow-400 capitalize"
-          : "bg-gray-100 text-gray-800 capitalize"
-      }`}
-    >
-      
-      {activeUser ? `Chat with ${activeUser.name}` : "Select a user"}
+    <div className="admin-chat-header">
+      <span className="admin-section-eyebrow">Inbox</span>
+      <strong>{activeUser ? `Chat with ${activeUser.name}` : "Select a user"}</strong>
+      <small>{activeUser ? "Private conversation with a guest" : "Choose a guest to view the conversation"}</small>
     </div>
   );
 }

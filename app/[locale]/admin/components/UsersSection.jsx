@@ -2,17 +2,13 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaUsers } from "react-icons/fa";
+import { FaUsers, FaUserShield, FaSyncAlt } from "react-icons/fa";
 import { useUsers } from "../context/UserContext";
-import { useTheme } from "@/context/ThemeContext";
-import UserCard from "./components/UserCard";
 import UserActions from "./components/UserActions";
 import UserDetails from "./components/UserDetails";
-import EgyptianBackground from "@/components/layout/EgyptianBackground";
 
 const UsersSection = () => {
   const { users, fetchUsers, setUsers } = useUsers();
-  const { theme } = useTheme();
   const [activeUser, setActiveUser] = useState(null);
   const [activeTab, setActiveTab] = useState(null);
 
@@ -67,76 +63,59 @@ const UsersSection = () => {
 
   return (
     <motion.div
-      className={`p-6 rounded-lg shadow-lg ${theme.card} ${theme.text}`}
+      className="admin-panel admin-section-panel"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      <EgyptianBackground />
-
-      {/* ✅ العنوان وعدد المستخدمين */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="flex items-center justify-between mb-6"
+        className="admin-section-header"
       >
-        <h2
-          className={`text-2xl font-bold flex items-center gap-2 ${theme.textAccent}`}
-        >
-          <FaUsers /> Users Management
-        </h2>
-        <div
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md ${theme.border}`}
-        >
+        <div><p className="admin-section-eyebrow">People & access</p><h2 className="admin-section-title">Users management</h2><p className="admin-section-description">Review profiles, activity and access levels from one place.</p></div>
+        <div className="admin-section-metric">
           <FaUsers />
-          <span className="font-semibold">Total: {users.length}</span>
+          <span><strong>{users.length}</strong><small>Registered users</small></span>
         </div>
       </motion.div>
 
-      <ul className={`mt-6 divide-y ${theme.border}`}>
+      <div className="admin-user-toolbar"><span><FaUserShield /> Access control</span><button type="button" className="admin-action-button" onClick={fetchUsers}><FaSyncAlt /> Refresh users</button></div>
+      <ul className="admin-user-grid">
         {users.map((user) => (
           <motion.li
             key={user.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className={`py-4 px-4 flex items-center gap-4`}
+            className="admin-user-card"
           >
             {/* ✅ صورة المستخدم */}
-            <im
+            <img
               src={user?.avatar_url || "/default-avatar.png"}
               alt={user?.name || "User"}
-              className="w-12 h-12 rounded-full border"
+              className="admin-user-card__avatar"
             />
 
-            <div className="flex-1">
+            <div className="admin-user-card__identity">
               {/* ✅ عرض الاسم والإيميل */}
-              <p className="text-sm font-medium">
-                Name: {user?.name || "Unknown"}
-              </p>
-              <p className="text-sm font-medium">
-                Email: {user?.email || "No email"}
-              </p>
+              <p className="admin-user-card__name">{user?.name || "Unknown user"}</p>
+              <p className="admin-user-card__email">{user?.email || "No email"}</p>
 
               {/* ✅ عرض الدور الحالي */}
-              <p className="text-sm font-medium mt-2">
-                Role: {user?.role || "USER"}
-              </p>
+              <span className="admin-status-pill">{user?.role || "USER"}</span>
 
               {/* ✅ زر لتغيير الدور */}
               <button
                 onClick={() => handleToggleRole(user)}
-                className="mt-2 px-3 py-1 text-xs rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+                className="admin-action-button admin-action-button--small mt-3"
               >
-                {String(user?.role || "").trim().toLowerCase() === "admin" ? "Make User" : "Make Admin"}
+                {String(user?.role || "").trim().toLowerCase() === "admin" ? "Make user" : "Make admin"}
               </button>
             </div>
 
-            <UserActions user={user} handleToggle={handleToggle} />
-            {activeUser === user.id && (
-              <UserDetails user={user} activeTab={activeTab} />
-            )}
+            <div className="admin-user-card__body"><UserActions user={user} handleToggle={handleToggle} />{activeUser === user.id && <UserDetails user={user} activeTab={activeTab} />}</div>
           </motion.li>
         ))}
       </ul>

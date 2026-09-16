@@ -1,12 +1,10 @@
 "use client";
 import React from "react";
-import { useTheme } from "@/context/ThemeContext";
 import { FaCheckCircle, FaTimesCircle, FaClipboardList, FaClock } from "react-icons/fa";
 import { usePurchase } from "../context/PurchaseContext";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 export default function BookingsList() {
-  const { themeName } = useTheme();
   const { purchases, loading, error, fetchPurchases, handleStatusChange } =
     usePurchase();
   const { i18n } = useTranslation();
@@ -23,43 +21,23 @@ export default function BookingsList() {
     }
   };
 
-  if (loading) return <p className="text-center">⏳ Loading bookings...</p>;
+  if (loading) return <div className="admin-loading-state"><span className="admin-loading-state__spinner" />Loading bookings…</div>;
   if (error)
-    return <p className="text-center text-red-500">❌ Error: {error}</p>;
+    return <div className="admin-empty-state admin-empty-state--error"><strong>Unable to load bookings</strong><span>{error}</span><button type="button" className="admin-action-button admin-action-button--primary" onClick={fetchPurchases}>Try again</button></div>;
 
   return (
-    <div
-      className={`rounded-xl shadow-lg p-6 ${
-        themeName === "dark"
-          ? "bg-black/40 border border-gold/30 text-white"
-          : "bg-white/70 border border-[#c9a34a]/30 text-[#3a2c0a] backdrop-blur-sm"
-      }`}
-    >
+    <section className="admin-panel admin-section-panel">
       {/* ✅ العنوان وعدد الحجوزات */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="flex items-center justify-between mb-6"
+        className="admin-section-header"
       >
-        <h2
-          className={`text-2xl font-bold ${
-            themeName === "dark"
-              ? "text-gold"
-              : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-          }`}
-        >
-          ✨ Bookings
-        </h2>
-        <div
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md ${
-            themeName === "dark"
-              ? "bg-gold/20 text-gold"
-              : "bg-[#fdf6e3] text-[#3a2c0a]"
-          }`}
-        >
+        <div><p className="admin-section-eyebrow">Operations</p><h2 className="admin-section-title">Bookings</h2><p className="admin-section-description">Review incoming requests and keep their status up to date.</p></div>
+        <div className="admin-section-metric">
           <FaClipboardList />
-          <span className="font-semibold">Total: {purchases.length}</span>
+          <span><strong>{purchases.length}</strong><small>Total bookings</small></span>
         </div>
       </motion.div>
 
@@ -67,15 +45,15 @@ export default function BookingsList() {
         onClick={fetchPurchases}
         disabled={loading}
         aria-label="Refresh bookings"
-        className="mb-4 px-4 py-2 rounded-lg bg-gradient-to-r from-[#c9a34a] to-[#eab308] text-white hover:scale-105 transition-transform shadow-md"
+        className="admin-action-button admin-action-button--primary mb-5"
       >
-        🔄 Refresh Bookings
+        Refresh bookings
       </button>
 
       {purchases.length > 0 ? (
-        <div className="overflow-x-auto rounded-lg border border-current/10">
+        <div className="admin-table-shell">
         <motion.table
-          className="min-w-[900px] w-full text-left border-collapse"
+          className="admin-table min-w-[900px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
@@ -191,15 +169,15 @@ export default function BookingsList() {
         </motion.table>
         </div>
       ) : (
-        <motion.p
-          className="opacity-70 text-center"
+        <motion.div
+          className="admin-empty-state"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
         >
-          No bookings available.
-        </motion.p>
+          <strong>No bookings yet</strong><span>New booking requests will appear here.</span>
+        </motion.div>
       )}
-    </div>
+    </section>
   );
 }

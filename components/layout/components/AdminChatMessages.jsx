@@ -11,7 +11,7 @@ export default function AdminChatMessages({ messages, themeName }) {
     }
   }, [messages]);
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-3">
+    <div className="conversation-messages">
       {messages.map((msg) => (
         <motion.div
           key={msg.id}
@@ -19,10 +19,10 @@ export default function AdminChatMessages({ messages, themeName }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className={`flex items-start gap-3 max-w-[100%] ${
+          className={`conversation-message-row ${
             msg.sender_type === "user"
-              ? "self-start"
-              : "self-end flex-row-reverse"
+              ? "conversation-message-row--incoming"
+              : "conversation-message-row--outgoing"
           }`}
         >
           <img
@@ -34,26 +34,16 @@ export default function AdminChatMessages({ messages, themeName }) {
                 : msg.user_image
             }
             alt={msg.user_name}
-            className={`w-12 h-12 rounded-full border ${
-              msg.sender_type === "admin"
-                ? themeName === "dark"
-                  ? "border-yellow-500"
-                  : "#41707e"
-                : ""
-            } object-cover`}
+            className="conversation-message-avatar"
           />
           <div
-            className={`p-3 rounded-lg shadow-md max-w-[70%] flex flex-col ${
+            className={`conversation-message-bubble ${
               msg.sender_type === "user"
-                ? themeName === "dark"
-                  ? "bg-gray-700 text-white"
-                  : "bg-gray-200 text-black"
-                : themeName === "dark"
-                  ? "bg-yellow-500 text-black"
-                  : "bg-[#41707e] text-white"
+                ? "conversation-message-bubble--incoming"
+                : "conversation-message-bubble--outgoing"
             }`}
           >
-            <p className="text-sm font-semibold mb-1 capitalize">
+            <p className="conversation-message-sender">
               {msg.sender_type === "admin"
                 ? "👑 Waset Travel 👑"
                 : msg.user_name || "Waset Travel"}
@@ -66,10 +56,10 @@ export default function AdminChatMessages({ messages, themeName }) {
                 className="w-full rounded-lg object-cover"
               />
             ) : (
-              <p>{msg.content}</p>
+              <p className="conversation-message-content">{msg.content}</p>
             )}
 
-            <div className="flex items-center gap-1 mt-1 text-xs opacity-70">
+            <div className="conversation-message-meta">
               <FaClock className="text-xs" />
               {/* <span className="italic">
                     {msg.created_at
@@ -79,7 +69,7 @@ export default function AdminChatMessages({ messages, themeName }) {
                       : ""}
                   </span> */}
               {msg.status && (
-                <span className="ml-2">
+                <span className="conversation-message-status">
                   {msg.status === "sent" ? "✅ Sent" : "👀 Seen"}
                 </span>
               )}

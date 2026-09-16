@@ -5,7 +5,6 @@ import { ResponsiveBar } from "@nivo/bar";
 import { ResponsivePie } from "@nivo/pie";
 import { ResponsiveLine } from "@nivo/line";
 import { FaChartBar } from "react-icons/fa";
-import EgyptianBackground from "@/components/layout/EgyptianBackground";
 
 // ✅ استدعاء الـ contexts
 import { useUsers } from "../context/UserContext";
@@ -26,37 +25,15 @@ export default function Reports() {
     { id: "Revenue", value: 250000 }, // هنا ممكن تربطها بكونتكست لو عندك بيانات مالية
   ];
 
-  const colors = themeName === "dark" ? { scheme: "nivo" } : { scheme: "set2" };
-
-  const sectionStyle = `rounded-lg p-6 shadow-lg ${
-    themeName === "dark"
-      ? "bg-black/40 border border-gold/30 text-white"
-      : "bg-white/70 border border-[#c9a34a]/30 text-[#3a2c0a] backdrop-blur-sm"
-  }`;
+  const colors = { scheme: themeName === "dark" ? "nivo" : "set2" };
 
   return (
-    <div
-      className={`rounded-xl shadow-lg p-6 ${
-        themeName === "dark"
-          ? "bg-black/40 border border-gold/30 text-white"
-          : "bg-white/70 border border-[#c9a34a]/30 text-[#3a2c0a] backdrop-blur-sm"
-      }`}
-    >
-      <EgyptianBackground />
-
-      <h2
-        className={`flex items-center gap-2 text-2xl font-bold mb-6 ${
-          themeName === "dark"
-            ? "text-gold"
-            : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-        }`}
-      >
-        <FaChartBar /> Reports
-      </h2>
+    <section className="admin-panel admin-section-panel">
+      <header className="admin-section-header"><div><p className="admin-section-eyebrow"><FaChartBar /> Business intelligence</p><h2 className="admin-section-title">Reports</h2><p className="admin-section-description">A clear snapshot of the people, journeys and bookings powering the platform.</p></div><span className="admin-section-badge">Live data</span></header>
 
       {/* ✅ Bar Chart */}
-      <div className={`${sectionStyle} mb-6`} style={{ height: "350px" }}>
-        <h3 className="text-xl font-bold mb-4">📊 Users, Trips & Bookings</h3>
+      <div className="admin-chart-panel mb-5" style={{ height: "350px" }}>
+        <div className="admin-panel-heading"><div><p className="admin-panel-kicker">Volume</p><h3>Users, trips & bookings</h3></div></div>
         <ResponsiveBar
           data={stats}
           keys={["value"]}
@@ -78,8 +55,8 @@ export default function Reports() {
       </div>
 
       {/* ✅ Pie Chart */}
-      <div className={`${sectionStyle} mb-6`} style={{ height: "350px" }}>
-        <h3 className="text-xl font-bold mb-4">🍩 Distribution</h3>
+      <div className="admin-chart-panel mb-5" style={{ height: "350px" }}>
+        <div className="admin-panel-heading"><div><p className="admin-panel-kicker">Mix</p><h3>Platform distribution</h3></div></div>
         <ResponsivePie
           data={stats}
           margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -98,8 +75,8 @@ export default function Reports() {
       </div>
 
       {/* ✅ Line Chart */}
-      <div className={sectionStyle} style={{ height: "350px" }}>
-        <h3 className="text-xl font-bold mb-4">📈 Bookings Over Time</h3>
+      <div className="admin-chart-panel" style={{ height: "350px" }}>
+        <div className="admin-panel-heading"><div><p className="admin-panel-kicker">Trend</p><h3>Bookings over time</h3></div></div>
         <ResponsiveLine
           data={[
             {
@@ -121,6 +98,6 @@ export default function Reports() {
           enableSlices="x"
         />
       </div>
-    </div>
+    </section>
   );
 }

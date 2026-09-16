@@ -23,10 +23,24 @@ export async function POST(request) {
 
     const user = rows[0];
 
-    // ✅ التحقق من كلمة المرور
-    const isValid = await bcrypt.compare(password, user.password);
+    // Passwords created by the current signup flow are bcrypt hashes. Some
+    // legacy/imported accounts may still contain the old plaintext value;
+    // accept those once, then migrate them immediately to bcrypt.
+    const storedPassword = String(user.password || "");
+    const isBcryptHash = /^\$2[aby]\$\d{2}\$/.test(storedPassword);
+    const isValid = isBcryptHash
+      ? await bcrypt.compare(password, storedPassword)
+      : password === storedPassword;
     if (!isValid) {
       return NextResponse.json({ error: "البريد الإلكتروني أو كلمة المرور غير صحيحة" }, { status: 401 });
+    }
+
+    if (!isBcryptHash) {
+      const migratedPassword = await bcrypt.hash(password, 12);
+      await db.query(
+        "UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?",
+        [migratedPassword, user.id],
+      );
     }
 
     // ✅ إنشاء التوكينات

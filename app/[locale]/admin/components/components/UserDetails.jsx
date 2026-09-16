@@ -1,13 +1,10 @@
 import React from "react";
 import UserLikes from "./UserLikes";
 import UserComments from "./UserComments";
-import { useTheme } from "@/context/ThemeContext";
 
 const UserDetails = ({ user, activeTab }) => {
-  const { theme } = useTheme();
-
   return (
-    <div className={`mt-4 p-3 rounded-md ${theme.cardSecondary}`}>
+    <div className="admin-user-details">
       {activeTab === "likes" && <UserLikes user={user} />}
       {activeTab === "comments" && <UserComments user={user} />}
     </div>

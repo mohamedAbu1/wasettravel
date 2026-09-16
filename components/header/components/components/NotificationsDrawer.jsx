@@ -1,174 +1,50 @@
 "use client";
 import Drawer from "@mui/material/Drawer";
 import Slide from "@mui/material/Slide";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
 import IconButton from "@mui/material/IconButton";
-import Fade from "@mui/material/Fade";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import { useNotifications } from "@/context/NotificationsContext";
-import DividerWithIcon from "@/components/layout/DividerWithIcon";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import CloseIcon from "@mui/icons-material/Close";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import { FaCalendarCheck, FaCommentDots, FaHeart, FaInfoCircle, FaShoppingBag, FaStar } from "react-icons/fa";
+import { useNotifications } from "@/context/NotificationsContext";
 import { useTranslation } from "react-i18next";
 
-export default function NotificationsDrawer({
-  open,
-  onClose,
-  themeName,
-  handleNotificationClick,
-  theme,
-}) {
+const eventMeta = {
+  purchase: { label: "New booking", icon: FaShoppingBag },
+  review: { label: "New review", icon: FaStar },
+  review_like: { label: "Review liked", icon: FaHeart },
+  contact: { label: "Contact request", icon: FaCommentDots },
+  cancellation: { label: "Cancellation", icon: FaCalendarCheck },
+};
+
+const formatDate = (value) => {
+  if (!value) return "Just now";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Just now" : date.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Cairo" });
+};
+
+export default function NotificationsDrawer({ open, onClose, themeName, handleNotificationClick }) {
   const { notifications, deleteNotification } = useNotifications();
   const { t } = useTranslation("ui");
-
   const now = Date.now();
-  const twoDays = 2 * 24 * 60 * 60 * 1000; // يومين بالمللي ثانية
-
-  // ✅ فلترة وترتيب الإشعارات
   const filteredNotifications = notifications
-    .filter((n) => n.event_type !== "message")
-    .filter((n) => {
-      const createdTime = new Date(n.created_at).getTime();
-      return now - createdTime < twoDays; // احتفظ فقط بالإشعارات الأقل من يومين
-    })
-    .sort((a, b) => {
-      // غير مقروءة أولاً
-      if (Number(a.is_read) === 0 && Number(b.is_read) !== 0) return -1;
-      if (Number(a.is_read) !== 0 && Number(b.is_read) === 0) return 1;
-      // لو الاتنين نفس الحالة، رتب حسب التاريخ (الأحدث أولاً)
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
+    .filter((notification) => notification.event_type !== "message")
+    .filter((notification) => now - new Date(notification.created_at).getTime() < 2 * 24 * 60 * 60 * 1000)
+    .sort((a, b) => Number(a.is_read) - Number(b.is_read) || new Date(b.created_at) - new Date(a.created_at));
 
   return (
-    <Drawer
-      anchor="right"
-      open={open}
-      onClose={onClose}
-      TransitionComponent={Slide}
-      TransitionProps={{ direction: "left" }}
-    >
-      <div className="stone-drawer" style={{ "--drawer-bg": themeName === "dark" ? "#211d19" : "#fffaf3", "--drawer-text": themeName === "dark" ? "#f8f1e7" : "#30271d", "--drawer-muted": themeName === "dark" ? "rgba(248,241,231,.62)" : "#6f5c49", "--drawer-line": themeName === "dark" ? "rgba(224,184,115,.18)" : "rgba(112,69,31,.16)" }}>
-        <div className="stone-drawer__header">
-          <div className="flex items-center gap-3"><span className="stone-drawer__icon"><NotificationsNoneIcon /></span><div><Typography variant="h6" sx={{ fontWeight: 800, color: "var(--drawer-text)" }}>{t("notifications")}</Typography><Typography variant="caption" sx={{ color: "var(--drawer-muted)" }}>{filteredNotifications.length} {t("recentUpdates")}</Typography></div></div>
-          <IconButton aria-label="Close notifications" onClick={onClose} sx={{ color: "var(--drawer-muted)" }}><CloseIcon /></IconButton>
-        </div>
-        <Divider sx={{ borderColor: "var(--drawer-line)" }} />
-        <List sx={{ p: 0, mt: 2 }}>
+    <Drawer anchor="right" open={open} onClose={onClose} TransitionComponent={Slide} TransitionProps={{ direction: "left" }}>
+      <div className="stone-drawer stone-drawer--notifications" data-theme={themeName}>
+        <header className="stone-drawer__header"><div className="stone-drawer__title-group"><span className="stone-drawer__icon"><NotificationsNoneIcon /></span><div><span className="stone-drawer__eyebrow">Activity center</span><h2>{t("notifications")}</h2><p>{filteredNotifications.length} recent updates</p></div></div><IconButton aria-label="Close notifications" onClick={onClose} className="stone-drawer__close"><CloseIcon /></IconButton></header>
+        <div className="stone-drawer__list">
           {!filteredNotifications.length && <div className="stone-drawer__empty"><NotificationsNoneIcon /><strong>{t("noNewNotifications")}</strong><span>{t("caughtUp")}</span></div>}
-          {filteredNotifications.map((n) => (
-            <Fade in={true} timeout={500} key={n.id}>
-              <Box sx={{ mb: 1.5 }}>
-                <ListItem
-                  button
-                  onClick={() => handleNotificationClick(n)}
-                  sx={{
-                    alignItems: "flex-start",
-                    backgroundColor:
-                        Number(n.is_read) !== 0
-                        ? "transparent"
-                        : themeName === "dark"
-                        ? "rgba(255,255,255,0.08)"
-                        : "rgba(143,93,46,0.08)",
-                    border: "1px solid var(--drawer-line)",
-                    borderRadius: "16px",
-                    padding: "14px",
-                    boxShadow: Number(n.is_read) !== 0 ? "none" : "0 8px 20px rgba(78,54,31,.08)",
-                    transition: "0.3s",
-                    "&:hover": {
-                      backgroundColor:
-                        themeName === "dark" ? "rgba(255,255,255,.08)" : "rgba(143,93,46,.12)",
-                    },
-                  }}
-                >
-                  {/* صورة المستخدم */}
-                  <Avatar
-                    src={n.user_image}
-                    alt={n.user_name}
-                    sx={{ width: 42, height: 42, mr: 1.5, border: "2px solid #8f5d2e" }}
-                  />
-
-                  {/* النصوص */}
-                  <Box sx={{ flex: 1 }}>
-                    <ListItemText
-                      primary={
-                        <Typography
-                          variant="subtitle1"
-                          sx={{
-                            fontWeight: Number(n.is_read) !== 0 ? 600 : 800,
-                            textTransform: "capitalize",
-                            color: "var(--drawer-text)",
-                          }}
-                        >
-                          {n.user_name}
-                        </Typography>
-                      }
-                      secondary={
-                        <>
-                          <Typography
-                            variant="body2"
-                            className="text-gradient"
-                            sx={{
-                              fontStyle: "italic",
-                              fontWeight: 500,
-                              color: "var(--drawer-muted)",
-                            }}
-                          >
-                            {n.user_email}
-                          </Typography>
-
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              mt: 0.5,
-                              fontWeight: 600,
-                              letterSpacing: "0.5px",
-                              color:"var(--drawer-text)"
-
-                            }}
-                          >
-                            {n.message}
-                          </Typography>
-
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              mt: 0.5,
-                              fontWeight: 400,
-                              opacity: 0.8,
-                              color:"var(--drawer-muted)"
-
-                            }}
-                          >
-                            {new Date(n.created_at).toLocaleString("en-GB", {
-                              timeZone: "Africa/Cairo",
-                            })}
-                          </Typography>
-                        </>
-                      }
-                    />
-                  </Box>
-
-                  {/* زر الحذف */}
-                  <IconButton
-                    edge="end"
-                    aria-label="delete"
-                    onClick={() => deleteNotification(n.id)}
-                    sx={{ color: themeName === "dark" ? "#ed9a8c" : "#a34e42", ml: 1 }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItem>
-
-              </Box>
-            </Fade>
-          ))}
-        </List>
+          {filteredNotifications.map((notification) => {
+            const meta = eventMeta[notification.event_type] || { label: "Account update", icon: FaInfoCircle };
+            const EventIcon = meta.icon;
+            const unread = Number(notification.is_read) === 0;
+            return <article key={notification.id} className={`stone-notification-card ${unread ? "is-unread" : ""}`} onClick={() => handleNotificationClick(notification)} onKeyDown={(event) => event.key === "Enter" && handleNotificationClick(notification)} role="button" tabIndex={0}><div className="stone-notification-card__top"><span className="stone-notification-card__icon"><EventIcon /></span><div className="stone-notification-card__heading"><span>{meta.label}</span><strong>{notification.user_name || "WasetTravel"}</strong></div>{unread && <span className="stone-notification-card__badge">New</span>}<IconButton aria-label="Delete notification" className="stone-notification-card__delete" onClick={(event) => { event.stopPropagation(); deleteNotification(notification.id); }}><DeleteIcon /></IconButton></div>{notification.user_email && <p className="stone-notification-card__email">{notification.user_email}</p>}<p className="stone-notification-card__message">{notification.message || "You have a new activity update."}</p><footer className="stone-notification-card__footer"><time dateTime={notification.created_at}>{formatDate(notification.created_at)}</time>{notification.trip_id && <span>Trip #{String(notification.trip_id).slice(0, 8)}</span>}</footer></article>;
+          })}
+        </div>
       </div>
     </Drawer>
   );

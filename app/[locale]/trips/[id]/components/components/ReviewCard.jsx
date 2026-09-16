@@ -2,7 +2,6 @@
 import {
   FaStar,
   FaThumbsUp,
-  FaThumbsDown,
   FaUserCircle,
   FaTrash,
   FaEdit,
@@ -17,12 +16,16 @@ export default function ReviewCard({
   likes,
   addLike,
   removeLike,
+  isLiked,
+  likePending,
   deleteReview,
   updateReview,
   user,
 }) {
   const isOwner = user && String(user.id) === String(rev.users?.id);
   const isAdmin = user && String(user?.role || user?.user_metadata?.role || "").trim().toLowerCase() === "admin";
+  const reviewIsLiked = Boolean(user && isLiked?.(rev.id, user.id));
+  const isLikePending = Boolean(likePending?.[rev.id]);
 
   // 🆕 حالات التعديل
   const [isEditing, setIsEditing] = useState(false);
@@ -119,24 +122,18 @@ export default function ReviewCard({
 
       {/* أزرار التحكم */}
       <div className="flex flex-wrap items-center gap-3 mt-2">
-        {/* زر لايك */}
+        {/* زر الإعجاب الموحد */}
         <motion.button
+          type="button"
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.1 }}
-          onClick={() => addLike(rev.id)}
-          className="trip-review-control"
+          onClick={() => (reviewIsLiked ? removeLike(rev.id) : addLike(rev.id))}
+          disabled={!user || isLikePending}
+          aria-pressed={reviewIsLiked}
+          aria-label={reviewIsLiked ? "Remove your like" : "Like this review"}
+          className={`trip-review-control ${reviewIsLiked ? "trip-review-control--liked" : ""} ${!user || isLikePending ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          <FaThumbsUp /> {likes[rev.id]?.count || 0}
-        </motion.button>
-
-        {/* زر إزالة لايك */}
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          whileHover={{ scale: 1.1 }}
-          onClick={() => removeLike(rev.id)}
-          className="trip-review-control"
-        >
-          <FaThumbsDown /> Unlike
+          <FaThumbsUp /> {reviewIsLiked ? "Liked" : "Like"} <strong>{likes[rev.id]?.count || 0}</strong>
         </motion.button>
 
         {/* صلاحيات الأدمن */}

@@ -35,7 +35,7 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
   };
 
   return (
-    <div className="flex-1 p-4 overflow-y-auto space-y-4">
+    <div className="conversation-messages admin-chat-messages">
       <EgyptianBackground />
       <AnimatePresence>
         {messages.length > 0 ? (
@@ -46,33 +46,27 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className={`flex items-start gap-3 max-w-[100%] ${
+              className={`conversation-message-row ${
                 msg.sender_type === "user"
-                  ? "self-start"
-                  : "self-end flex-row-reverse"
+                  ? "conversation-message-row--incoming"
+                  : "conversation-message-row--outgoing"
               }`}
             >
               {/* ✅ صورة المرسل من قاعدة البيانات */}
               <img
                 src={msg.user_image || "/default-avatar.png"}
                 alt={msg.user_name}
-                className={`w-12 h-12 rounded-full border ${
-                  msg.sender_type === "admin" ? "border-yellow-500" : ""
-                } object-cover`}
+                className="conversation-message-avatar"
               />
 
               <div
-                className={`p-3 rounded-lg shadow-md max-w-[70%] ${
+                className={`conversation-message-bubble ${
                   msg.sender_type === "user"
-                    ? themeName === "dark"
-                      ? "bg-gray-700 text-white"
-                      : "bg-gray-200 text-black"
-                    : themeName === "dark"
-                      ? "bg-yellow-500 text-black"
-                      : "bg-yellow-400 text-white"
+                    ? "conversation-message-bubble--incoming"
+                    : "conversation-message-bubble--outgoing"
                 }`}
               >
-                <p className="text-sm font-semibold mb-1 capitalize">
+                <p className="conversation-message-sender">
                   {msg.sender_type === "admin" ? "👑 Admin" : msg.user_name}
                 </p>
 
@@ -93,11 +87,11 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
                     className="rounded-lg shadow-md"
                   />
                 ) : (
-                  <p className="text-sm">{msg.content || ""}</p>
+                  <p className="conversation-message-content">{msg.content || ""}</p>
                 )}
 
                 {/* ✅ وقت الإرسال وحالة الرسالة */}
-                <div className="flex items-center gap-1 mt-1">
+                <div className="conversation-message-meta">
                   <FaClock className="text-xs opacity-70" />
                   <span className="text-xs italic opacity-70">
                     {msg.created_at
@@ -107,7 +101,7 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
                       : ""}
                   </span>
                   {msg.status && (
-                    <span className="text-xs ml-2 opacity-70">
+                    <span className="conversation-message-status">
                       {msg.status === "sent" ? "✅ Sent" : "👀 Seen"}
                     </span>
                   )}
@@ -116,12 +110,12 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
             </motion.div>
           ))
         ) : (
-          <p className="text-sm opacity-70">No messages yet...</p>
+          <p className="admin-chat-empty">No messages yet. Start the conversation when you are ready.</p>
         )}
       </AnimatePresence>
 
       {userTyping && (
-        <p className="text-xs italic opacity-70">User is typing...</p>
+        <p className="admin-chat-typing">User is typing…</p>
       )}
     </div>
   );

@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect } from "react";
-import { useTheme } from "@/context/ThemeContext";
 import { FaTrash, FaMapMarkedAlt } from "react-icons/fa";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import { useTrip } from "../context/TripContext";
@@ -9,7 +8,6 @@ import DividerWithIcon from "@/components/layout/DividerWithIcon";
 import { motion } from "framer-motion";
 
 export default function TripsList() {
-  const { themeName } = useTheme();
   const { trips, fetchTrips, setTrips } = useTrip();
   const { deleteTrip } = useTripID();
 
@@ -25,13 +23,7 @@ export default function TripsList() {
   };
 
   return (
-    <div
-      className={`rounded-xl shadow-lg p-6 ${
-        themeName === "dark"
-          ? "bg-black/40 border border-gold/30 text-white"
-          : "bg-white/70 border border-[#c9a34a]/30 text-[#3a2c0a] backdrop-blur-sm"
-      }`}
-    >
+    <section className="admin-panel admin-section-panel">
       <EgyptianBackground />
 
       {/* ✅ عدد الرحلات */}
@@ -39,30 +31,16 @@ export default function TripsList() {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="flex items-center justify-between mb-6"
+        className="admin-section-header"
       >
-        <h2
-          className={`text-2xl font-bold ${
-            themeName === "dark"
-              ? "text-gold"
-              : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-          }`}
-        >
-          All Trips
-        </h2>
-        <div
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md ${
-            themeName === "dark"
-              ? "bg-gold/20 text-gold"
-              : "bg-[#fdf6e3] text-[#3a2c0a]"
-          }`}
-        >
+        <div><p className="admin-section-eyebrow">Journey library</p><h2 className="admin-section-title">All trips</h2><p className="admin-section-description">Manage the journeys currently available across the website.</p></div>
+        <div className="admin-section-metric">
           <FaMapMarkedAlt />
-          <span className="font-semibold">Total: {trips.length}</span>
+          <span><strong>{trips.length}</strong><small>Published trips</small></span>
         </div>
       </motion.div>
 
-      <table className="w-full text-left border-collapse">
+      <div className="admin-table-shell"><table className="admin-table min-w-[44rem]">
         <thead>
           <tr
             className={`${
@@ -141,7 +119,7 @@ export default function TripsList() {
             </React.Fragment>
           ))}
         </tbody>
-      </table>
-    </div>
+      </table></div>
+    </section>
   );
 }

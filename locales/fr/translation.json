@@ -109,11 +109,12 @@
     "li3": "Confort et soin",
     "h4": "Pourquoi nous choisir",
     "p3": "Guides professionnels, logistique fluide et créations qui honorent l’âme de l’Égypte.",
-    "h5": "Ancré dans l’héritage égyptien",
-    "p4": "Notre identité visuelle embrasse les symboles hiéroglyphiques, les accents dorés et les tons chaleureux — apportant élégance à chaque point de contact.",
+    "h5": "Ce que nous faisons",
+    "p4": "Des majestueuses pyramides de Gizeh et des temples monumentaux de Louxor et d’Assouan aux trésors archéologiques cachés et aux paysages paisibles, nous créons des itinéraires selon vos préférences. Que vous souhaitiez explorer des sites antiques mondialement célèbres ou découvrir des trésors calmes et méconnus d’Égypte, nous veillons à chaque détail pour rendre votre voyage fluide, inspirant et inoubliable.",
     "h6": "Prêt à planifier votre voyage ?",
     "p5": "Créons ensemble un itinéraire personnel, élégant et sans effort.",
     "a": "Contactez-nous",
+    "liText":"Vous imaginez votre programme idéal, nous le réalisons avec précision et attention.","li2Text":"Nous vous guidons vers les merveilles incontournables et des lieux uniques hors des sentiers battus.","li3Text":"Notre équipe apporte un contexte historique authentique, une expertise locale et une hospitalité d’excellence.","li4":"Voyage en toute sérénité","li4Text":"Des transferts privés aux guides experts, nous prenons soin de chaque détail.",
     "label": "Années d’excellence",
     "label2": "Voyageurs heureux",
     "label3": "Circuits sélectionnés",
@@ -136,6 +137,7 @@
   },
   "footer": {
     "p": "© 2025 — Explorez l'Égypte avec confort et luxe",
+    "description": "Des voyages d’exception en Égypte, façonnés par l’expertise locale, une planification soignée et une véritable hospitalité.",
     "Home": "Accueil",
     "AboutUs": "À propos de nous",
     "Tours": "Excursions",
@@ -243,6 +245,6 @@
     "email": "wasettraveleg@gmail.com",
     "phoneLabel": "Téléphone:",
     "phone": "+201091126069"
-  }
-  
+  },
+  "ui": {"explore":"Explorer","support":"Assistance","planEscape":"Préparez votre prochaine escapade","egyptWaiting":"L’Égypte vous attend.","footerPlanText":"Dites-nous ce que vous souhaitez découvrir et nous créerons le voyage idéal.","talkTeam":"Parler à notre équipe","curatedJourneys":"Voyages d’exception en Égypte","loadingTopTrips":"Chargement des meilleurs voyages...","noTrips":"Aucun voyage disponible pour le moment.","guestPerspective":"Avis des voyageurs","reviewHint":"Des retours authentiques de voyageurs ayant découvert l’Égypte avec nous.","shareExperience":"Partagez votre expérience","reviewPrompt":"Une évaluation rapide aide les futurs voyageurs à choisir.","addFeeling":"Ajouter une émotion","previousReviews":"Avis précédents","nextReviews":"Avis suivants","destinations":"Destinations","travelStyle":"Style de voyage","planJourney":"Planifier votre voyage","tripNotFound":"Voyage introuvable","loadingTrips":"Chargement des voyages...","currency":"Devise","dashboard":"Tableau de bord","signIn":"Se connecter","logout":"Se déconnecter","openAccountMenu":"Ouvrir le menu du compte","messages":"Messages","notifications":"Notifications","noNewNotifications":"Aucune nouvelle notification","caughtUp":"Vous êtes à jour.","noNewMessages":"Aucun nouveau message","inboxClear":"Votre boîte de réception est vide.","conversations":"conversations","recentUpdates":"mises à jour récentes","typeMessage":"Écrivez votre message...","noMessagesYet":"Aucun message pour le moment","startConversation":"Commencez une conversation avec nous ✨🚘","adminTyping":"L’administrateur écrit..."}
 }

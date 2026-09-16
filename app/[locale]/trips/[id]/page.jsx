@@ -38,11 +38,12 @@ export default function TripPage({ params }) {
   const { purchases } = usePurchase();
   const { messages } = useMessages();
   const { t } = useTranslation("header");
+  const { t: ui } = useTranslation("ui");
 
   useEffect(() => { if (!trips.length) fetchTrips(); }, [trips.length, fetchTrips]);
 
   const trip = getTripById(id);
-  if (!trip) return <main className="flex min-h-screen items-center justify-center bg-[var(--background)] text-[var(--muted)]">Trip not found</main>;
+  if (!trip) return <main className="flex min-h-screen items-center justify-center bg-[var(--background)] text-[var(--muted)]">{ui("tripNotFound")}</main>;
 
   const tripTitle = trip.title?.[lang] || trip.title?.en || "Egypt tour";
   const tripDescription = trip.description?.[lang] || trip.description?.en || "Discover an unforgettable Egypt travel experience with WasetTravel.";
@@ -61,14 +62,14 @@ export default function TripPage({ params }) {
 
           <div className="trip-detail-layout mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,.65fr)]">
             <div className="min-w-0 space-y-6">
-              <section className="trip-detail-meta grid gap-4 sm:grid-cols-2"><div className="stone-card rounded-2xl p-5"><p className="stone-kicker mb-2">Destinations</p><TripCities trip={trip} lang={lang} theme={theme} themeName={themeName} /></div><div className="stone-card rounded-2xl p-5"><p className="stone-kicker mb-2">Travel style</p><TripCategories trip={trip} lang={lang} theme={theme} themeName={themeName} /></div></section>
+              <section className="trip-detail-meta grid gap-4 sm:grid-cols-2"><div className="stone-card rounded-2xl p-5"><p className="stone-kicker mb-2">{ui("destinations")}</p><TripCities trip={trip} lang={lang} theme={theme} themeName={themeName} /></div><div className="stone-card rounded-2xl p-5"><p className="stone-kicker mb-2">{ui("travelStyle")}</p><TripCategories trip={trip} lang={lang} theme={theme} themeName={themeName} /></div></section>
               <TripOverviewTable trip={trip} />
               <AccessibilityInfo theme={themeName} themeName={themeName} />
               <section className="grid gap-6 lg:grid-cols-2"><TripIncludes trip={trip} lang={lang} theme={theme} themeName={themeName} /><TripExclusions trip={trip} lang={lang} theme={theme} themeName={themeName} /></section>
               <TripItinerary trip={trip} lang={lang} theme={theme} themeName={themeName} />
               <TripReviews trip={trip} lang={lang} theme={theme} />
             </div>
-            <aside className="trip-detail-booking lg:sticky lg:top-24"><div className="trip-detail-booking__label mb-3 flex items-center gap-2 px-1 text-sm"><FaMapMarkerAlt className="text-[#e0b873]" /> Plan your journey</div><CalendarWidget trip={trip} id={id} />{userData && userData.role !== "ADMIN" && hasActivePurchase && <div className="mt-4"><CancelButton trip={trip} theme={theme} /></div>}</aside>
+            <aside className="trip-detail-booking lg:sticky lg:top-24"><div className="trip-detail-booking__label mb-3 flex items-center gap-2 px-1 text-sm"><FaMapMarkerAlt className="text-[#e0b873]" /> {ui("planJourney")}</div><CalendarWidget trip={trip} id={id} />{userData && userData.role !== "ADMIN" && hasActivePurchase && <div className="mt-4"><CancelButton trip={trip} theme={theme} /></div>}</aside>
           </div>
         </div>
         <Footer /><SignUpButton /><LoginModal />{userData && <ChatWidget />}{chatUser && <AdminChatWindow user={chatUser} admin={userData} messages={messages} onClose={() => setChatUser(null)} />}

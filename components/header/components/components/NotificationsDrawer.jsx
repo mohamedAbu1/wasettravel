@@ -15,6 +15,7 @@ import { useNotifications } from "@/context/NotificationsContext";
 import DividerWithIcon from "@/components/layout/DividerWithIcon";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTranslation } from "react-i18next";
 
 export default function NotificationsDrawer({
   open,
@@ -24,6 +25,7 @@ export default function NotificationsDrawer({
   theme,
 }) {
   const { notifications, deleteNotification } = useNotifications();
+  const { t } = useTranslation("ui");
 
   const now = Date.now();
   const twoDays = 2 * 24 * 60 * 60 * 1000; // يومين بالمللي ثانية
@@ -53,12 +55,12 @@ export default function NotificationsDrawer({
     >
       <div className="stone-drawer" style={{ "--drawer-bg": themeName === "dark" ? "#211d19" : "#fffaf3", "--drawer-text": themeName === "dark" ? "#f8f1e7" : "#30271d", "--drawer-muted": themeName === "dark" ? "rgba(248,241,231,.62)" : "#6f5c49", "--drawer-line": themeName === "dark" ? "rgba(224,184,115,.18)" : "rgba(112,69,31,.16)" }}>
         <div className="stone-drawer__header">
-          <div className="flex items-center gap-3"><span className="stone-drawer__icon"><NotificationsNoneIcon /></span><div><Typography variant="h6" sx={{ fontWeight: 800, color: "var(--drawer-text)" }}>Notifications</Typography><Typography variant="caption" sx={{ color: "var(--drawer-muted)" }}>{filteredNotifications.length} recent updates</Typography></div></div>
+          <div className="flex items-center gap-3"><span className="stone-drawer__icon"><NotificationsNoneIcon /></span><div><Typography variant="h6" sx={{ fontWeight: 800, color: "var(--drawer-text)" }}>{t("notifications")}</Typography><Typography variant="caption" sx={{ color: "var(--drawer-muted)" }}>{filteredNotifications.length} {t("recentUpdates")}</Typography></div></div>
           <IconButton aria-label="Close notifications" onClick={onClose} sx={{ color: "var(--drawer-muted)" }}><CloseIcon /></IconButton>
         </div>
         <Divider sx={{ borderColor: "var(--drawer-line)" }} />
         <List sx={{ p: 0, mt: 2 }}>
-          {!filteredNotifications.length && <div className="stone-drawer__empty"><NotificationsNoneIcon /><strong>No new notifications</strong><span>You are all caught up.</span></div>}
+          {!filteredNotifications.length && <div className="stone-drawer__empty"><NotificationsNoneIcon /><strong>{t("noNewNotifications")}</strong><span>{t("caughtUp")}</span></div>}
           {filteredNotifications.map((n) => (
             <Fade in={true} timeout={500} key={n.id}>
               <Box sx={{ mb: 1.5 }}>

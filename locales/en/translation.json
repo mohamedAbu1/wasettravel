@@ -124,7 +124,7 @@
     "h4": "Our Vision",
     "p3": "To bridge cultures and share the rich heritage of Egypt with travelers from around the globe, delivering extraordinary journeys built on trust, authenticity, and personalized service.",
     "h5": "What We Do",
-    "p4": "From the majestic Pyramids of Giza and the monumental temples of Luxor and Aswan, to hidden archaeological gems and serene local landscapes, we curate itineraries designed around your preferences.",
+    "p4": "From the majestic Pyramids of Giza and the monumental temples of Luxor and Aswan, to hidden archaeological gems and serene local landscapes, we curate itineraries designed around your preferences. Whether you want to explore world-famous ancient landmarks or discover quiet, lesser-known treasures across Egypt, we ensure every detail of your journey is seamless, inspiring, and memorable.",
     "h6": "Ready to plan your journey?",
     "p5": "Let’s craft an itinerary that feels personal, elegant, and effortless.",
     "a": "Contact us",
@@ -241,5 +241,8 @@
     "email": "wasettraveleg@gmail.com",
     "phoneLabel": "Phone:",
     "phone": "+201091126069"
+  },
+  "ui": {
+    "explore": "Explore", "support": "Support", "planEscape": "Plan your next escape", "egyptWaiting": "Egypt is waiting.", "footerPlanText": "Tell us what you want to discover and we will shape the perfect journey.", "talkTeam": "Talk to our team", "curatedJourneys": "Curated Egypt journeys", "loadingTopTrips": "Loading top trips...", "noTrips": "No trips available yet.", "guestPerspective": "Guest perspective", "reviewHint": "Real feedback from travelers who explored Egypt with us.", "shareExperience": "Share your experience", "reviewPrompt": "A quick rating helps future travelers choose with confidence.", "addFeeling": "Add feeling", "previousReviews": "Previous reviews", "nextReviews": "Next reviews", "destinations": "Destinations", "travelStyle": "Travel style", "planJourney": "Plan your journey", "tripNotFound": "Trip not found", "loadingTrips": "Loading trips...", "currency": "Currency", "dashboard": "Dashboard", "signIn": "Sign in", "logout": "Logout", "openAccountMenu": "Open account menu", "messages": "Messages", "notifications": "Notifications", "noNewNotifications": "No new notifications", "caughtUp": "You are all caught up.", "noNewMessages": "No new messages", "inboxClear": "Your inbox is clear.", "conversations": "conversations", "recentUpdates": "recent updates", "typeMessage": "Type your message...", "noMessagesYet": "No messages yet", "startConversation": "Start your conversation with us ✨🚘", "adminTyping": "Admin is typing..."
   }
 }

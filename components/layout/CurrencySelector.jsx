@@ -8,6 +8,7 @@ import { usePurchase } from "@/context/PurchaseContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useApp } from "@/context/AppContext";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const currencyOptions = [
   { value: "USD", label: "USD", symbol: "$" },
@@ -19,6 +20,7 @@ export default function CurrencySelector() {
   const { currency, setCurrency } = usePurchase();
   const { themeName } = useTheme();
   const { country } = useApp();
+  const { t } = useTranslation("ui");
 
   useEffect(() => {
     if (!country || localStorage.getItem("currency-manual") === "true") return;
@@ -35,8 +37,8 @@ export default function CurrencySelector() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }} className="currency-selector" data-theme-mode={themeName}>
-      <div className="currency-selector__label"><FaCoins aria-hidden="true" /><span>Currency</span></div>
-      <Select value={active.value} onChange={handleChange} variant="standard" disableUnderline aria-label="Select currency" renderValue={() => `${active.label} ${active.symbol}`}>
+      <div className="currency-selector__label"><FaCoins aria-hidden="true" /><span>{t("currency")}</span></div>
+      <Select value={active.value} onChange={handleChange} variant="standard" disableUnderline aria-label={t("currency")} renderValue={() => `${active.label} ${active.symbol}`}>
         {currencyOptions.map((option) => <MenuItem key={option.value} value={option.value}>{option.label} {option.symbol}</MenuItem>)}
       </Select>
     </motion.div>

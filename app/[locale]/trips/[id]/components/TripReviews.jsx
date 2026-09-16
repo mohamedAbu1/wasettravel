@@ -24,6 +24,7 @@ export default function TripReviews({ trip, lang }) {
   } = useReviews();
   const { userData } = useAuth();
   const { t } = useTranslation("tripsId");
+  const { t: ui } = useTranslation("ui");
 
   // ✅ استدعاء التعليقات الخاصة بالرحلة عند تحميل الكومبوننت
   useEffect(() => {
@@ -158,7 +159,7 @@ export default function TripReviews({ trip, lang }) {
 
       {userData && (
         <div className="trip-review-composer mt-6">
-          <div className="mb-4"><p className="font-semibold">Share your experience</p><p className="text-sm text-[var(--muted)]">A quick rating helps future travelers choose with confidence.</p></div>
+          <div className="mb-4"><p className="font-semibold">{ui("shareExperience")}</p><p className="text-sm text-[var(--muted)]">{ui("reviewPrompt")}</p></div>
           {/* تقييم النجوم */}
           <StarRating
             rating={rating}
@@ -219,7 +220,7 @@ export default function TripReviews({ trip, lang }) {
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => prev - 1)}
-            aria-label="Previous reviews"
+            aria-label={ui("previousReviews")}
             className={`trip-detail-pagination ${
               currentPage === 1
                 ? "opacity-40 cursor-not-allowed"
@@ -247,7 +248,7 @@ export default function TripReviews({ trip, lang }) {
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((prev) => prev + 1)}
-            aria-label="Next reviews"
+            aria-label={ui("nextReviews")}
             className={`trip-detail-pagination ${
               currentPage === totalPages
                 ? "opacity-40 cursor-not-allowed"

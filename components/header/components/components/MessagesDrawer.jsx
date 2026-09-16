@@ -15,9 +15,11 @@ import { useNotifications } from "@/context/NotificationsContext";
 import DividerWithIcon from "@/components/layout/DividerWithIcon";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTranslation } from "react-i18next";
 
 export default function MessagesDrawer({ open, onClose, themeName, theme, messageNotifications, handleMessageClick }) {
   const { deleteNotification } = useNotifications();
+  const { t } = useTranslation("ui");
 
   return (
     <Drawer
@@ -29,12 +31,12 @@ export default function MessagesDrawer({ open, onClose, themeName, theme, messag
     >
       <div className="stone-drawer" style={{ "--drawer-bg": themeName === "dark" ? "#211d19" : "#fffaf3", "--drawer-text": themeName === "dark" ? "#f8f1e7" : "#30271d", "--drawer-muted": themeName === "dark" ? "rgba(248,241,231,.62)" : "#6f5c49", "--drawer-line": themeName === "dark" ? "rgba(224,184,115,.18)" : "rgba(112,69,31,.16)" }}>
         <div className="stone-drawer__header">
-          <div className="flex items-center gap-3"><span className="stone-drawer__icon"><MailOutlineIcon /></span><div><Typography variant="h6" sx={{ fontWeight: 800, color: "var(--drawer-text)" }}>Messages</Typography><Typography variant="caption" sx={{ color: "var(--drawer-muted)" }}>{messageNotifications.length} conversations</Typography></div></div>
+          <div className="flex items-center gap-3"><span className="stone-drawer__icon"><MailOutlineIcon /></span><div><Typography variant="h6" sx={{ fontWeight: 800, color: "var(--drawer-text)" }}>{t("messages")}</Typography><Typography variant="caption" sx={{ color: "var(--drawer-muted)" }}>{messageNotifications.length} {t("conversations")}</Typography></div></div>
           <IconButton aria-label="Close messages" onClick={onClose} sx={{ color: "var(--drawer-muted)" }}><CloseIcon /></IconButton>
         </div>
         <Divider sx={{ borderColor: "var(--drawer-line)" }} />
         <List sx={{ p: 0, mt: 2 }}>
-          {!messageNotifications.length && <div className="stone-drawer__empty"><MailOutlineIcon /><strong>No new messages</strong><span>Your inbox is clear.</span></div>}
+          {!messageNotifications.length && <div className="stone-drawer__empty"><MailOutlineIcon /><strong>{t("noNewMessages")}</strong><span>{t("inboxClear")}</span></div>}
           {messageNotifications.map((n) => (
             <Fade in={true} timeout={500} key={n.id}>
               <Box sx={{ mb: 1.5 }}>

@@ -110,11 +110,12 @@
     "li3": "舒适与关怀",
     "h4": "为什么选择我们",
     "p3": "专业导游、无缝的后勤安排，以及尊重埃及灵魂的设计。",
-    "h5": "扎根于埃及的传承",
-    "p4": "我们的视觉识别融合了象形文字符号、金色点缀和温暖色调——为每个细节带来优雅。",
+    "h5": "我们提供的服务",
+    "p4": "从宏伟的吉萨金字塔、卢克索和阿斯旺的壮丽神庙，到隐藏的考古瑰宝与宁静的当地景观，我们根据您的偏好策划旅程。无论您想探索举世闻名的古迹，还是发现埃及安静而鲜为人知的宝藏，我们都确保旅程的每个细节顺畅、鼓舞人心且令人难忘。",
     "h6": "准备好规划您的旅程了吗？",
     "p5": "让我们一起打造一个个性化、优雅且轻松的行程。",
     "a": "联系我们",
+    "liText":"您设计理想行程，我们以精准和用心将其变为现实。","li2Text":"我们带您探索世界闻名的奇迹和远离常规路线的独特目的地。","li3Text":"经验丰富的团队提供真实的历史背景、深度的当地见解和优质服务。","li4":"轻松旅程","li4Text":"从私人交通到专业导游，我们为您处理每一个细节。",
     "label": "卓越年份",
     "label2": "满意的旅客",
     "label3": "精心策划的行程",
@@ -137,6 +138,7 @@
   },
   "footer": {
     "p": "© 2025 — 舒适与奢华探索埃及",
+    "description": "精选埃及旅程，融合当地专业知识、周到规划和真诚待客之道。",
     "Home": "首页",
     "AboutUs": "关于我们",
     "Tours": "旅游",
@@ -230,5 +232,6 @@
     "email": "wasettraveleg@gmail.com",
     "phoneLabel": "电话:",
     "phone": "+201091126069"
-  }
+  },
+  "ui": {"explore":"探索","support":"支持","planEscape":"规划下一次旅行","egyptWaiting":"埃及正等着您。","footerPlanText":"告诉我们您想探索什么，我们将为您打造完美旅程。","talkTeam":"联系我们的团队","curatedJourneys":"精选埃及旅程","loadingTopTrips":"正在加载热门旅程...","noTrips":"暂时没有可用旅程。","guestPerspective":"旅客评价","reviewHint":"来自与我们一起探索埃及的旅客的真实反馈。","shareExperience":"分享您的体验","reviewPrompt":"快速评分可以帮助未来旅客做出选择。","addFeeling":"添加表情","previousReviews":"上一页评价","nextReviews":"下一页评价","destinations":"目的地","travelStyle":"旅行风格","planJourney":"规划您的旅程","tripNotFound":"未找到旅程","loadingTrips":"正在加载旅程...","currency":"货币","dashboard":"控制面板","signIn":"登录","logout":"退出登录","openAccountMenu":"打开账户菜单","messages":"消息","notifications":"通知","noNewNotifications":"没有新通知","caughtUp":"您已查看所有内容。","noNewMessages":"没有新消息","inboxClear":"收件箱为空。","conversations":"个对话","recentUpdates":"近期更新","typeMessage":"输入消息...","noMessagesYet":"暂无消息","startConversation":"开始与我们聊天 ✨🚘","adminTyping":"管理员正在输入..."}
 }

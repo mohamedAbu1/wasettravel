@@ -18,6 +18,7 @@ export default function ChatInput({
 }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { t } = useTranslation("home");
+    const { t: ui } = useTranslation("ui");
 
   return (
     <div className="relative flex items-center gap-2 border-t border-[var(--line)] bg-[var(--surface-raised)] p-3">
@@ -32,7 +33,7 @@ export default function ChatInput({
       </label> */}
       <input
         type="text"
-        placeholder="Type your message..."
+        placeholder={ui("typeMessage")}
         value={text}
         onChange={(e) => {
           setText(e.target.value);

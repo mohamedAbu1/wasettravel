@@ -25,21 +25,14 @@ export default function Sidebar({ activeSection, setActiveSection, locale = "en"
         type="button"
         aria-current={isActive ? "page" : undefined}
         onClick={() => setActiveSection(section)}
-        className={`flex items-center gap-3 px-4 py-2 rounded-lg font-semibold transition-all duration-300 relative cursor-pointer
-          ${
-            isActive
-              ? "bg-gradient-to-r from-yellow-400 to-yellow-600 text-black shadow-lg border-l-4 border-yellow-500"
-              : "text-gold hover:text-yellow-400 hover:bg-black/20"
-          }`}
+        className={`admin-nav-item ${isActive ? "is-active" : ""}`}
       >
         {/* ✅ خط جانبي يوضح الزر النشط */}
-        {isActive && <span className="absolute inset-y-0 left-0 w-1 rounded-r bg-yellow-500" />}
+        {isActive && <span className="admin-nav-item__active" />}
 
         {/* ✅ أيقونة مع تأثير عند النشط */}
         <span
-          className={`text-lg transition-transform ${
-            isActive ? "scale-110 text-yellow-800 drop-shadow-md" : ""
-          }`}
+          className="admin-nav-item__icon"
         >
           {icon}
         </span>
@@ -49,16 +42,14 @@ export default function Sidebar({ activeSection, setActiveSection, locale = "en"
   };
 
   return (
-    <aside className="w-full shrink-0 border-b border-gold/30 bg-black/10 p-4 lg:w-64 lg:border-b-0 lg:border-r lg:p-6">
-
-      <div className="mb-4 flex items-center justify-between gap-3 lg:mb-6">
-        <span>WasetTravel</span> <ThemeToggle />
+    <aside className="admin-sidebar">
+      <div className="admin-brand"><span className="admin-brand__mark">W</span><div><strong>Waset<span>Travel</span></strong><small>Admin workspace</small></div><ThemeToggle />
       </div>
 
-      <nav aria-label="Admin navigation" className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-col lg:gap-3">
+      <nav aria-label="Admin navigation" className="admin-nav">
         <Link
           href={`/${locale}`}
-          className="flex items-center gap-3 font-bold text-gold hover:text-yellow-500 transition"
+          className="admin-back-link"
         >
           <span aria-hidden="true">←</span> Back to Home
         </Link>
@@ -78,7 +69,7 @@ export default function Sidebar({ activeSection, setActiveSection, locale = "en"
             await logout();
             window.location.assign(`/${locale || "en"}`);
           }}
-          className="mt-2 flex items-center gap-3 rounded-lg px-4 py-2 font-semibold text-red-300 transition hover:bg-red-500/10 hover:text-red-200"
+          className="admin-signout"
         >
           <span aria-hidden="true">↪</span> Sign out
         </button>

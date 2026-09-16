@@ -109,11 +109,12 @@
     "li3": "Comodidad y cuidado",
     "h4": "Por qué elegirnos",
     "p3": "Guías profesionales, logística impecable y diseños que honran el alma de Egipto.",
-    "h5": "Con raíces en la herencia egipcia",
-    "p4": "Nuestra identidad visual abraza la simbología jeroglífica, los acentos dorados y los tonos cálidos — aportando elegancia en cada detalle.",
+    "h5": "Lo que hacemos",
+    "p4": "Desde las majestuosas pirámides de Guiza y los monumentales templos de Luxor y Asuán hasta tesoros arqueológicos ocultos y paisajes serenos, diseñamos itinerarios según tus preferencias. Tanto si quieres explorar lugares antiguos mundialmente famosos como descubrir tesoros tranquilos y menos conocidos de Egipto, cuidamos cada detalle para que tu viaje sea fluido, inspirador e inolvidable.",
     "h6": "¿Listo para planear tu viaje?",
     "p5": "Diseñemos juntos un itinerario personal, elegante y sin esfuerzo.",
     "a": "Contáctanos",
+    "liText":"Diseña tu programa ideal y nosotros lo hacemos realidad con precisión y cuidado.","li2Text":"Te guiamos hacia maravillas famosas y destinos únicos alejados de las rutas habituales.","li3Text":"Nuestro equipo ofrece contexto histórico auténtico, conocimiento local y hospitalidad de primer nivel.","li4":"Viaje sin complicaciones","li4Text":"Desde el transporte privado hasta los guías expertos, cuidamos cada detalle.",
     "label": "Años de excelencia",
     "label2": "Viajeros felices",
     "label3": "Tours seleccionados",
@@ -136,6 +137,7 @@
   },
   "footer": {
     "p": "© 2025 — Explora Egipto con comodidad y lujo",
+    "description": "Viajes seleccionados por Egipto, guiados por la experiencia local, una planificación cuidada y una hospitalidad auténtica.",
     "Home": "Inicio",
     "AboutUs": "Sobre nosotros",
     "Tours": "Tours",
@@ -243,5 +245,6 @@
     "email": "wasettraveleg@gmail.com",
     "phoneLabel": "Teléfono:",
     "phone": "+201091126069"
-  }
+  },
+  "ui": {"explore":"Explorar","support":"Soporte","planEscape":"Planifica tu próxima escapada","egyptWaiting":"Egipto te espera.","footerPlanText":"Cuéntanos qué quieres descubrir y diseñaremos el viaje perfecto.","talkTeam":"Habla con nuestro equipo","curatedJourneys":"Viajes seleccionados por Egipto","loadingTopTrips":"Cargando los mejores viajes...","noTrips":"Aún no hay viajes disponibles.","guestPerspective":"Perspectiva de los viajeros","reviewHint":"Opiniones reales de viajeros que exploraron Egipto con nosotros.","shareExperience":"Comparte tu experiencia","reviewPrompt":"Una valoración rápida ayuda a futuros viajeros a elegir.","addFeeling":"Añadir emoción","previousReviews":"Reseñas anteriores","nextReviews":"Siguientes reseñas","destinations":"Destinos","travelStyle":"Estilo de viaje","planJourney":"Planifica tu viaje","tripNotFound":"Viaje no encontrado","loadingTrips":"Cargando viajes...","currency":"Moneda","dashboard":"Panel","signIn":"Iniciar sesión","logout":"Cerrar sesión","openAccountMenu":"Abrir menú de cuenta","messages":"Mensajes","notifications":"Notificaciones","noNewNotifications":"No hay notificaciones nuevas","caughtUp":"Ya estás al día.","noNewMessages":"No hay mensajes nuevos","inboxClear":"Tu bandeja está vacía.","conversations":"conversaciones","recentUpdates":"actualizaciones recientes","typeMessage":"Escribe tu mensaje...","noMessagesYet":"Aún no hay mensajes","startConversation":"Inicia una conversación con nosotros ✨🚘","adminTyping":"El administrador está escribiendo..."}
 }

@@ -19,6 +19,7 @@ const MAX_TOP_TRIPS = 6;
 const TopTripsSection = () => {
   const { themeName } = useTheme();
   const { t, i18n } = useTranslation("home");
+  const { t: ui } = useTranslation("ui");
   const router = useRouter();
   const { userData } = useAuth();
   const { trips, fetchTrips, loadingTrips } = useTrip();
@@ -43,7 +44,7 @@ const TopTripsSection = () => {
     return () => clearInterval(interval);
   }, [trips.length]);
 
-  if (loadingTrips) return <section className="stone-section flex min-h-96 items-center justify-center"><p className="text-white/60">Loading top trips...</p></section>;
+  if (loadingTrips) return <section className="stone-section flex min-h-96 items-center justify-center"><p className="text-white/60">{ui("loadingTopTrips")}</p></section>;
 
   const topTrips = [...trips]
     .sort((a, b) => {
@@ -76,7 +77,7 @@ const TopTripsSection = () => {
     <section className={`stone-section w-full px-5 sm:px-8 ${themeName === "light" ? "text-[#30271d]" : "text-white"}`}>
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end"><div><p className="stone-kicker mb-3">Curated journeys</p><h2 className="max-w-xl text-4xl font-bold tracking-tight sm:text-5xl">{t("TopTrips")}</h2><DividerWithIcon /></div><div className="hidden max-w-xs text-right text-sm leading-6 text-white/55 sm:block">Handpicked experiences designed to make every moment in Egypt feel effortless.</div></div>
-        {topTrips.length ? <><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{topTrips.map((trip, position) => <TripCard key={`${trip.id}-${position}`} trip={trip} position={position} />)}</div><div className="mt-6 flex justify-center gap-2 lg:hidden" aria-label="Trip carousel position">{topTrips.map((trip, position) => <span key={trip.id} className={`h-1.5 rounded-full transition-all ${position === index % topTrips.length ? "w-8 bg-[#e0b873]" : "w-1.5 bg-white/25"}`} />)}</div></> : <p className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-white/60">No trips available yet.</p>}
+        {topTrips.length ? <><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{topTrips.map((trip, position) => <TripCard key={`${trip.id}-${position}`} trip={trip} position={position} />)}</div><div className="mt-6 flex justify-center gap-2 lg:hidden" aria-label="Trip carousel position">{topTrips.map((trip, position) => <span key={trip.id} className={`h-1.5 rounded-full transition-all ${position === index % topTrips.length ? "w-8 bg-[#e0b873]" : "w-1.5 bg-white/25"}`} />)}</div></> : <p className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-white/60">{ui("noTrips")}</p>}
       </div>
     </section>
   );

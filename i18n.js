@@ -26,7 +26,8 @@ i18n
         contact: en.contact,
         tripsId: en.tripsId,
          privacyPolicy: en.privacyPolicy,
-        cancellationPolicy: en.cancellationPolicy
+        cancellationPolicy: en.cancellationPolicy,
+        ui: en.ui
       },
       es: {
         header: es.header,
@@ -38,7 +39,8 @@ i18n
         contact: es.contact,
         tripsId: es.tripsId,
          privacyPolicy: es.privacyPolicy,
-        cancellationPolicy: es.cancellationPolicy
+        cancellationPolicy: es.cancellationPolicy,
+        ui: es.ui
       },
       fr: {
         header: fr.header,
@@ -50,7 +52,8 @@ i18n
         contact: fr.contact,
         tripsId: fr.tripsId,
          privacyPolicy: fr.privacyPolicy,
-        cancellationPolicy: fr.cancellationPolicy
+        cancellationPolicy: fr.cancellationPolicy,
+        ui: fr.ui
       },
       de: {
         header: de.header,
@@ -62,7 +65,8 @@ i18n
         contact: de.contact,
         tripsId: de.tripsId,
          privacyPolicy: de.privacyPolicy,
-        cancellationPolicy: de.cancellationPolicy
+        cancellationPolicy: de.cancellationPolicy,
+        ui: de.ui
       },
       it: {
         header: it.header,
@@ -74,7 +78,8 @@ i18n
         contact: it.contact,
         tripsId: it.tripsId,
          privacyPolicy: it.privacyPolicy,
-        cancellationPolicy: it.cancellationPolicy
+        cancellationPolicy: it.cancellationPolicy,
+        ui: it.ui
       },
       "zh-CN": {
         header: zhCN.header,
@@ -86,7 +91,8 @@ i18n
         contact: zhCN.contact,
         tripsId: zhCN.tripsId,
          privacyPolicy: zhCN.privacyPolicy,
-        cancellationPolicy: zhCN.cancellationPolicy
+        cancellationPolicy: zhCN.cancellationPolicy,
+        ui: zhCN.ui
       },
     },
     fallbackLng: "en", // اللغة الافتراضية لو اللغة غير موجودة

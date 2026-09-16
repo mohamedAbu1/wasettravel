@@ -53,11 +53,7 @@ export default function DashboardHome() {
 
   const colors = themeName === "dark" ? { scheme: "nivo" } : { scheme: "set2" };
 
-  const sectionStyle = `p-6 rounded-xl shadow-lg ${
-    themeName === "dark"
-      ? "bg-black/40 border border-gold/30 text-gold"
-      : "bg-white/70 border border-[#c9a34a]/30 text-[#3a2c0a] backdrop-blur-sm"
-  }`;
+  const sectionStyle = "admin-panel";
 
   const quickStats = [
     { title: "Users", value: users.length, icon: <FaUsers /> },
@@ -78,18 +74,16 @@ export default function DashboardHome() {
         {quickStats.map((card, i) => (
           <div
             key={i}
-            className={`${sectionStyle} flex flex-col items-center justify-center gap-3 transform transition hover:scale-105`}
+            className="admin-stat-card"
           >
-            <div className="text-3xl">{card.icon}</div>
-            <h4 className="text-base font-bold">{card.title}</h4>
-            <p className="text-2xl font-extrabold">{card.value}</p>
+            <div className="admin-stat-card__icon">{card.icon}</div><div><h4>{card.title}</h4><p>{card.value}</p></div><span className="admin-stat-card__trend">Live</span>
           </div>
         ))}
       </div>
 
       {/* ✅ Bar Chart */}
-      <div className={sectionStyle} style={{ height: "350px" }}>
-        <h3 className="mb-4 text-xl font-bold">Users, trips and bookings</h3>
+      <div className={`${sectionStyle} admin-chart-panel`}>
+        <div className="admin-panel-heading"><div><p className="admin-panel-kicker">Operations snapshot</p><h3>Users, trips and bookings</h3></div><span className="admin-panel-badge">Updated now</span></div>
         <div className="h-[260px] sm:h-[300px]">
         <ResponsiveBar
           data={stats}
@@ -112,8 +106,8 @@ export default function DashboardHome() {
       </div>
 
       {/* ✅ Pie Chart */}
-      <div className={sectionStyle} style={{ height: "350px" }}>
-        <h3 className="mb-4 text-xl font-bold">Booking status</h3>
+      <div className={`${sectionStyle} admin-chart-panel`}>
+        <div className="admin-panel-heading"><div><p className="admin-panel-kicker">Conversion health</p><h3>Booking status</h3></div></div>
         {bookingStatus.length ? <div className="h-[260px] sm:h-[300px]"><ResponsivePie
           data={bookingStatus}
           margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -125,8 +119,8 @@ export default function DashboardHome() {
       </div>
 
       {/* ✅ Line Chart */}
-      <div className={sectionStyle} style={{ height: "350px" }}>
-        <h3 className="mb-4 text-xl font-bold">Bookings over time</h3>
+      <div className={`${sectionStyle} admin-chart-panel`}>
+        <div className="admin-panel-heading"><div><p className="admin-panel-kicker">Demand trend</p><h3>Bookings over time</h3></div></div>
         {bookingsOverTime.length ? <div className="h-[260px] sm:h-[300px]"><ResponsiveLine
           data={[
             {

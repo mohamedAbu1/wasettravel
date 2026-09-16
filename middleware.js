@@ -5,16 +5,19 @@ import { jwtVerify } from "jose";
 const protectedAdminPattern = /^\/(en|es|fr|de|it|zh)\/admin(?:\/|$)/;
 
 async function isAdminRequest(req) {
-  const token = req.cookies.get("token")?.value || req.cookies.get("access-token")?.value;
-  if (!token || !process.env.JWT_SECRET) return false;
+  const tokens = [req.cookies.get("token")?.value, req.cookies.get("access-token")?.value].filter(Boolean);
+  if (!tokens.length || !process.env.JWT_SECRET) return false;
 
-  try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
-    return String(payload.role || "").toLowerCase() === "admin";
-  } catch {
-    return false;
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+  for (const token of tokens) {
+    try {
+      const { payload } = await jwtVerify(token, secret);
+      if (String(payload.role || "").toLowerCase() === "admin") return true;
+    } catch {
+      // Continue with the other cookie if one token is stale or invalid.
+    }
   }
+  return false;
 }
 
 export async function middleware(req) {

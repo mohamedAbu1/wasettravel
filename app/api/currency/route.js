@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth/admin";
 export async function GET() {
   try {
     const db = await connectDB();
-    const [rows] = await db.query("SELECT * FROM currency_rates");
+    const [rows] = await db.query("SELECT id, base_currency, target_currency, rate, updated_at FROM currency_rates WHERE base_currency IN ('USD','EUR','EGP') AND target_currency IN ('USD','EUR','EGP') ORDER BY base_currency, target_currency");
     return NextResponse.json(rows, { status: 200 });
   } catch (error) {
     console.error("GET /currency Error:", error);
@@ -21,8 +21,11 @@ export async function POST(req) {
 
   try {
     const { base_currency, target_currency, rate } = await req.json();
+    const base = String(base_currency || "").toUpperCase();
+    const target = String(target_currency || "").toUpperCase();
+    const numericRate = Number(rate);
 
-    if (!base_currency || !target_currency || !rate) {
+    if (!["USD", "EUR", "EGP"].includes(base) || !["USD", "EUR", "EGP"].includes(target) || base === target || !Number.isFinite(numericRate) || numericRate <= 0 || numericRate > 100000) {
       return NextResponse.json(
         { error: "Missing base_currency, target_currency or rate" },
         { status: 400 }
@@ -34,7 +37,7 @@ export async function POST(req) {
       `INSERT INTO currency_rates (base_currency, target_currency, rate, updated_at)
        VALUES (?, ?, ?, NOW())
        ON DUPLICATE KEY UPDATE rate = VALUES(rate), updated_at = NOW()`,
-      [base_currency, target_currency, rate]
+      [base, target, numericRate]
     );
 
     return NextResponse.json(
@@ -55,8 +58,11 @@ export async function PUT(req) {
 
   try {
     const { base_currency, target_currency, rate } = await req.json();
+    const base = String(base_currency || "").toUpperCase();
+    const target = String(target_currency || "").toUpperCase();
+    const numericRate = Number(rate);
 
-    if (!base_currency || !target_currency) {
+    if (!["USD", "EUR", "EGP"].includes(base) || !["USD", "EUR", "EGP"].includes(target) || base === target || !Number.isFinite(numericRate) || numericRate <= 0 || numericRate > 100000) {
       return NextResponse.json(
         { error: "Missing base_currency or target_currency" },
         { status: 400 }
@@ -65,10 +71,10 @@ export async function PUT(req) {
 
     const db = await connectDB();
     await db.query(
-      `UPDATE currency_rates 
-       SET rate = ?, updated_at = NOW() 
-       WHERE base_currency = ? AND target_currency = ?`,
-      [rate, base_currency, target_currency]
+      `INSERT INTO currency_rates (base_currency, target_currency, rate, updated_at)
+       VALUES (?, ?, ?, NOW())
+       ON DUPLICATE KEY UPDATE rate = VALUES(rate), updated_at = NOW()`,
+      [base, target, numericRate]
     );
 
     return NextResponse.json(

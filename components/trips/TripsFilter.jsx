@@ -1,235 +1,98 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
+
 import React from "react";
-import {
-  FaMapMarkerAlt,
-  FaDollarSign,
-  FaEuroSign,
-  FaTags,
-  FaFire,
-} from "react-icons/fa";
+import { FaCheck, FaChevronDown, FaFire, FaMapMarkerAlt, FaRedoAlt, FaTags, FaTimes } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
-import { useTheme } from "@/context/ThemeContext";
-import Divider from "@/components/layout/Divider";
-import { usePurchase } from "@/context/PurchaseContext";
 import { useQueryFilters } from "@/context/QueryContext";
 
-export default function TripsFilter({ allCities, allCategories, loading }) {
-  const { i18n, t } = useTranslation("trips");
-  const normalizedLang = i18n.language.split("-")[0];
-  const { themeName } = useTheme();
-  const { currency } = usePurchase();
+function getLabel(value, language) {
+  if (!value) return "";
+  if (typeof value === "object") return value[language] || value.en || Object.values(value)[0] || "";
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === "object" ? parsed[language] || parsed.en || Object.values(parsed)[0] || "" : value;
+    } catch {
+      return value;
+    }
+  }
+  return String(value);
+}
 
-  const { city, category, group_price, popular, updateValue } = useQueryFilters();
+function Choice({ checked, label, onChange, type = "checkbox", name }) {
+  return (
+    <label className={`trip-filter-choice ${checked ? "is-selected" : ""}`}>
+      <input type={type} name={name} checked={checked} onChange={onChange} />
+      <span className="trip-filter-choice__box" aria-hidden="true">{checked ? <FaCheck /> : null}</span>
+      <span className="trip-filter-choice__label">{label}</span>
+    </label>
+  );
+}
+
+export default function TripsFilter({ allCities = [], allCategories = [], loading, mobileOpen = false, onClose }) {
+  const { i18n, t } = useTranslation("trips");
+  const language = i18n.language?.split("-")[0] || "en";
+  const { city, category, group_price, popular, updateValue, resetFilters } = useQueryFilters();
+  const selectedCities = city === "all" ? [] : Array.isArray(city) ? city : [city];
+  const selectedCategories = category === "all" ? [] : Array.isArray(category) ? category : [category];
+  const selectedCount = selectedCities.length + selectedCategories.length + (group_price !== "All" ? 1 : 0) + (popular ? 1 : 0);
 
   const toggleFilter = (key, current, value) => {
-    if (current === "all") return updateValue(key, [value]);
-    const values = Array.isArray(current) ? current : [current];
-    const next = values.includes(value)
-      ? values.filter((item) => item !== value)
-      : [...values, value];
+    const currentValues = current === "all" ? [] : Array.isArray(current) ? current : [current];
+    const next = currentValues.includes(value) ? currentValues.filter((item) => item !== value) : [...currentValues, value];
     updateValue(key, next.length ? next : "all");
   };
 
-  if (loading)
-    return <p className="text-center text-gray-500">{t("Loading")}</p>;
-
-  const rangesUSD = [
-    { label: "0 - 199", value: "Economy" },
-    { label: "200 - 599", value: "Standard" },
-    { label: "600+", value: "Luxury" },
-  ];
-
-  const conversionRate = 0.85;
-
   const priceRanges = [
-    { label: t("All"), value: "All" },
-    ...(currency === "EUR"
-      ? rangesUSD.map((r) => ({
-          ...r,
-          label: r.label.includes("+")
-            ? `${parseInt(r.label) * conversionRate}+ €`
-            : r.label
-                .split("-")
-                .map((n) => `${(parseInt(n) * conversionRate).toFixed(0)} €`)
-                .join(" - "),
-        }))
-      : rangesUSD.map((r) => ({
-          ...r,
-          label: r.label.includes("+") ? `${r.label} $` : `${r.label} $`,
-        }))),
+    { label: t("All", { defaultValue: "All prices" }), value: "All" },
+    { label: "0 – 199 USD", value: "Economy" },
+    { label: "200 – 599 USD", value: "Standard" },
+    { label: "600+ USD", value: "Luxury" },
   ];
 
-  const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
+  if (loading) return <div className="trip-filter trip-filter--loading" aria-busy="true">{t("Loading", { defaultValue: "Loading filters…" })}</div>;
 
   return (
-    <motion.aside
-      role="complementary"
-      aria-label="Trips filter options"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={fadeUp}
-      className={`p-6 rounded-xl shadow-lg transition ${
-        themeName === "dark"
-          ? "bg-gradient-to-br from-[#0a0a0a] via-[#111] to-[#1a1a1a] text-[#b5892e] border border-[#c9a34a]/40"
-          : "bg-[var(--surface)] border border-[var(--line)] text-[var(--foreground)]"
-      }`}
-    >
-      <h3
-        role="heading"
-        aria-level={3}
-        aria-label={t("Filters")}
-        className="text-xl font-bold mb-6 text-[var(--color)]"
-      >
-        {t("Filters")}
-      </h3>
-
-      <div className="flex flex-col gap-8">
-        {/* المدن */}
-        <div>
-          <label
-            className="flex items-center gap-2 font-semibold mb-3 text-[var(--color)]"
-            aria-label="Filter by cities"
-          >
-            <FaMapMarkerAlt /> {t("Cities")} :
-          </label>
-          <div className="grid grid-cols-2 gap-2 ml-6">
-            <label className="col-span-2 flex items-center gap-2 cursor-pointer font-medium">
-              <input type="checkbox" aria-label={t("All")} className="accent-[#c9a34a] cursor-pointer" checked={city === "all"} onChange={() => updateValue("city", "all")} />
-              {t("All")}
-            </label>
-            {allCities.map((cityObj) => {
-              const cityName =
-                cityObj.name?.[normalizedLang] ||
-                cityObj.name?.["en"] ||
-                cityObj.name;
-              return (
-                <label
-                  key={cityObj.id ?? cityName}
-                  className="flex items-center gap-2 cursor-pointer hover:text-[var(--color-hover)] transition"
-                >
-                  <input
-                    type="checkbox"
-                    aria-label={`Filter by city ${cityName}`}
-                    className="accent-[#c9a34a] cursor-pointer"
-                    checked={
-                      city === "all"
-                        ? false
-                        : Array.isArray(city)
-                        ? city.includes(cityName)
-                        : city === cityName
-                    }
-                    onChange={() => toggleFilter("city", city, cityName)}
-                  />
-                  {cityName}
-                </label>
-              );
-            })}
-          </div>
+    <>
+      {mobileOpen ? <button className="trip-filter-backdrop" type="button" aria-label="Close filters" onClick={onClose} /> : null}
+      <aside className={`trip-filter ${mobileOpen ? "trip-filter--mobile-open" : ""}`} aria-label={t("Filters", { defaultValue: "Trip filters" })}>
+        <div className="trip-filter__header">
+          <div><span className="trip-filter__eyebrow">WasetTravel</span><h2>{t("Filters", { defaultValue: "Refine your journey" })}</h2></div>
+          {mobileOpen ? <button className="trip-filter__close" type="button" onClick={onClose} aria-label="Close filters"><FaTimes /></button> : null}
         </div>
-
-        <Divider fadeUp={fadeUp} themeName={themeName} />
-
-        {/* الكاتجري */}
-        <div>
-          <label
-            className="flex items-center gap-2 font-semibold mb-3 text-[var(--color)]"
-            aria-label="Filter by categories"
-          >
-            <FaTags /> {t("Categories")} :
-          </label>
-          <div className="grid grid-cols-2 gap-2 ml-6">
-            <label className="col-span-2 flex items-center gap-2 cursor-pointer font-medium">
-              <input type="checkbox" aria-label={t("All")} className="accent-[#c9a34a] cursor-pointer" checked={category === "all"} onChange={() => updateValue("category", "all")} />
-              {t("All")}
-            </label>
-            {allCategories.map((cat) => {
-              const categoryName =
-                cat.name?.[normalizedLang] || cat.name?.["en"] || cat.name;
-              return (
-                <label
-                  key={cat.id ?? categoryName}
-                  className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
-                >
-                  <input
-                    type="checkbox"
-                    aria-label={`Filter by category ${categoryName}`}
-                    className="accent-[#c9a34a] cursor-pointer"
-                    checked={
-                      category === "all"
-                        ? false
-                        : Array.isArray(category)
-                        ? category.includes(categoryName)
-                        : category === categoryName
-                    }
-                    onChange={() => toggleFilter("category", category, categoryName)}
-                  />
-                  {categoryName}
-                </label>
-              );
-            })}
-          </div>
+        <div className="trip-filter__summary">
+          <span>{selectedCount ? `${selectedCount} ${selectedCount === 1 ? "filter" : "filters"} applied` : "All journeys"}</span>
+          <button type="button" onClick={() => { resetFilters(); onClose?.(); }} disabled={!selectedCount}><FaRedoAlt /> {t("Reset", { defaultValue: "Reset" })}</button>
         </div>
-
-        <Divider fadeUp={fadeUp} themeName={themeName} />
-
-        {/* السعر */}
-        <div>
-          <label
-            className="flex items-center gap-2 font-semibold mb-3 text-[#c9a34a]"
-            aria-label="Filter by price range"
-          >
-            {currency === "USD" ? <FaDollarSign /> : <FaEuroSign />}{" "}
-            {t("PriceRange")} :
-          </label>
-          <div className="flex flex-col gap-2 ml-6">
-            {priceRanges.map((range) => (
-              <label
-                key={range.value}
-                className="flex items-center gap-2 cursor-pointer hover:text-[#c9a34a] transition"
-              >
-                <input
-                  type="radio"
-                  name="priceRange"
-                  aria-label={`Price range ${range.label}`}
-                  className="accent-[#c9a34a] cursor-pointer"
-                  checked={group_price === range.value}
-                  onChange={() => updateValue("group_price", range.value)}
-                />
-                {range.label}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <Divider fadeUp={fadeUp} themeName={themeName} />
-
-        {/* الأكثر طلباً */}
-        <div>
-          <label
-            className="flex items-center gap-2 font-semibold cursor-pointer text-[#c9a34a] hover:text-[#c9a34a] transition"
-            aria-label="Filter by most popular trips"
-          >
-            <FaFire /> {t("MostPopular")}
-            <input
-              type="checkbox"
-              aria-label="Filter by most popular trips"
-              className="ml-2 accent-[#c9a34a] cursor-pointer"
-              checked={popular === true}
-              onChange={(e) => updateValue("popular", e.target.checked)}
-            />
+        <div className="trip-filter__sections">
+          <details open>
+            <summary><span><FaMapMarkerAlt /> {t("Cities", { defaultValue: "Destinations" })}</span><FaChevronDown /></summary>
+            <div className="trip-filter__options">
+              <Choice label={t("All", { defaultValue: "All destinations" })} checked={city === "all"} onChange={() => updateValue("city", "all")} />
+              {allCities.map((item) => { const label = getLabel(item.name, language); return <Choice key={item.id || label} label={label} checked={selectedCities.includes(label)} onChange={() => toggleFilter("city", city, label)} />; })}
+            </div>
+          </details>
+          <details open>
+            <summary><span><FaTags /> {t("Categories", { defaultValue: "Experiences" })}</span><FaChevronDown /></summary>
+            <div className="trip-filter__options">
+              <Choice label={t("All", { defaultValue: "All experiences" })} checked={category === "all"} onChange={() => updateValue("category", "all")} />
+              {allCategories.map((item) => { const label = getLabel(item.name, language); return <Choice key={item.id || label} label={label} checked={selectedCategories.includes(label)} onChange={() => toggleFilter("category", category, label)} />; })}
+            </div>
+          </details>
+          <details open>
+            <summary><span>◇ {t("PriceRange", { defaultValue: "Price range" })}</span><FaChevronDown /></summary>
+            <div className="trip-filter__options">
+              {priceRanges.map((range) => <Choice key={range.value} type="radio" name="price-range" label={range.label} checked={group_price === range.value} onChange={() => updateValue("group_price", range.value)} />)}
+            </div>
+          </details>
+          <label className={`trip-filter__popular ${popular ? "is-selected" : ""}`}>
+            <span><FaFire /> {t("MostPopular", { defaultValue: "Most popular journeys" })}</span>
+            <input type="checkbox" checked={popular === true} onChange={(event) => updateValue("popular", event.target.checked)} />
+            <span className="trip-filter__switch" aria-hidden="true" />
           </label>
         </div>
-      </div>
-    </motion.aside>
+        {mobileOpen ? <button className="trip-filter__apply" type="button" onClick={onClose}>{t("Apply", { defaultValue: "Show journeys" })}</button> : null}
+      </aside>
+    </>
   );
 }

@@ -60,7 +60,7 @@ const handleBookingClick = async () => {
 
 
   return (
-    <div className={`booking-card ${themeName}`}>
+    <div className={`booking-card trip-booking-summary ${themeName}`}>
       {/* Header */}
       <h2 className="booking-header">{t("bookingSummary")}</h2>
 

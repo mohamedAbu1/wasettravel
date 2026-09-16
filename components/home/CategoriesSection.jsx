@@ -9,6 +9,7 @@ import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
 import { encodeBase64Json } from "@/lib/utils/base64";
+import { useLanguage } from "@/context/LanguageContext";
 
 const fallbackImage = "/HomePageImage/_16934_1.webp";
 const imageUrl = (url) => {
@@ -18,6 +19,7 @@ const imageUrl = (url) => {
 
 function CategoryCard({ category, language, position }) {
   const router = useRouter();
+  const { lang } = useLanguage();
   const [imageIndex, setImageIndex] = useState(0);
   const name = typeof category.name === "object" ? category.name?.[language] || category.name?.en || Object.values(category.name)[0] : category.name;
   const images = category.images?.length ? category.images : [fallbackImage];
@@ -29,8 +31,8 @@ function CategoryCard({ category, language, position }) {
   }, [images.length]);
 
   const explore = () => {
-    const query = { city: "all", category: [name], price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(name) ? "Luxury" : "All", popular: false };
-    router.push(`/trips?data=${encodeBase64Json(query)}`);
+    const query = { city: "all", category: [name], group_price: ["Luxury Tours", "Luxusreisen", "Voyages de luxe"].includes(name) ? "Luxury" : "All", popular: false };
+    router.push(`/${lang}/trips?data=${encodeBase64Json(query)}`);
   };
 
   return (

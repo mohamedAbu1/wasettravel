@@ -10,12 +10,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/context/LanguageContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
 
 const OurSection = () => {
   const router = useRouter();
   const { theme, themeName } = useTheme();
   const { t } = useTranslation("home");
+  const { lang } = useLanguage();
 
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => {
@@ -95,7 +97,7 @@ const OurSection = () => {
               {t("AtPP")}
             </p>
             <button
-              onClick={() => router.push("/about")}
+              onClick={() => router.push(`/${lang}/about`)}
               aria-label="Learn more about Waset Travel" // ✅ اسم واضح
               className="stone-button px-6 py-3 rounded-lg font-semibold transition shadow-lg bg-[#c9a34a] text-white hover:bg-[#b5892e]"
             >
@@ -203,7 +205,7 @@ const OurSection = () => {
           </p>
 
           <button
-            onClick={() => router.push("/about")}
+            onClick={() => router.push(`/${lang}/about`)}
             className="stone-button px-5 py-2 rounded-lg font-medium transition shadow-md bg-[#c9a34a] text-white hover:bg-[#b5892e]"
           >
             {t("LearnMoreAboutUs")}

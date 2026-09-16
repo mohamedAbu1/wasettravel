@@ -19,7 +19,7 @@ export default function NavBar({ scrolled }) {
   const navItems = ["home", "trips", "about", "contact","b2b"];
 
   const segments = pathname.split("/").filter(Boolean);
-  const langPrefix = segments[0];
+  const langPrefix = ["en", "es", "fr", "de", "it", "zh"].includes(segments[0]) ? segments[0] : "en";
   const normalizedPath = "/" + segments.slice(1).join("/");
 
   return (
@@ -41,7 +41,7 @@ export default function NavBar({ scrolled }) {
           const encoded = encodeQuery({
             city: "all",
             category: "all",
-            price: "All",
+            group_price: "All",
             popular: false,
           });
           path = `/trips?data=${encoded}`;

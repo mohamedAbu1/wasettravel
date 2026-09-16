@@ -5,7 +5,6 @@ import Logo from "./components/Logo";
 import NavBar from "./components/NavBar";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
-import { signOut } from "next-auth/react"; 
 import MobileNav from "./components/MobileNav";
 import ThemeToggle from "../ThemeToggle";
 import dynamic from "next/dynamic";
@@ -21,6 +20,7 @@ export default function Header({ overlay = true }) {
   const [scrolled, setScrolled] = useState(false);
   const { userData } = useAuth();
   const { handleLoginOpen } = useData();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -46,7 +46,7 @@ export default function Header({ overlay = true }) {
           <button
             type="button"
             aria-label={userData ? "Sign out" : "Sign in"} // ✅ تحسين الـ accessibility
-            onClick={userData ? () => signOut() : () => handleLoginOpen()}
+            onClick={userData ? logout : handleLoginOpen}
             className="header-auth-btn"
             >
             {userData ? <FaSignOutAlt size={20} /> : <FaUserPlus size={20} />}

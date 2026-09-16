@@ -21,7 +21,7 @@ export default function SignUpModal() {
   const { handleLoginOpen, signUpOpen, handleSignUpClose } = useData();
   const { t } = useTranslation("home");
   const { validateField } = useSecurity();
-  const { register, loading, loginWithGoogle } = useAuth();
+  const { register, loading, loginWithGoogle, error } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -86,6 +86,7 @@ export default function SignUpModal() {
             <h1 id="signup-dialog-title">{t("StartYourJourney", { defaultValue: "Start your journey" })}</h1>
             <p>{t("SignupDescription", { defaultValue: "A few details are all we need to get you started." })}</p>
           </div>
+          {error ? <div className="auth-form-error" role="alert" aria-live="polite">{error}</div> : null}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate>
             <TextField

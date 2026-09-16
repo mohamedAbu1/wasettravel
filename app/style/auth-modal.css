@@ -76,6 +76,7 @@ html[data-site-theme="stone"] .auth-modal-close:hover { background: rgba(224,184
 html[data-site-theme="stone"] .auth-modal-heading { margin-bottom: 1.3rem; padding-right: 2rem; }
 html[data-site-theme="stone"] .auth-modal-heading h1 { margin: .35rem 0 .45rem; color: #fff8ed; font-family: var(--font-display); font-size: clamp(1.55rem, 3vw, 2.1rem); line-height: 1.08; letter-spacing: -.025em; }
 html[data-site-theme="stone"] .auth-modal-heading > p:last-child { color: rgba(255,248,237,.55); font-size: .78rem; line-height: 1.5; }
+html[data-site-theme="stone"] .auth-form-error { margin: -.35rem 0 .85rem; padding: .7rem .8rem; border: 1px solid rgba(216,125,109,.45); border-radius: .7rem; color: #f0b0a2; background: rgba(216,125,109,.1); font-size: .72rem; line-height: 1.45; }
 html[data-site-theme="stone"] .auth-form { display: grid; gap: .16rem; }
 html[data-site-theme="stone"] .auth-field .MuiOutlinedInput-root { min-height: 3.35rem; border-radius: .82rem; background: rgba(255,255,255,.055); color: #f7efe3; transition: border-color .2s ease, background .2s ease, box-shadow .2s ease; }
 html[data-site-theme="stone"] .auth-field .MuiOutlinedInput-notchedOutline { border-color: rgba(224,184,115,.24); }
@@ -124,6 +125,7 @@ html[data-site-theme="stone"][data-theme="light"] .auth-modal-aside-note,
 html[data-site-theme="stone"][data-theme="light"] .auth-benefits { color: rgba(48,39,29,.7); }
 html[data-site-theme="stone"][data-theme="light"] .auth-modal-heading h1 { color: #30271d; }
 html[data-site-theme="stone"][data-theme="light"] .auth-modal-heading > p:last-child { color: rgba(48,39,29,.58); }
+html[data-site-theme="stone"][data-theme="light"] .auth-form-error { border-color: rgba(164,74,56,.3); color: #913d31; background: #fff0eb; }
 html[data-site-theme="stone"][data-theme="light"] .auth-modal-close { color: rgba(48,39,29,.5); }
 html[data-site-theme="stone"][data-theme="light"] .auth-field .MuiOutlinedInput-root { background: #f7eee2; color: #30271d; }
 html[data-site-theme="stone"][data-theme="light"] .auth-field .MuiOutlinedInput-notchedOutline { border-color: rgba(148,106,59,.3); }
@@ -136,6 +138,9 @@ html[data-site-theme="stone"][data-theme="light"] .auth-gender legend { color: r
 html[data-site-theme="stone"][data-theme="light"] .auth-choice { border-color: rgba(148,106,59,.25); color: rgba(48,39,29,.68); }
 html[data-site-theme="stone"][data-theme="light"] .auth-choice:hover,
 html[data-site-theme="stone"][data-theme="light"] .auth-choice--selected { border-color: #b77b3c; background: #f0dfca; color: #4a3826; }
+html[data-site-theme="stone"] .auth-modal-content :is(button, input):focus-visible { outline: 3px solid rgba(224,184,115,.45); outline-offset: 2px; }
+html[data-site-theme="stone"][data-theme="light"] .auth-modal-content :is(button, input):focus-visible { outline-color: rgba(143,93,46,.35); }
+html[data-site-theme="stone"][data-theme="light"] .auth-field .MuiInputBase-input:-webkit-autofill { -webkit-text-fill-color: #30271d; box-shadow: 0 0 0 100px #f7eee2 inset; }
 
 @media (max-width: 680px) {
   html[data-site-theme="stone"] .auth-dialog-paper { width: calc(100vw - 1rem); margin: .5rem; border-radius: 1rem; }

@@ -2,18 +2,14 @@
 import { FaShoppingCart, FaMoneyBillWave, FaUsers } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { usePurchase } from "@/context/PurchaseContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function TripDetails({ trip, groupSize }) {
   const { themeName } = useTheme();
   const { currency } = usePurchase();
+  const { convertPrice } = useCurrency();
 
-  // ✅ حساب السعر للفرد حسب العملة
-  let pricePerPerson = trip.price;
-  if (currency === "EUR" && trip.currency === "USD") {
-    pricePerPerson = (trip.price * 0.85).toFixed(2);
-  } else if (currency === "USD" && trip.currency === "EUR") {
-    pricePerPerson = (trip.price * 1.18).toFixed(2);
-  }
+  const pricePerPerson = convertPrice(trip.price, trip.currency || "USD", currency || trip.currency);
 
 
   // ✅ السعر النهائي = السعر للفرد × عدد الأشخاص

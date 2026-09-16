@@ -15,7 +15,7 @@ const Footer = () => {
   const { t } = useTranslation("footer", "cancellationPolicy");
   const pathname = usePathname();
   const locale = pathname?.split("/").filter(Boolean)[0] || "en";
-  const tripsQuery = encodeQuery({ city: "all", category: "all", price: "All", popular: false });
+  const tripsQuery = encodeQuery({ city: "all", category: "all", group_price: "All", popular: false });
   const socials = [
     ["Facebook", "https://www.facebook.com/share/1BTkjPD5Sd/", FaFacebookF],
     ["Instagram", "https://www.instagram.com/kader.mohameda", FaInstagram],

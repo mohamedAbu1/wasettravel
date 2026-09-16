@@ -55,20 +55,20 @@ export default function TripPage({ params }) {
       <Head><title>{tripTitle}</title><meta name="description" content={tripDescription} /></Head>
       <main className={`trip-detail-page site-shell min-h-screen overflow-hidden ${theme.text}`}>
         <Header />
-        <div className="mx-auto w-full max-w-7xl px-5 pb-16 pt-28 sm:px-8 lg:px-12">
-          <nav className="mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.14em] text-white/45"><Link href={`/${lang}/trips`} className="transition hover:text-[#e0b873]">{t("Trips", { defaultValue: "Trips" })}</Link><FaArrowLeft className="text-[10px]" /><span className="max-w-[15rem] truncate text-[#e0b873]">{tripTitle}</span></nav>
+        <div className="trip-detail-container mx-auto w-full max-w-7xl px-5 pb-16 pt-28 sm:px-8 lg:px-12">
+          <nav className="trip-detail-breadcrumb mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[.14em]"><Link href={`/${lang}/trips`} className="transition hover:text-[#e0b873]">{t("Trips", { defaultValue: "Trips" })}</Link><FaArrowLeft className="text-[10px]" /><span className="max-w-[15rem] truncate">{tripTitle}</span></nav>
           <TripHeader trip={trip} lang={lang} />
 
-          <div className="mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,.65fr)]">
+          <div className="trip-detail-layout mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,.65fr)]">
             <div className="min-w-0 space-y-6">
-              <section className="grid gap-4 sm:grid-cols-2"><div className="stone-card rounded-2xl p-5"><p className="stone-kicker mb-2">Destinations</p><TripCities trip={trip} lang={lang} theme={theme} themeName={themeName} /></div><div className="stone-card rounded-2xl p-5"><p className="stone-kicker mb-2">Travel style</p><TripCategories trip={trip} lang={lang} theme={theme} themeName={themeName} /></div></section>
+              <section className="trip-detail-meta grid gap-4 sm:grid-cols-2"><div className="stone-card rounded-2xl p-5"><p className="stone-kicker mb-2">Destinations</p><TripCities trip={trip} lang={lang} theme={theme} themeName={themeName} /></div><div className="stone-card rounded-2xl p-5"><p className="stone-kicker mb-2">Travel style</p><TripCategories trip={trip} lang={lang} theme={theme} themeName={themeName} /></div></section>
               <TripOverviewTable trip={trip} />
               <AccessibilityInfo theme={themeName} themeName={themeName} />
               <section className="grid gap-6 lg:grid-cols-2"><TripIncludes trip={trip} lang={lang} theme={theme} themeName={themeName} /><TripExclusions trip={trip} lang={lang} theme={theme} themeName={themeName} /></section>
               <TripItinerary trip={trip} lang={lang} theme={theme} themeName={themeName} />
               <TripReviews trip={trip} lang={lang} theme={theme} />
             </div>
-            <aside className="lg:sticky lg:top-24"><div className="mb-3 flex items-center gap-2 px-1 text-sm text-white/55"><FaMapMarkerAlt className="text-[#e0b873]" /> Plan your journey</div><CalendarWidget trip={trip} id={id} />{userData && userData.role !== "ADMIN" && hasActivePurchase && <div className="mt-4"><CancelButton trip={trip} theme={theme} /></div>}</aside>
+            <aside className="trip-detail-booking lg:sticky lg:top-24"><div className="trip-detail-booking__label mb-3 flex items-center gap-2 px-1 text-sm"><FaMapMarkerAlt className="text-[#e0b873]" /> Plan your journey</div><CalendarWidget trip={trip} id={id} />{userData && userData.role !== "ADMIN" && hasActivePurchase && <div className="mt-4"><CancelButton trip={trip} theme={theme} /></div>}</aside>
           </div>
         </div>
         <Footer /><SignUpButton /><LoginModal />{userData && <ChatWidget />}{chatUser && <AdminChatWindow user={chatUser} admin={userData} messages={messages} onClose={() => setChatUser(null)} />}

@@ -10,6 +10,8 @@ import { useTrip } from "@/context/TripContext";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useCurrency } from "@/context/CurrencyContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 const fallbackImage = "/Luxor/pexels-axp-photography-500641970-18934598.webp";
 
@@ -20,6 +22,8 @@ const TopTripsSection = () => {
   const { user } = useAuth();
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const { currency, purchases } = usePurchase();
+  const { convertPrice } = useCurrency();
+  const { lang } = useLanguage();
   const [index, setIndex] = useState(0);
   const language = i18n.language.split("-")[0];
 
@@ -38,14 +42,6 @@ const TopTripsSection = () => {
       (a.review_count ?? a.reviews?.length ?? 0),
   );
 
-  const convertPrice = (price, tripCurrency) => {
-    if (currency === "EUR" && tripCurrency === "USD") return (price * 0.85).toFixed(2);
-    if (currency === "USD" && tripCurrency === "EUR") return (price * 1.18).toFixed(2);
-    if (currency === "EGP" && tripCurrency === "USD") return (price * 49.1).toFixed(2);
-    if (currency === "USD" && tripCurrency === "EGP") return (price / 49.1).toFixed(2);
-    return price;
-  };
-
   const TripCard = ({ trip, position }) => {
     const title = trip.title?.[language] || trip.title?.en || "Untitled Trip";
     const hasPurchased = user && purchases.some((purchase) => purchase.user_id?.toString() === user.id?.toString() && purchase.trip_id?.toString() === trip.id?.toString() && purchase.status !== "Cancelled");
@@ -58,8 +54,8 @@ const TopTripsSection = () => {
           <div className="absolute inset-x-5 bottom-4"><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#e0b873]">Waset experience</p><h3 className="line-clamp-2 text-xl font-bold leading-tight text-white">{title}</h3></div>
         </div>
         <div className="flex items-center justify-between gap-3 px-5 py-4">
-          <div><div className="flex items-center gap-1.5 text-sm text-[#e0b873]"><span>★</span><span className="font-bold">{trip.rating || "4.5"}</span><span className="text-white/45">({trip.review_count ?? trip.reviews?.length ?? 0} {t("reviews")})</span></div><p className="mt-1 text-lg font-bold text-[#f3d18f]">{convertPrice(trip.group_price, trip.currency)} <span className="text-xs font-medium text-white/50">{currency}</span></p></div>
-          <button onClick={() => router.push(`/trips/${trip.id}`)} className={`rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 ${hasPurchased ? "bg-[#83b995] text-[#13251a]" : "stone-button"}`}>{hasPurchased ? t("Tripdetails") : t("BookNow")}</button>
+          <div><div className="flex items-center gap-1.5 text-sm text-[#e0b873]"><span>★</span><span className="font-bold">{trip.rating || "4.5"}</span><span className="text-white/45">({trip.review_count ?? trip.reviews?.length ?? 0} {t("reviews")})</span></div><p className="mt-1 text-lg font-bold text-[#f3d18f]">{convertPrice(trip.group_price, trip.currency || "USD", currency)}</p></div>
+          <button onClick={() => router.push(`/${lang}/trips/${trip.id}`)} className={`rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 ${hasPurchased ? "bg-[#83b995] text-[#13251a]" : "stone-button"}`}>{hasPurchased ? t("Tripdetails") : t("BookNow")}</button>
         </div>
       </motion.article>
     );

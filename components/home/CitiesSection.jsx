@@ -9,6 +9,7 @@ import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useRouter } from "next/navigation";
 import { encodeBase64Json } from "@/lib/utils/base64";
+import { useLanguage } from "@/context/LanguageContext";
 
 const fallbackImage = "/HomePageImage/_16934_1.webp";
 const imageUrl = (url) => {
@@ -19,7 +20,8 @@ const imageUrl = (url) => {
 function CityCard({ city, language, position, t }) {
   const router = useRouter();
   const name = typeof city.name === "object" ? city.name?.[language] || city.name?.en || Object.values(city.name)[0] : city.name;
-  const explore = () => router.push(`/trips?data=${encodeBase64Json({ city: [name], category: "all", group_price: "All", popular: false })}`);
+  const { lang } = useLanguage();
+  const explore = () => router.push(`/${lang}/trips?data=${encodeBase64Json({ city: [name], category: "all", group_price: "All", popular: false })}`);
 
   return (
     <motion.article initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: position * 0.07 }} viewport={{ once: true, amount: 0.15 }} onClick={explore} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") explore(); }} role="button" tabIndex={0} aria-label={`Explore trips in ${name}`} className={`group relative min-h-[19rem] cursor-pointer overflow-hidden rounded-[1.35rem] border border-white/10 outline-none focus-visible:ring-2 focus-visible:ring-[#e0b873] ${position === 0 ? "sm:col-span-2 sm:min-h-[24rem]" : ""}`}>

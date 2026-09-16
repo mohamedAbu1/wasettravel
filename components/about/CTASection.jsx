@@ -25,7 +25,10 @@ export default function CTASection() {
       viewport={{ once: true, amount: 0.3 }}
       variants={staggerContainer}
     >
-      <motion.div variants={staggerContainer} className="max-w-7xl mx-auto text-center">
+      <motion.div variants={staggerContainer} className="about-vision max-w-7xl mx-auto text-center">
+        <motion.p variants={fadeUp} className="stone-kicker mb-3">Beyond the itinerary</motion.p>
+        <motion.h3 variants={fadeUp} className={`mb-4 text-3xl font-bold ${themeName === "dark" ? "text-white" : "text-[#30271d]"}`}>{t("h4")}</motion.h3>
+        <motion.p variants={fadeUp} className={`${themeName === "dark" ? "text-white/75" : "text-[#4f3d2d]"} mx-auto mb-12 max-w-2xl text-base leading-8`}>{t("p3")}</motion.p>
         <motion.h4
           variants={fadeUp}
           className={`text-xl font-semibold mb-3 ${themeName === "dark" ? "text-gold" : "text-[#8f5d2e]"}`}

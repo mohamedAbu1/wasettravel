@@ -1,157 +1,57 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@/context/ThemeContext";
+import { FaCheckCircle, FaExchangeAlt, FaRedoAlt, FaSave } from "react-icons/fa";
+import { useCurrency } from "@/context/CurrencyContext";
+
+const pairs = [
+  { base: "USD", target: "EUR", label: "US Dollar → Euro" },
+  { base: "USD", target: "EGP", label: "US Dollar → Egyptian Pound" },
+  { base: "EUR", target: "EGP", label: "Euro → Egyptian Pound" },
+];
 
 export default function CurrencyRates() {
-  const { themeName } = useTheme();
-  const [rates, setRates] = useState({
-    USD_EGP: 50.36,
-    USD_EUR: 0.87,
-    EUR_EGP: 58.09,
-    EGP_USD: 0.0199,
-    EGP_EUR: 0.0172,
-    EUR_USD: 1.15,
-  });
-
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { rates, loading, saving, error, refreshRates, saveRates } = useCurrency();
+  const [draft, setDraft] = useState({ USD_EUR: "", USD_EGP: "", EUR_EGP: "" });
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const fetchRates = async () => {
-      try {
-        const res = await fetch("/api/currency");
-        const data = await res.json();
+    setDraft({ USD_EUR: rates.USD_EUR ?? "", USD_EGP: rates.USD_EGP ?? "", EUR_EGP: rates.EUR_EGP ?? "" });
+  }, [rates]);
 
-        const findRate = (base, target) =>
-          data.find(
-            (r) => r.base_currency === base && r.target_currency === target,
-          )?.rate || 0;
-
-        setRates({
-          USD_EGP: findRate("USD", "EGP"),
-          USD_EUR: findRate("USD", "EUR"),
-          EUR_EGP: findRate("EUR", "EGP"),
-          EGP_USD: findRate("EGP", "USD"),
-          EGP_EUR: findRate("EGP", "EUR"),
-          EUR_USD: findRate("EUR", "USD"),
-        });
-      } catch (err) {
-        console.error("Error fetching rates:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRates();
-  }, []);
-
-  // ✅ زر حفظ التغييرات
-  const saveRates = async () => {
-    setSaving(true);
-    try {
-      const updates = [
-        { base: "USD", target: "EGP", rate: rates.USD_EGP },
-        { base: "USD", target: "EUR", rate: rates.USD_EUR },
-        { base: "EUR", target: "EGP", rate: rates.EUR_EGP },
-        { base: "EGP", target: "USD", rate: rates.EGP_USD },
-        { base: "EGP", target: "EUR", rate: rates.EGP_EUR },
-        { base: "EUR", target: "USD", rate: rates.EUR_USD },
-      ];
-
-      for (const u of updates) {
-        await fetch("/api/currency", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            base_currency: u.base,
-            target_currency: u.target,
-            rate: u.rate,
-          }),
-        });
-      }
-
-      alert("✅ تم حفظ جميع التغييرات بنجاح");
-    } catch (err) {
-      alert("❌ حدث خطأ أثناء الحفظ");
-    } finally {
-      setSaving(false);
-    }
+  const update = (key, value) => {
+    setMessage("");
+    setDraft((current) => ({ ...current, [key]: value }));
   };
 
-  if (loading)
-    return <p className="text-center">⏳ Loading currency rates...</p>;
+  const handleSave = async () => {
+    const values = Object.fromEntries(Object.entries(draft).map(([key, value]) => [key, Number(value)]));
+    if (Object.values(values).some((value) => !Number.isFinite(value) || value <= 0)) {
+      setMessage("Enter a valid positive rate for every pair.");
+      return;
+    }
+    const success = await saveRates(values);
+    setMessage(success ? "Rates saved and published successfully." : "Unable to save rates. Please try again.");
+  };
 
-  const renderCard = (flag, label, value, onChange) => (
-    <div
-      className={`flex flex-col items-center justify-center p-6 rounded-xl shadow-lg ${
-        themeName === "dark"
-          ? "bg-gradient-to-r from-gray-800 to-gray-900 border border-gold/30"
-          : "bg-gradient-to-r from-blue-100 to-blue-200 border border-blue-300"
-      }`}
-    >
-      <span className="text-5xl">{flag}</span>
-      <h3 className="text-xl font-semibold mt-2">{label}</h3>
-      <input
-        type="number"
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="mt-3 border rounded px-3 py-2 w-40 text-center dark:bg-gray-800 dark:text-white"
-      />
-    </div>
-  );
+  if (loading) return <div className="admin-currency-card">Loading currency settings…</div>;
 
   return (
-    <div
-      className={`p-6 rounded-xl shadow-lg ${
-        themeName === "dark"
-          ? "bg-black/40 border border-gold/30 text-white"
-          : "bg-white/70 border border-[#c9a34a]/30 text-[#3a2c0a] backdrop-blur-sm"
-      }`}
-    >
-      <h2
-        className={`text-3xl font-bold mb-6 text-center ${
-          themeName === "dark"
-            ? "text-gold"
-            : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] bg-clip-text text-transparent"
-        }`}
-      >
-        💱 Currency Rates
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {renderCard("🇺🇸", "USD → EGP", rates.USD_EGP, (val) =>
-          setRates((prev) => ({ ...prev, USD_EGP: val })),
-        )}
-        {renderCard("🇺🇸", "USD → EUR", rates.USD_EUR, (val) =>
-          setRates((prev) => ({ ...prev, USD_EUR: val })),
-        )}
-        {renderCard("🇪🇺", "EUR → EGP", rates.EUR_EGP, (val) =>
-          setRates((prev) => ({ ...prev, EUR_EGP: val })),
-        )}
-        {renderCard("🇪🇬", "EGP → USD", rates.EGP_USD, (val) =>
-          setRates((prev) => ({ ...prev, EGP_USD: val })),
-        )}
-        {renderCard("🇪🇬", "EGP → EUR", rates.EGP_EUR, (val) =>
-          setRates((prev) => ({ ...prev, EGP_EUR: val })),
-        )}
-        {renderCard("🇪🇺", "EUR → USD", rates.EUR_USD, (val) =>
-          setRates((prev) => ({ ...prev, EUR_USD: val })),
-        )}
+    <section className="admin-currency-card" aria-labelledby="currency-settings-title">
+      <div className="admin-currency-card__header">
+        <div><span className="admin-currency-card__eyebrow">Pricing control</span><h2 id="currency-settings-title">Currency rates</h2><p>Set the three live base rates. Reverse conversions are calculated automatically.</p></div>
+        <button type="button" className="admin-currency-refresh" onClick={() => { setMessage(""); refreshRates(); }} disabled={saving}><FaRedoAlt /> Refresh</button>
       </div>
-
-      {/* ✅ زر الحفظ */}
-      <div className="mt-6 flex justify-center">
-        <button
-          onClick={saveRates}
-          disabled={saving}
-          className={`px-6 py-2 rounded-lg shadow-md font-semibold transition-transform ${
-            themeName === "dark"
-              ? "bg-gold text-black hover:scale-105"
-              : "bg-gradient-to-r from-[#c9a34a] to-[#eab308] text-white hover:scale-105"
-          }`}
-        >
-          {saving ? "⏳ Saving..." : "💾 Save Changes"}
-        </button>
+      <div className="admin-currency-notice"><FaExchangeAlt /><span>All customer-facing prices use these values across trips, details, filters, and booking summaries.</span></div>
+      <div className="admin-currency-grid">
+        {pairs.map((pair) => {
+          const key = `${pair.base}_${pair.target}`;
+          return <label key={key} className="admin-currency-field"><span>{pair.label}</span><div><input type="number" min="0.000001" step="0.0001" inputMode="decimal" value={draft[key]} onChange={(event) => update(key, event.target.value)} aria-label={pair.label} /><strong>{pair.target}</strong></div><small>1 {pair.base} = {draft[key] || "—"} {pair.target}</small></label>;
+        })}
       </div>
-    </div>
+      {error ? <p className="admin-currency-error" role="alert">{error}</p> : null}
+      {message ? <p className={`admin-currency-message ${message.includes("Unable") || message.includes("valid") ? "is-error" : ""}`} role="status">{message.includes("successfully") ? <FaCheckCircle /> : null}{message}</p> : null}
+      <div className="admin-currency-card__footer"><span>Changes apply after saving and refresh automatically for visitors.</span><button type="button" className="admin-currency-save" onClick={handleSave} disabled={saving}><FaSave /> {saving ? "Saving…" : "Save & publish"}</button></div>
+    </section>
   );
 }

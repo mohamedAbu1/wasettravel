@@ -1,117 +1,95 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
 
-const CurrencyContext = createContext();
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+
+const CurrencyContext = createContext(null);
+const supportedCurrencies = ["USD", "EUR", "EGP"];
+const fallbackRates = {
+  USD_EUR: 0.86,
+  USD_EGP: 51.34,
+  EUR_EGP: 58.6,
+};
+
+function createRateMap(rows = []) {
+  const next = { ...fallbackRates };
+  rows.forEach((row) => {
+    const base = String(row.base_currency || "").toUpperCase();
+    const target = String(row.target_currency || "").toUpperCase();
+    const rate = Number(row.rate);
+    if (supportedCurrencies.includes(base) && supportedCurrencies.includes(target) && base !== target && Number.isFinite(rate) && rate > 0) {
+      next[`${base}_${target}`] = rate;
+    }
+  });
+  // Keep only three canonical rates and derive inverses, so every screen uses the same source.
+  if (next.USD_EUR) next.EUR_USD = 1 / next.USD_EUR;
+  if (next.USD_EGP) next.EGP_USD = 1 / next.USD_EGP;
+  if (next.EUR_EGP) next.EGP_EUR = 1 / next.EUR_EGP;
+  return next;
+}
 
 export function CurrencyProvider({ children }) {
-  const [rates, setRates] = useState({
-    USD_EUR: 0.86,
-    EUR_USD: 1.18,
-    USD_EGP: 51.34,
-    EUR_EGP: 58.60,
-  });
-  const [ids, setIds] = useState({});
+  const [rates, setRates] = useState(() => createRateMap());
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchRates = async () => {
-      try {
-        const res = await fetch("/api/currency");
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-
-        // هنا ممكن تجيب القيم من الجدول مباشرة
-        const usdRow = data.find((r) => r.currency === "USD");
-        const eurRow = data.find((r) => r.currency === "EUR");
-setRates({
-  USD_EUR: eurRow?.urop_rate || 0.86,   // اليورو مقابل الدولار
-  EUR_USD: usdRow?.urop_rate ? 1 / usdRow.urop_rate : 1.18, // الدولار مقابل اليورو
-  USD_EGP: usdRow?.eg_rate || 51.34,    // الدولار مقابل الجنيه
-  EUR_EGP: eurRow?.eg_rate || 58.60,    // اليورو مقابل الجنيه
-});
-
-        setIds({
-          USD: usdRow?.id || null,
-          EUR: eurRow?.id || null,
-        });
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRates();
+  const refreshRates = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/currency", { cache: "no-store" });
+      if (!response.ok) throw new Error("Unable to load currency rates");
+      const data = await response.json();
+      const nextRows = Array.isArray(data) ? data : data.rows || [];
+      setRows(nextRows);
+      setRates(createRateMap(nextRows));
+      setError(null);
+      return nextRows;
+    } catch (requestError) {
+      setError(requestError.message);
+      return [];
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const saveRates = async () => {
+  useEffect(() => { refreshRates(); }, [refreshRates]);
+
+  const convertPrice = useCallback((amount, fromCurrency, toCurrency, decimals = 2) => {
+    const numericAmount = Number(amount);
+    const from = String(fromCurrency || "USD").toUpperCase();
+    const to = String(toCurrency || from).toUpperCase();
+    if (!Number.isFinite(numericAmount) || from === to) return Number.isFinite(numericAmount) ? numericAmount.toFixed(decimals) : "0.00";
+    const direct = rates[`${from}_${to}`];
+    const converted = direct ? numericAmount * direct : numericAmount;
+    return converted.toFixed(decimals);
+  }, [rates]);
+
+  const saveRates = useCallback(async (nextRates) => {
     setSaving(true);
     try {
-      for (const currency of Object.keys(ids)) {
-        if (ids[currency]) {
-          await fetch("/api/currency", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: ids[currency], rate: rates[currency] }),
-          });
-        }
-      }
-    } catch (err) {
-      setError(err.message);
+      const payload = [
+        ["USD", "EUR", nextRates.USD_EUR], ["USD", "EGP", nextRates.USD_EGP], ["EUR", "EGP", nextRates.EUR_EGP],
+      ];
+      const responses = await Promise.all(payload.map(([base_currency, target_currency, rate]) => fetch("/api/currency", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ base_currency, target_currency, rate }),
+      })));
+      if (responses.some((response) => !response.ok)) throw new Error("One or more rates could not be saved");
+      await refreshRates();
+      return true;
+    } catch (requestError) {
+      setError(requestError.message);
+      return false;
     } finally {
       setSaving(false);
     }
-  };
+  }, [refreshRates]);
 
-  // ✅ دالة التحويل بالشروط المحددة
-  const convertPrice = (amount, fromCurrency, toCurrency) => {
-    let converted = amount;
-
-
-    // تحويل من دولار إلى يورو
-    if (fromCurrency === "USD" && toCurrency === "EUR") {
-      converted = amount * (rates.USD_EUR || 0.86);
-    }
-    // تحويل من يورو إلى دولار
-    else if (fromCurrency === "EUR" && toCurrency === "USD") {
-      converted = amount * (rates.EUR_USD || 1.18);
-    }
-    // تحويل من دولار إلى جنيه مصري
-    else if (fromCurrency === "USD" && toCurrency === "EGP") {
-      converted = amount * (rates.USD_EGP || 51.34);
-    }
-    // تحويل من يورو إلى جنيه مصري
-    else if (fromCurrency === "EUR" && toCurrency === "EGP") {
-      converted = amount * (rates.EUR_EGP || 58.60);
-    }
-    // تحويل من جنيه مصري إلى دولار
-    else if (fromCurrency === "EGP" && toCurrency === "USD") {
-      converted = amount / (rates.USD_EGP || 51.34);
-    }
-    // تحويل من جنيه مصري إلى يورو
-    else if (fromCurrency === "EGP" && toCurrency === "EUR") {
-      converted = amount / (rates.EUR_EGP || 58.60);
-    }
-
-    return converted.toFixed(2);
-  };
-
-  return (
-    <CurrencyContext.Provider
-      value={{
-        rates,
-        setRates,
-        loading,
-        saving,
-        error,
-        saveRates,
-        convertPrice, // ✅ متاح الآن في كل المكونات
-      }}
-    >
-      {children}
-    </CurrencyContext.Provider>
-  );
+  const value = useMemo(() => ({ rates, rows, loading, saving, error, refreshRates, saveRates, convertPrice }), [rates, rows, loading, saving, error, refreshRates, saveRates, convertPrice]);
+  return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>;
 }
 
 export const useCurrency = () => useContext(CurrencyContext);

@@ -8,7 +8,6 @@ import { usePurchase } from "@/context/PurchaseContext";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
-import { useCurrency } from "@/context/CurrencyContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -19,25 +18,10 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const router = useRouter();
   const { userData } = useAuth();
   const { currency, purchases } = usePurchase();
+  const { convertPrice } = useCurrency();
   const { t } = useTranslation("trips");
   const { lang } = useLanguage();
   const { theme } = useTheme();
-
-  const getRandomStars = () => Math.floor(Math.random() * 3) + 3;
-
-  const convertPrice = (group_price, tripCurrency) => {
-    let converted = group_price;
-    if (currency === "EUR" && tripCurrency === "USD") {
-      converted = (group_price * 0.85).toFixed(2);
-    } else if (currency === "USD" && tripCurrency === "EUR") {
-      converted = (group_price * 1.18).toFixed(2);
-    } else if (currency === "EGP" && tripCurrency === "USD") {
-      converted = (group_price * 49.1).toFixed(2);
-    } else if (currency === "USD" && tripCurrency === "EGP") {
-      converted = (group_price / 49.1).toFixed(2);
-    }
-    return converted;
-  };
 
   return (
     <div
@@ -48,8 +32,8 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
       } `}
     >
       {trips.map((trip, i) => {
-        const avgStars = getRandomStars();
-        const displayedPrice = convertPrice(trip.group_price || 0, trip.currency || "USD");
+        const avgStars = Math.max(0, Math.min(5, Number(trip.rating) || 4));
+        const displayedPrice = convertPrice(trip.group_price || 0, trip.currency || "USD", currency);
 
         const hasPurchased =
           userData &&
@@ -84,7 +68,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               scale: 1.02,
               boxShadow: theme.shadow,
             }}
-            className={`flex ${
+            className={`trips-card flex ${
               cardStyle === "vertical" ? "w-full flex-col" : "flex-row"
             } stone-card rounded-xl shadow-lg overflow-hidden`}
           >
@@ -104,7 +88,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 modules={[Autoplay, Pagination, Navigation]}
                 className="h-[300px] bg-[#ead9c7] lg:h-[480px]"
               >
-                {(trip.images || [trip.cover_image]).map((img, idx) => (
+                {(Array.isArray(trip.images) && trip.images.length ? trip.images : [trip.cover_image]).map((img, idx) => (
                   <SwiperSlide key={idx}>
                     <Image
                       src={img || "/HomePageImage/_16934_1.webp"}
@@ -130,6 +114,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 cardStyle === "vertical" ? "w-full" : "lg:w-1/2"
               } w-full p-6 flex flex-col gap-4`}
             >
+              <div className="flex items-start justify-between gap-3">
               <h3
                 role="heading"
                 aria-level={3}
@@ -138,6 +123,8 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               >
                 {trip.title?.[lang] || trip.title?.en || "Untitled"}
               </h3>
+              {trip.duration ? <span className="trips-card__duration">{trip.duration} {trip.duration_unit || "days"}</span> : null}
+              </div>
 
               <p
                 aria-label="Trip cities"
@@ -195,11 +182,11 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                     }
                   />
                 ))}
-                <span className="text-sm text-gray-500">({t("reviews")})</span>
+                <span className="text-sm text-[var(--muted)]">({trip.review_count ?? 0} {t("reviews")})</span>
               </div>
 
               <button
-                onClick={() => router.push(`/trips/${trip.id}`)}
+                onClick={() => router.push(`/${lang}/trips/${trip.id}`)}
                 aria-label={
                   hasPurchased ? "View trip details" : "Book this trip"
                 }

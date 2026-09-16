@@ -74,9 +74,9 @@ export default function Sidebar({ activeSection, setActiveSection, locale = "en"
         <NavButton section="currency" icon={<FaChartBar />} label="Currency Rates" />
         <button
           type="button"
-          onClick={() => {
-            logout();
-            window.location.assign(`/${locale}`);
+          onClick={async () => {
+            await logout();
+            window.location.assign(`/${locale || "en"}`);
           }}
           className="mt-2 flex items-center gap-3 rounded-lg px-4 py-2 font-semibold text-red-300 transition hover:bg-red-500/10 hover:text-red-200"
         >

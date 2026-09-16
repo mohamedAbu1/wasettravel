@@ -22,14 +22,14 @@ export default function TripHeader({ trip, lang }) {
     return () => clearInterval(timer);
   }, [images.length]);
 
-  if (!images.length) return <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center text-white/60">No photos are available for this trip.</div>;
+  if (!images.length) return <div className="trip-detail-hero rounded-3xl border p-10 text-center">No photos are available for this trip.</div>;
 
   const activeImage = images[activeIndex];
   const imageSrc = typeof activeImage === "string" ? activeImage : activeImage?.url || "/default.jpg";
   const imageName = typeof activeImage === "object" ? activeImage?.name?.[lang] || activeImage?.name?.en : "";
 
   return (
-    <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65 }} className="overflow-hidden rounded-[1.75rem] border border-[#e0b873]/25 bg-[#25211d] shadow-[0_2rem_4rem_rgba(0,0,0,.2)]">
+    <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65 }} className="trip-detail-hero overflow-hidden rounded-[1.75rem] border shadow-[0_2rem_4rem_rgba(0,0,0,.2)]">
       <div className="relative aspect-[16/8] min-h-[19rem] overflow-hidden sm:min-h-[25rem] lg:min-h-[31rem]">
         <motion.div key={activeIndex} initial={{ opacity: 0, scale: 1.03 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .7 }} className="absolute inset-0"><Image src={imageSrc} alt={imageName || title} fill priority={activeIndex === 0} sizes="(max-width: 1024px) 100vw, 70vw" className="object-cover" /></motion.div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#151311] via-[#151311]/20 to-transparent" />

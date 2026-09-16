@@ -13,8 +13,8 @@ export default function AboutHero() {
   const { t } = useTranslation("about");
 
   return (
-    <section className="relative z-10 py-20 px-6 mt-9">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section className="about-hero relative z-10 mt-9 px-5 py-20 sm:px-8">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
         <motion.div
           initial={{ opacity: 0, x: -60 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -22,15 +22,14 @@ export default function AboutHero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="space-y-5"
         >
-          <p className={`uppercase tracking-widest text-sm ${themeName === "dark" ? "text-white/60" : "text-[#6e4523]"}`}>
+          <p className={`about-kicker uppercase tracking-widest text-sm ${themeName === "dark" ? "text-white/60" : "text-[#6e4523]"}`}>
             {t("AboutWasetTravel")}
           </p>
-          <DividerWithIcon />
           <h1
             role="heading"
             aria-level={1}
             aria-label={t("h1")}
-            className={`text-4xl lg:text-5xl font-extrabold leading-tight ${
+            className={`about-hero__title text-4xl lg:text-5xl font-extrabold leading-tight ${
               themeName === "dark"
                 ? "text-gold"
                 : "text-[#8f5d2e]"
@@ -38,13 +37,13 @@ export default function AboutHero() {
           >
             {t("h1")}
           </h1>
-          <DividerWithIcon />
           <p
             aria-label="About Waset Travel introduction"
             className={`${themeName === "dark" ? "text-white/80" : "text-[#4f3d2d]"} text-lg`}
           >
-            {/* النص الطويل كما هو */}
+            {t("p")}
           </p>
+          <div className="about-hero__proof"><span>𓂀</span><p>Authentic journeys shaped by local knowledge and thoughtful care.</p></div>
         </motion.div>
 
         <motion.div
@@ -52,7 +51,7 @@ export default function AboutHero() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative w-full h-80 lg:h-[420px] rounded-2xl overflow-hidden shadow-2xl"
+          className="about-hero__media relative h-80 w-full overflow-hidden rounded-[1.5rem] shadow-2xl lg:h-[460px]"
         >
           <Image
             src="/HomePageImage/pexels-radwa-magdy-1718930-21668633.webp"

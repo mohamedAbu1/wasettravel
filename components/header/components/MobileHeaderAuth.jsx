@@ -7,7 +7,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import { signOut, signIn } from "next-auth/react"; // ✅ إضافة
 
 export default function MobileHeaderAuth() {
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -46,7 +45,7 @@ export default function MobileHeaderAuth() {
             open={Boolean(anchorEl)}
             onClose={handleCloseMenu}
           >
-            <MenuItem onClick={signOut}>Logout</MenuItem>
+            <MenuItem onClick={async () => { await logout(); handleCloseMenu(); }}>Logout</MenuItem>
           </Menu>
         </>
       )}

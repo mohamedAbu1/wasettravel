@@ -1,164 +1,93 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
-import { decodeJwt } from "@/lib/utils/JWToken";
-import { toast } from "react-toastify";
-import { useSession } from "next-auth/react"; // ✅ إضافة NextAuth
 
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-const AuthContext = createContext();
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { signOut, useSession } from "next-auth/react";
+
+const AuthContext = createContext(null);
+
+const normalizeUser = (value) => value ? { ...value, role: String(value.role || "USER").toUpperCase(), avatar_url: value.avatar_url || value.image } : null;
 
 export function AuthProvider({ children }) {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { data: session } = useSession(); // ✅ جلب المستخدم من جوجل عبر NextAuth
+  const { data: session } = useSession();
 
-  
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-  // إدارة التوكين
-  const saveToken = (token) => {
-    localStorage.setItem("token", token);
-      document.cookie = `token=${token}; path=/; max-age=${2 * 24 * 60 * 60}; SameSite=Lax`;
-  };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-  const removeToken = () => {
-    localStorage.removeItem("token");
-    document.cookie = "token=; path=/; max-age=0";
-  };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-  const getToken = () => {
-    const lsToken = localStorage.getItem("token");
-    if (lsToken) return lsToken;
-    const cookieToken = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("token="))
-      ?.split("=")[1];
-    return cookieToken || null;
-  };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-  // عند تحميل التطبيق: تحقق من وجود التوكين وعيّن user
-  useEffect(() => {
-    const token = getToken();
-    if (token) {
-      const decoded = decodeJwt(token);
-      if (decoded) {
-        setUser(decoded);
-        setIsLoggedIn(true);
-      } else {
-        removeToken();
-        setUser(null);
-        setIsLoggedIn(false);
-      }
-    }
-    setLoading(false);
-  }, []);
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-  // التسجيل
-  const register = async (email, password, name, gender, onSuccess) => {
-    setLoading(true);
-    setError(null);
+  const fetchUser = async () => {
     try {
-      const res = await axios.post("/api/auth/register", {
-        email,
-        password,
-        name,
-        gender, // ✅ أرسل الجنس
-      });
-      const data = res.data;
-
-      if (!data.user) throw new Error(data.error || "Registration failed");
-
-      saveToken(data.token);
-      const decoded = decodeJwt(data.token);
-      setUser(decoded);
-      setIsLoggedIn(true);
-      toast.success("✅ Account created successfully!");
-      if (onSuccess) setOpen(false);
-
-      return decoded;
-    } catch (err) {
-      setError(err.message);
-      toast.error("❌ Error: " + err.message);
+      const response = await axios.get("/api/auth/me", { withCredentials: true });
+      const nextUser = normalizeUser(response.data.user);
+      if (!nextUser?.id) throw new Error("Invalid session");
+      setUser(nextUser);
+      return nextUser;
+    } catch {
+      try {
+        const response = await axios.post("/api/auth/refresh", {}, { withCredentials: true });
+        const nextUser = normalizeUser(response.data.user);
+        if (!nextUser?.id) throw new Error("Invalid refreshed session");
+        setUser(nextUser);
+        return nextUser;
+      } catch {
+        setUser(null);
+        return null;
+      }
     } finally {
       setLoading(false);
     }
   };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-  // الدخول
+  useEffect(() => { fetchUser(); }, []);
+
   const login = async (email, password, onSuccess) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(
-        "/api/auth/login",
-        { email, password },
-        { withCredentials: true }
-      );
-      const data = res.data;
-
-      if (!data.user || !data.token)
-        throw new Error(data.error || "Login failed");
-
-      saveToken(data.token);
-      const decoded = decodeJwt(data.token);
-      setUser(decoded);
-      setIsLoggedIn(true);
-
-      // أغلق المودال بعد النجاح
-      if (onSuccess) onSuccess();
-
-      return decoded;
-    } catch (err) {
-      setError(err.message);
-      throw err;
+      const response = await axios.post("/api/auth/login", { email, password }, { withCredentials: true });
+      const nextUser = normalizeUser(response.data.user);
+      if (!nextUser?.id) throw new Error(response.data.error || "Login failed");
+      setUser(nextUser);
+      onSuccess?.();
+      return nextUser;
+    } catch (requestError) {
+      const message = requestError.response?.data?.error || requestError.message;
+      setError(message);
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
   };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-  // الخروج
-  const logout = () => {
-    setUser(null);
-    setIsLoggedIn(false);
-    removeToken();
+  const register = async (email, password, name, gender, onSuccess) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post("/api/auth/register", { email, password, name, gender }, { withCredentials: true });
+      const nextUser = normalizeUser(response.data.user);
+      if (!nextUser?.id) throw new Error(response.data.error || "Registration failed");
+      setUser(nextUser);
+      toast.success("✅ Account created successfully!");
+      onSuccess?.();
+      return nextUser;
+    } catch (requestError) {
+      const message = requestError.response?.data?.error || requestError.message;
+      setError(message);
+      toast.error(`❌ Error: ${message}`);
+      return null;
+    } finally {
+      setLoading(false);
+    }
   };
-// ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-  const userData = user || session?.user;
 
-  return (
-    <AuthContext.Provider
-      value={{
-        userData,
-        register,
-        login,
-        logout,
-        loading,
-        error,
-        isLoggedIn,
-        open,
-        setOpen,
-        handleOpen,
-        handleClose,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const logout = async () => {
+    try { await axios.post("/api/auth/logout", {}, { withCredentials: true }); } catch (requestError) { console.error("Logout failed", requestError); }
+    setUser(null);
+    setError(null);
+    if (session) await signOut({ redirect: false });
+  };
+
+  return <AuthContext.Provider value={{ userData: user || normalizeUser(session?.user), register, login, logout, loading, error, isLoggedIn: Boolean(user || session?.user), fetchUser }}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export function useAuth() { return useContext(AuthContext); }

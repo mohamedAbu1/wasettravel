@@ -1,76 +1,32 @@
 "use client";
-import { useTheme } from "@/context/ThemeContext";
-import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
 
-// ✅ Lazy load للمكون DividerWithIcon
-const DividerWithIcon = dynamic(() => import("../layout/DividerWithIcon"), { ssr: false });
+import { FaCompass, FaCrown, FaHandsHelping, FaMapMarkedAlt, FaShieldAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function MissionValues() {
   const { themeName } = useTheme();
   const { t } = useTranslation("about");
-
-  const fadeUp = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-  };
-
-  const staggerContainer = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.2 } },
-  };
+  const features = [
+    { icon: FaCompass, title: t("li"), text: t("liText") },
+    { icon: FaCrown, title: t("li2"), text: t("li2Text") },
+    { icon: FaHandsHelping, title: t("li3"), text: t("li3Text") },
+    { icon: FaShieldAlt, title: t("li4"), text: t("li4Text") },
+  ];
 
   return (
-    <motion.section
-      role="region"
-      aria-label="Mission and Values Section"
-      className="relative z-10 py-8 px-6"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={staggerContainer}
-    >
-      <motion.div
-        variants={staggerContainer}
-        className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8"
-      >
-        {/* Mission */}
-        <motion.div variants={fadeUp} className={`rounded-2xl p-6 border ${themeName === "dark" ? "border-gold/25 bg-black/30" : "border-[#8f5d2e]/20 bg-[#fffaf3] shadow-[0_.8rem_2rem_rgba(78,54,31,.08)]"}`}>
-          <h3 role="heading" aria-level={3} aria-label={t("h3")} className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "text-[#8f5d2e]"}`}>
-            {t("h3")}
-          </h3>
-          <DividerWithIcon />
-          <p aria-label="Mission statement text" className={`${themeName === "dark" ? "text-white/80" : "text-[#4f3d2d]"}`}>
-            {t("p2")}
-          </p>
-          <DividerWithIcon />
-        </motion.div>
-
-        {/* Values */}
-        <motion.div variants={fadeUp} className={`rounded-2xl p-6 border ${themeName === "dark" ? "border-gold/25 bg-black/30" : "border-[#8f5d2e]/20 bg-[#fffaf3] shadow-[0_.8rem_2rem_rgba(78,54,31,.08)]"}`}>
-          <h3 role="heading" aria-level={3} aria-label={t("h2")} className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "text-[#8f5d2e]"}`}>
-            {t("h2")}
-          </h3>
-          <DividerWithIcon />
-          <p aria-label="Values description text" className={`${themeName === "dark" ? "text-white/80" : "text-[#4f3d2d]"}`}>
-            {t("li")}
-          </p>
-          <DividerWithIcon />
-        </motion.div>
-
-        {/* Vision */}
-        <motion.div variants={fadeUp} className={`rounded-2xl p-6 border ${themeName === "dark" ? "border-gold/25 bg-black/30" : "border-[#8f5d2e]/20 bg-[#fffaf3] shadow-[0_.8rem_2rem_rgba(78,54,31,.08)]"}`}>
-          <h3 role="heading" aria-level={3} aria-label={t("h4")} className={`text-xl font-bold mb-2 ${themeName === "dark" ? "text-gold" : "text-[#8f5d2e]"}`}>
-            {t("h4")}
-          </h3>
-          <DividerWithIcon />
-          <p aria-label="Vision statement text" className={`${themeName === "dark" ? "text-white/80" : "text-[#4f3d2d]"}`}>
-            {t("p3")}
-          </p>
-          <DividerWithIcon />
-        </motion.div>
-      </motion.div>
-    </motion.section>
+    <section className="about-features relative z-10 px-5 py-10 sm:px-8" aria-labelledby="about-why-title">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 max-w-2xl"><p className="stone-kicker mb-3">The Waset standard</p><h2 id="about-why-title" className={`text-3xl font-bold tracking-tight sm:text-4xl ${themeName === "dark" ? "text-white" : "text-[#30271d]"}`}>{t("h3")}</h2></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map(({ icon: Icon, title, text }, index) => (
+            <motion.article key={title} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .2 }} transition={{ delay: index * .08 }} className="about-feature-card">
+              <span className="about-feature-card__icon"><Icon /></span><h3>{title}</h3><p>{text}</p>
+            </motion.article>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

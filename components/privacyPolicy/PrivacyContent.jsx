@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function PrivacyContent({ theme }) {
   const { t } = useTranslation("privacyPolicy");
+  const { lang } = useLanguage();
 
   return (
     <motion.div
@@ -39,7 +41,7 @@ export default function PrivacyContent({ theme }) {
         <p>
           {t("dataUsage")} {t("consent")}{" "}
           <Link
-            href="/cancellationPolicy"
+            href={`/${lang}/cancellationPolicy`}
             aria-label="Read our Cancellation Policy"
             className="text-blue-500 underline"
           >

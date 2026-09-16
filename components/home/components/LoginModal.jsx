@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 export default function LoginModal() {
   const { loginOpen, handleLoginClose, handleSignUpOpen } = useData();
   const { t } = useTranslation("home");
-  const { login, loginWithGoogle, loading } = useAuth();
+  const { login, loginWithGoogle, loading, error } = useAuth();
   const { validateField } = useSecurity();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -82,6 +82,7 @@ export default function LoginModal() {
             <h1 id="login-dialog-title">{t("SignInToContinue", { defaultValue: "Sign in to continue" })}</h1>
             <p>{t("LoginDescription", { defaultValue: "Access your saved trips and travel plans." })}</p>
           </div>
+          {error ? <div className="auth-form-error" role="alert" aria-live="polite">{error}</div> : null}
 
           <form className="auth-form" onSubmit={handleSubmit} noValidate>
             <TextField

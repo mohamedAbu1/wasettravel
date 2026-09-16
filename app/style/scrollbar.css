@@ -1,21 +1,14 @@
-/* =========================
-   Scrollbar Styles
-   ========================= */
-::-webkit-scrollbar {
-  width: 8px;              /* عرض الشريط */
-  height: 8px;             /* لو فيه scroll أفقي */
+/* Quiet, accessible scrollbar that follows the stone theme in both modes. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb, #a77943) var(--scroll-track, transparent);
 }
 
-::-webkit-scrollbar-track {
-  background: transparent !important; /* خلفية الشريط */
-  border-radius: 10px;
-}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--scroll-track, transparent); }
+::-webkit-scrollbar-thumb { min-height: 2.5rem; border: 3px solid var(--scroll-track, transparent); border-radius: 999px; background: var(--scroll-thumb, #a77943); }
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover, #d2a15f); }
+::-webkit-scrollbar-corner { background: transparent; }
 
-::-webkit-scrollbar-thumb {
-  background: #C9A34A !important;     /* اللون الذهبي */
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #C9A34A;                /* نفس اللون عند hover */
-}
+:root[data-theme="light"] { --scroll-thumb: #b17a43; --scroll-thumb-hover: #8f5d2e; --scroll-track: #eee3d6; }
+:root[data-theme="dark"] { --scroll-thumb: #a77943; --scroll-thumb-hover: #e0b873; --scroll-track: #211d19; }

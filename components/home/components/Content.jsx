@@ -11,6 +11,7 @@ import CategorySelect from "./CategorySelect";
 import { useRouter } from "next/navigation";
 import { FiSearch } from "react-icons/fi";
 import { encodeBase64Json } from "@/lib/utils/base64";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Content() {
   const {
@@ -26,6 +27,7 @@ export default function Content() {
   const { cities: allCities, categories: allCategories } = useCitiesCategories();
   const router = useRouter();
   const currentLang = i18n.language || "en";
+  const { lang } = useLanguage();
   const isFormValid = Boolean(city && tripType && arrival && departure);
 
   const handleSearch = (event) => {
@@ -38,7 +40,7 @@ export default function Content() {
       departure,
       popular: false,
     };
-    router.push(`/trips?data=${encodeBase64Json(query)}`);
+    router.push(`/${lang}/trips?data=${encodeBase64Json(query)}`);
   };
 
   return (

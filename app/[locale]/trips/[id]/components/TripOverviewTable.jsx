@@ -12,7 +12,7 @@ export default function TripOverviewTable({ trip }) {
 
   return (
     <section
-      className={`h-fit p-6 rounded-xl shadow-lg transition ${
+      className={`trip-detail-panel h-fit p-6 rounded-xl shadow-lg transition ${
         themeName === "dark"
           ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
           : "bg-white/90 text-[#3a2c0a]"

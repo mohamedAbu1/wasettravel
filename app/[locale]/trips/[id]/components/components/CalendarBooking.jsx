@@ -109,7 +109,7 @@ const CalendarBooking = ({
 
   return (
     <div
-      className={`max-w-2xl mx-auto p-6 rounded-xl shadow-lg transition font-sans ${
+      className={`trip-calendar max-w-2xl mx-auto p-6 rounded-xl shadow-lg transition font-sans ${
         themeName === "dark"
           ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
           : "bg-white/90 text-[#3a2c0a]"

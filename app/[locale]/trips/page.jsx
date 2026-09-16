@@ -20,6 +20,22 @@ import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import AdminChatWindow from "@/components/layout/AdminChatWindow";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useTranslation } from "react-i18next";
+import { FaSlidersH, FaCompass } from "react-icons/fa";
+
+function localizedValue(value, lang) {
+  if (!value) return "";
+  if (typeof value === "object") return value[lang] || value.en || Object.values(value)[0] || "";
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === "object" ? parsed[lang] || parsed.en || Object.values(parsed)[0] || "" : value;
+    } catch {
+      return value;
+    }
+  }
+  return String(value);
+}
+
 export default function TripsPage() {
   const { trips, fetchTrips, loadingTrips } = useTrip();
   const {
@@ -35,6 +51,7 @@ export default function TripsPage() {
   const [cardStyle, setCardStyle] = useState("vertical");
   const tripsPerPage = cardStyle === "vertical" ? 6 : 8;
   const [search, setSearch] = useState("");
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   const { city, category, group_price, popular } = useQueryFilters();
 
@@ -42,28 +59,27 @@ export default function TripsPage() {
     fetchTrips();
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, city, category, group_price, popular, cardStyle]);
+
   if (loadingTrips)
     return <p className="min-h-[40vh] pt-32 text-center text-[var(--muted)]">Loading trips...</p>;
   // فلترة الرحلات
   const filteredTrips = trips.filter((trip) => {
     const lowerSearch = search.trim().toLowerCase();
 
-    const matchesSearch =
-      !lowerSearch ||
-      (trip.title?.[lang] &&
-        trip.title[lang].toLowerCase().includes(lowerSearch));
+    const searchableText = [
+      localizedValue(trip.title, lang),
+      ...(trip.cities || []).map((item) => localizedValue(item?.name, lang)),
+      ...(trip.categories || []).map((item) => localizedValue(item?.name, lang)),
+    ].join(" ").toLowerCase();
+    const matchesSearch = !lowerSearch || searchableText.includes(lowerSearch);
 
     const tripCities =
       trip.cities
         ?.map((c) => {
-          let nameObj;
-          try {
-            nameObj =
-              typeof c?.name === "string" ? JSON.parse(c.name) : c?.name;
-          } catch {
-            nameObj = {};
-          }
-          return typeof nameObj === "object" ? nameObj.en || "" : "";
+          return localizedValue(c?.name, lang);
         })
         .filter((n) => n !== "") || [];
 
@@ -79,14 +95,7 @@ export default function TripsPage() {
     const tripCategories =
       trip.categories
         ?.map((cat) => {
-          let nameObj;
-          try {
-            nameObj =
-              typeof cat?.name === "string" ? JSON.parse(cat.name) : cat?.name;
-          } catch {
-            nameObj = {};
-          }
-          return typeof nameObj === "object" ? nameObj.en || "" : "";
+            return localizedValue(cat?.name, lang);
         })
         .filter((n) => n !== "") || [];
 
@@ -132,7 +141,7 @@ export default function TripsPage() {
     });
 
     // نربط الرحلات بالمشتريات مرة واحدة فقط
-    finalTrips = trips.map((trip) => {
+    finalTrips = filteredTrips.map((trip) => {
       const count = purchaseMap.get(trip.id) || 0;
       return { ...trip, purchase_count: count };
     });
@@ -155,15 +164,27 @@ export default function TripsPage() {
  
           <motion.section
             style={{ marginTop: "105px", paddingBottom: "20px" }}
-            className="container flex flex-1 gap-6 px-6 relative z-10"
+            className="trips-page-shell relative z-10 flex flex-1 flex-col gap-5 px-4 sm:px-6"
           >
-            <div className=" hidden lg:flex w-1/4 max-h-fit rounded-2xl">
+            <div className="flex items-end justify-between gap-4 lg:hidden">
+              <div>
+                <p className="stone-kicker">WasetTravel collection</p>
+                <h1 className="mt-1 text-2xl font-bold text-[var(--foreground)]">{t("ExploreTrips", { defaultValue: "Explore journeys" })}</h1>
+              </div>
+              <button type="button" className="trips-filter-trigger" onClick={() => setMobileFilterOpen(true)}>
+                <FaSlidersH /> {t("Filters", { defaultValue: "Filters" })}
+              </button>
+            </div>
+            <div className="flex items-start gap-6">
+            <div className="hidden w-[280px] shrink-0 lg:block">
               <TripsFilter
                 allCities={allCities}
                 allCategories={allCategories}
                 loading={loading}
               />
             </div>
+
+            <TripsFilter allCities={allCities} allCategories={allCategories} loading={loading} mobileOpen={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)} />
 
             <div className="flex-1 flex flex-col gap-6">
               <TripsSearch
@@ -172,6 +193,10 @@ export default function TripsPage() {
                 cardStyle={cardStyle}
                 setCardStyle={setCardStyle}
               />
+              <div className="flex items-center justify-between gap-3 text-sm text-[var(--muted)]" aria-live="polite">
+                <span className="inline-flex items-center gap-2"><FaCompass className="text-[var(--color)]" /> {finalTrips.length} {t("TripsFound", { defaultValue: "journeys found" })}</span>
+                {search ? <span className="max-w-[55%] truncate">“{search}”</span> : null}
+              </div>
               {currentTrips.length ? (
                 <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
               ) : (
@@ -200,6 +225,7 @@ export default function TripsPage() {
                   ))}
                 </div>
               )}
+            </div>
             </div>
           </motion.section>
 

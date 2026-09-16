@@ -69,9 +69,8 @@ export default function TripClassification() {
               <input
                 type="checkbox"
                 checked={tripData.categories.includes(cat.id)}
-                onChange={() =>
-                  toggleSelection(tripData.categories, "categories", cat.id)
-                }
+                onClick={(event) => event.stopPropagation()}
+                onChange={() => toggleSelection(tripData.categories, "categories", cat.id)}
               />
                <img
                 src={cat.images[0]}
@@ -107,6 +106,7 @@ export default function TripClassification() {
               <input
                 type="checkbox"
                 checked={cities.includes(city.id)}
+                onClick={(event) => event.stopPropagation()}
                 onChange={() => toggleSelection(cities, "cities", city.id)}
               />
               <img

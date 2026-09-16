@@ -13,6 +13,7 @@ export default function ChatInput({
   handleSend,
   setIsTyping,
   handleSendImage,
+  themeName,
 }) {
   if (!activeUser) return null;
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -29,7 +30,7 @@ export default function ChatInput({
         <label
           className="admin-chat-tool"
         >
-          <FaImage className={`text-lg ${theme.icon}`} />
+          <FaImage className="text-lg" />
           <input
             type="file"
             accept="image/*"

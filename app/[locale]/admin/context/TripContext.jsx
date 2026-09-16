@@ -136,9 +136,6 @@ const saveTrip = async () => {
       details: tripData.details, // ✅ إرسال تفاصيل الرحلة
     };
 
-    // ✅ اطبع القيم قبل الإرسال
-    console.log("➡️ Payload being sent to backend:", payload);
-
     const res = await fetch("/api/trips", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -147,9 +144,11 @@ const saveTrip = async () => {
 
     const result = await res.json();
 
-    if (result.success) {
-      setTripData(emptyTrip);
+    if (!res.ok || !result.success) {
+      throw new Error(result.error || `Unable to save trip (${res.status}).`);
     }
+
+    setTripData(emptyTrip);
 
     return result;
   } catch (err) {

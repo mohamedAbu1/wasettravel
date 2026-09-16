@@ -2,7 +2,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { useUsers } from "../context/UserContext";
-import { useAuth } from "@/context/AuthContext";
 import UsersSidebar from "./components/UsersSidebar";
 import ChatSection from "./components/ChatSection";
 import { useMessages } from "@/context/MessageContext";
@@ -10,14 +9,15 @@ import { FaBell, FaCheckCircle, FaDesktop, FaExclamationTriangle, FaSyncAlt } fr
 
 export default function MessagesPage() {
   const { theme, themeName } = useTheme();
-  const { users } = useUsers();
-  const { userData } = useAuth(); 
-  const { messages, setMessages, markMessageSeen } = useMessages();
+  const { users = [] } = useUsers();
+  const { messages, setMessages } = useMessages();
 
   const [activeUser, setActiveUser] = useState(null);
   const [connectionState, setConnectionState] = useState("connecting");
   const [desktopPermission, setDesktopPermission] = useState("default");
   const [newMessageNotice, setNewMessageNotice] = useState(null);
+  const [syncError, setSyncError] = useState("");
+  const [lastSyncedAt, setLastSyncedAt] = useState(null);
   const knownMessagesRef = useRef(new Map());
   const firstSyncRef = useRef(true);
 
@@ -25,6 +25,16 @@ export default function MessagesPage() {
     () => messages.filter((message) => message.sender_type === "user" && message.status === "sent"),
     [messages],
   );
+
+  const conversationUsers = useMemo(() => {
+    const byId = new Map((Array.isArray(users) ? users : []).map((user) => [String(user.id), user]));
+    messages.forEach((message) => {
+      if (message.sender_type !== "user" || message.user_id == null) return;
+      const key = String(message.user_id);
+      if (!byId.has(key)) byId.set(key, { id: message.user_id, name: message.user_name, image: message.user_image });
+    });
+    return Array.from(byId.values());
+  }, [messages, users]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
@@ -65,6 +75,8 @@ export default function MessagesPage() {
         firstSyncRef.current = false;
         setMessages(data);
         setConnectionState("online");
+        setSyncError("");
+        setLastSyncedAt(new Date());
 
         if (freshMessages.length > 0) {
           const firstMessage = freshMessages[0];
@@ -94,6 +106,7 @@ export default function MessagesPage() {
       } catch (error) {
         if (!cancelled) {
           setConnectionState("offline");
+          setSyncError(error.message || "Unable to refresh messages.");
           console.error("Unable to sync admin messages:", error);
         }
       }
@@ -113,7 +126,7 @@ export default function MessagesPage() {
   };
 
   const noticeUser = newMessageNotice
-    ? users.find((user) => String(user.id) === String(newMessageNotice.userId))
+    ? conversationUsers.find((user) => String(user.id) === String(newMessageNotice.userId))
     : null;
 
   return (
@@ -127,6 +140,7 @@ export default function MessagesPage() {
         <div className="admin-message-toolbar__actions">
           <span className={`admin-message-connection admin-message-connection--${connectionState}`}><span /> {connectionState === "online" ? "Live sync" : connectionState === "offline" ? "Connection issue" : "Connecting"}</span>
           <span className="admin-message-count"><strong>{unreadMessages.length}</strong> unread</span>
+          {lastSyncedAt && <span className="admin-message-last-sync">Updated {lastSyncedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>}
           {desktopPermission === "granted" ? (
             <span className="admin-desktop-status"><FaCheckCircle /> Desktop alerts on</span>
           ) : (
@@ -136,6 +150,12 @@ export default function MessagesPage() {
           )}
         </div>
       </header>
+      {syncError && (
+        <div className="admin-message-sync-error" role="alert">
+          <FaExclamationTriangle /><span>{syncError}</span>
+          <button type="button" className="admin-action-button admin-action-button--small" onClick={() => window.location.reload()}><FaSyncAlt /> Retry</button>
+        </div>
+      )}
       {newMessageNotice && (
         <div className="admin-message-alert" role="status">
           <FaExclamationTriangle />
@@ -145,13 +165,9 @@ export default function MessagesPage() {
         </div>
       )}
       <UsersSidebar
-        users={users}
-        userData={userData}
+        users={conversationUsers}
         activeUser={activeUser}
         setActiveUser={handleUserSelect}
-        theme={theme}
-        themeName={themeName}
-        markMessageSeen={markMessageSeen}
         messages={messages}
       />
       <ChatSection

@@ -6,10 +6,12 @@ export default function SaveButton() {
   const { tripData, saveTrip } = useTrip();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSave = async () => {
     setLoading(true);
     setStatus(null);
+    setErrorMessage("");
 
     // ✅ تتبع قبل الحفظ
     console.log("➡️ SaveButton clicked");
@@ -25,10 +27,11 @@ export default function SaveButton() {
         setStatus("success");
       } else {
         setStatus("error");
+        setErrorMessage(res.error || "Please review the required fields and try again.");
       }
     } catch (err) {
-      console.error("❌ Error in handleSave:", err.message);
       setStatus("error");
+      setErrorMessage(err.message || "Unable to save this trip.");
     } finally {
       setLoading(false);
     }
@@ -42,7 +45,7 @@ export default function SaveButton() {
         disabled={
           !tripData.title.en ||
           !tripData.description.en ||
-          tripData.price <= 0 ||
+          Number(tripData.solo_price) <= 0 ||
           !tripData.duration ||
           !tripData.priceLevel ||
           tripData.cities.length === 0 ||
@@ -65,7 +68,7 @@ export default function SaveButton() {
         </p>
       )}
       {status === "error" && (
-        <p className="mt-2 text-red-600 font-semibold">Error saving trip ❌</p>
+        <p className="mt-2 text-red-600 font-semibold">{errorMessage || "Error saving trip ❌"}</p>
       )}
     </div>
   );

@@ -139,18 +139,27 @@ export async function POST(req) {
     // ✅ إدخال تفاصيل الرحلة (trip_details)
     if (body.details?.length > 0) {
       console.log("➡️ Inserting trip details:", body.details);
-      const detailsData = body.details.map((detail) => [
-        uuidv4(),
-        tripId,
-        detail.key,
-        JSON.stringify(detail.translations),
-        JSON.stringify(detail.values),
-      ]);
+      const detailsData = body.details
+        .map((detail) => ({
+          optionKey: detail.option_key || detail.key,
+          translations: detail.translations || {},
+          values: detail.values || detail.detail_values || {},
+        }))
+        .filter((detail) => detail.optionKey)
+        .map((detail) => [
+          uuidv4(),
+          tripId,
+          detail.optionKey,
+          JSON.stringify(detail.translations),
+          JSON.stringify(detail.values),
+        ]);
 
-      await db.query(
-        "INSERT INTO trip_details (id, trip_id, option_key, translations, detail_values) VALUES ?",
-        [detailsData],
-      );
+      if (detailsData.length > 0) {
+        await db.query(
+          "INSERT INTO trip_details (id, trip_id, option_key, translations, detail_values) VALUES ?",
+          [detailsData],
+        );
+      }
 
       console.log("✅ Trip details inserted:", detailsData.length);
     }

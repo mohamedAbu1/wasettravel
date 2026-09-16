@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaUsers, FaUserShield, FaSyncAlt } from "react-icons/fa";
 import { useUsers } from "../context/UserContext";
@@ -8,9 +8,15 @@ import UserActions from "./components/UserActions";
 import UserDetails from "./components/UserDetails";
 
 const UsersSection = () => {
-  const { users, fetchUsers, setUsers } = useUsers();
+  const { users = [], fetchUsers, setUsers, loading, error } = useUsers();
   const [activeUser, setActiveUser] = useState(null);
   const [activeTab, setActiveTab] = useState(null);
+
+  useEffect(() => {
+    fetchUsers();
+    const interval = window.setInterval(fetchUsers, 15000);
+    return () => window.clearInterval(interval);
+  }, [fetchUsers]);
 
   const handleToggle = (userId, tab) => {
     if (activeUser === userId && activeTab === tab) {
@@ -81,8 +87,9 @@ const UsersSection = () => {
         </div>
       </motion.div>
 
-      <div className="admin-user-toolbar"><span><FaUserShield /> Access control</span><button type="button" className="admin-action-button" onClick={fetchUsers}><FaSyncAlt /> Refresh users</button></div>
-      <ul className="admin-user-grid">
+      <div className="admin-user-toolbar"><span><FaUserShield /> Access control</span><button type="button" className="admin-action-button" onClick={fetchUsers} disabled={loading}><FaSyncAlt /> {loading ? "Refreshing…" : "Refresh users"}</button></div>
+      {error && <p className="admin-empty-state admin-empty-state--error" role="alert">{error}</p>}
+      {!loading && !error && users.length === 0 ? <p className="admin-empty-state">No users found.</p> : <ul className="admin-user-grid">
         {users.map((user) => (
           <motion.li
             key={user.id}
@@ -118,7 +125,7 @@ const UsersSection = () => {
             <div className="admin-user-card__body"><UserActions user={user} handleToggle={handleToggle} />{activeUser === user.id && <UserDetails user={user} activeTab={activeTab} />}</div>
           </motion.li>
         ))}
-      </ul>
+      </ul>}
     </motion.div>
   );
 };

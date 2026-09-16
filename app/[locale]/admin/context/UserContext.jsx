@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 import axios from "axios";
 
 const UserContext = createContext();
@@ -10,7 +10,7 @@ export function UserProvider({ children }) {
   const [error, setError] = useState(null);
 
   // ✅ جلب جميع المستخدمين
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -27,7 +27,7 @@ export function UserProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return (
     <UserContext.Provider value={{ users, setUsers, loading, error, fetchUsers }}>

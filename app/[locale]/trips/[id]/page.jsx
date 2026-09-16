@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { FaArrowLeft, FaMapMarkerAlt } from "react-icons/fa";
-import { useTrip } from "@/context/TripContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useMessages } from "@/context/MessageContext";
@@ -30,8 +30,11 @@ import TripOverviewTable from "./components/TripOverviewTable";
 import AccessibilityInfo from "./components/components/AccessibilityInfo";
 
 export default function TripPage({ params }) {
-  const { id } = params;
-  const { trips, fetchTrips, getTripById } = useTrip();
+  const routeParams = useParams();
+  const id = routeParams?.id || params?.id;
+  const [trip, setTrip] = useState(null);
+  const [loadingTrip, setLoadingTrip] = useState(true);
+  const [tripError, setTripError] = useState("");
   const { lang } = useLanguage();
   const { theme, themeName } = useTheme();
   const { userData, chatUser, setChatUser } = useAuth();
@@ -40,10 +43,46 @@ export default function TripPage({ params }) {
   const { t } = useTranslation("header");
   const { t: ui } = useTranslation("ui");
 
-  useEffect(() => { if (!trips.length) fetchTrips(); }, [trips.length, fetchTrips]);
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    const loadTrip = async () => {
+      setLoadingTrip(true);
+      setTripError("");
+      try {
+        const response = await fetch(`/api/trips/${encodeURIComponent(id)}`, { cache: "no-store" });
+        const result = await response.json();
+        if (!response.ok || !result.success || !result.trip) throw new Error(result.error || "Trip not found");
+        const parseJson = (value, fallback) => {
+          if (value == null) return fallback;
+          if (typeof value !== "string") return value;
+          try { return JSON.parse(value); } catch { return fallback; }
+        };
+        const loadedTrip = result.trip;
+        const normalizedTrip = {
+          ...loadedTrip,
+          title: parseJson(loadedTrip.title, {}),
+          description: parseJson(loadedTrip.description, {}),
+          gallery_images: parseJson(loadedTrip.gallery_images, []),
+          solo_price: Number(loadedTrip.solo_price || 0),
+          group_price: Number(loadedTrip.group_price || 0),
+          duration: Number(loadedTrip.duration || 0),
+          discountPercent: Number(loadedTrip.discount_percent || 0),
+          reviews: Array.isArray(loadedTrip.reviews) ? loadedTrip.reviews : [],
+        };
+        if (!cancelled) setTrip(normalizedTrip);
+      } catch (error) {
+        if (!cancelled) setTripError(error.message || "Unable to load this trip");
+      } finally {
+        if (!cancelled) setLoadingTrip(false);
+      }
+    };
+    loadTrip();
+    return () => { cancelled = true; };
+  }, [id]);
 
-  const trip = getTripById(id);
-  if (!trip) return <main className="flex min-h-screen items-center justify-center bg-[var(--background)] text-[var(--muted)]">{ui("tripNotFound")}</main>;
+  if (loadingTrip) return <main className="trip-detail-state"><span className="trip-detail-state__spinner" /><p>{ui("loading", { defaultValue: "Loading trip details…" })}</p></main>;
+  if (tripError || !trip) return <main className="trip-detail-state"><strong>{ui("tripNotFound", { defaultValue: "Trip not found" })}</strong><p>{tripError || ui("tripNotFound")}</p><Link href={`/${lang}/trips`} className="stone-button rounded-xl px-5 py-3">{t("Trips", { defaultValue: "Back to trips" })}</Link></main>;
 
   const tripTitle = trip.title?.[lang] || trip.title?.en || "Egypt tour";
   const tripDescription = trip.description?.[lang] || trip.description?.en || "Discover an unforgettable Egypt travel experience with WasetTravel.";

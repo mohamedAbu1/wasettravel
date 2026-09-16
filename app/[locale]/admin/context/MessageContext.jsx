@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 
 const MessageContext = createContext();
+const sameId = (left, right) => left != null && right != null && String(left) === String(right);
 
 export function MessageProvider({ children }) {
   const [messages, setMessages] = useState([]);
@@ -36,7 +37,7 @@ const sendMessage = async ({
   const payload = {
     user_id,
     user_name: userData?.name || "Unknown User",
-    user_image: userData?.image || "/default-avatar.png",
+    user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
     content,
     sender_type,
     status,
@@ -88,7 +89,7 @@ const sendMessage = async ({
     if (!data.error) {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === messageId ? { ...msg, status: "seen" } : msg
+          sameId(msg.id, messageId) ? { ...msg, status: "seen" } : msg
         )
       );
     } else {

@@ -28,7 +28,7 @@ const UsersSection = () => {
 
   // ✅ تغيير الدور (USER ⇄ ADMIN)
   const handleToggleRole = async (user) => {
-    const newRole = user?.role === "ADMIN" ? "USER" : "ADMIN";
+    const newRole = String(user?.role || "").trim().toLowerCase() === "admin" ? "USER" : "ADMIN";
 
     const res = await fetch("/api/updateRole", {
       method: "POST",
@@ -129,7 +129,7 @@ const UsersSection = () => {
                 onClick={() => handleToggleRole(user)}
                 className="mt-2 px-3 py-1 text-xs rounded bg-blue-500 text-white hover:bg-blue-600 transition"
               >
-                {user?.role === "ADMIN" ? "Make User" : "Make Admin"}
+                {String(user?.role || "").trim().toLowerCase() === "admin" ? "Make User" : "Make Admin"}
               </button>
             </div>
 

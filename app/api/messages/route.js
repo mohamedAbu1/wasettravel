@@ -21,17 +21,14 @@ export async function POST(req) {
 
       // اسم فريد للصورة
       const fileName = `${Date.now()}-${file.name}`;
-      const baseUrl = `https://basttettravel.com/iamges/${fileName}`; // صححت iamges → iamges
+      const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin;
+      const baseUrl = `${siteOrigin}/iamges/${encodeURIComponent(fileName)}`;
 
       // مسار المشروع المحلي
       const projectPath = path.join(process.cwd(), "public/iamges", fileName);
 
-      // مسار الاستضافة
-      const hostingPath = `/home/u984684626/public_html/iamges/${fileName}`;
-
       // تجهيز المجلدات
       await fs.promises.mkdir(path.dirname(projectPath), { recursive: true });
-      await fs.promises.mkdir(path.dirname(hostingPath), { recursive: true });
 
       // تحويل الملف إلى buffer
       const buffer = Buffer.from(await file.arrayBuffer());
@@ -39,21 +36,18 @@ export async function POST(req) {
       // حفظ نسخة في المشروع
       await fs.promises.writeFile(projectPath, buffer);
 
-      // حفظ نسخة في الاستضافة
-      await fs.promises.writeFile(hostingPath, buffer);
-
       // باقي البيانات
       const user_id = formData.get("user_id");
       if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
 
-      const requestedSenderType = formData.get("sender_type") || "user";
+      const requestedSenderType = String(formData.get("sender_type") || "user").trim().toLowerCase();
       const sender_type = auth.user.role?.toLowerCase() === "admin" ? "admin" : "user";
       if (requestedSenderType !== sender_type) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
       const user_name = formData.get("user_name") || "Admin";
       const user_image = formData.get("user_image") || "/default-avatar.png";
       const reply_to = formData.get("reply_to");
       const admin_id = sender_type === "admin" ? auth.user.id : null;
-      if (sender_type === "user" && user_id !== auth.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      if (sender_type === "user" && String(user_id) !== String(auth.user.id)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
       const db = await connectDB();
       const messagesId = uuidv4();
@@ -90,11 +84,12 @@ export async function POST(req) {
     const { user_id, content, sender_type = "user", user_name = "Unknown User", user_image = "/default-avatar.png", reply_to = null } = body;
 
     if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
-    if (!content) return NextResponse.json({ error: "Content cannot be null" }, { status: 400 });
+    if (typeof content !== "string" || !content.trim()) return NextResponse.json({ error: "Content cannot be empty" }, { status: 400 });
 
     const isAdmin = auth.user.role?.toLowerCase() === "admin";
-    if (sender_type !== (isAdmin ? "admin" : "user")) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
-    if (!isAdmin && user_id !== auth.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const normalizedSenderType = String(sender_type).trim().toLowerCase();
+    if (normalizedSenderType !== (isAdmin ? "admin" : "user")) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
+    if (!isAdmin && String(user_id) !== String(auth.user.id)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const admin_id = isAdmin ? auth.user.id : null;
 
     const db = await connectDB();
@@ -104,14 +99,14 @@ export async function POST(req) {
       `INSERT INTO messages 
        (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
-      [messagesId, user_id, content, sender_type, user_name, user_image, reply_to, admin_id],
+      [messagesId, user_id, content.trim(), normalizedSenderType, user_name, user_image, reply_to, admin_id],
     );
 
     const newMessage = {
       id: messagesId,
       user_id,
       content,
-      sender_type,
+        sender_type: normalizedSenderType,
       user_name,
       user_image,
       reply_to,

@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function AdminDashboardButton() {
-  const { userData } = useAuth();
+  const { userData, fetchUserFromServer } = useAuth();
   const { lang } = useLanguage();
   const pathname = usePathname();
   const [navigating, setNavigating] = useState(false);
@@ -21,11 +21,12 @@ export default function AdminDashboardButton() {
     const dashboardPath = `/${locale}/admin`;
 
     setNavigating(true);
-    // The button is rendered only for admins. Let the protected route perform
-    // the final server-side check instead of rejecting a valid user because a
-    // stale client-side token was returned during a refresh.
+    const authenticatedUser = await fetchUserFromServer();
+    if (authenticatedUser?.role?.toLowerCase() !== "admin") {
+      setNavigating(false);
+      return;
+    }
     window.location.assign(dashboardPath);
-    setNavigating(false);
   };
 
   if (!isAdmin) return null; // الزر يظهر فقط للأدمن

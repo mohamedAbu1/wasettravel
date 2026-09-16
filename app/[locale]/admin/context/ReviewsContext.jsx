@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext"; 
 
 const ReviewsContext = createContext();
+const sameId = (left, right) => left != null && right != null && String(left) === String(right);
 
 export function ReviewsProvider({ children }) {
   const { user } = useAuth(); 
@@ -19,7 +20,7 @@ export function ReviewsProvider({ children }) {
     try {
       const res = await axios.get(`/api/reviews?tripId=${tripId}`);
       const data = res.data?.reviews || [];
-      const filtered = data.filter((review) => review.trip_id === tripId);
+      const filtered = data.filter((review) => sameId(review.trip_id, tripId));
 
       setReviewsByTrip((prev) => ({ ...prev, [tripId]: filtered }));
 
@@ -158,7 +159,7 @@ export function ReviewsProvider({ children }) {
   const getUserLikes = (userId) => {
     if (!userId) return [];
 
-    const userReviews = allReviews.filter((review) => review.user_id === userId);
+    const userReviews = allReviews.filter((review) => sameId(review.user_id, userId));
 
     return userReviews.map((review) => ({
       reviewId: review.id,

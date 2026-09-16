@@ -3,6 +3,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
 
 const MessageContext = createContext();
+const sameId = (left, right) => left != null && right != null && String(left) === String(right);
+const isAdminRole = (role) => String(role || "").trim().toLowerCase() === "admin";
 
 export function MessageProvider({ children }) {
   const [messages, setMessages] = useState([]);
@@ -25,9 +27,10 @@ export function MessageProvider({ children }) {
       const data = await res.json();
       if (!Array.isArray(data)) return;
       setMessages((prev) => {
-        const ids = new Set(prev.map((m) => m.id));
-        const merged = [...prev, ...data.filter((m) => !ids.has(m.id))];
-        return merged;
+        const incoming = new Map(data.map((message) => [String(message.id), message]));
+        const existing = prev.map((message) => incoming.get(String(message.id)) || message);
+        const existingIds = new Set(existing.map((message) => String(message.id)));
+        return [...existing, ...data.filter((message) => !existingIds.has(String(message.id)))];
       });
     } catch (err) {
       console.error("❌ Error fetching messages:", err.message);
@@ -44,7 +47,7 @@ export function MessageProvider({ children }) {
         return [];
       }
       const data = await res.json();
-      return Array.isArray(data) ? data.filter((msg) => msg.user_id === id) : [];
+      return Array.isArray(data) ? data.filter((msg) => sameId(msg.user_id, id)) : [];
     } catch (err) {
       console.error("❌ خطأ أثناء جلب الرسائل:", err.message);
       return [];
@@ -58,7 +61,7 @@ export function MessageProvider({ children }) {
     sender_type,
     status = "sent",
     reply_to = null,
-    admin_id = userData?.role === "ADMIN" ? userData.id : "SYSTEM",
+    admin_id = isAdminRole(userData?.role) ? userData.id : "SYSTEM",
   }) => {
     const payload = {
       user_id,
@@ -144,7 +147,7 @@ export function MessageProvider({ children }) {
       if (!data.error) {
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.id === messageId ? { ...msg, status: "seen" } : msg,
+            sameId(msg.id, messageId) ? { ...msg, status: "seen" } : msg,
           ),
         );
       } else {

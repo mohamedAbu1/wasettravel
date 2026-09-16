@@ -69,7 +69,7 @@ export default function TripPage({ params }) {
               <TripItinerary trip={trip} lang={lang} theme={theme} themeName={themeName} />
               <TripReviews trip={trip} lang={lang} theme={theme} />
             </div>
-            <aside className="trip-detail-booking lg:sticky lg:top-24"><div className="trip-detail-booking__label mb-3 flex items-center gap-2 px-1 text-sm"><FaMapMarkerAlt className="text-[#e0b873]" /> {ui("planJourney")}</div><CalendarWidget trip={trip} id={id} />{userData && userData.role !== "ADMIN" && hasActivePurchase && <div className="mt-4"><CancelButton trip={trip} theme={theme} /></div>}</aside>
+            <aside className="trip-detail-booking lg:sticky lg:top-24"><div className="trip-detail-booking__label mb-3 flex items-center gap-2 px-1 text-sm"><FaMapMarkerAlt className="text-[#e0b873]" /> {ui("planJourney")}</div><CalendarWidget trip={trip} id={id} />{userData && String(userData.role || "").trim().toLowerCase() !== "admin" && hasActivePurchase && <div className="mt-4"><CancelButton trip={trip} theme={theme} /></div>}</aside>
           </div>
         </div>
         <Footer /><SignUpButton /><LoginModal />{userData && <ChatWidget />}{chatUser && <AdminChatWindow user={chatUser} admin={userData} messages={messages} onClose={() => setChatUser(null)} />}

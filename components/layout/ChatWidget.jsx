@@ -78,7 +78,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     }
   };
 
-  const isAdmin = userData?.role === "ADMIN";
+  const isAdmin = String(userData?.role || "").trim().toLowerCase() === "admin";
 
   const handleSendImage = async (file) => {
     const formData = new FormData();

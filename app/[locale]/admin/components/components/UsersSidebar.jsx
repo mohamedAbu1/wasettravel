@@ -3,9 +3,10 @@ import React from "react";
 import { FaUserCircle } from "react-icons/fa";
 
 const UsersSidebar = ({ users,userData, activeUser, setActiveUser, theme, themeName, markMessageSeen, messages }) => {
+  const sameId = (left, right) => left != null && right != null && String(left) === String(right);
   // فلترة المستخدمين بحيث نستبعد الـ Admin
   const nonAdminUsers = users.filter(
-    (user) => user?.role?.toUpperCase() !== "ADMIN"
+    (user) => String(user?.role || "").trim().toLowerCase() !== "admin"
   );
 console.log(users)
   return (
@@ -29,7 +30,7 @@ console.log(users)
           // عدد الرسائل الجديدة غير المقروءة
           const unreadCount = messages.filter(
             (msg) =>
-              msg.user_id === user.id &&
+              sameId(msg.user_id, user.id) &&
               msg.sender_type === "user" &&
               msg.status === "sent"
           ).length;
@@ -41,7 +42,7 @@ console.log(users)
                 setActiveUser(user);
                 // تحديث حالة الرسائل إلى "seen" عند فتح المحادثة
                 messages
-                  .filter((msg) => msg.user_id === user.id && msg.status === "sent")
+                  .filter((msg) => sameId(msg.user_id, user.id) && msg.status === "sent")
                   .forEach((msg) => markMessageSeen(msg.id));
               }}
               className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-300

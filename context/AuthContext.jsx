@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
 
   const [user, setUser] = useState(null); // بيانات من API
   const [UserToken, setUserToken] = useState(null); // بيانات من التوكين
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { handleSignUpClose, handleLoginClose } = useData();
@@ -67,6 +67,8 @@ export function AuthProvider({ children }) {
         setIsLoggedIn(false);
         return null;
       }
+    } finally {
+      setLoading(false);
     }
   };
 

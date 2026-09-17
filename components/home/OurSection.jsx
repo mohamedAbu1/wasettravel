@@ -12,7 +12,6 @@ import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/context/LanguageContext";
 import DividerWithIcon from "../layout/DividerWithIcon";
-import catalog from "@/lib/imageCatalog";
 
 const OurSection = () => {
   const router = useRouter();
@@ -27,11 +26,9 @@ const OurSection = () => {
   if (!hasMounted) return null;
 
   const images = [
-    "/Aswan/chrysanthe-gomree-_nubht5aO2w-unsplash.webp",
-    "/Luxor/pexels-axp-photography-500641970-18934596.webp",
-    "/Cairo/pexels-alexazabache-3290075.webp",
-    catalog.about,
-    "/Nile%20Cruise/0222p12000k6c5981109F_W_1280_853_R5.webp",
+    "/iamges/pexels-35129174-35192391.webp",
+    "/iamges/pexels-jules-clark-624979041-35569689.webp",
+    "/iamges/pexels-axp-photography-500641970-18934726.webp",
   ];
 
   return (

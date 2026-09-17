@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { getUserToken } from "@/lib/notifications"; // 🟢 الدالة اللي تجيب التوكن
-import { requireAdmin } from "@/lib/auth/admin";
+import { getUserToken, sendPushNotification } from "@/lib/notifications";
+import { requireAdmin, requireUser } from "@/lib/auth/admin";
 
 // ✅ إضافة إشعار جديد + إرسال إشعار للموبايل
 export async function POST(req) {
@@ -37,15 +37,7 @@ export async function POST(req) {
     const expoPushToken = await getUserToken(body.user_id);
     if (expoPushToken) {
       // 🟢 استدعاء API Route send-notification
-      await fetch("https://basttettravel.com/api/send-notification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          expoPushToken,
-          title: `إشعار جديد (${body.event_type})`,
-          bodyText: body.message,
-        }),
-      });
+      await sendPushNotification(expoPushToken, `إشعار جديد (${body.event_type})`, body.message);
     }
 
     return NextResponse.json({ success: true, id });
@@ -59,15 +51,18 @@ export async function POST(req) {
 
 // ✅ جلب الإشعارات
 export async function GET(req) {
-  const auth = requireAdmin(req);
+  const auth = requireUser(req);
   if (auth.response) return auth.response;
 
   try {
     const db = await connectDB();
+    const isAdmin = String(auth.user.role || "").toLowerCase() === "admin";
     const [rows] = await db.execute(
-      `SELECT id, admin_id, event_type, user_id, message, created_at_second, user_name, user_email, user_image, created_at, is_read, trip_id 
-   FROM notifications 
-   ORDER BY created_at DESC`,
+      `SELECT id, admin_id, event_type, user_id, message, created_at_second, user_name, user_email, user_image, created_at, is_read, trip_id
+       FROM notifications
+       ${isAdmin ? "WHERE admin_id = ? OR user_id = ?" : "WHERE user_id = ?"}
+       ORDER BY created_at DESC`,
+      isAdmin ? [auth.user.id, auth.user.id] : [auth.user.id],
     );
 
     return NextResponse.json({ success: true, notifications: rows });

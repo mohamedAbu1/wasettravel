@@ -8,6 +8,9 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { expoPushToken, title, bodyText } = body;
+    if (!expoPushToken || !title || !bodyText) {
+      return NextResponse.json({ success: false, error: "expoPushToken, title and bodyText are required" }, { status: 400 });
+    }
 
     const message = {
       to: expoPushToken,
@@ -27,6 +30,9 @@ export async function POST(req) {
     });
     const result = await response.json();
     console.log("Expo Response:", result);
+    if (!response.ok || result?.data?.status === "error") {
+      return NextResponse.json({ success: false, error: result?.errors?.[0]?.message || result?.data?.message || "Push failed" }, { status: 502 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

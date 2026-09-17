@@ -1711,6 +1711,19 @@ html[data-site-theme="stone"] .MuiDrawer-paper:has(.stone-drawer) { width:min(28
 .admin-chat-emoji-wrap { position:relative; flex:0 0 auto; }.admin-chat-emoji-picker { position:absolute; right:0; bottom:calc(100% + .65rem); z-index:20; overflow:hidden; border:1px solid var(--line); border-radius:1rem; background:var(--surface); box-shadow:0 1.2rem 3rem rgba(27,18,10,.22); }.admin-chat-emoji-picker em-emoji-picker { --border-radius:1rem; --font-family:inherit; --rgb-background:var(--surface); }.admin-chat-emoji-close { position:absolute; top:.5rem; right:.5rem; z-index:2; display:grid; width:1.7rem; height:1.7rem; place-items:center; border:1px solid var(--line); border-radius:50%; color:var(--muted); background:var(--surface); cursor:pointer; }
 @media (max-width:720px) { .admin-chat-input { padding:.6rem .7rem .75rem; }.admin-chat-input__row { flex-wrap:wrap; }.admin-chat-textbox { order:3; flex-basis:calc(100% - 3.2rem); }.admin-chat-send { order:4; flex:1; }.admin-chat-input__footer { flex-direction:column; gap:.15rem; }.admin-chat-input__footer span:last-child { text-align:left; }.admin-chat-emoji-picker { position:fixed; right:.7rem; bottom:5.5rem; max-width:calc(100vw - 1.4rem); } }
 
+/* Trip cards stay calm at rest and reveal their gallery only on interaction. */
+.trips-card { position:relative; min-width:0; transition:transform .35s ease, box-shadow .35s ease, border-color .35s ease; }
+.trips-card__media { min-width:0; overflow:hidden; }
+.trips-card__cover,.trips-card__slider { min-height:18rem; }
+.trips-card__cover img,.trips-card__slider img { transition:transform .55s ease; }
+.trips-card--expanded { z-index:20; border-color:var(--color); box-shadow:0 1.5rem 3rem rgba(32,22,13,.2); }
+.trips-card__gallery-hint { position:absolute; right:.75rem; bottom:.75rem; border:1px solid rgba(255,255,255,.22); border-radius:999px; padding:.35rem .55rem; color:#fff; background:rgba(20,16,12,.64); backdrop-filter:blur(8px); font-size:.62rem; font-weight:800; }
+.trips-card .swiper-button-prev,.trips-card .swiper-button-next { color:var(--color); }.trips-card .swiper-pagination-bullet-active { background:var(--color); }
+@media (min-width:1024px) {
+  .trips-card--expanded { grid-column:span 2; }
+  .trips-card--expanded .trips-card__media,.trips-card--expanded .trips-card__slider,.trips-card--expanded .trips-card__cover { min-height:30rem; }
+}
+
 /* Shared conversation language: the same message hierarchy in customer and admin chat. */
 .conversation-messages { position:relative; display:flex; flex:1; min-height:0; flex-direction:column; gap:.85rem; overflow-x:hidden; overflow-y:auto; padding:1.15rem; background:color-mix(in srgb,var(--surface) 92%,var(--surface-raised)); }
 .conversation-message-row { display:flex; align-items:flex-end; gap:.6rem; max-width:88%; animation:conversation-message-in .25s ease both; }

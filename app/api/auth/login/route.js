@@ -65,6 +65,7 @@ export async function POST(request) {
     const response = NextResponse.json(
       {
         message: "تم تسجيل الدخول بنجاح",
+        accessToken,
         user: {
           id: user.id,
           email: user.email,

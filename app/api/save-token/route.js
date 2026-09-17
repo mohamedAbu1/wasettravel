@@ -1,10 +1,16 @@
 "use server";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { requireUser } from "@/lib/auth/admin";
 
 export async function POST(req) {
+  const auth = requireUser(req);
+  if (auth.response) return auth.response;
   try {
     const { userId, token } = await req.json();
+    if (!userId || !token || String(userId) !== String(auth.user.id)) {
+      return NextResponse.json({ success: false, error: "Invalid token owner" }, { status: 403 });
+    }
     const db = await connectDB();
 
     // 🟢 إدخال أو تحديث الـ token (UPSERT)

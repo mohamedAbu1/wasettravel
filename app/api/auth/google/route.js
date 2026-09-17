@@ -26,7 +26,7 @@ export async function POST(req) {
   }
 
   const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "30d" });
-  const response = NextResponse.json(user);
+  const response = NextResponse.json({ user, accessToken: token });
   response.cookies.set("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 30 });
   response.cookies.set("access-token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 30 });
   return response;

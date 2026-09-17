@@ -1,22 +1,24 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db"; // ملف الاتصال بقاعدة البيانات MySQL
-import { requireAdmin } from "@/lib/auth/admin";
+import { requireUser } from "@/lib/auth/admin";
 
 export async function GET(req) {
-  const auth = requireAdmin(req);
+  const auth = requireUser(req);
   if (auth.response) return auth.response;
 
   try {
     const db = await connectDB();
 
     // 1️⃣ جلب الحجوزات
+    const isAdmin = String(auth.user.role || "").toLowerCase() === "admin";
     const [purchases] = await db.query(`
       SELECT 
         id, created_at, arrival_date, departure_date, guide_languages, 
         num_children, num_persons, pet_type, platform, has_children, 
         has_guide, status, has_pets, user_id, trip_id
       FROM purchases
-    `);
+      ${isAdmin ? "" : "WHERE user_id = ?"}
+    `, isAdmin ? [] : [auth.user.id]);
 
     // 2️⃣ جلب الرحلات المرتبطة
     const tripIds = purchases.map((p) => p.trip_id);

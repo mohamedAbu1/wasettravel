@@ -15,6 +15,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { resolveTripImage } from "@/lib/imageCatalog";
+import { normalizeGalleryImages } from "@/lib/galleryImages";
+import { toPublicImageUrl } from "@/lib/publicImageUrl";
 
 function localizedValue(value, lang, fallback = "") {
   if (!value) return fallback;
@@ -40,6 +42,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
   const { t } = useTranslation("trips");
   const { lang } = useLanguage();
   const { theme } = useTheme();
+  const [expandedTripId, setExpandedTripId] = useState(null);
 
   return (
     <div
@@ -57,6 +60,11 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
         });
         const avgStars = Math.max(0, Math.min(5, Number(trip.rating) || 4));
         const displayedPrice = convertPrice(trip.group_price || 0, trip.currency || "USD", currency);
+        const galleryImages = normalizeGalleryImages(trip.gallery_images);
+        const coverImage = typeof trip.cover_image === "string" && trip.cover_image
+          ? toPublicImageUrl(trip.cover_image)
+          : fallbackImage;
+        const isExpanded = expandedTripId === trip.id;
 
         const hasPurchased =
           userData &&
@@ -91,49 +99,67 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               scale: 1.02,
               boxShadow: theme.shadow,
             }}
-            className={`trips-card flex ${
+            onMouseEnter={() => setExpandedTripId(trip.id)}
+            onMouseLeave={() => setExpandedTripId(null)}
+            onFocus={() => setExpandedTripId(trip.id)}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) setExpandedTripId(null);
+            }}
+            className={`trips-card ${isExpanded ? "trips-card--expanded" : ""} flex ${
               cardStyle === "vertical" ? "w-full flex-col" : "flex-row"
             } stone-card rounded-xl shadow-lg overflow-hidden`}
           >
-            {/* قسم الصور بسليدر */}
+            {/* Show only the cover by default. Mount the slider on hover/focus. */}
             <div
-              className={` ${
+              className={`trips-card__media ${
                 cardStyle === "vertical" ? "w-full" : "lg:w-1/2"
-              } w-full`}
+              } w-full relative`}
             >
-              <Swiper
-                spaceBetween={10}
-                slidesPerView={1}
-                loop
-                autoplay={{ delay: 3000 }}
-                pagination={{ clickable: true }}
-                navigation
-                modules={[Autoplay, Pagination, Navigation]}
-                className="h-[300px] bg-[#ead9c7] lg:h-[480px]"
-              >
-                {(Array.isArray(trip.gallery_images) && trip.gallery_images.length ? trip.gallery_images : [trip.cover_image]).map((image, idx) => {
-                  const img = typeof image === "string"
-                    ? image
-                    : image?.url || image?.src || image?.image || image?.image_url || image?.path;
-                  return (
-                  <SwiperSlide key={idx}>
-                    <Image
-                      src={img || fallbackImage}
-                      alt={`Trip image: ${trip.title?.[lang] || trip.title?.en || "Untitled"}`}
-                      fill
-                      quality={75} // ✅ ضغط الصورة بدون فقدان واضح للجودة
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" // ✅ صور متجاوبة
-                      priority={idx === 0} // ✅ تحميل الصورة الأولى بسرعة لتحسين LCP
-                      loading={idx === 0 ? "eager" : "lazy"} // ✅ تحميل كسول لباقي الصور
-                      className="object-cover w-full h-full rounded-lg"
-                      style={{ aspectRatio: "4/3" }} // ✅ يمنع تغير الأبعاد أثناء التحميل (يقلل CLS)
-                      placeholder="blur" // ✅ تحسين تجربة التحميل
-                      blurDataURL={fallbackImage} // ✅ صورة منخفضة الجودة أثناء التحميل
-                    />
-                  </SwiperSlide>
-                  );
-                })}
-              </Swiper>
+              {isExpanded && galleryImages.length > 1 ? (
+                <Swiper
+                  spaceBetween={10}
+                  slidesPerView={1}
+                  loop
+                  autoplay={{ delay: 3000 }}
+                  pagination={{ clickable: true }}
+                  navigation
+                  modules={[Autoplay, Pagination, Navigation]}
+                  className="trips-card__slider h-[300px] bg-[#ead9c7] lg:h-[480px]"
+                >
+                  {galleryImages.map((image, idx) => (
+                    <SwiperSlide key={`${image.url}-${idx}`}>
+                      <Image
+                        src={image.url}
+                        alt={`Trip image: ${localizedValue(trip.title, lang, "Untitled")}`}
+                        fill
+                        quality={75}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 720px"
+                        priority={idx === 0}
+                        loading={idx === 0 ? "eager" : "lazy"}
+                        className="object-cover w-full h-full rounded-lg"
+                        placeholder="blur"
+                        blurDataURL={fallbackImage}
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              ) : (
+                <div className="trips-card__cover relative h-[300px] bg-[#ead9c7] lg:h-[480px]">
+                  <Image
+                    src={coverImage}
+                    alt={`Trip image: ${localizedValue(trip.title, lang, "Untitled")}`}
+                    fill
+                    quality={75}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 360px"
+                    priority={i < 3}
+                    loading={i < 3 ? "eager" : "lazy"}
+                    className="object-cover w-full h-full rounded-lg"
+                    placeholder="blur"
+                    blurDataURL={fallbackImage}
+                  />
+                  {galleryImages.length > 1 ? <span className="trips-card__gallery-hint">Hover to explore {galleryImages.length} photos</span> : null}
+                </div>
+              )}
             </div>
 
             {/* قسم المعلومات */}

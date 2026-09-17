@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { FaStar, FaDollarSign, FaEuroSign, FaPoundSign } from "react-icons/fa";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -59,7 +60,9 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
           categories: trip.categories?.map((category) => localizedValue(category?.name, lang)),
         });
         const avgStars = Math.max(0, Math.min(5, Number(trip.rating) || 4));
-        const displayedPrice = convertPrice(trip.group_price || 0, trip.currency || "USD", currency);
+        const tripCurrency = String(trip.currency || "USD").toUpperCase();
+        const displayCurrency = String(currency || tripCurrency).toUpperCase();
+        const displayedPrice = convertPrice(Number(trip.group_price) || 0, tripCurrency, displayCurrency);
         const galleryImages = normalizeGalleryImages(trip.gallery_images);
         const coverImage = typeof trip.cover_image === "string" && trip.cover_image
           ? toPublicImageUrl(trip.cover_image)
@@ -76,15 +79,15 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
           );
 
         // 🟢 اختيار الأيقونة حسب العملة
-        let CurrencyIcon;
+        let CurrencyIcon = FaDollarSign;
         let currencyColor;
-        if (currency === "USD") {
+        if (displayCurrency === "USD") {
           CurrencyIcon = FaDollarSign;
           currencyColor = theme.usdColor || "#2ecc71";
-        } else if (currency === "EUR") {
+        } else if (displayCurrency === "EUR") {
           CurrencyIcon = FaEuroSign;
           currencyColor = theme.eurColor || "#3498db";
-        } else if (currency === "EGP") {
+        } else if (displayCurrency === "EGP") {
           CurrencyIcon = FaPoundSign;
           currencyColor = theme.egpColor || "#b8860b";
         }
@@ -211,11 +214,11 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               </p>
 
               <p
-                aria-label={`Trip price in ${currency}`}
+                aria-label={`Trip price in ${displayCurrency}`}
                 className="text-lg font-semibold flex items-center gap-2"
               >
                 <CurrencyIcon style={{ color: currencyColor }} />
-                {displayedPrice} {currency}
+                {displayedPrice} {displayCurrency}
               </p>
 
               <div

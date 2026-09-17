@@ -306,14 +306,19 @@ export async function GET(req) {
       }
     };
 
+    const safeTranslations = (value) => {
+      if (!value || typeof value !== "string") return value;
+      try {
+        return JSON.parse(value);
+      } catch {
+        return { en: value };
+      }
+    };
+
     const parsedTrips = trips.map((trip) => ({
       ...trip,
-      title:
-        typeof trip.title === "string" ? JSON.parse(trip.title) : trip.title,
-      description:
-        typeof trip.description === "string"
-          ? JSON.parse(trip.description)
-          : trip.description,
+      title: safeTranslations(trip.title),
+      description: safeTranslations(trip.description),
       cover_image: toPublicImageUrl(trip.cover_image),
       solo_price: Number(trip.solo_price),
       group_price: Number(trip.group_price),

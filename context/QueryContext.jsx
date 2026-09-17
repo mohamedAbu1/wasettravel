@@ -96,8 +96,8 @@ export function QueryProvider({ children }) {
 
     // ✅ فلترة على الرحلات نفسها
     if (queryState.popular === true) {
-      filtered = filtered
-        .sort((a, b) => (b.purchase_count || 0) - (a.purchase_count || 0))
+      filtered = [...filtered]
+        .sort((a, b) => (Number(b.purchase_count) || 0) - (Number(a.purchase_count) || 0))
         .slice(0, 9);
     }
 

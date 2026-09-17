@@ -36,6 +36,27 @@ function localizedValue(value, lang) {
   return String(value);
 }
 
+function filterValues(value, lang) {
+  if (!value) return [];
+  const localizedCandidates = (item) => {
+    if (item == null) return [];
+    if (typeof item === "object") return Object.values(item);
+    return [localizedValue(item, lang)];
+  };
+  return [value.id, value.name, value.slug]
+    .flatMap(localizedCandidates)
+    .map((item) => String(item).trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function matchesSelected(items, selected, lang) {
+  if (!selected || selected === "all") return true;
+  const selectedValues = (Array.isArray(selected) ? selected : [selected])
+    .map((item) => String(item).trim().toLowerCase())
+    .filter(Boolean);
+  return items.some((item) => filterValues(item, lang).some((value) => selectedValues.includes(value)));
+}
+
 export default function TripsPage() {
   const { trips, fetchTrips, loadingTrips, error } = useTrip();
   const {
@@ -64,53 +85,23 @@ export default function TripsPage() {
   }, [search, city, category, group_price, popular, cardStyle]);
 
   if (loadingTrips)
-    return <p className="min-h-[40vh] pt-32 text-center text-[var(--muted)]">Loading trips...</p>;
+    return <main className="trip-detail-state" aria-busy="true"><span className="trip-detail-state__spinner" aria-hidden="true" /><strong>{t("Loading", { defaultValue: "Loading journeys" })}</strong><p>{t("LoadingTripsMessage", { defaultValue: "Preparing the best journeys for you…" })}</p></main>;
   if (error)
-    return <p className="min-h-[40vh] px-6 pt-32 text-center text-[var(--muted)]" role="alert">Unable to load journeys right now. Please try again shortly.</p>;
+    return <main className="trip-detail-state" role="alert"><strong>{t("TripsLoadError", { defaultValue: "We could not load the journeys" })}</strong><p>{t("TryAgainMessage", { defaultValue: "Please check your connection and try again." })}</p><button type="button" className="stone-button rounded-xl px-5 py-3 font-semibold" onClick={() => fetchTrips()}>{t("Retry", { defaultValue: "Try again" })}</button></main>;
   // فلترة الرحلات
   const filteredTrips = trips.filter((trip) => {
     const lowerSearch = search.trim().toLowerCase();
 
     const searchableText = [
       localizedValue(trip.title, lang),
+      localizedValue(trip.description, lang),
       ...(trip.cities || []).map((item) => localizedValue(item?.name, lang)),
       ...(trip.categories || []).map((item) => localizedValue(item?.name, lang)),
     ].join(" ").toLowerCase();
     const matchesSearch = !lowerSearch || searchableText.includes(lowerSearch);
 
-    const tripCities =
-      trip.cities
-        ?.map((c) => {
-          return localizedValue(c?.name, lang);
-        })
-        .filter((n) => n !== "") || [];
-
-    const matchesCity =
-      !city || city === "all"
-        ? true
-        : Array.isArray(city)
-          ? tripCities.some((c) =>
-              city.some((x) => c.toLowerCase() === x.toLowerCase()),
-            )
-          : tripCities.some((c) => c.toLowerCase() === city.toLowerCase());
-
-    const tripCategories =
-      trip.categories
-        ?.map((cat) => {
-            return localizedValue(cat?.name, lang);
-        })
-        .filter((n) => n !== "") || [];
-
-    const matchesCategory =
-      !category || category === "all"
-        ? true
-        : Array.isArray(category)
-          ? tripCategories.some((c) =>
-              category.some((x) => c.toLowerCase() === x.toLowerCase()),
-            )
-          : tripCategories.some(
-              (c) => c.toLowerCase() === category.toLowerCase(),
-            );
+    const matchesCity = matchesSelected(trip.cities || [], city, lang);
+    const matchesCategory = matchesSelected(trip.categories || [], category, lang);
 
     const ranges = {
       Economy: { min: 0, max: 199 },
@@ -119,12 +110,12 @@ export default function TripsPage() {
     };
     const selectedRange = ranges[group_price];
 
+    const price = Number(trip.group_price);
     const matchesPrice =
       group_price === "All" || !group_price
         ? true
         : selectedRange
-          ? trip.group_price >= selectedRange.min &&
-            trip.group_price <= selectedRange.max
+          ? Number.isFinite(price) && price >= selectedRange.min && price <= selectedRange.max
           : true;
 
     return matchesSearch && matchesCity && matchesCategory && matchesPrice;
@@ -152,10 +143,11 @@ export default function TripsPage() {
   }
 
   // تقسيم الصفحات
-  const indexOfLastTrip = currentPage * tripsPerPage;
+  const totalPages = Math.ceil(finalTrips.length / tripsPerPage);
+  const safeCurrentPage = totalPages ? Math.min(currentPage, totalPages) : 1;
+  const indexOfLastTrip = safeCurrentPage * tripsPerPage;
   const indexOfFirstTrip = indexOfLastTrip - tripsPerPage;
   const currentTrips = finalTrips.slice(indexOfFirstTrip, indexOfLastTrip);
-  const totalPages = Math.ceil(finalTrips.length / tripsPerPage);
 
   return (
     <>
@@ -217,7 +209,7 @@ export default function TripsPage() {
                         window.scrollTo({ top: 30, behavior: "smooth" });
                       }}
                       className={`px-3 py-1 rounded-lg font-bold cursor-pointer transition ${
-                        currentPage === i + 1
+                        safeCurrentPage === i + 1
                           ? "bg-[var(--primary-color)] text-gray-700"
                           : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                       }`}

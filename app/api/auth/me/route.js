@@ -5,9 +5,9 @@ import { getAuthenticatedUser } from "@/lib/auth/admin";
 export async function GET(request) {
   try {
     const user = getAuthenticatedUser(request);
-    if (!user) return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    if (!user) return NextResponse.json({ user: null }, { status: 200 });
     return NextResponse.json({ user }, { status: 200 });
   } catch {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    return NextResponse.json({ user: null }, { status: 200 });
   }
 }

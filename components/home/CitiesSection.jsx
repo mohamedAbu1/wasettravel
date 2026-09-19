@@ -10,10 +10,11 @@ import DividerWithIcon from "../layout/DividerWithIcon";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { resolveCityImage } from "@/lib/imageCatalog";
+import { normalizeNextImageSource } from "@/lib/publicImageUrl";
 
 const imageUrl = (url, name) => {
   if (!url || typeof url !== "string" || !url.trim()) return resolveCityImage(name);
-  return url.startsWith("http") ? `${url}?width=1000&quality=75&format=webp` : (url.startsWith("/") ? url : `/${url}`);
+  return normalizeNextImageSource(url.startsWith("http") ? `${url}?width=1000&quality=75&format=webp` : (url.startsWith("/") ? url : `/${url}`));
 };
 
 function CityCard({ city, language, position, t }) {

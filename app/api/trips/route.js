@@ -188,9 +188,9 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
+  const summary = new URL(req.url).searchParams.get("summary") === "1";
   try {
     const db = await connectDB();
-    const summary = new URL(req.url).searchParams.get("summary") === "1";
     const query = summary
       ? `
       SELECT
@@ -344,8 +344,10 @@ export async function GET(req) {
     });
   } catch (err) {
     console.error("GET /api/trips database unavailable; returning an empty catalog:", err.message);
-    return new Response(JSON.stringify({ success: false, error: "Trips catalog is temporarily unavailable" }), {
-      status: 503,
+    return new Response(JSON.stringify(summary
+      ? { success: true, trips: [], degraded: true }
+      : { success: false, error: "Trips catalog is temporarily unavailable" }), {
+      status: summary ? 200 : 503,
       headers: { "Cache-Control": "no-store", "Retry-After": "30" },
     });
   }

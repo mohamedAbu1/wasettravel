@@ -40,7 +40,12 @@ export function AuthProvider({ children }) {
     try {
       const res = await axios.get("/api/auth/me", { withCredentials: true });
       const authenticatedUser = normalizeUser(res.data.user);
-      if (!authenticatedUser?.id) throw new Error("Invalid session");
+      if (!authenticatedUser?.id) {
+        setUser(null);
+        setUserToken(null);
+        setIsLoggedIn(false);
+        return null;
+      }
       setUser(authenticatedUser);
       setUserToken(authenticatedUser);
       setIsLoggedIn(Boolean(authenticatedUser));

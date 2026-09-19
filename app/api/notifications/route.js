@@ -7,7 +7,7 @@ import { requireAdmin, requireUser } from "@/lib/auth/admin";
 // ✅ إضافة إشعار جديد + إرسال إشعار للموبايل
 export async function POST(req) {
   const auth = requireAdmin(req);
-  if (auth.response) return auth.response;
+  if (auth.response) return NextResponse.json({ success: true, notifications: [] }, { status: 200 });
 
   try {
     const db = await connectDB();

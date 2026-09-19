@@ -10,10 +10,11 @@ import DividerWithIcon from "../layout/DividerWithIcon";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { resolveCategoryImage } from "@/lib/imageCatalog";
+import { normalizeNextImageSource } from "@/lib/publicImageUrl";
 
 const imageUrl = (url, name) => {
   if (!url || typeof url !== "string" || !url.trim()) return resolveCategoryImage(name);
-  return url.startsWith("http") ? `${url}?width=800&quality=75&format=webp` : (url.startsWith("/") ? url : `/${url}`);
+  return normalizeNextImageSource(url.startsWith("http") ? `${url}?width=800&quality=75&format=webp` : (url.startsWith("/") ? url : `/${url}`));
 };
 
 function CategoryCard({ category, language, position }) {

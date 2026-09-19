@@ -62,6 +62,8 @@ const OurSection = () => {
                       src={imgSrc}
                       alt={`Slide ${index + 1} showing Waset Travel destination`} // ✅ وصف أوضح
                       fill
+                      quality={60}
+                      sizes="(max-width: 1024px) 100vw, 50vw"
                       className="object-cover rounded-lg"
                       loading="lazy"
                     />
@@ -125,7 +127,7 @@ const OurSection = () => {
   src={imgSrc}
   alt={`Slide ${index + 1} showing Waset Travel destination`}
   fill
-  quality={75} // ضغط الصورة لتقليل الحجم
+  quality={60} // ضغط الصورة لتقليل الحجم
   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
   loading="lazy"
   placeholder="blur" // صورة منخفضة الجودة أثناء التحميل
@@ -162,7 +164,7 @@ const OurSection = () => {
   src={imgSrc}
   alt={`Slide ${index + 1} showing Waset Travel destination`}
   fill
-  quality={75} // ضغط الصورة لتقليل الحجم
+  quality={60} // ضغط الصورة لتقليل الحجم
   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
   loading="lazy"
   placeholder="blur" // صورة منخفضة الجودة أثناء التحميل

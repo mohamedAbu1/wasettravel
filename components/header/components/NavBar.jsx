@@ -5,11 +5,6 @@ import { useTheme } from "@/context/ThemeContext";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
-// دالة بسيطة لتحويل النص لـ Base64
-const encodeQuery = (queryObj) => {
-  const str = JSON.stringify(queryObj);
-  return Buffer.from(str).toString("base64");
-};
 
 export default function NavBar({ scrolled }) {
   const { themeName } = useTheme();
@@ -37,14 +32,7 @@ export default function NavBar({ scrolled }) {
         if (item === "home") {
           path = "/";
         } else if (item === "trips") {
-          // ✅ القيم الافتراضية كل مرة
-          const encoded = encodeQuery({
-            city: "all",
-            category: "all",
-            group_price: "All",
-            popular: false,
-          });
-          path = `/trips?data=${encoded}`;
+          path = "/trips";
         } else {
           path = `/${item}`;
         }

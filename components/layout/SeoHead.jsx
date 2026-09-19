@@ -10,8 +10,6 @@ export default function SeoHead({ title, description, keywords, image }) {
       {/* Meta Description */}
       <meta name="description" content={description} />
 
-      {/* Keywords */}
-      {keywords && <meta name="keywords" content={keywords} />}
 
       {/* Open Graph (Social Media) */}
       <meta property="og:title" content={title} />

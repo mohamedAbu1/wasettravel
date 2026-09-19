@@ -5,6 +5,12 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
+  async redirects() {
+    return [
+      { source: "/:locale/privacyPolicy", destination: "/:locale/privacy-policy", permanent: true },
+      { source: "/:locale/cancellationPolicy", destination: "/:locale/cancellation-policy", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

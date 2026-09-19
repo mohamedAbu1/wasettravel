@@ -8,8 +8,6 @@ export const metadata = {
   title: "WasetTravel | Explore Egypt's Best Tours & Trips",
   description:
     "Discover Egypt with WasetTravel: luxury Nile cruises, desert safaris, Red Sea diving, historical tours, and personalized travel experiences.",
-  keywords:
-    "WasetTravel, Egypt tours, Nile cruise, desert safari, Red Sea diving, Luxor, Aswan, travel agency",
   openGraph: {
     title: "WasetTravel | Explore Egypt's Best Tours & Trips",
     description:
@@ -46,6 +44,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-site-theme="stone" suppressHydrationWarning>
       <body>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-black focus:px-4 focus:py-3 focus:text-white">Skip to content</a>
         <Providers>{children}</Providers>
       </body>
     </html>

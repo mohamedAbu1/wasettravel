@@ -1,5 +1,3 @@
-import StatusPage from "@/components/layout/StatusPage";
-
 export default function Loading() {
-  return <StatusPage loading title="Preparing your journey" description="We are loading the best Egypt travel experiences for you." />;
+  return <div role="status" aria-live="polite" className="min-h-24" aria-label="Loading" />;
 }

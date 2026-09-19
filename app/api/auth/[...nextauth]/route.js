@@ -16,8 +16,7 @@ export const authOptions = {
   callbacks: {
     async signIn({ user }) {
       const adminEmails = [
-        "wasettraveleg@gmail.com",
-        "mohamedahmed33m11@gmail.com",
+        "info@wasettravel.com",
       ];
 
       const [rows] = await pool.query("SELECT id, password FROM users WHERE email = ?", [user.email]);

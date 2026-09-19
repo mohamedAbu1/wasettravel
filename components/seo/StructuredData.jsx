@@ -1,4 +1,6 @@
-const siteUrl = "https://wasettravel.com";
+import { siteConfig } from "@/lib/siteConfig";
+
+const { siteUrl } = siteConfig;
 
 export default function StructuredData({ locale = "en", pathname = "" }) {
   const url = `${siteUrl}/${locale}${pathname}`.replace(/\/$/, "") || siteUrl;
@@ -7,7 +9,8 @@ export default function StructuredData({ locale = "en", pathname = "" }) {
       "@context": "https://schema.org",
       "@type": ["Organization", "TravelAgency"],
       name: "WasetTravel",
-      url: siteUrl,
+      "@id": `${siteUrl}/#agency`,
+      url: `${siteUrl}/en`,
       logo: `${siteUrl}/HomePageImage/apple-touch-icon.png`,
       description:
         "Egypt travel agency offering tours, Nile cruises, cultural experiences, and private trips in Luxor, Aswan, and across Egypt.",
@@ -16,14 +19,9 @@ export default function StructuredData({ locale = "en", pathname = "" }) {
         { "@type": "City", name: "Aswan" },
         { "@type": "Country", name: "Egypt" },
       ],
-      email: "info@wasettravel.com",
-      telephone: "+201091126069",
-      sameAs: [
-        "https://www.facebook.com/share/1BTkjPD5Sd/",
-        "https://www.instagram.com/kader.mohameda",
-        "https://www.tiktok.com/@mohamedakader25",
-        "https://www.tripadvisor.com/Attraction_Review-g294205-d34511536-Reviews-Waset_Travel-Luxor_Nile_River_Valley.html",
-      ],
+      email: siteConfig.email,
+      telephone: siteConfig.phone,
+      sameAs: Object.values(siteConfig.social),
     },
     {
       "@context": "https://schema.org",
@@ -34,7 +32,7 @@ export default function StructuredData({ locale = "en", pathname = "" }) {
       isPartOf: { "@type": "WebSite", name: "WasetTravel", url: siteUrl },
       about: ["Egypt tourism", "Luxor tours", "Aswan tours", "Nile cruises"],
     },
-    {
+    ...(pathname ? [{
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
@@ -43,7 +41,7 @@ export default function StructuredData({ locale = "en", pathname = "" }) {
           ? [{ "@type": "ListItem", position: 2, name: pathname.slice(1).split("/")[0], item: url }]
           : []),
       ],
-    },
+    }] : []),
   ];
 
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;

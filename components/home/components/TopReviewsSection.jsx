@@ -18,6 +18,7 @@ export default function TopReviewsSection() {
   const { t } = useTranslation("home");
 
   const safeReviews = Array.isArray(allReviews) ? allReviews : [];
+  if (!safeReviews.length) return null;
 
   // ✅ حساب التعليقات الأكثر إعجابًا
   const topLikedReviews = safeReviews
@@ -107,9 +108,7 @@ export default function TopReviewsSection() {
             {fallbackReviews.map((rev, idx) => renderCard(rev, idx))}
           </div>
         )
-      ) : (
-        <p className={`text-center opacity-70 ${theme.subText}`}>{t("p6")}</p>
-      )}
+      ) : null}
     </section>
   );
 

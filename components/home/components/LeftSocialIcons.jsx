@@ -3,14 +3,15 @@ import { motion } from "framer-motion";
 import React from "react";
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaTiktok } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import { siteConfig } from "@/lib/siteConfig";
 
 const LeftSocialIcons = () => {
   const socialLinks = [
-    { Icon: FaFacebookF, url: "https://www.facebook.com/share/1BTkjPD5Sd/", label: "Visit our Facebook page" },
-    { Icon: FaInstagram, url: "https://www.instagram.com/kader.mohameda?igsh=MXZkd3VvOTNhanJoZA==", label: "Visit our Instagram page" },
-    { Icon: FaWhatsapp, url: "https://wa.me/201091126069", label: "Chat with us on WhatsApp" },
-    { Icon: MdEmail, url: "mailto:wasettraveleg@gmail.com", label: "Send us an email" },
-    { Icon: FaTiktok, url: "https://www.tiktok.com/@mohamedakader25?_r=1&_t=ZS-97OkNILIAZm", label: "Follow us on TikTok" },
+    { Icon: FaFacebookF, url: siteConfig.social.facebook, label: "Visit our Facebook page" },
+    { Icon: FaInstagram, url: siteConfig.social.instagram, label: "Visit our Instagram page" },
+    { Icon: FaWhatsapp, url: siteConfig.whatsapp, label: "Chat with us on WhatsApp" },
+    { Icon: MdEmail, url: `mailto:${siteConfig.email}`, label: "Send us an email" },
+    { Icon: FaTiktok, url: siteConfig.social.tiktok, label: "Follow us on TikTok" },
   ];
 
   return (

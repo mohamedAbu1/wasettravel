@@ -15,6 +15,7 @@ import DividerWithIcon from "@/components/layout/DividerWithIcon";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import CurrencySelector from "@/components/layout/CurrencySelector";
 import SignUpModal from "@/components/home/components/SignUpButton";
+import { siteConfig } from "@/lib/siteConfig";
 
 const symbols = [
   "𓂀",
@@ -123,7 +124,7 @@ export default function ContactPage() {
                         themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                       }
                     />
-                    <span>+20 1091126069</span>
+                    <span>{siteConfig.phone}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <FaEnvelope
@@ -131,7 +132,7 @@ export default function ContactPage() {
                         themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                       }
                     />
-                    <span>wasettraveleg@gmail.com</span>
+                    <span>{siteConfig.email}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <FaMapMarkerAlt

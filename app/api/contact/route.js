@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { siteConfig } from "@/lib/siteConfig";
 
 export async function POST(req) {
   const body = await req.json();
@@ -18,7 +19,7 @@ export async function POST(req) {
             subject: `New Contact Form Submission from ${name}`,
           },
         ],
-        from: { email: "mohamedahmed33m11@gmail.com" }, // بريدك الموثق
+        from: { email: siteConfig.email },
         content: [
           {
             type: "text/html",

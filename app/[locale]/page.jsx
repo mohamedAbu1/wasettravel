@@ -60,7 +60,7 @@ export default function Home() {
 
   return (
     <>
-      <main
+      <main id="main-content"
         className={`
           site-shell w-full flex flex-col items-center justify-center
           min-h-screen font-sans bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300

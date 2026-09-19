@@ -54,6 +54,14 @@ export function QueryProvider({ children }) {
     const current = searchParams.get("data");
     if (current) {
       loadFromQuery(current);
+    } else if (pathname.includes("/trips") && (searchParams.has("city") || searchParams.has("category"))) {
+      setQueryState((prev) => ({
+        ...prev,
+        city: searchParams.get("city") || "all",
+        category: searchParams.get("category") || "all",
+        group_price: searchParams.get("group_price") || "All",
+        popular: searchParams.get("popular") === "true",
+      }));
     } else if (pathname.includes("/trips")) {
       // ✅ لو دخلت على trips بدون كويري → نعرض كل الرحلات
       resetFilters();

@@ -145,6 +145,10 @@ export default function TopReviewsSection() {
             <img
               src={rev.avatar_url}
               alt={`Avatar of ${rev.name || "Anonymous user"}`} // ✅ وصف أوضح
+              width="56"
+              height="56"
+              loading="lazy"
+              decoding="async"
               className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 object-cover"
               style={{ borderColor: theme.logoBorder }}
             />

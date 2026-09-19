@@ -44,8 +44,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-site-theme="stone" suppressHydrationWarning>
       <body>
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-black focus:px-4 focus:py-3 focus:text-white">Skip to content</a>
-        <Providers>{children}</Providers>
+        <a href="#main-content-root" className="skip-link">Skip to content</a>
+        <Providers><div id="main-content-root" tabIndex={-1}>{children}</div></Providers>
       </body>
     </html>
   );

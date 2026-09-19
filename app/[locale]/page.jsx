@@ -71,7 +71,7 @@ export default function Home() {
 
         {/* ================= HERO SECTION ================= */}
         <HeroSection />
-        <DownloadAppSection />
+        <div className="home-deferred-section"><DownloadAppSection /></div>
 
         <section
           id="discover"
@@ -105,20 +105,20 @@ export default function Home() {
         </section>
 
         {/* ================= CATEGORIES SECTION ================= */}
-        <CategoriesSection />
+        <div className="home-deferred-section"><CategoriesSection /></div>
 
         {/* ================= TOP TRIPS SECTION ================= */}
-        <TopTripsSection />
+        <div className="home-deferred-section"><TopTripsSection /></div>
 
         {/* ================= CITIES SECTION ================= */}
-        <CitiesSection />
+        <div className="home-deferred-section"><CitiesSection /></div>
 
-        <OurSection />
-        <TopReviewsSection />
-        <CarBookingSection />
+        <div className="home-deferred-section"><OurSection /></div>
+        <div className="home-deferred-section"><TopReviewsSection /></div>
+        <div className="home-deferred-section"><CarBookingSection /></div>
 
         {/* ================= FOOTER ================= */}
-        <Footer />
+        <div className="home-deferred-section"><Footer /></div>
 
         {/* ✅ Lazy loaded components */}
         <SignUpModal />

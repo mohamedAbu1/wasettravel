@@ -67,7 +67,7 @@ const TopTripsSection = () => {
     return (
       <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: position * 0.08 }} viewport={{ once: true, amount: 0.2 }} className="stone-card group relative min-w-0 overflow-hidden rounded-[1.35rem]">
         <div className="relative aspect-[1.15] overflow-hidden">
-          <Image src={normalizeNextImageSource(trip.cover_image || fallbackImage)} alt={title} fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 31vw, 360px" className="object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
+          <Image src={normalizeNextImageSource(trip.cover_image || fallbackImage)} unoptimized={normalizeNextImageSource(trip.cover_image || fallbackImage).includes(" ")} alt={title} fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 31vw, 360px" className="object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#151311] via-[#151311]/15 to-transparent" />
           <span className="absolute left-4 top-4 rounded-full border border-white/20 bg-black/30 px-3 py-1 text-xs font-semibold text-white/90 backdrop-blur-md">{String(position + 1).padStart(2, "0")}</span>
           <div className="absolute inset-x-5 bottom-4"><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#e0b873]">Waset experience</p><h3 className="line-clamp-2 text-xl font-bold leading-tight text-white">{title}</h3></div>

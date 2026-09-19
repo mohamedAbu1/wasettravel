@@ -35,7 +35,7 @@ function CategoryCard({ category, language, position }) {
 
   return (
     <Link href={explore()} aria-label={`View trips in category ${name}`} className="stone-card group relative block min-h-[15rem] overflow-hidden rounded-[1.25rem] outline-none focus-visible:ring-2 focus-visible:ring-[#e0b873] sm:min-h-[17rem]">
-      <Image src={imageUrl(images[imageIndex], name)} alt={name} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 260px" className="object-cover transition duration-700 group-hover:scale-110" loading="lazy" />
+      <Image src={imageUrl(images[imageIndex], name)} unoptimized={imageUrl(images[imageIndex], name).includes(" ")} alt={name} fill sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 260px" className="object-cover transition duration-700 group-hover:scale-110" loading="lazy" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#121110] via-[#121110]/35 to-transparent" />
       <div className="absolute left-4 top-4 flex items-center gap-2"><span className="rounded-full border border-white/20 bg-black/25 px-2.5 py-1 text-[10px] font-bold tracking-[0.15em] text-white/80 backdrop-blur-md">{String(position + 1).padStart(2, "0")}</span>{images.length > 1 && <span className="h-1.5 w-1.5 rounded-full bg-[#e0b873]" />}</div>
       <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3"><h3 className="text-xl font-bold leading-tight text-white drop-shadow-lg">{name}</h3><span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#e0b873]/60 bg-[#e0b873]/15 text-lg text-[#f0c979] transition group-hover:bg-[#e0b873] group-hover:text-[#211a13]">↗</span></div>

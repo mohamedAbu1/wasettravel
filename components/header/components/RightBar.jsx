@@ -18,7 +18,7 @@ export default function RightBar() {
   const { userData, setChatUser } = useAuth();
   const { themeName, theme } = useTheme();
   const { t } = useTranslation("header");
-  const { notifications, markAsRead } = useNotifications();
+  const { notifications, fetchNotifications, markAsRead } = useNotifications();
   const { fetchUserMessagesById, setMessages } = useMessages();
   const router = useRouter();
   const pathname = usePathname();
@@ -113,7 +113,7 @@ export default function RightBar() {
           <NotificationsIcon
             aria-label={t("notifications")}
             title={t("notifications")}
-            onClick={() => setOpen(true)}
+            onClick={() => { setOpen(true); fetchNotifications(); }}
             sx={{
               cursor: "pointer",
               color: "var(--header-foreground)",
@@ -132,7 +132,7 @@ export default function RightBar() {
           <MailIcon
             aria-label={t("messages")}
             title={t("messages")}
-            onClick={() => setOpenMessages(true)}
+            onClick={() => { setOpenMessages(true); fetchNotifications(); }}
             sx={{
               cursor: "pointer",
               color: "var(--header-foreground)",

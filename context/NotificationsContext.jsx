@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const NotificationsContext = createContext();
 
@@ -23,11 +23,6 @@ export function NotificationsProvider({ children }) {
       }
   };
 
-  useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(() => fetchNotifications(true), 30000);
-    return () => clearInterval(interval);
-  }, []);
   // تحديث حالة الإشعار إلى مقروء
   const markAsRead = async (id) => {
     try {
@@ -62,7 +57,7 @@ export function NotificationsProvider({ children }) {
 
   return (
     <NotificationsContext.Provider
-      value={{ notifications, loading, markAsRead, deleteNotification }}
+      value={{ notifications, loading, fetchNotifications, markAsRead, deleteNotification }}
     >
       {children}
     </NotificationsContext.Provider>

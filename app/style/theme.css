@@ -1809,7 +1809,7 @@ html[data-site-theme="stone"] .MuiDrawer-paper:has(.stone-drawer) { width:min(28
 html { scroll-behavior:smooth; }
 .skip-link { position:fixed; top:1rem; left:1rem; z-index:100; padding:.75rem 1rem; border-radius:.5rem; color:#fff; background:#211a13; box-shadow:0 .5rem 1rem rgba(0,0,0,.25); transform:translateY(-180%); transition:transform .2s ease; }
 .skip-link:focus, .skip-link:focus-visible { transform:translateY(0); outline:3px solid #f0c979; outline-offset:3px; }
-.home-deferred-section { content-visibility:auto; contain-intrinsic-size:600px; }
+.home-deferred-section { width:100%; align-self:stretch; content-visibility:auto; contain-intrinsic-size:600px; }
 .site-shell { isolation:isolate; }
 .site-shell > main, .site-shell > section, .site-shell > footer { animation:waset-page-enter .55s cubic-bezier(.22,.61,.36,1) both; }
 .site-shell a, .site-shell button, .site-shell input, .site-shell textarea, .site-shell select { transition-duration:.22s; transition-timing-function:cubic-bezier(.22,.61,.36,1); }

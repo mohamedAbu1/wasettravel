@@ -62,7 +62,7 @@ export default function Home() {
     <>
       <main id="main-content" tabIndex={-1}
         className={`
-          site-shell w-full flex flex-col items-center justify-center
+          site-shell w-full flex flex-col items-stretch justify-center
           min-h-screen font-sans bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300
           overflow-hidden
         `}

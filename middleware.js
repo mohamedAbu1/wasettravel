@@ -31,6 +31,15 @@ export async function middleware(req) {
     return NextResponse.redirect(url);
   }
 
+  // Filter state is useful for visitors but should not become a separate
+  // indexable URL. Keep the clean /trips page canonical in search results.
+  const hasFilterQuery = ["data", "city", "category", "group_price", "popular"].some((key) => url.searchParams.has(key));
+  if (hasFilterQuery && url.pathname.match(/^\/(en|es|fr|de|it|zh)\/trips\/?$/)) {
+    const response = NextResponse.next();
+    response.headers.set("X-Robots-Tag", "noindex, follow");
+    return response;
+  }
+
   // استثناء مسارات النظام والملفات الثابتة
   if (
     url.pathname.startsWith("/_next") ||

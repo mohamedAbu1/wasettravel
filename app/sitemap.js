@@ -16,7 +16,7 @@ async function getTripIds() {
 
 export default async function sitemap() {
   const baseUrl = "https://wasettravel.com";
-  const lastModified = new Date("2026-09-11T00:00:00.000Z");
+  const lastModified = new Date();
   const tripIds = await getTripIds();
 
   const staticEntries = locales.flatMap((locale) =>

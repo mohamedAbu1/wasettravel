@@ -38,7 +38,14 @@ export default function CurrencySelector() {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }} className="currency-selector" data-theme-mode={themeName}>
       <div className="currency-selector__label"><FaCoins aria-hidden="true" /><span>{t("currency")}</span></div>
-      <Select value={active.value} onChange={handleChange} variant="standard" disableUnderline aria-label={t("currency")} renderValue={() => `${active.label} ${active.symbol}`}>
+      <Select
+        value={active.value}
+        onChange={handleChange}
+        variant="standard"
+        disableUnderline
+        SelectDisplayProps={{ "aria-label": t("currency") }}
+        renderValue={() => `${active.label} ${active.symbol}`}
+      >
         {currencyOptions.map((option) => <MenuItem key={option.value} value={option.value}>{option.label} {option.symbol}</MenuItem>)}
       </Select>
     </motion.div>

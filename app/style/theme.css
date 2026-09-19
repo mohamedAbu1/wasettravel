@@ -1122,6 +1122,56 @@ html[data-site-theme="stone"] .travel-search-content .travel-select-placeholder 
   font-weight: 600;
 }
 html[data-site-theme="stone"] .travel-search-content .travel-select-field .MuiSelect-icon { right: .72rem; color: #8a6841; }
+html[data-site-theme="stone"] .travel-search-content .travel-select-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  min-height: 60px;
+  overflow: hidden;
+  border: 1px solid rgba(224,184,115,.42);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, #f4eadc, #e8dac6);
+  box-shadow: inset 0 1px rgba(255,255,255,.58), 0 .35rem .8rem rgba(0,0,0,.08);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+html[data-site-theme="stone"] .travel-search-content .travel-select-field:hover,
+html[data-site-theme="stone"] .travel-search-content .travel-select-field:focus-within {
+  border-color: #bd7c3e;
+  box-shadow: 0 0 0 4px rgba(224,184,115,.18), 0 .55rem 1rem rgba(0,0,0,.1);
+}
+html[data-site-theme="stone"] .travel-search-content .travel-select-field:hover { transform: translateY(-1px); }
+html[data-site-theme="stone"] .travel-search-content .travel-select-native {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  padding: 0 2.3rem 0 2.65rem;
+  border: 0;
+  outline: 0;
+  appearance: none;
+  color: #30271d;
+  background: transparent;
+  font-size: .83rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+html[data-site-theme="stone"] .travel-search-content .travel-select-field::after {
+  position: absolute;
+  right: .85rem;
+  content: "⌄";
+  color: #8a6841;
+  font-size: 1rem;
+  pointer-events: none;
+}
+html[data-site-theme="stone"] .travel-search-content .travel-field-icon {
+  position: absolute;
+  left: .9rem;
+  z-index: 1;
+  display: inline-flex;
+  color: #a96f35;
+  font-size: 1.05rem;
+  pointer-events: none;
+}
 html[data-site-theme="stone"] .travel-search-content .hero-filter-control--dates > .flex { gap: .78rem; }
 html[data-site-theme="stone"] .travel-search-content .travel-date-input {
   display: flex;
@@ -1760,7 +1810,6 @@ html { scroll-behavior:smooth; }
 .site-shell { isolation:isolate; }
 .site-shell > main, .site-shell > section, .site-shell > footer { animation:waset-page-enter .55s cubic-bezier(.22,.61,.36,1) both; }
 .site-shell a, .site-shell button, .site-shell input, .site-shell textarea, .site-shell select { transition-duration:.22s; transition-timing-function:cubic-bezier(.22,.61,.36,1); }
-.site-shell a:not([aria-disabled="true"]):not(.no-motion), .site-shell button:not(:disabled):not(.no-motion) { will-change:transform; }
 .site-shell button:not(:disabled):not(.no-motion):active { transform:translateY(0) scale(.98); }
 .stone-card, .about-feature-card, .trip-detail-panel, .trip-review-card, .admin-panel, .admin-stat-card { transition:transform .28s cubic-bezier(.22,.61,.36,1), border-color .22s ease, box-shadow .28s ease, background-color .22s ease; }
 .stone-card:hover, .about-feature-card:hover, .trip-detail-panel:hover, .trip-review-card:hover { transform:translateY(-3px); box-shadow:0 1.1rem 2.4rem rgba(51,35,19,.1); }

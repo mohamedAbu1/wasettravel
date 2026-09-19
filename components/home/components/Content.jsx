@@ -1,7 +1,5 @@
 "use client";
 
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import { useData } from "@/context/DataContext";
 import { useTranslation } from "react-i18next";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
@@ -57,8 +55,7 @@ export default function Content() {
         </div>
       </div>
 
-      <Box
-        component="form"
+      <form
         className="hero-filter-form"
         onSubmit={handleSearch}
         aria-label={t("TripSearch", { defaultValue: "Find an Egypt trip" })}
@@ -90,17 +87,16 @@ export default function Content() {
           <CalendarSC />
         </div>
 
-        <Button
+      <button
           className="hero-filter-submit"
-          variant="contained"
           type="submit"
           disabled={!isFormValid}
           aria-label={isFormValid ? t("Search") : t("CompleteSearchFilters", { defaultValue: "Select a city, category and travel dates to continue" })}
         >
           <span>{t("Search")}</span>
           <span className="hero-filter-submit__arrow" aria-hidden="true">↗</span>
-        </Button>
-      </Box>
+      </button>
+      </form>
 
       <div className="hero-filter-footer">
         <span><i aria-hidden="true" /> {t("LocalPlanning", { defaultValue: "Local planning support" })}</span>

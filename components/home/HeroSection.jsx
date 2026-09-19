@@ -25,6 +25,7 @@ export default function HeroSection() {
           alt="Ancient Egyptian temple columns in Luxor"
           fill
           priority
+          fetchPriority="high"
           quality={75}
           sizes="(max-width: 1023px) 100vw, 35vw"
           className="object-cover object-center"

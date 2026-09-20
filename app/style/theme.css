@@ -1830,3 +1830,19 @@ html { scroll-behavior:smooth; }
   *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.001ms !important; }
   .stone-card:hover, .about-feature-card:hover, .trip-detail-panel:hover, .trip-review-card:hover, .site-nav__link:hover, .admin-nav-item:hover, .admin-icon-button:hover, .trip-review-control:hover, .trip-detail-pagination:hover { transform:none; }
 }
+html[data-site-theme="stone"] .car-booking-input {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--color) 24%, var(--line));
+  border-radius: .85rem;
+  padding: .78rem .9rem;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--surface) 92%, var(--color) 8%);
+  font-size: .82rem;
+  font-weight: 500;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+html[data-site-theme="stone"] .car-booking-input::placeholder { color: var(--muted); opacity: .75; }
+html[data-site-theme="stone"] .car-booking-input:focus { border-color: var(--color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 18%, transparent); }
+html[data-site-theme="stone"] .car-booking-input option { color: #30271d; background: #fffaf3; }

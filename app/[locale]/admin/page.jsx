@@ -15,10 +15,11 @@ import UsersSection from "./components/UsersSection";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "./context/AuthContext";
 import CurrencyRates from "./components/CurrencyRates";
-import { FaBell, FaChevronRight, FaShieldAlt } from "react-icons/fa";
+import { FaBell, FaBars, FaChevronRight, FaShieldAlt } from "react-icons/fa";
 
 export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState("dashboard");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { theme, themeName } = useTheme();
   const { userData, loading } = useAuth();
   const router = useRouter();
@@ -47,11 +48,12 @@ export default function DashboardPage() {
       <EgyptianBackground />
 
       {/* Sidebar */}
-      <Sidebar setActiveSection={setActiveSection} activeSection={activeSection} themeName={themeName} locale={locale} />
+      <Sidebar setActiveSection={setActiveSection} activeSection={activeSection} themeName={themeName} locale={locale} mobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+      {mobileNavOpen && <button type="button" className="admin-mobile-backdrop" aria-label="Close admin navigation" onClick={() => setMobileNavOpen(false)} />}
 
       {/* Main Content */}
       <section className="admin-main relative z-10 min-w-0 flex-1">
-        <header className="admin-topbar"><div><p className="admin-eyebrow"><FaShieldAlt /> WasetTravel administration</p><h1>{sectionTitles[activeSection] || "Dashboard"}</h1><p className="admin-topbar__sub">Manage journeys, guests and operations from one calm workspace.</p></div><div className="admin-topbar__actions"><span className="admin-live-status"><span /> System operational</span><button type="button" className="admin-icon-button" aria-label="Notifications"><FaBell /></button><div className="admin-user-chip"><span>{(userData.name || userData.email || "A").slice(0, 1).toUpperCase()}</span><div><strong>{userData.name || "Administrator"}</strong><small>Administrator</small></div><FaChevronRight /></div></div></header>
+        <header className="admin-topbar"><button type="button" className="admin-mobile-menu-button" aria-label="Open admin navigation" aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen(true)}><FaBars /></button><div className="admin-topbar__copy"><p className="admin-eyebrow"><FaShieldAlt /> WasetTravel administration</p><h1>{sectionTitles[activeSection] || "Dashboard"}</h1><p className="admin-topbar__sub">Manage journeys, guests and operations from one calm workspace.</p></div><div className="admin-topbar__actions"><span className="admin-live-status"><span /> System operational</span><button type="button" className="admin-icon-button" aria-label="Notifications"><FaBell /></button><div className="admin-user-chip"><span>{(userData.name || userData.email || "A").slice(0, 1).toUpperCase()}</span><div><strong>{userData.name || "Administrator"}</strong><small>Administrator</small></div><FaChevronRight /></div></div></header>
         <div className="admin-content">
         {activeSection === "dashboard" && <DashboardHome themeName={themeName} />}
         {activeSection === "addTrip" && <AddTrip themeName={themeName} />}

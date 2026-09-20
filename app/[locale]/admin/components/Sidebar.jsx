@@ -12,10 +12,11 @@ import {
   FaChartBar,
   FaEnvelope,
   FaEdit,
+  FaTimes,
 } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
-export default function Sidebar({ activeSection, setActiveSection, locale = "en" }) {
+export default function Sidebar({ activeSection, setActiveSection, locale = "en", mobileOpen = false, onClose }) {
   const { logout } = useAuth();
   // ✅ دالة لتوليد زر مع حالة Active
   const NavButton = ({ section, icon, label }) => {
@@ -24,7 +25,10 @@ export default function Sidebar({ activeSection, setActiveSection, locale = "en"
       <button
         type="button"
         aria-current={isActive ? "page" : undefined}
-        onClick={() => setActiveSection(section)}
+        onClick={() => {
+          setActiveSection(section);
+          onClose?.();
+        }}
         className={`admin-nav-item ${isActive ? "is-active" : ""}`}
       >
         {/* ✅ خط جانبي يوضح الزر النشط */}
@@ -42,8 +46,8 @@ export default function Sidebar({ activeSection, setActiveSection, locale = "en"
   };
 
   return (
-    <aside className="admin-sidebar">
-      <div className="admin-brand"><span className="admin-brand__mark">W</span><div><strong>Waset<span>Travel</span></strong><small>Admin workspace</small></div><ThemeToggle />
+    <aside className={`admin-sidebar ${mobileOpen ? "is-mobile-open" : ""}`}>
+      <div className="admin-brand"><span className="admin-brand__mark">W</span><div><strong>Waset<span>Travel</span></strong><small>Admin workspace</small></div><ThemeToggle /><button type="button" className="admin-mobile-close" aria-label="Close admin navigation" onClick={onClose}><FaTimes /></button>
       </div>
 
       <nav aria-label="Admin navigation" className="admin-nav">

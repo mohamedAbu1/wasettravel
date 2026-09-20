@@ -1,6 +1,6 @@
 "use client";
 
-import { FaPaperPlane, FaImage, FaSmile, FaTimes } from "react-icons/fa";
+import { FaPaperPlane, FaSmile, FaTimes } from "react-icons/fa";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { useEffect, useRef, useState } from "react";
@@ -11,11 +11,9 @@ export default function ChatInput({
   setNewMessage,
   handleSend,
   setIsTyping,
-  handleSendImage,
   themeName,
 }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const typingTimer = useRef(null);
   const emojiPanel = useRef(null);
 
@@ -46,21 +44,9 @@ export default function ChatInput({
     }, 250);
   };
 
-  const handleImageUpload = async (event) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-    setUploading(true);
-    try {
-      await handleSendImage(file);
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const submitMessage = (event) => {
     event.preventDefault();
-    if (!newMessage?.trim() || uploading) return;
+    if (!newMessage?.trim()) return;
     handleSend();
   };
 
@@ -68,12 +54,6 @@ export default function ChatInput({
     <form className="admin-chat-input" onSubmit={submitMessage}>
       <div className="admin-chat-input__composer">
         <div className="admin-chat-input__row">
-          <label className="admin-chat-tool" title="Attach an image">
-            <FaImage aria-hidden="true" />
-            <span className="sr-only">Attach an image</span>
-            <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-          </label>
-
           <textarea
             rows={1}
             value={newMessage}
@@ -121,10 +101,10 @@ export default function ChatInput({
           <button
             type="submit"
             className="admin-chat-send"
-            disabled={!newMessage?.trim() || uploading}
+            disabled={!newMessage?.trim()}
           >
             <FaPaperPlane aria-hidden="true" />
-            <span>{uploading ? "Uploading…" : "Send"}</span>
+            <span>Send</span>
           </button>
         </div>
         <div className="admin-chat-input__footer">

@@ -76,28 +76,6 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
     }
   };
 
-  // ✅ إرسال صورة
-  const handleSendImage = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("user_id", user.id);
-    formData.append("user_name", "Waset Travel");
-    formData.append(
-      "user_image",
-      admin?.avatar_url || admin?.image || "/default-avatar.png",
-    );
-    formData.append("sender_type", "admin");
-    formData.append("admin_id", admin?.id || "SYSTEM");
-
-    const res = await fetch("/api/messages", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-
-    if (!data.content) return;
-    setMessages((prev) => [...prev, data]); // ✅ إضافة الرسالة محليًا
-  };
   return (
     <AnimatePresence>
       {user && (
@@ -145,7 +123,6 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
             theme={theme}
             themeName={themeName}
             user={user}
-            handleSendImage={handleSendImage}
           />
         </motion.div>
       )}

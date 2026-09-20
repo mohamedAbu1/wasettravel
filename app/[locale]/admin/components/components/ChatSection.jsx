@@ -76,32 +76,6 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
     return () => clearInterval(interval);
   }, [activeUser]);
 
-const handleSendImage = async (file) => {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  // ✅ نضيف بيانات المستخدم
-  formData.append("user_id", activeUser.id);
-  formData.append("sender_type", "admin");
-  formData.append("user_name", userData?.name || "Admin");
-  formData.append("user_image", userData?.avatar_url || userData?.image || "/default-avatar.png");
-  formData.append("admin_id", userData.id);
-
-  const res = await fetch("/api/messages", {
-    method: "POST",
-    body: formData,
-  });
-
-  const data = await res.json();
-  if (data.error) {
-    return;
-  }
-
-  const uploadedUrl = data.content || data.url;
-  if (uploadedUrl) setMessages((prev) => [...prev, data]);
-};
-
-
   return (
     <section className="admin-chat-panel">
       <EgyptianBackground />
@@ -114,7 +88,6 @@ const handleSendImage = async (file) => {
       />
 
       <ChatInput
-        handleSendImage={handleSendImage}
         activeUser={activeUser}
         newMessage={newMessage}
         setNewMessage={setNewMessage}

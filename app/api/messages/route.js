@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
-import { requireUser, requireAdmin } from "@/lib/auth/admin";
+import { isPrimaryAdmin, requireUser, requireAdmin } from "@/lib/auth/admin";
 import { notifyAdmins, notifyUser } from "@/lib/notifications";
 
 export async function POST(req) {
@@ -15,6 +15,9 @@ export async function POST(req) {
 
     // 📌 لو الرسالة صورة
     if (contentType.includes("multipart/form-data")) {
+      if (isPrimaryAdmin(auth.user)) {
+        return NextResponse.json({ error: "Image messages are disabled for administrators" }, { status: 403 });
+      }
       const formData = await req.formData();
       const file = formData.get("file");
       if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -41,7 +44,7 @@ export async function POST(req) {
       if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
 
       const requestedSenderType = String(formData.get("sender_type") || "user").trim().toLowerCase();
-      const sender_type = auth.user.role?.toLowerCase() === "admin" ? "admin" : "user";
+      const sender_type = isPrimaryAdmin(auth.user) ? "admin" : "user";
       if (requestedSenderType !== sender_type) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
       const user_name = formData.get("user_name") || "Admin";
       const user_image = formData.get("user_image") || "/default-avatar.png";
@@ -86,7 +89,7 @@ export async function POST(req) {
     if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
     if (typeof content !== "string" || !content.trim()) return NextResponse.json({ error: "Content cannot be empty" }, { status: 400 });
 
-    const isAdmin = auth.user.role?.toLowerCase() === "admin";
+    const isAdmin = isPrimaryAdmin(auth.user);
     const normalizedSenderType = String(sender_type).trim().toLowerCase();
     if (normalizedSenderType !== (isAdmin ? "admin" : "user")) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
     if (!isAdmin && String(user_id) !== String(auth.user.id)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -142,7 +145,7 @@ export async function GET(req) {
                  FROM messages`;
     let params = [];
 
-    const isAdmin = auth.user.role?.toLowerCase() === "admin";
+    const isAdmin = isPrimaryAdmin(auth.user);
     if (messageId) {
       query += isAdmin ? ` WHERE id = ?` : ` WHERE id = ? AND user_id = ?`;
       params.push(messageId);

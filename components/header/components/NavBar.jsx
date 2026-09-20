@@ -11,7 +11,7 @@ export default function NavBar({ scrolled }) {
   const pathname = usePathname();
   const { t } = useTranslation("header");
 
-  const navItems = ["home", "trips", "about", "contact","b2b"];
+  const navItems = ["home", "trips", "tailor", "about", "contact", "b2b"];
 
   const segments = pathname.split("/").filter(Boolean);
   const langPrefix = ["en", "es", "fr", "de", "it", "zh"].includes(segments[0]) ? segments[0] : "en";
@@ -34,12 +34,13 @@ export default function NavBar({ scrolled }) {
         } else if (item === "trips") {
           path = "/trips";
         } else {
-          path = `/${item}`;
+          path = item === "tailor" ? "/tailor-your-trip" : `/${item}`;
         }
 
+        const itemPath = item === "tailor" ? "/tailor-your-trip" : `/${item}`;
         const isActive =
           (item === "home" && normalizedPath === "/") ||
-          (item !== "home" && normalizedPath.startsWith(`/${item}`));
+          (item !== "home" && normalizedPath.startsWith(itemPath));
 
         return (
           <motion.div
@@ -63,7 +64,7 @@ export default function NavBar({ scrolled }) {
                   : "text-gray-200 hover:text-yellow-600"
               }`}
             >
-              <span>{t(item)}</span>
+              <span>{item === "tailor" ? "Tailor your trip" : t(item)}</span>
             </Link>
           </motion.div>
         );

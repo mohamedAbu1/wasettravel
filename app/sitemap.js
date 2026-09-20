@@ -1,7 +1,7 @@
 import { connectDB } from "@/lib/db";
 
 const locales = ["en", "de", "es", "fr", "it", "zh"];
-const routes = ["", "about", "trips", "contact", "b2b", "destinations/luxor", "destinations/aswan"];
+const routes = ["", "about", "trips", "tailor-your-trip", "contact", "b2b", "destinations/luxor", "destinations/aswan"];
 
 async function getTripIds() {
   try {

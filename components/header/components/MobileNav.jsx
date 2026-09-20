@@ -15,6 +15,7 @@ export default function MobileNav() {
   const links = [
     ["home", `/${lang}`],
     ["trips", `/${lang}/trips`],
+    ["tailor", `/${lang}/tailor-your-trip`],
     ["about", `/${lang}/about`],
     ["contact", `/${lang}/contact`],
     ["b2b", `/${lang}/b2b`],
@@ -41,7 +42,7 @@ export default function MobileNav() {
                 onClick={() => setOpen(false)}
                 className="rounded-xl px-4 py-3 text-sm font-semibold uppercase tracking-wide text-white/85 transition hover:bg-[#c9a34a] hover:text-white"
               >
-                {t(key)}
+                {key === "tailor" ? "Tailor your trip" : t(key)}
               </Link>
             ))}
           </nav>

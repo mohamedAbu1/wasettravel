@@ -24,7 +24,7 @@ export default function RightBar() {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
   const locale = ["en", "fr", "de", "it", "es", "pt", "zh"].includes(segments[0]) ? segments[0] : "en";
-  const isAdmin = userData?.role?.toLowerCase() === "admin";
+  const isAdmin = String(userData?.email || "").trim().toLowerCase() === "wasettraveleg@gmail.com";
 
   const now = Date.now();
   const twelveHours = 12 * 60 * 60 * 1000;

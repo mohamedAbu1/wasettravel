@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { requireUser } from "@/lib/auth/admin";
+import { isPrimaryAdmin, requireUser } from "@/lib/auth/admin";
 
 // ✅ تحديث حالة الإشعار إلى مقروء
 export async function PUT(req, { params }) {
@@ -10,7 +10,7 @@ export async function PUT(req, { params }) {
     const db = await connectDB();
     const { id } = params; // نأخذ id من الرابط
 
-    const isAdmin = String(auth.user.role || "").toLowerCase() === "admin";
+    const isAdmin = isPrimaryAdmin(auth.user);
     await db.execute(
       `UPDATE notifications SET is_read = 1 WHERE id = ? AND ${isAdmin ? "(admin_id = ? OR user_id = ?)" : "user_id = ?"}`,
       isAdmin ? [id, auth.user.id, auth.user.id] : [id, auth.user.id],

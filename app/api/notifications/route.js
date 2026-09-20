@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { getUserToken, sendPushNotification } from "@/lib/notifications";
-import { requireAdmin, requireUser } from "@/lib/auth/admin";
+import { isPrimaryAdmin, requireAdmin, requireUser } from "@/lib/auth/admin";
 
 // ✅ إضافة إشعار جديد + إرسال إشعار للموبايل
 export async function POST(req) {
@@ -21,7 +21,7 @@ export async function POST(req) {
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0)`,
       [
         id,
-        body.admin_id,
+        auth.user.id,
         body.event_type,
         body.message,
         body.user_id,
@@ -56,7 +56,7 @@ export async function GET(req) {
 
   try {
     const db = await connectDB();
-    const isAdmin = String(auth.user.role || "").toLowerCase() === "admin";
+    const isAdmin = isPrimaryAdmin(auth.user);
     const [rows] = await db.execute(
       `SELECT id, admin_id, event_type, user_id, message, created_at_second, user_name, user_email, user_image, created_at, is_read, trip_id
        FROM notifications

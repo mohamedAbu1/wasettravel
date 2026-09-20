@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { requireUser } from "@/lib/auth/admin";
+import { isPrimaryAdmin, requireUser } from "@/lib/auth/admin";
 
 
 export async function DELETE(req, { params }) {
@@ -10,7 +10,7 @@ export async function DELETE(req, { params }) {
     const db = await connectDB();
     const { id } = params; // نأخذ id من الرابط مثل /api/notifications/[id]
 
-    const isAdmin = String(auth.user.role || "").toLowerCase() === "admin";
+    const isAdmin = isPrimaryAdmin(auth.user);
     await db.execute(
       `DELETE FROM notifications WHERE id = ? AND ${isAdmin ? "(admin_id = ? OR user_id = ?)" : "user_id = ?"}`,
       isAdmin ? [id, auth.user.id, auth.user.id] : [id, auth.user.id],

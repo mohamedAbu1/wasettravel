@@ -50,7 +50,7 @@ export default function ReviewCard({
       className="trip-review-card"
     >
       {/* رأس البطاقة */}
-      <div className="flex items-center gap-4 mb-3">
+      <div className="trip-review-card__header">
         {rev.picture || rev.avatar_url || rev.avatar ? (
           <img
             src={
@@ -66,14 +66,14 @@ export default function ReviewCard({
           <FaUserCircle size={48} className="text-[var(--muted)]" />
         )}
 
-        <div className="flex flex-col">
-          <span className="font-bold text-lg capitalize">{rev.name || "Traveler"}</span>
-          <span className="text-xs text-[var(--muted)]">{rev.date || rev.time}</span>
+        <div className="trip-review-card__identity">
+          <span className="trip-review-card__name">{rev.name || "Traveler"}</span>
+          <span className="trip-review-card__date">{rev.date || rev.time}</span>
         </div>
       </div>
 
       {/* التقييم */}
-      <div className="flex items-center gap-1 mb-2">
+      <div className="trip-review-card__rating" aria-label={`${rev.rating || 0} out of 5 stars`}>
         {[...Array(5)].map((_, i) => (
           <FaStar
             key={i}
@@ -117,11 +117,11 @@ export default function ReviewCard({
           </div>
         </div>
       ) : (
-        <p className="mb-5 whitespace-pre-wrap leading-7 text-[var(--foreground)]">{rev.comment}</p>
+        <p className="trip-review-card__comment">{rev.comment}</p>
       )}
 
       {/* أزرار التحكم */}
-      <div className="flex flex-wrap items-center gap-3 mt-2">
+      <div className="trip-review-card__actions">
         {/* زر الإعجاب الموحد */}
         <motion.button
           type="button"

@@ -1642,11 +1642,22 @@ html[data-theme="light"] .currency-selector { box-shadow: 0 .8rem 2rem rgba(88,5
 .trip-detail-hero__media { background: #171513; }
 .trip-detail-hero__thumbs { border-color: var(--line); background: var(--surface-raised); }
 .trip-reviews-section { overflow: visible; }
+.trip-reviews-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.5rem; align-items:stretch; }
+.trip-reviews-grid > div { min-width:0; }
 .trip-reviews__header { display:flex; align-items:flex-start; justify-content:space-between; gap:1.5rem; border-bottom:1px solid var(--line); padding-bottom:1.25rem; }
 .trip-reviews__score { min-width:8.5rem; display:flex; flex-direction:column; align-items:flex-end; gap:.25rem; color:var(--muted); font-size:.78rem; }
 .trip-reviews__score strong { color:var(--foreground); font-family:var(--font-display); font-size:2rem; line-height:1; }
 .trip-review-composer { border:1px solid var(--line); border-radius:1.25rem; padding:1.1rem; background:color-mix(in srgb, var(--surface-raised) 68%, transparent); }
-.trip-review-card { height:100%; border:1px solid var(--line); border-radius:1.15rem; padding:1.15rem; background:var(--surface-raised); color:var(--foreground); box-shadow:0 .8rem 1.6rem rgba(51,35,19,.06); }
+.trip-review-card { display:flex; height:100%; min-height:15rem; flex-direction:column; border:1px solid color-mix(in srgb,var(--line) 88%,var(--color)); border-radius:1.35rem; padding:1.4rem; background:linear-gradient(145deg,color-mix(in srgb,var(--surface-raised) 96%,var(--color)),var(--surface-raised)); color:var(--foreground); box-shadow:0 1rem 2rem rgba(51,35,19,.07); }
+.trip-review-card__header { display:flex; align-items:center; gap:.85rem; min-width:0; }
+.trip-review-card__identity { display:flex; min-width:0; flex:1; flex-direction:column; gap:.2rem; }
+.trip-review-card__name { overflow:hidden; color:var(--foreground); font-size:1rem; font-weight:800; text-overflow:ellipsis; white-space:nowrap; }
+.trip-review-card__date { color:var(--muted); font-size:.72rem; }
+.trip-review-card__rating { display:flex; align-items:center; gap:.25rem; margin-top:1.1rem; padding-top:1rem; border-top:1px solid color-mix(in srgb,var(--line) 75%,transparent); }
+.trip-review-card__rating svg { color:var(--color); font-size:1rem; }
+.trip-review-card__rating svg.text-\[var\(--line\)\] { color:var(--line); }
+.trip-review-card__comment { flex:1; margin:1rem 0 1.35rem; color:var(--foreground); font-size:.95rem; line-height:1.8; white-space:pre-wrap; overflow-wrap:anywhere; }
+.trip-review-card__actions { display:flex; flex-wrap:wrap; align-items:center; gap:.55rem; margin-top:auto; padding-top:1rem; border-top:1px solid color-mix(in srgb,var(--line) 75%,transparent); }
 .trip-review-control, .trip-detail-icon-button { display:inline-flex; align-items:center; gap:.4rem; border:1px solid var(--line); border-radius:999px; padding:.45rem .7rem; color:var(--muted); background:var(--surface); font-size:.78rem; font-weight:700; transition:.2s ease; }
 .trip-review-control:hover, .trip-detail-icon-button:hover { border-color:var(--color); color:var(--foreground); }
 .trip-review-control--liked { border-color:color-mix(in srgb,var(--color) 70%,var(--line)); color:#241b12; background:var(--color); box-shadow:0 .35rem .9rem color-mix(in srgb,var(--color) 18%,transparent); }
@@ -1663,7 +1674,8 @@ html[data-theme="light"] .currency-selector { box-shadow: 0 .8rem 2rem rgba(88,5
 .trip-detail-list-item:hover { border-color:var(--color); transform:translateY(-1px); }
 .trip-detail-list-item--include svg { color:#25805a; }
 .trip-detail-list-item--exclude svg { color:#b94a48; }
-@media (max-width: 640px) { .trip-reviews__header { flex-direction:column; } .trip-reviews__score { align-items:flex-start; } .trip-review-card { padding:1rem; } }
+@media (max-width: 760px) { .trip-reviews-grid { grid-template-columns:1fr; gap:1.15rem; } }
+@media (max-width: 640px) { .trip-reviews__header { flex-direction:column; } .trip-reviews__score { align-items:flex-start; } .trip-review-card { min-height:0; padding:1.15rem; } }
 .trip-detail-panel { border: 1px solid var(--line); border-radius: 1.15rem; color: var(--foreground); background: color-mix(in srgb, var(--surface) 95%, transparent) !important; box-shadow: 0 .9rem 2rem rgba(51,35,19,.07); }
 .trip-detail-panel h2 { border-color: var(--line) !important; color: var(--foreground); font-family: var(--font-display); font-size: 1.35rem; }
 .trip-detail-panel table { border-color: var(--line); }

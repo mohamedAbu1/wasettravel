@@ -207,7 +207,7 @@ export default function TripReviews({ trip, lang }) {
       )}
 
       {/* عرض التعليقات */}
-      <div className="mt-7 grid gap-4 md:grid-cols-2">
+      <div className="trip-reviews-grid mt-7">
         {currentComments.map((rev, idx) => (
           <div
             key={rev.id || idx}

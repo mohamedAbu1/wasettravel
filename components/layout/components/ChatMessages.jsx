@@ -127,6 +127,8 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
         )}
       </AnimatePresence>
 
+      <div ref={messagesEndRef} aria-hidden="true" />
+
       {adminTyping && (
         <p className="text-xs italic opacity-70">{t("adminTyping")}</p>
       )}

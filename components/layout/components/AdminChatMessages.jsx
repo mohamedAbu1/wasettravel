@@ -77,6 +77,7 @@ export default function AdminChatMessages({ messages, themeName }) {
           </div>
         </motion.div>
       ))}
+      <div ref={messagesEndRef} aria-hidden="true" />
     </div>
   );
 }

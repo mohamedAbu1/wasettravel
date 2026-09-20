@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import { useMessages } from "@/context/MessageContext";
@@ -19,6 +20,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const { userData } = useAuth();
   const { notifications, fetchNotifications, markAsRead } = useNotifications();
   const [adminTyping, setAdminTyping] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const {
     open,
     bookingMode,
@@ -31,6 +33,11 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     setMessageses,
     openChatWithCarBooking,
   } = useChat();
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   useEffect(() => {
     if (!userData?.id) return;
@@ -112,7 +119,9 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     await fetchMessages(userData.id);
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <>
       {!isAdmin && (
         <motion.button
@@ -205,6 +214,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </>,
+    document.body,
   );
 }

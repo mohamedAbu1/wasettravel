@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import AdminChatMessages from "./components/AdminChatMessages";
@@ -14,8 +15,14 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
   const { theme, themeName } = useTheme();
   const [text, setText] = useState("");
   const [adminTyping, setAdminTyping] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const { setMessages, setActiveChatUserId, fetchUserMessagesById } = useMessages();
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   // ✅ تحديد المستخدم النشط
   useEffect(() => {
@@ -76,11 +83,13 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
     }
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {user && (
         <motion.div
-          className="admin-chat-panel fixed bottom-24 right-3 z-[89] flex h-[min(40rem,calc(100dvh-7rem))] w-[calc(100vw-1.5rem)] max-w-[27rem] flex-col overflow-hidden rounded-[1.5rem] border border-[#8f5d2e]/20 bg-[var(--surface)] text-[var(--foreground)] shadow-[0_1.5rem_4rem_rgba(32,24,17,.25)] sm:right-6"
+          className="admin-chat-panel admin-chat-panel--external fixed bottom-24 right-3 z-[89] flex h-[min(40rem,calc(100dvh-7rem))] w-[calc(100vw-1.5rem)] max-w-[27rem] flex-col overflow-hidden rounded-[1.5rem] border border-[#8f5d2e]/20 bg-[var(--surface)] text-[var(--foreground)] shadow-[0_1.5rem_4rem_rgba(32,24,17,.25)] sm:right-6"
         >
           <EgyptianBackground />
 
@@ -126,6 +135,7 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
           />
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

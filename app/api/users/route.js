@@ -15,7 +15,7 @@ export async function GET(req) {
         u.id,
         u.name,
         u.email,
-        u.role,
+        CASE WHEN LOWER(u.email) = 'wasettraveleg@gmail.com' THEN 'ADMIN' ELSE 'USER' END AS role,
         u.avatar_url,
         u.created_at,
         (SELECT COUNT(*) FROM review_likes rl WHERE rl.user_id = u.id) AS likes_count,

@@ -12,7 +12,7 @@ export default function AdminDashboardButton() {
   const pathname = usePathname();
   const [navigating, setNavigating] = useState(false);
   // ✅ تحقق من أن المستخدم أدمن
-  const isAdmin = userData?.role?.toLowerCase() === "admin";
+  const isAdmin = String(userData?.email || "").trim().toLowerCase() === "wasettraveleg@gmail.com";
 
   const goToDashboard = async () => {
     if (navigating) return;
@@ -22,7 +22,7 @@ export default function AdminDashboardButton() {
 
     setNavigating(true);
     const authenticatedUser = await fetchUserFromServer();
-    if (authenticatedUser?.role?.toLowerCase() !== "admin") {
+    if (String(authenticatedUser?.email || "").trim().toLowerCase() !== "wasettraveleg@gmail.com") {
       setNavigating(false);
       return;
     }

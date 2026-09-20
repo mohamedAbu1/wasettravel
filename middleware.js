@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const protectedAdminPattern = /^\/(en|es|fr|de|it|zh)\/admin(?:\/|$)/;
+const primaryAdminEmail = "wasettraveleg@gmail.com";
 
 async function isAdminRequest(req) {
   const tokens = [req.cookies.get("token")?.value, req.cookies.get("access-token")?.value].filter(Boolean);
@@ -12,7 +13,7 @@ async function isAdminRequest(req) {
   for (const token of tokens) {
     try {
       const { payload } = await jwtVerify(token, secret);
-      if (String(payload.role || "").toLowerCase() === "admin") return true;
+      if (String(payload.email || "").trim().toLowerCase() === primaryAdminEmail) return true;
     } catch {
       // Continue with the other cookie if one token is stale or invalid.
     }

@@ -23,15 +23,16 @@ export default function DashboardPage() {
   const { userData, loading } = useAuth();
   const router = useRouter();
   const { locale } = useParams();
+  const isPrimaryAdmin = String(userData?.email || "").trim().toLowerCase() === "wasettraveleg@gmail.com";
 
 
   useEffect(() => {
-    if (!loading && (!userData || userData?.role?.toLowerCase() !== "admin")) {
+    if (!loading && (!userData || !isPrimaryAdmin)) {
       router.replace(`/${locale || "en"}`);
     }
   }, [loading, locale, router, userData]);
 
-  if (loading || !userData || userData?.role?.toLowerCase() !== "admin") {
+  if (loading || !userData || !isPrimaryAdmin) {
     return (
       <main className="grid min-h-screen place-items-center bg-[#0b0b0b] text-[#f4d58d]">
         <p className="rounded-xl border border-[#c9a34a]/30 px-6 py-4">Checking administrator access…</p>

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { effectiveRole } from "@/lib/auth/admin";
 
 export async function POST(request) {
   try {
@@ -22,6 +23,7 @@ export async function POST(request) {
     }
 
     const user = rows[0];
+    const role = effectiveRole(user);
 
     // Passwords created by the current signup flow are bcrypt hashes. Some
     // legacy/imported accounts may still contain the old plaintext value;
@@ -47,7 +49,7 @@ export async function POST(request) {
     const tokenPayload = {
       id: user.id,
       email: user.email,
-      role: user.role,
+      role,
       name: user.name,
       avatar_url: user.avatar_url,
       gender: user.gender,
@@ -70,7 +72,7 @@ export async function POST(request) {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role,
+          role,
           gender: user.gender,
           avatar_url: user.avatar_url,
         },

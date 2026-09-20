@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { effectiveRole } from "@/lib/auth/admin";
 
 export async function POST(req) {
   const { email, name } = await req.json();
@@ -20,9 +21,9 @@ export async function POST(req) {
       "INSERT INTO users (id, email, name, gender, created_at) VALUES (?, ?, ?, ?, NOW())",
       [newUserId, normalizedEmail, name || normalizedEmail.split("@")[0], "unspecified"]
     );
-    user = { id: newUserId, email: normalizedEmail, name: name || normalizedEmail.split("@")[0], role: "USER", avatar_url: null };
+    user = { id: newUserId, email: normalizedEmail, name: name || normalizedEmail.split("@")[0], role: effectiveRole({ email: normalizedEmail }), avatar_url: null };
   } else {
-    user = { id: rows[0].id, email: normalizedEmail, name, role: rows[0].role || "USER", avatar_url: rows[0].avatar_url };
+    user = { id: rows[0].id, email: normalizedEmail, name, role: effectiveRole({ ...rows[0], email: normalizedEmail }), avatar_url: rows[0].avatar_url };
   }
 
   const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "30d" });

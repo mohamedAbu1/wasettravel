@@ -8,13 +8,14 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { useData } from "./DataContext";
 
 const AuthContext = createContext();
+const PRIMARY_ADMIN_EMAIL = "wasettraveleg@gmail.com";
 
 const normalizeUser = (value) => {
   if (!value || typeof value !== "object") return null;
   return {
     ...value,
     id: value.id || value.userId,
-    role: String(value.role || "USER").toUpperCase(),
+    role: String(value.email || "").trim().toLowerCase() === PRIMARY_ADMIN_EMAIL ? "ADMIN" : "USER",
     avatar_url: value.avatar_url || value.image || value.avatar,
   };
 };

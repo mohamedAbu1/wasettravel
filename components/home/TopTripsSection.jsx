@@ -33,7 +33,10 @@ const TopTripsSection = () => {
   useEffect(() => {
     let cancelled = false;
     const loadTopTrips = async () => {
-      await fetchTrips("?summary=1");
+      const summaryTrips = await fetchTrips("?summary=1");
+      // Keep the homepage resilient if a deployment/database temporarily
+      // returns a degraded empty summary while the full catalog is available.
+      if (!cancelled && !summaryTrips?.length) await fetchTrips("");
     };
     loadTopTrips();
     return () => { cancelled = true; };

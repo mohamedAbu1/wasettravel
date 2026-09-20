@@ -95,14 +95,15 @@ export function MessageProvider({ children }) {
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        console.error("❌ Server error:", text);
+        const body = await res.json().catch(() => null);
+        const message = body?.error || `Message request failed (${res.status})`;
+        console.error("❌ Server error:", message);
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === tempMessage.id ? { ...msg, status: "error" } : msg,
           ),
         );
-        return { error: text };
+        return { error: message };
       }
 
       const data = await res.json();

@@ -60,8 +60,8 @@ export async function POST(req) {
 
       await db.query(
         `INSERT INTO messages 
-         (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
+         (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW(), NOW())`,
         [messagesId, user_id, baseUrl, sender_type, user_name, user_image, reply_to ?? null, admin_id],
       );
 
@@ -105,8 +105,8 @@ export async function POST(req) {
 
     await db.query(
       `INSERT INTO messages 
-       (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW())`,
+       (id, user_id, content, sender_type, user_name, user_image, reply_to, admin_id, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'sent', NOW(), NOW())`,
       [messagesId, user_id, content.trim(), normalizedSenderType, user_name, user_image, reply_to, admin_id],
     );
 

@@ -76,9 +76,11 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
       });
 
       const data = await res.json();
-      setMessages((prev) => [...prev, data]); // ✅ أضف الرسالة مباشرة
-      setText("");
-
+      if (!res.ok || data?.error) {
+        console.error("Unable to send admin message:", data?.error || res.statusText);
+        return;
+      }
+      setMessages((prev) => [...prev, data]);
       setText("");
     }
   };

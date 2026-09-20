@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useQueryFilters } from "./QueryContext";
@@ -34,6 +34,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const googleSyncingRef = useRef(false);
   const { handleSignUpClose, handleLoginClose } = useData();
   const { getEncodedQuery } = useQueryFilters();
 
@@ -78,10 +79,38 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const syncGoogleSession = async (sessionUser) => {
+    if (!sessionUser?.email || googleSyncingRef.current) return null;
+    googleSyncingRef.current = true;
+    try {
+      const response = await axios.post("/api/auth/google", {
+        email: sessionUser.email,
+        name: sessionUser.name,
+      }, { withCredentials: true });
+      const authenticatedUser = normalizeUser(response.data.user || response.data);
+      if (!authenticatedUser?.id) throw new Error("Google session synchronization failed");
+      setUser(authenticatedUser);
+      setUserToken(authenticatedUser);
+      setIsLoggedIn(true);
+      return authenticatedUser;
+    } catch (err) {
+      console.error("Google session synchronization failed:", err.message);
+      return null;
+    } finally {
+      googleSyncingRef.current = false;
+    }
+  };
+
   // ✅ استدعاء عند تحميل الصفحة
   useEffect(() => {
     fetchUserFromServer();
   }, []);
+
+  // NextAuth can restore a Google session while the site's own JWT cookie is
+  // missing or expired. Synchronize it before protected API actions are used.
+  useEffect(() => {
+    if (session?.user?.email && !user) syncGoogleSession(session.user);
+  }, [session?.user?.email, user]);
 
   // ✅ تسجيل مستخدم جديد يدويًا
   const register = async (email, password, name, gender) => {
@@ -182,16 +211,11 @@ export function AuthProvider({ children }) {
       }
 
       // ✅ استدعاء API route للتعامل مع MySQL
-      const dbRes = await axios.post("/api/auth/google", {
-        email: userData.email,
-        name: userData.name,
-      });
-
-      const authenticatedUser = normalizeUser(dbRes.data.user || dbRes.data);
-      setUser(authenticatedUser);
-      setUserToken(authenticatedUser);
-      setIsLoggedIn(Boolean(authenticatedUser));
-      await fetchUserFromServer();
+      const authenticatedUser = await syncGoogleSession(userData);
+      if (!authenticatedUser) {
+        toast.error("❌ تعذر مزامنة جلسة Google مع الموقع.");
+        return;
+      }
       handleLoginClose();
       toast.success("✅ تم تسجيل الدخول بجوجل!");
       return authenticatedUser;

@@ -199,7 +199,7 @@ export async function GET(req) {
         t.currency,
         t.cover_image,
         t.group_price,
-        t.rating,
+        COALESCE((SELECT AVG(r.rating) FROM reviews r WHERE r.trip_id = t.id), 0) AS rating,
         COALESCE((SELECT COUNT(*) FROM reviews r WHERE r.trip_id = t.id), 0) AS review_count,
         COALESCE((SELECT COUNT(*) FROM purchases p WHERE p.trip_id = t.id), 0) AS purchase_count
       FROM trips t

@@ -19,8 +19,14 @@ export default function ChatInput({
     const { t } = useTranslation("home");
     const { t: ui } = useTranslation("ui");
 
+  const submitMessage = (event) => {
+    event.preventDefault();
+    if (!text?.trim()) return;
+    handleSend();
+  };
+
   return (
-    <div className="conversation-input">
+    <form className="conversation-input" onSubmit={submitMessage}>
       {/* <label className="cursor-pointer">
         <FaImage size={20} className={theme.icon} />
         <input
@@ -55,6 +61,7 @@ export default function ChatInput({
         className="conversation-input__field"
       />
       <button
+        type="button"
         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
         aria-label="Choose emoji"
         className="conversation-input__tool"
@@ -75,15 +82,15 @@ export default function ChatInput({
       )}
 
       <motion.button
+        type="submit"
         style={{ cursor: "pointer" }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={handleSend}
         aria-label="Send message"
         className="conversation-input__send"
       >
         <FaPaperPlane /> {t("Send")}
       </motion.button>
-    </div>
+    </form>
   );
 }

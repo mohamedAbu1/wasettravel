@@ -17,8 +17,14 @@ export default function AdminChatInput({
 }) {
 const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
+  const submitMessage = (event) => {
+    event.preventDefault();
+    if (!text?.trim()) return;
+    handleSend();
+  };
+
   return (
-    <div className="conversation-input">
+    <form className="conversation-input" onSubmit={submitMessage}>
       {/* <label className="cursor-pointer">
         <FaImage size={20} className={theme.icon} />
         <input
@@ -52,6 +58,7 @@ const [showEmojiPicker, setShowEmojiPicker] = useState(false);
         className="conversation-input__field"
       />
       <button
+        type="button"
         onClick={() => setShowEmojiPicker(!showEmojiPicker)}
         className="conversation-input__tool"
       >
@@ -71,15 +78,15 @@ const [showEmojiPicker, setShowEmojiPicker] = useState(false);
       )}
 
       <motion.button
+        type="submit"
         style={{ cursor: "pointer" }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={handleSend}
         className="conversation-input__send"
       >
         <FaPaperPlane /> Send
       </motion.button>
-    </div>
+    </form>
   );
 }
 

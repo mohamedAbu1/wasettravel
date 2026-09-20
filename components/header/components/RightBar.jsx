@@ -9,7 +9,7 @@ import { useNotifications } from "@/context/NotificationsContext";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MailIcon from "@mui/icons-material/Mail";
 import Badge from "@mui/material/Badge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMessages } from "@/context/MessageContext";
 import NotificationsDrawer from "./components/NotificationsDrawer";
 import MessagesDrawer from "./components/MessagesDrawer";
@@ -47,6 +47,13 @@ export default function RightBar() {
   ).length;
 
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isAdmin) return undefined;
+    fetchNotifications(true);
+    const interval = window.setInterval(() => fetchNotifications(true), 15000);
+    return () => window.clearInterval(interval);
+  }, [isAdmin]);
 
   // ✅ إشعارات الرسائل (فلترة + ترتيب)
   const messageNotifications = notifications

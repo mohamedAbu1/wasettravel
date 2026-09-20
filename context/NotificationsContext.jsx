@@ -10,7 +10,7 @@ export function NotificationsProvider({ children }) {
   const fetchNotifications = async (silent = false) => {
       if (!silent) setLoading(true);
       try {
-        const res = await fetch("/api/notifications");
+        const res = await fetch("/api/notifications", { credentials: "include", cache: "no-store" });
         if (!res.ok) return;
         const data = await res.json();
         if (data.success) {

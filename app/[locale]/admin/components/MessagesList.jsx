@@ -73,7 +73,11 @@ export default function MessagesPage() {
           data.map((message) => [String(message.id), message.status]),
         );
         firstSyncRef.current = false;
-        setMessages(data);
+        setMessages((previous) => {
+          const serverIds = new Set(data.map((message) => String(message.id)));
+          const localOnly = previous.filter((message) => !serverIds.has(String(message.id)) && ["pending", "error"].includes(message.status));
+          return [...data, ...localOnly];
+        });
         setConnectionState("online");
         setSyncError("");
         setLastSyncedAt(new Date());

@@ -16,6 +16,8 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
   const [replyTo, setReplyTo] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState("");
   const markedSeenRef = useRef(new Set());
 
   const activeMessages = useMemo(
@@ -42,28 +44,43 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
   }, [activeUser, activeMessages, markMessageSeen]);
 
   const handleSend = async () => {
-    if (!newMessage.trim()) return;
+    if (!activeUser || !userData?.id || !newMessage.trim() || isSending) return;
 
-    await sendMessage({
-      user_id: activeUser.id,
-      user_name: siteConfig.name,
-      user_image: siteConfig.brandImage,
-      content: newMessage,
-      sender_type: "admin",
-      reply_to: replyTo ? replyTo.id : null,
-      admin_id: userData.id,
-      status: "sent",
-    });
+    const content = newMessage.trim();
+    setIsSending(true);
+    setSendError("");
+    try {
+      const result = await sendMessage({
+        user_id: activeUser.id,
+        user_name: siteConfig.name,
+        user_image: siteConfig.brandImage,
+        content,
+        sender_type: "admin",
+        reply_to: replyTo ? replyTo.id : null,
+        admin_id: userData.id,
+        status: "sent",
+      });
 
-    setNewMessage("");
-    setReplyTo(null);
-    setIsTyping(false);
+      if (result?.error) {
+        setSendError("Message could not be sent. Please try again.");
+        return;
+      }
 
-    await fetch("/api/typing", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: activeUser.id, adminTyping: false }),
-    });
+      setNewMessage("");
+      setReplyTo(null);
+      setIsTyping(false);
+
+      await fetch("/api/typing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: activeUser.id, adminTyping: false }),
+      });
+    } catch (error) {
+      console.error("Unable to send admin message:", error);
+      setSendError("Message could not be sent. Please try again.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   // ✅ استعلام حالة الكتابة للمستخدم
@@ -97,6 +114,7 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
         theme={theme}
         themeName={themeName}
       />
+      {sendError ? <p className="admin-chat-send-error" role="alert">{sendError}</p> : null}
     </section>
   );
 };

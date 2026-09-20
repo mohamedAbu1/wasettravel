@@ -1917,3 +1917,5 @@ html[data-site-theme="stone"] .home-review-card__likes { display: inline-flex; a
 html[data-site-theme="stone"] .home-review-card__likes svg { font-size: .65rem; }
 html[data-site-theme="stone"] .home-reviews-section .slick-list { padding: .35rem 0; }
 @media (max-width: 640px) { html[data-site-theme="stone"] .home-review-card { min-height: 22rem; margin-inline: .2rem; padding: 1.15rem; } html[data-site-theme="stone"] .home-review-card__body p { font-size: .98rem; } }
+
+.admin-chat-send-error { margin: 0; padding: .35rem 1rem .7rem; color: #b94a48; font-size: .7rem; font-weight: 700; }

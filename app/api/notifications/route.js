@@ -17,8 +17,8 @@ export async function POST(req) {
 
     await db.execute(
       `INSERT INTO notifications 
-       (id, admin_id, event_type, message, user_id, user_name, user_email, user_image, trip_id, type, created_at, is_read) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0)`,
+       (id, admin_id, event_type, message, user_id, user_name, user_email, user_image, trip_id, created_at, is_read, message_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 0, ?)`,
       [
         id,
         auth.user.id,
@@ -29,7 +29,7 @@ export async function POST(req) {
         body.user_email,
         body.user_image,
         body.trip_id,
-        body.type,
+        body.message_id || uuidv4(),
       ],
     );
 

@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { isPrimaryAdmin, requireUser, requireAdmin } from "@/lib/auth/admin";
 import { notifyAdmins, notifyUser } from "@/lib/notifications";
+import { siteConfig } from "@/lib/siteConfig";
 
 export async function POST(req) {
   const auth = requireUser(req);
@@ -46,8 +47,10 @@ export async function POST(req) {
       const requestedSenderType = String(formData.get("sender_type") || "user").trim().toLowerCase();
       const sender_type = isPrimaryAdmin(auth.user) ? "admin" : "user";
       if (requestedSenderType !== sender_type) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
-      const user_name = formData.get("user_name") || "Admin";
-      const user_image = formData.get("user_image") || "/default-avatar.png";
+      const requestedUserName = formData.get("user_name");
+      const requestedUserImage = formData.get("user_image");
+      const user_name = sender_type === "admin" ? siteConfig.name : requestedUserName || "Unknown User";
+      const user_image = sender_type === "admin" ? siteConfig.brandImage : requestedUserImage || "/default-avatar.png";
       const reply_to = formData.get("reply_to");
       const admin_id = sender_type === "admin" ? auth.user.id : null;
       if (sender_type === "user" && String(user_id) !== String(auth.user.id)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -76,7 +79,7 @@ export async function POST(req) {
       };
 
       if (sender_type === "user") {
-        await notifyAdmins(db, { eventType: "message", message: contentType.includes("multipart") ? "New image message" : "New message", userId: auth.user.id, userName: auth.user.name || user_name, userEmail: auth.user.email, userImage: auth.user.avatar_url || user_image });
+        await notifyAdmins(db, { eventType: "message", message: "New image message", messageId: messagesId, userId: auth.user.id, userName: auth.user.name || user_name, userEmail: auth.user.email, userImage: auth.user.avatar_url || user_image });
       }
 
       return NextResponse.json(newMessage, { status: 201 });
@@ -84,7 +87,7 @@ export async function POST(req) {
 
     // 📌 لو الرسالة نصية
     const body = await req.json();
-    const { user_id, content, sender_type = "user", user_name = "Unknown User", user_image = "/default-avatar.png", reply_to = null } = body;
+    const { user_id, content, sender_type = "user", user_name: requestedUserName = "Unknown User", user_image: requestedUserImage = "/default-avatar.png", reply_to = null } = body;
 
     if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
     if (typeof content !== "string" || !content.trim()) return NextResponse.json({ error: "Content cannot be empty" }, { status: 400 });
@@ -94,6 +97,8 @@ export async function POST(req) {
     if (normalizedSenderType !== (isAdmin ? "admin" : "user")) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
     if (!isAdmin && String(user_id) !== String(auth.user.id)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const admin_id = isAdmin ? auth.user.id : null;
+    const user_name = isAdmin ? siteConfig.name : requestedUserName;
+    const user_image = isAdmin ? siteConfig.brandImage : requestedUserImage;
 
     const db = await connectDB();
     const messagesId = uuidv4();
@@ -119,13 +124,13 @@ export async function POST(req) {
     };
 
     if (!isAdmin) {
-      await notifyAdmins(db, { eventType: "message", message: content.slice(0, 180), userId: auth.user.id, userName: auth.user.name || user_name, userEmail: auth.user.email, userImage: auth.user.avatar_url || user_image });
+      await notifyAdmins(db, { eventType: "message", message: content.slice(0, 180), messageId: messagesId, userId: auth.user.id, userName: auth.user.name || user_name, userEmail: auth.user.email, userImage: auth.user.avatar_url || user_image });
     } else {
       await notifyUser(db, {
         userId: user_id,
         title: "📩 رسالة جديدة",
         message: content.slice(0, 180),
-        data: { screen: "chat", userId: user_id, messageId: messagesId, adminId: auth.user.id, adminName: "WasetTravel", adminImage: "/HomePageImage/apple-touch-icon.png" },
+        data: { screen: "chat", userId: user_id, messageId: messagesId, adminId: auth.user.id, adminName: siteConfig.name, adminImage: siteConfig.brandImage },
       });
     }
 

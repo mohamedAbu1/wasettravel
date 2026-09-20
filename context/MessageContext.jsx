@@ -90,6 +90,7 @@ export function MessageProvider({ children }) {
     try {
       const res = await fetch("/api/messages", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });

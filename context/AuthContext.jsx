@@ -242,7 +242,12 @@ export function AuthProvider({ children }) {
     toast.info("🚪 Logged out successfully");
   };
 
-  const userData = user || normalizeUser(session?.user);
+  // Do not expose a partial NextAuth profile as an authenticated app user.
+  // The messaging APIs use the site's JWT cookie, which is created by the
+  // Google sync request. Waiting for the synced user prevents chat requests
+  // from being sent with a missing database id and receiving a misleading 401.
+  const sessionUser = normalizeUser(session?.user);
+  const userData = user || (sessionUser?.id ? sessionUser : null);
   return (
     <AuthContext.Provider
       value={{

@@ -7,6 +7,7 @@ import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
+import { siteConfig } from "@/lib/siteConfig";
 
 const ChatSection = ({ activeUser, theme, themeName }) => {
   const { messages, setMessages, sendMessage, markMessageSeen } = useMessages();
@@ -45,8 +46,8 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
 
     await sendMessage({
       user_id: activeUser.id,
-      user_name: userData?.name || "Admin",
-      user_image: userData?.avatar_url || userData?.image || "/default-avatar.png",
+      user_name: siteConfig.name,
+      user_image: siteConfig.brandImage,
       content: newMessage,
       sender_type: "admin",
       reply_to: replyTo ? replyTo.id : null,
@@ -77,7 +78,7 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
   }, [activeUser]);
 
   return (
-    <section className="admin-chat-panel">
+    <section className="admin-chat-panel admin-chat-panel--floating">
       <EgyptianBackground />
       <ChatHeader activeUser={activeUser} theme={theme} themeName={themeName} />
 

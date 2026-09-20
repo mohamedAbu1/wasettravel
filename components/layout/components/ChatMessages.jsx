@@ -5,6 +5,7 @@ import { saveAs } from "file-saver";
 import { FaClock, FaDownload, FaExpand, FaComments } from "react-icons/fa";
 import { useEffect ,useRef} from "react";
 import { useTranslation } from "react-i18next";
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function ChatMessages({ messages, adminTyping, themeName }) {
     const { t } = useTranslation("ui");
@@ -56,9 +57,7 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
             >
               <img
                src={
-                  msg.sender_type === "admin" ?   themeName === "dark"
-                ? "/HomePageImage/Copilot_20260613_134423.webp"
-                : "/HomePageImage/Copilot_20260613_134550.webp" :
+                  msg.sender_type === "admin" ? siteConfig.brandImage :
                   msg.user_image}
                 alt={msg.user_name}
                 className="conversation-message-avatar"
@@ -71,7 +70,7 @@ export default function ChatMessages({ messages, adminTyping, themeName }) {
                 }`}
               >
                 <p className="conversation-message-sender">
-                  {msg.sender_type === "admin" ? "👑 Basttet Travel 👑" : msg.user_name} 
+                  {msg.sender_type === "admin" ? `👑 ${siteConfig.name} 👑` : msg.user_name}
                 </p>
 
                 {msg.content.startsWith("http") &&

@@ -121,7 +121,12 @@ export async function POST(req) {
     if (!isAdmin) {
       await notifyAdmins(db, { eventType: "message", message: content.slice(0, 180), userId: auth.user.id, userName: auth.user.name || user_name, userEmail: auth.user.email, userImage: auth.user.avatar_url || user_image });
     } else {
-      await notifyUser(db, { userId: user_id, title: "📩 رسالة جديدة", message: content.slice(0, 180), data: { screen: "chat", userId: user_id } });
+      await notifyUser(db, {
+        userId: user_id,
+        title: "📩 رسالة جديدة",
+        message: content.slice(0, 180),
+        data: { screen: "chat", userId: user_id, messageId: messagesId, adminId: auth.user.id, adminName: "WasetTravel", adminImage: "/HomePageImage/apple-touch-icon.png" },
+      });
     }
 
     return NextResponse.json(newMessage, { status: 201 });

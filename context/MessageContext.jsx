@@ -62,14 +62,16 @@ export function MessageProvider({ children }) {
     user_id,
     content,
     sender_type,
+    user_name,
+    user_image,
     status = "sent",
     reply_to = null,
     admin_id = isAdminRole(userData?.role) ? userData.id : "SYSTEM",
   }) => {
     const payload = {
       user_id,
-      user_name: userData?.name || "Unknown User",
-      user_image: userData?.avatar_url || userData?.image,
+      user_name: user_name || userData?.name || "Unknown User",
+      user_image: user_image || userData?.avatar_url || userData?.image || "/default-avatar.png",
       content,
       sender_type,
       status,

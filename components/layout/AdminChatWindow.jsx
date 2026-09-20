@@ -8,6 +8,7 @@ import EgyptianBackground from "./EgyptianBackground";
 import { useMessages } from "@/context/MessageContext";
 import { FaTimes } from "react-icons/fa";
 import { useChat } from "@/context/ChatContext";
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function AdminChatWindow({ user, admin, messages, onClose }) {
   const { theme, themeName } = useTheme();
@@ -58,9 +59,8 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: user.id,
-          user_name: "Waset Travel",
-          user_image:
-            admin?.avatar_url || admin?.image || "/HomePageImage/apple-touch-icon.png",
+          user_name: siteConfig.name,
+          user_image: siteConfig.brandImage,
           content: text,
           sender_type: "admin",
           status: "sent",

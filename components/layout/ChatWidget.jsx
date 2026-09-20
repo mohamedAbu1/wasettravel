@@ -6,6 +6,7 @@ import { useMessages } from "@/context/MessageContext";
 import { FaComments } from "react-icons/fa";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationsContext";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
@@ -16,6 +17,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const { messages, sendMessage, fetchMessages, markMessageSeen } = useMessages();
   const [text, setText] = useState("");
   const { userData } = useAuth();
+  const { notifications, fetchNotifications, markAsRead } = useNotifications();
   const [adminTyping, setAdminTyping] = useState(false);
   const {
     open,
@@ -37,6 +39,13 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     const interval = setInterval(() => fetchMessages(userData.id), 8000);
     return () => clearInterval(interval);
   }, [userData?.id, open]);
+
+  useEffect(() => {
+    if (!userData?.id || isAdmin) return undefined;
+    fetchNotifications(true);
+    const interval = window.setInterval(() => fetchNotifications(true), 10000);
+    return () => window.clearInterval(interval);
+  }, [userData?.id, userData?.role]);
 
   useEffect(() => {
     if (userData?.id && messages.length > 0) {
@@ -79,6 +88,14 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   };
 
   const isAdmin = String(userData?.role || "").trim().toLowerCase() === "admin";
+  const unreadAdminMessages = notifications.filter((notification) => notification.event_type === "message" && String(notification.user_id) === String(userData?.id) && Number(notification.is_read) === 0).length;
+
+  const openChat = () => {
+    setOpen((current) => !current);
+    if (!open) {
+      notifications.filter((notification) => notification.event_type === "message" && String(notification.user_id) === String(userData?.id) && Number(notification.is_read) === 0).forEach((notification) => markAsRead(notification.id));
+    }
+  };
 
   const handleSendImage = async (file) => {
     const formData = new FormData();
@@ -100,13 +117,14 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
       {!isAdmin && (
         <motion.button
           style={{ cursor: "pointer" }}
-          onClick={() => setOpen(!open)}
+          onClick={openChat}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Open chat widget"
           className="fixed bottom-5 right-5 z-[90] grid h-14 w-14 place-items-center rounded-2xl border border-[#e0b873]/40 bg-[#8f5d2e] text-white shadow-[0_1rem_2.5rem_rgba(78,54,31,.28)] transition hover:-translate-y-1 hover:bg-[#6e4523] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#8f5d2e]/30 sm:bottom-6 sm:right-6"
         >
           <FaComments size={22} color="#fff" />
+          {unreadAdminMessages > 0 ? <span className="absolute -right-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full border-2 border-[var(--background)] bg-[#b94a48] px-1 text-[.65rem] font-black text-white">{unreadAdminMessages > 9 ? "9+" : unreadAdminMessages}</span> : null}
         </motion.button>
       )}
 

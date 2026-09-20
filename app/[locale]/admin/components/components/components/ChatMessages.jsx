@@ -3,6 +3,7 @@ import { FaClock, FaDownload, FaExpand } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { saveAs } from "file-saver";
 import EgyptianBackground from "@/components/layout/EgyptianBackground";
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function ChatMessages({ messages, userTyping, themeName }) {
   const handleDownload = async (url, id) => {
@@ -54,8 +55,8 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
             >
               {/* ✅ صورة المرسل من قاعدة البيانات */}
               <img
-                src={msg.user_image || "/default-avatar.png"}
-                alt={msg.user_name}
+                src={msg.sender_type === "admin" ? siteConfig.brandImage : (msg.user_image || "/default-avatar.png")}
+                alt={msg.sender_type === "admin" ? siteConfig.name : msg.user_name}
                 className="conversation-message-avatar"
               />
 
@@ -67,7 +68,7 @@ export default function ChatMessages({ messages, userTyping, themeName }) {
                 }`}
               >
                 <p className="conversation-message-sender">
-                  {msg.sender_type === "admin" ? "👑 Admin" : msg.user_name}
+                  {msg.sender_type === "admin" ? `👑 ${siteConfig.name}` : msg.user_name}
                 </p>
 
                 {/* ✅ عرض الصور أو النصوص */}

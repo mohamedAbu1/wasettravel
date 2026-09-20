@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useMessages } from "@/context/MessageContext";
 import { useAuth } from "@/context/AuthContext";
 import ChatHeader from "./components/ChatHeader";
@@ -18,7 +19,13 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
   const [userTyping, setUserTyping] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState("");
+  const [mounted, setMounted] = useState(false);
   const markedSeenRef = useRef(new Set());
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   const activeMessages = useMemo(
     () => activeUser
@@ -94,7 +101,9 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
     return () => clearInterval(interval);
   }, [activeUser]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <section className="admin-chat-panel admin-chat-panel--floating">
       <EgyptianBackground />
       <ChatHeader activeUser={activeUser} theme={theme} themeName={themeName} />
@@ -115,7 +124,8 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
         themeName={themeName}
       />
       {sendError ? <p className="admin-chat-send-error" role="alert">{sendError}</p> : null}
-    </section>
+    </section>,
+    document.body,
   );
 };
 

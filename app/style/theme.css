@@ -1804,8 +1804,9 @@ html[data-site-theme="stone"] .MuiDrawer-paper:has(.stone-drawer) { width:min(28
 @media (max-width:720px) { .admin-message-workspace { grid-template-rows:auto auto auto; }.admin-message-last-sync { display:none; }.admin-message-sync-error { align-items:flex-start; flex-wrap:wrap; padding:.65rem .95rem; }.admin-message-sync-error span { flex-basis:calc(100% - 1.5rem); }.admin-message-sidebar { min-height:13rem; max-height:16rem; }.admin-chat-header { min-height:5rem; }.admin-message-toolbar__actions { width:100%; }.admin-message-toolbar__actions > * { flex:1 1 auto; justify-content:center; } }
 
 /* Keep the selected admin conversation available as a floating right-side panel. */
-.admin-chat-panel--floating { position:fixed; right:1.5rem; bottom:1.5rem; z-index:90; width:min(27rem,calc(100vw - 2rem)); height:min(40rem,calc(100dvh - 7rem)); min-height:0; border:1px solid var(--line); border-radius:1.25rem; box-shadow:0 1.5rem 4rem rgba(32,24,17,.28); }
-@media (max-width:720px) { .admin-chat-panel--floating { right:.75rem; bottom:.75rem; width:calc(100vw - 1.5rem); height:min(38rem,calc(100dvh - 1.5rem)); } }
+.admin-chat-panel--floating { position:fixed !important; top:auto !important; right:1.5rem !important; bottom:1.5rem !important; left:auto !important; z-index:90; display:flex !important; width:min(27rem,calc(100vw - 2rem)); height:min(40rem,calc(100dvh - 7rem)); max-height:calc(100dvh - 3rem); min-height:0 !important; flex-direction:column !important; overflow:hidden !important; border:1px solid var(--line); border-radius:1.25rem; box-shadow:0 1.5rem 4rem rgba(32,24,17,.28); }
+.admin-chat-panel--floating .admin-chat-messages { flex:1 1 0% !important; width:100%; height:0 !important; min-height:0 !important; overflow-x:hidden !important; overflow-y:auto !important; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+@media (max-width:720px) { .admin-chat-panel--floating { right:.75rem !important; bottom:.75rem !important; width:calc(100vw - 1.5rem); height:min(38rem,calc(100dvh - 1.5rem)); max-height:calc(100dvh - 1.5rem); } }
 
 /* Global motion system: restrained transitions, clear feedback and reduced-motion support. */
 @keyframes waset-page-enter { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }

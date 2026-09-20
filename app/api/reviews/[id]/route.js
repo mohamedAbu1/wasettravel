@@ -1,12 +1,12 @@
 // src/app/api/reviews/[id]/route.js
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { requireUser } from "@/lib/auth/admin";
+import { isPrimaryAdmin, requireUser } from "@/lib/auth/admin";
 
 // ✅ GET: جلب تعليق واحد
 export async function GET(req, { params }) {
   try {
-    const reviewId = params.id;
+    const { id: reviewId } = await params;
     const db = await connectDB();
 
     const [rows] = await db.query("SELECT * FROM reviews WHERE id = ?", [reviewId]);
@@ -27,7 +27,7 @@ export async function DELETE(req, { params }) {
   if (auth.response) return auth.response;
 
   try {
-    const reviewId = params.id;
+    const { id: reviewId } = await params;
     const db = await connectDB();
 
     // جلب التعليق للتأكد من وجوده
@@ -36,7 +36,7 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ ok: false, error: "Review not found" }, { status: 404 });
     }
 
-    const isAdmin = String(auth.user.role || "").trim().toLowerCase() === "admin";
+    const isAdmin = isPrimaryAdmin(auth.user) || String(auth.user.role || "").trim().toLowerCase() === "admin";
     if (!isAdmin && String(rows[0].user_id) !== String(auth.user.id)) {
       return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
     }
@@ -53,9 +53,16 @@ export async function DELETE(req, { params }) {
 // ✅ PUT: تعديل تعليق
 export async function PUT(req, { params }) {
   try {
-    const reviewId = params.id;
+    const { id: reviewId } = await params;
+    const auth = requireUser(req);
+    if (auth.response) return auth.response;
     const body = await req.json();
-    const { comment, rating } = body;
+    const { comment, rating } = body || {};
+    const normalizedComment = String(comment || "").trim();
+    const normalizedRating = Number(rating);
+    if (!normalizedComment || !Number.isInteger(normalizedRating) || normalizedRating < 1 || normalizedRating > 5) {
+      return NextResponse.json({ ok: false, error: "Valid comment and rating are required" }, { status: 400 });
+    }
 
     const db = await connectDB();
 
@@ -65,12 +72,12 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ ok: false, error: "Review not found" }, { status: 404 });
     }
 
-    // ⚠️ تحقق من صلاحيات المستخدم قبل التعديل (مثلاً لو عندك user_id من JWT)
-    await db.query("UPDATE reviews SET comment = ?, rating = ? WHERE id = ?", [
-      comment,
-      rating,
-      reviewId,
-    ]);
+    const isAdmin = isPrimaryAdmin(auth.user) || String(auth.user.role || "").trim().toLowerCase() === "admin";
+    if (!isAdmin && String(rows[0].user_id) !== String(auth.user.id)) {
+      return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+    }
+
+    await db.query("UPDATE reviews SET comment = ?, rating = ? WHERE id = ?", [normalizedComment, normalizedRating, reviewId]);
 
     return NextResponse.json({ ok: true, message: "Review updated successfully" }, { status: 200 });
   } catch (err) {

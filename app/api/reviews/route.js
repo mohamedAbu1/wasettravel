@@ -31,51 +31,46 @@ export async function GET(req) {
 
 // ✅ إضافة تعليق جديد
 export async function POST(req) {
-    const auth = requireUser(req);
-    if (auth.response) return auth.response;
+  const auth = requireUser(req);
+  if (auth.response) return auth.response;
   try {
-    console.log("📩 Request received at /api/reviews");
-
     const body = await req.json();
-    console.log("📌 Parsed body:", body);
-
-    const { trip_id, rating, comment, name, avatar_url, time } = body;
+    const { trip_id, rating, comment, name, avatar_url, time } = body || {};
     const user_id = auth.user.id;
-    console.log("✅ Extracted values:", {
-      trip_id,
-      user_id,
-      rating,
-      comment,
-      name,
-      avatar_url,
-      time,
-    });
+
+    const normalizedComment = String(comment || "").trim();
+    const normalizedRating = Number(rating);
+    if (!trip_id || !normalizedComment) {
+      return NextResponse.json({ success: false, error: "Trip and comment are required" }, { status: 400 });
+    }
+    if (!Number.isInteger(normalizedRating) || normalizedRating < 1 || normalizedRating > 5) {
+      return NextResponse.json({ success: false, error: "Rating must be between 1 and 5" }, { status: 400 });
+    }
 
     const db = await connectDB();
-    console.log("🔗 Connected to DB successfully");
+    const [trips] = await db.query("SELECT id FROM trips WHERE id = ? LIMIT 1", [trip_id]);
+    if (!trips.length) {
+      return NextResponse.json({ success: false, error: "Trip not found" }, { status: 404 });
+    }
 
     const reviewId = uuidv4();
-    console.log("🆔 Generated reviewId:", reviewId);
-
+    const normalizedName = String(name || auth.user.name || auth.user.email || "Traveler").trim();
+    const normalizedAvatar = String(avatar_url || auth.user.avatar_url || auth.user.image || "/default-avatar.png").trim();
+    const normalizedTime = String(time || new Date().toLocaleTimeString()).trim();
     const query = `
       INSERT INTO reviews 
       (id, trip_id, user_id, rating, comment, name, avatar_url, time, created_at) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
     `;
-    const params = [reviewId, trip_id, user_id, rating, comment, name, avatar_url, time];
-    console.log("📝 Executing query:", query);
-    console.log("📊 With params:", params);
-
-    await db.query(query, params);
+    await db.query(query, [reviewId, trip_id, user_id, normalizedRating, normalizedComment, normalizedName, normalizedAvatar, normalizedTime]);
     await notifyAdmins(db, { eventType: "review", message: `${name || "A traveler"} submitted a new review`, userId: user_id, userName: name, userImage: avatar_url, tripId: trip_id });
-    console.log("✅ Insert successful");
 
     return NextResponse.json(
-      { success: true, review: { id: reviewId, ...body } },
+      { success: true, review: { id: reviewId, trip_id, user_id, rating: normalizedRating, comment: normalizedComment, name: normalizedName, avatar_url: normalizedAvatar, time: normalizedTime, created_at: new Date().toISOString() } },
       { status: 201 }
     );
   } catch (err) {
-    console.error("💥 Error in POST /api/reviews:", err.message);
+    console.error("Error in POST /api/reviews:", err.message);
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

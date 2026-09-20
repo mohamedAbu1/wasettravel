@@ -11,6 +11,7 @@ export default function ReviewForm({
   placeholder,
   submitLabel,
   themeName,
+  disabled = false,
 }) {
   return (
     <form onSubmit={onSubmit} className="trip-review-form space-y-4">
@@ -26,11 +27,12 @@ export default function ReviewForm({
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3"><div className="relative"><button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)} aria-expanded={showEmojiPicker} className="trip-detail-icon-button"><span aria-hidden="true">😀</span> Add feeling</button>{showEmojiPicker && <div className="absolute bottom-12 left-0 z-20"><EmojiPicker onEmojiClick={onEmojiClick} theme={themeName === "dark" ? "dark" : "light"}/></div>}</div>
 
-      <button
+        <button
         type="submit"
+        disabled={disabled}
         className="trip-detail-action"
       >
-        {submitLabel}
+        {disabled ? "Submitting…" : submitLabel}
       </button>
       </div>
     </form>

@@ -8,6 +8,7 @@ import { notifyAdmins } from "@/lib/notifications";
 export async function GET(request, { params }) {
   try {
     const { id: reviewId } = await params;
+    if (!reviewId) return NextResponse.json({ ok: false, error: "Review id is required" }, { status: 400 });
 
     const db = await connectDB();
     const [rows] = await db.query(
@@ -35,6 +36,8 @@ export async function POST(request, { params }) {
     const user_id = auth.user.id;
 
     const db = await connectDB();
+    const [reviewRows] = await db.query("SELECT id, trip_id FROM reviews WHERE id = ? LIMIT 1", [reviewId]);
+    if (!reviewRows.length) return NextResponse.json({ ok: false, error: "Review not found" }, { status: 404 });
     const [existingRows] = await db.query(
       "SELECT user_id FROM review_likes WHERE review_id = ? AND user_id = ? LIMIT 1",
       [reviewId, user_id],
@@ -59,7 +62,6 @@ export async function POST(request, { params }) {
       "SELECT user_id FROM review_likes WHERE review_id = ?",
       [reviewId],
     );
-    const [reviewRows] = await db.query("SELECT trip_id FROM reviews WHERE id = ?", [reviewId]);
     if (reviewRows[0]) await notifyAdmins(db, { eventType: "review_like", message: `${auth.user.name || "A traveler"} liked a review`, userId: auth.user.id, userName: auth.user.name, userEmail: auth.user.email, tripId: reviewRows[0].trip_id });
 
     return NextResponse.json({ ok: true, count: likeRows.length, users: likeRows.map((row) => row.user_id), message: "Like added successfully" }, { status: 201 });
@@ -74,6 +76,7 @@ export async function DELETE(request, { params }) {
     if (auth.response) return auth.response;
   try {
     const { id: reviewId } = await params;
+    if (!reviewId) return NextResponse.json({ ok: false, error: "Review id is required" }, { status: 400 });
 
     const user_id = auth.user.id;
 

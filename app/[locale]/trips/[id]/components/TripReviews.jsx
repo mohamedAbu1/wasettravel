@@ -82,6 +82,8 @@ export default function TripReviews({ trip, lang }) {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   // ✅ الباجينيشن
@@ -106,19 +108,32 @@ export default function TripReviews({ trip, lang }) {
   // ✅ دالة إضافة تعليق
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!comment.trim() || rating === 0 || !userData) return;
+    if (!comment.trim() || rating === 0 || !userData || isSubmitting) {
+      if (!userData) setSubmitError("Please log in before submitting a review.");
+      else if (!comment.trim() || rating === 0) setSubmitError("Please add a comment and choose a rating.");
+      return;
+    }
 
-    await addReview({
-      trip_id: trip.id,
-      rating,
-      comment,
-      name: userData?.name || userData.email,
-      avatar_url: userData?.avatar_url || userData?.image,
-      time: new Date().toLocaleTimeString(),
-    });
-
-    setComment("");
-    setRating(0);
+    setSubmitError("");
+    setIsSubmitting(true);
+    try {
+      const result = await addReview({
+        trip_id: trip.id,
+        rating,
+        comment,
+        name: userData?.name || userData.email,
+        avatar_url: userData?.avatar_url || userData?.image,
+        time: new Date().toLocaleTimeString(),
+      });
+      if (!result?.success) {
+        setSubmitError(result?.error || "The review could not be submitted. Please try again.");
+        return;
+      }
+      setComment("");
+      setRating(0);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const averageRating =
@@ -185,7 +200,9 @@ export default function TripReviews({ trip, lang }) {
             placeholder={tr.placeholder}
             submitLabel={tr.submit}
             themeName={themeName}
+            disabled={isSubmitting}
           />
+          {submitError ? <p role="alert" className="mt-3 rounded-xl border border-[#a34e42]/30 bg-[#a34e42]/10 px-4 py-3 text-sm font-semibold text-[#a34e42]">{submitError}</p> : null}
         </div>
       )}
 

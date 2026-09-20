@@ -22,7 +22,7 @@ export default function ReviewCard({
   updateReview,
   user,
 }) {
-  const isOwner = user && String(user.id) === String(rev.users?.id);
+  const isOwner = user && String(user.id) === String(rev.user_id || rev.users?.id);
   const isAdmin = user && String(user?.role || user?.user_metadata?.role || "").trim().toLowerCase() === "admin";
   const reviewIsLiked = Boolean(user && isLiked?.(rev.id, user.id));
   const isLikePending = Boolean(likePending?.[rev.id]);

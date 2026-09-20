@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext"; 
 
 const ReviewsContext = createContext();
+const sameId = (left, right) => left != null && right != null && String(left) === String(right);
 
 export function ReviewsProvider({ children }) {
   const { userData } = useAuth(); 
@@ -19,7 +20,7 @@ export function ReviewsProvider({ children }) {
     try {
       const res = await axios.get(`/api/reviews?tripId=${tripId}`);
       const data = res.data?.reviews || [];
-      const filtered = data.filter((review) => review.trip_id === tripId);
+      const filtered = data.filter((review) => sameId(review.trip_id, tripId));
 
       setReviewsByTrip((prev) => ({ ...prev, [tripId]: filtered }));
 
@@ -70,20 +71,22 @@ export function ReviewsProvider({ children }) {
     try {
       const res = await axios.post(`/api/reviews`, {
         trip_id: review.trip_id,
-        user_id: userData.id,
         rating: review.rating,
-        comment: review.comment,
+        comment: String(review.comment || "").trim(),
         name: review.name || userData.name || userData.email,
         avatar_url: userData.avatar_url || userData?.image,
         time: review.time,
-      });
+      }, { withCredentials: true });
 
       const data = res.data;
       if (data.success) {
+        const createdReview = data.review;
         setReviewsByTrip((prev) => ({
           ...prev,
-          [review.trip_id]: [...(prev[review.trip_id] || []), data.review],
+          [review.trip_id]: [createdReview, ...(prev[review.trip_id] || []).filter((item) => !sameId(item.id, createdReview.id))],
         }));
+        setAllReviews((prev) => [createdReview, ...prev.filter((item) => !sameId(item.id, createdReview.id))]);
+        setLikes((prev) => ({ ...prev, [createdReview.id]: { count: 0, users: [] } }));
       }
       return data;
     } catch (err) {
@@ -170,7 +173,7 @@ export function ReviewsProvider({ children }) {
   const getUserLikes = (userId) => {
     if (!userId) return [];
 
-    const userReviews = allReviews.filter((review) => review.user_id === userId);
+    const userReviews = allReviews.filter((review) => sameId(review.user_id, userId));
 
     return userReviews.map((review) => ({
       reviewId: review.id,
@@ -183,15 +186,35 @@ export function ReviewsProvider({ children }) {
       users: likes[review.id]?.users || [],
     }));
   };
-// ✅ حذف تعليق
-const deleteReview = async (reviewId) => {
+
+  const updateReview = async (reviewId, changes) => {
+    if (!reviewId || !userData?.id) return { success: false, error: "Login required" };
+    try {
+      const res = await axios.put(`/api/reviews/${reviewId}`, {
+        comment: String(changes.comment || "").trim(),
+        rating: Number(changes.rating),
+      }, { withCredentials: true });
+      const data = res.data;
+      if (data.ok) {
+        const update = (review) => sameId(review.id, reviewId) ? { ...review, comment: String(changes.comment).trim(), rating: Number(changes.rating) } : review;
+        setReviewsByTrip((prev) => Object.fromEntries(Object.entries(prev).map(([key, reviews]) => [key, reviews.map(update)])));
+        setAllReviews((prev) => prev.map(update));
+      }
+      return { ...data, success: Boolean(data.ok) };
+    } catch (err) {
+      return { success: false, error: err.response?.data?.error || err.message };
+    }
+  };
+
+  const deleteReview = async (reviewId) => {
   if (!reviewId) {
-    return { success: false, error: "Missing reviewId or tripId" };
+    return { success: false, error: "Missing reviewId" };
   }
+  if (!userData?.id) return { success: false, error: "Login required" };
 
   try {
     const res = await axios.delete(`/api/reviews/${reviewId}`, {
-      data: { user_id: userData.id }, // للتأكد أن المستخدم هو صاحب التعليق أو عندك صلاحيات
+      withCredentials: true,
     });
 
     const data = res.data;
@@ -215,7 +238,7 @@ const deleteReview = async (reviewId) => {
     console.error("❌ Error deleting review:", err);
     return { success: false, error: err.message };
   }
-};
+  };
 
   return (
     <ReviewsContext.Provider
@@ -228,6 +251,7 @@ const deleteReview = async (reviewId) => {
         fetchReviewsByTrip,
         fetchAllReviews,
         addReview,
+        updateReview,
         fetchLikes,
         addLike,
         removeLike,

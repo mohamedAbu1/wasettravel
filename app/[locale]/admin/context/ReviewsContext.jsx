@@ -81,10 +81,12 @@ export function ReviewsProvider({ children }) {
 
       const data = res.data;
       if (data.success) {
+        const createdReview = data.review;
         setReviewsByTrip((prev) => ({
           ...prev,
-          [review.trip_id]: [...(prev[review.trip_id] || []), data.review],
+          [review.trip_id]: [createdReview, ...(prev[review.trip_id] || []).filter((item) => !sameId(item.id, createdReview.id))],
         }));
+        setAllReviews((prev) => [createdReview, ...prev.filter((item) => !sameId(item.id, createdReview.id))]);
       }
       return data;
     } catch (err) {
@@ -118,12 +120,12 @@ export function ReviewsProvider({ children }) {
         user_id: user.id,
       });
 
-      if (!res.data?.error) {
+      if (res.data?.ok) {
         setLikes((prev) => ({
           ...prev,
           [reviewId]: {
-            count: (prev[reviewId]?.count || 0) + 1,
-            users: [...(prev[reviewId]?.users || []), user.id],
+            count: Number(res.data.count ?? (prev[reviewId]?.count || 0)),
+            users: res.data.users || prev[reviewId]?.users || [],
           },
         }));
       }
@@ -173,6 +175,26 @@ export function ReviewsProvider({ children }) {
     }));
   };
 
+  const deleteReview = async (reviewId) => {
+    if (!reviewId) return { success: false, error: "Missing reviewId" };
+    try {
+      const res = await axios.delete(`/api/reviews/${reviewId}`, { withCredentials: true });
+      const data = res.data;
+      if (data.ok || data.success) {
+        setAllReviews((prev) => prev.filter((review) => !sameId(review.id, reviewId)));
+        setReviewsByTrip((prev) => Object.fromEntries(Object.entries(prev).map(([key, reviews]) => [key, reviews.filter((review) => !sameId(review.id, reviewId))])));
+        setLikes((prev) => {
+          const next = { ...prev };
+          delete next[reviewId];
+          return next;
+        });
+      }
+      return { ...data, success: Boolean(data.ok || data.success) };
+    } catch (err) {
+      return { success: false, error: err.response?.data?.error || err.message };
+    }
+  };
+
   return (
     <ReviewsContext.Provider
       value={{
@@ -188,6 +210,7 @@ export function ReviewsProvider({ children }) {
         addLike,
         removeLike,
         getUserLikes,
+        deleteReview,
       }}
     >
       {children}

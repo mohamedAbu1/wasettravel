@@ -2,9 +2,22 @@ import React from "react";
 import { FaStar, FaCommentDots, FaUsers, FaSyncAlt } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
+import { useReviews } from "@/context/ReviewsContext";
+import { useState } from "react";
+import { FaTrash } from "react-icons/fa";
 
 const UserComments = ({ user }) => {
   const { theme } = useTheme();
+  const { allReviews, deleteReview } = useReviews();
+  const [deletingId, setDeletingId] = useState(null);
+  const reviews = allReviews.filter((review) => String(review.user_id) === String(user.id));
+
+  const handleDelete = async (reviewId) => {
+    if (!window.confirm("Delete this review permanently?")) return;
+    setDeletingId(reviewId);
+    await deleteReview(reviewId);
+    setDeletingId(null);
+  };
 
   return (
     <motion.div
@@ -13,8 +26,8 @@ const UserComments = ({ user }) => {
       transition={{ duration: 0.6 }}
       className="space-y-4"
     >
-      {Array.isArray(user.reviews) && user.reviews.length > 0 ? (
-        user.reviews.map((review, index) => (
+      {reviews.length > 0 ? (
+        reviews.map((review, index) => (
           <motion.div
             key={review.id}
             initial={{ opacity: 0, x: -20 }}
@@ -51,6 +64,9 @@ const UserComments = ({ user }) => {
               <FaSyncAlt className="text-gray-400 animate-spin-slow" />
               <small>{new Date(review.created_at).toLocaleDateString()}</small>
             </div>
+            <button type="button" onClick={() => handleDelete(review.id)} disabled={deletingId === review.id} className="trip-review-control trip-review-control--danger mt-4 inline-flex items-center gap-2">
+              <FaTrash /> {deletingId === review.id ? "Deleting…" : "Delete review"}
+            </button>
           </motion.div>
         ))
       ) : (

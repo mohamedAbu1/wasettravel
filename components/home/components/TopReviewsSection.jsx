@@ -18,6 +18,18 @@ export default function TopReviewsSection() {
   const { t } = useTranslation("home");
 
   const safeReviews = Array.isArray(allReviews) ? allReviews : [];
+  const [expandedIds, setExpandedIds] = useState([]);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   if (!safeReviews.length) return null;
 
   // ✅ حساب التعليقات الأكثر إعجابًا
@@ -42,7 +54,6 @@ export default function TopReviewsSection() {
           )
           .slice(0, 6);
 
-  const [expandedIds, setExpandedIds] = useState([]);
   const toggleExpand = (id) => {
     setExpandedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
@@ -64,17 +75,6 @@ export default function TopReviewsSection() {
       { breakpoint: 640, settings: { slidesToShow: 1 } },
     ],
   };
-
-  // ✅ تحديد حجم الشاشة
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
-  useEffect(() => {
-    const handleResize = () => {
-      setIsLargeScreen(window.innerWidth >= 1024);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   return (
     <section

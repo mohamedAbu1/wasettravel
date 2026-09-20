@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { v4 as uuidv4 } from "uuid";
 import { connectDB } from "@/lib/db";
 import { requireUser } from "@/lib/auth/admin";
 import { notifyAdmins } from "@/lib/notifications";
@@ -51,8 +52,8 @@ export async function POST(request, { params }) {
       });
     }
     await db.query(
-      "INSERT INTO review_likes (review_id, user_id, created_at) VALUES (?, ?, NOW())",
-      [reviewId, user_id]
+      "INSERT INTO review_likes (id, review_id, user_id, created_at) VALUES (?, ?, ?, NOW())",
+      [uuidv4(), reviewId, user_id]
     );
     const [likeRows] = await db.query(
       "SELECT user_id FROM review_likes WHERE review_id = ?",

@@ -7,11 +7,14 @@ import { isPrimaryAdmin, requireAdmin, requireUser } from "@/lib/auth/admin";
 // ✅ إضافة إشعار جديد + إرسال إشعار للموبايل
 export async function POST(req) {
   const auth = requireAdmin(req);
-  if (auth.response) return NextResponse.json({ success: true, notifications: [] }, { status: 200 });
+  if (auth.response) return auth.response;
 
   try {
     const db = await connectDB();
     const body = await req.json();
+    if (!body.user_id || !body.event_type || !String(body.message || "").trim()) {
+      return NextResponse.json({ success: false, error: "user_id, event_type and message are required" }, { status: 400 });
+    }
 
     const id = uuidv4(); // توليد id فريد
 
@@ -25,10 +28,10 @@ export async function POST(req) {
         body.event_type,
         body.message,
         body.user_id,
-        body.user_name,
-        body.user_email,
-        body.user_image,
-        body.trip_id,
+        body.user_name || "Traveler",
+        body.user_email || "",
+        body.user_image || "/default-avatar.png",
+        body.trip_id || "00000000-0000-0000-0000-000000000000",
         body.message_id || uuidv4(),
       ],
     );
@@ -58,7 +61,7 @@ export async function GET(req) {
     const db = await connectDB();
     const isAdmin = isPrimaryAdmin(auth.user);
     const [rows] = await db.execute(
-      `SELECT id, admin_id, event_type, user_id, message, created_at_second, user_name, user_email, user_image, created_at, is_read, trip_id
+      `SELECT id, admin_id, event_type, user_id, message, user_name, user_email, user_image, created_at, is_read, trip_id, message_id
        FROM notifications
        ${isAdmin ? "WHERE admin_id = ? OR user_id = ?" : "WHERE user_id = ?"}
        ORDER BY created_at DESC`,

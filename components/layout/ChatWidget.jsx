@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
@@ -21,6 +21,8 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   const { notifications, fetchNotifications, markAsRead } = useNotifications();
   const [adminTyping, setAdminTyping] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const markedSeenRef = useRef(new Set());
+  const isAdmin = String(userData?.role || "").trim().toLowerCase() === "admin" || String(userData?.email || "").trim().toLowerCase() === "wasettraveleg@gmail.com";
   const {
     open,
     bookingMode,
@@ -57,7 +59,8 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   useEffect(() => {
     if (userData?.id && messages.length > 0) {
       messages.forEach((msg) => {
-        if (msg.sender_type === "admin" && msg.status === "sent") {
+        if (msg.sender_type === "admin" && msg.status === "sent" && !markedSeenRef.current.has(String(msg.id))) {
+          markedSeenRef.current.add(String(msg.id));
           markMessageSeen(msg.id);
         }
       });
@@ -73,9 +76,14 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
   useEffect(() => {
     if (!userData?.id) return;
     const interval = setInterval(async () => {
-      const res = await fetch(`/api/typing?userId=${userData.id}`);
-      const data = await res.json();
-      setAdminTyping(data.adminTyping || false);
+      try {
+        const res = await fetch(`/api/typing?userId=${encodeURIComponent(userData.id)}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        setAdminTyping(Boolean(data.adminTyping));
+      } catch {
+        // Typing indicators are best-effort and must never interrupt the chat.
+      }
     }, 2000);
     return () => clearInterval(interval);
   }, [userData?.id]);
@@ -94,7 +102,6 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     }
   };
 
-  const isAdmin = String(userData?.role || "").trim().toLowerCase() === "admin";
   const unreadAdminMessages = notifications.filter((notification) => notification.event_type === "message" && String(notification.user_id) === String(userData?.id) && Number(notification.is_read) === 0).length;
 
   const openChat = () => {
@@ -114,7 +121,7 @@ export default function ChatWidget({ setShowEmojiPicker, showEmojiPicker }) {
     formData.append("admin_id", "SYSTEM");
 
     const res = await fetch("/api/messages", { method: "POST", body: formData });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.content) return;
     await fetchMessages(userData.id);
   };

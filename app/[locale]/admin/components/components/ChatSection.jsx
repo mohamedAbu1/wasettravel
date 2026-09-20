@@ -87,9 +87,14 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
   useEffect(() => {
     if (!activeUser) return;
     const interval = setInterval(async () => {
-      const res = await fetch(`/api/typing?userId=${activeUser.id}`);
-      const data = await res.json();
-      setUserTyping(data.isTyping);
+      try {
+        const res = await fetch(`/api/typing?userId=${encodeURIComponent(activeUser.id)}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        setUserTyping(Boolean(data.isTyping));
+      } catch {
+        // Typing indicators are best-effort and must never interrupt the chat.
+      }
     }, 2000);
     return () => clearInterval(interval);
   }, [activeUser]);

@@ -22,9 +22,18 @@ export async function POST(req) {
       const formData = await req.formData();
       const file = formData.get("file");
       if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      const user_id = formData.get("user_id");
+      if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
+      const sender_type = isPrimaryAdmin(auth.user) ? "admin" : "user";
+      if (sender_type === "user" && String(user_id) !== String(auth.user.id)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      const requestedSenderType = String(formData.get("sender_type") || "user").trim().toLowerCase();
+      if (requestedSenderType !== sender_type) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
+      if (typeof file.type === "string" && !file.type.startsWith("image/")) return NextResponse.json({ error: "Only image files are allowed" }, { status: 400 });
+      if (Number(file.size || 0) > 8 * 1024 * 1024) return NextResponse.json({ error: "Image must be smaller than 8 MB" }, { status: 413 });
 
       // اسم فريد للصورة
-      const fileName = `${Date.now()}-${file.name}`;
+      const safeFileName = path.basename(String(file.name || "upload")).replace(/[^a-zA-Z0-9._-]/g, "-");
+      const fileName = `${Date.now()}-${safeFileName}`;
       const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin;
       const baseUrl = `${siteOrigin}/iamges/${encodeURIComponent(fileName)}`;
 
@@ -41,19 +50,12 @@ export async function POST(req) {
       await fs.promises.writeFile(projectPath, buffer);
 
       // باقي البيانات
-      const user_id = formData.get("user_id");
-      if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
-
-      const requestedSenderType = String(formData.get("sender_type") || "user").trim().toLowerCase();
-      const sender_type = isPrimaryAdmin(auth.user) ? "admin" : "user";
-      if (requestedSenderType !== sender_type) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
       const requestedUserName = formData.get("user_name");
       const requestedUserImage = formData.get("user_image");
-      const user_name = sender_type === "admin" ? siteConfig.name : requestedUserName || "Unknown User";
-      const user_image = sender_type === "admin" ? siteConfig.brandImage : requestedUserImage || "/default-avatar.png";
+      const user_name = sender_type === "admin" ? siteConfig.name : auth.user.name || requestedUserName || "Unknown User";
+      const user_image = sender_type === "admin" ? siteConfig.brandImage : auth.user.avatar_url || requestedUserImage || "/default-avatar.png";
       const reply_to = formData.get("reply_to");
       const admin_id = sender_type === "admin" ? auth.user.id : null;
-      if (sender_type === "user" && String(user_id) !== String(auth.user.id)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
       const db = await connectDB();
       const messagesId = uuidv4();
@@ -97,8 +99,8 @@ export async function POST(req) {
     if (normalizedSenderType !== (isAdmin ? "admin" : "user")) return NextResponse.json({ error: "Invalid sender type" }, { status: 403 });
     if (!isAdmin && String(user_id) !== String(auth.user.id)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const admin_id = isAdmin ? auth.user.id : null;
-    const user_name = isAdmin ? siteConfig.name : requestedUserName;
-    const user_image = isAdmin ? siteConfig.brandImage : requestedUserImage;
+    const user_name = isAdmin ? siteConfig.name : auth.user.name || requestedUserName || "Unknown User";
+    const user_image = isAdmin ? siteConfig.brandImage : auth.user.avatar_url || requestedUserImage || "/default-avatar.png";
 
     const db = await connectDB();
     const messagesId = uuidv4();
@@ -199,7 +201,8 @@ export async function PUT(req) {
     if (!messageId) return NextResponse.json({ error: "messageId is required" }, { status: 400 });
 
     const db = await connectDB();
-    const isAdmin = auth.user.role?.toLowerCase() === "admin";
+    const isAdmin = isPrimaryAdmin(auth.user);
+    if (!["sent", "seen"].includes(String(status).toLowerCase())) return NextResponse.json({ error: "Invalid message status" }, { status: 400 });
     const [result] = await db.query(
       isAdmin
         ? `UPDATE messages SET status = ?, updated_at = NOW() WHERE id = ?`
@@ -238,6 +241,7 @@ export async function DELETE(req) {
     }
 
     const { messageId } = body;
+    if (!messageId) return NextResponse.json({ error: "messageId is required" }, { status: 400 });
 
     const db = await connectDB();
     const [result] = await db.query(`DELETE FROM messages WHERE id = ?`, [

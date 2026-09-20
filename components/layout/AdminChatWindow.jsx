@@ -51,9 +51,14 @@ export default function AdminChatWindow({ user, admin, messages, onClose }) {
   useEffect(() => {
     if (!user?.id) return;
     const interval = setInterval(async () => {
-      const res = await fetch(`/api/typing?userId=${user.id}`);
-      const data = await res.json();
-      setAdminTyping(data.adminTyping || false);
+      try {
+        const res = await fetch(`/api/typing?userId=${encodeURIComponent(user.id)}`, { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        setAdminTyping(Boolean(data.adminTyping));
+      } catch {
+        // Typing indicators are best-effort and must never interrupt the chat.
+      }
     }, 2000);
     return () => clearInterval(interval);
   }, [user?.id]);

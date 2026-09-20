@@ -101,7 +101,7 @@ const ChatSection = ({ activeUser, theme, themeName }) => {
     return () => clearInterval(interval);
   }, [activeUser]);
 
-  if (!mounted) return null;
+  if (!mounted || !activeUser) return null;
 
   return createPortal(
     <section className="admin-chat-panel admin-chat-panel--floating">

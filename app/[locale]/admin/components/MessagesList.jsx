@@ -5,7 +5,7 @@ import { useUsers } from "../context/UserContext";
 import UsersSidebar from "./components/UsersSidebar";
 import ChatSection from "./components/ChatSection";
 import { useMessages } from "@/context/MessageContext";
-import { FaBell, FaCheckCircle, FaDesktop, FaExclamationTriangle, FaSyncAlt } from "react-icons/fa";
+import { FaBell, FaCheckCircle, FaComments, FaDesktop, FaExclamationTriangle, FaSyncAlt, FaUsers } from "react-icons/fa";
 
 export default function MessagesPage() {
   const { theme, themeName } = useTheme();
@@ -133,6 +133,10 @@ export default function MessagesPage() {
     ? conversationUsers.find((user) => String(user.id) === String(newMessageNotice.userId))
     : null;
 
+  const activeConversationMessages = activeUser
+    ? messages.filter((message) => String(message.user_id) === String(activeUser.id)).length
+    : 0;
+
   return (
     <main className="admin-message-workspace">
       <header className="admin-message-toolbar">
@@ -144,6 +148,7 @@ export default function MessagesPage() {
         <div className="admin-message-toolbar__actions">
           <span className={`admin-message-connection admin-message-connection--${connectionState}`}><span /> {connectionState === "online" ? "Live sync" : connectionState === "offline" ? "Connection issue" : "Connecting"}</span>
           <span className="admin-message-count"><strong>{unreadMessages.length}</strong> unread</span>
+          <span className="admin-message-count"><strong>{conversationUsers.length}</strong> conversations</span>
           {lastSyncedAt && <span className="admin-message-last-sync">Updated {lastSyncedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>}
           {desktopPermission === "granted" ? (
             <span className="admin-desktop-status"><FaCheckCircle /> Desktop alerts on</span>
@@ -168,12 +173,31 @@ export default function MessagesPage() {
           <button type="button" className="admin-message-alert__dismiss" aria-label="Dismiss new message notice" onClick={() => setNewMessageNotice(null)}>×</button>
         </div>
       )}
-      <UsersSidebar
-        users={conversationUsers}
-        activeUser={activeUser}
-        setActiveUser={handleUserSelect}
-        messages={messages}
-      />
+      <section className="admin-message-inbox" aria-label="Guest message inbox">
+        <UsersSidebar
+          users={conversationUsers}
+          activeUser={activeUser}
+          setActiveUser={handleUserSelect}
+          messages={messages}
+        />
+        <section className={`admin-message-stage ${activeUser ? "is-ready" : ""}`} aria-live="polite">
+          {activeUser ? (
+            <>
+              <div className="admin-message-stage__icon"><FaComments /></div>
+              <strong>{activeUser.name || activeUser.email || "Guest"}</strong>
+              <span>{activeConversationMessages} message{activeConversationMessages === 1 ? "" : "s"} loaded</span>
+              <small>The conversation is open in the floating chat panel at the bottom right.</small>
+            </>
+          ) : (
+            <>
+              <div className="admin-message-stage__icon"><FaUsers /></div>
+              <strong>Select a guest conversation</strong>
+              <span>Choose a guest from the list to start replying.</span>
+              <small>Unread conversations are highlighted and sorted first.</small>
+            </>
+          )}
+        </section>
+      </section>
       <ChatSection
         activeUser={activeUser}
         setActiveUser={setActiveUser}

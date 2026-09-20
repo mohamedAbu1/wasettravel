@@ -1814,6 +1814,17 @@ html[data-site-theme="stone"] .MuiDrawer-paper:has(.stone-drawer) { width:min(28
 @media (max-width:720px) { .chat-widget-panel { right:.75rem !important; bottom:5.25rem !important; width:calc(100vw - 1.5rem); height:min(38rem,calc(100dvh - 6rem)); max-height:calc(100dvh - 5.25rem); } }
 @media (max-width:720px) { .admin-chat-panel--external { right:.75rem !important; bottom:5.25rem !important; width:calc(100vw - 1.5rem); height:min(38rem,calc(100dvh - 6rem)); max-height:calc(100dvh - 5.25rem); } }
 
+/* Messages inbox shell: keep the dashboard readable while the active thread floats independently. */
+.admin-message-inbox { grid-column:1/-1; display:grid; grid-template-columns:minmax(15rem,19rem) minmax(0,1fr); min-height:clamp(24rem,calc(100vh - 21rem),38rem); min-width:0; }
+.admin-message-inbox .admin-message-sidebar { grid-column:auto; grid-row:auto; overflow-y:auto; border-right:1px solid var(--line); }
+.admin-message-stage { display:grid; min-width:0; place-items:center; align-content:center; gap:.45rem; padding:2rem; color:var(--muted); background:radial-gradient(circle at 50% 20%,color-mix(in srgb,var(--color) 8%,transparent),transparent 28rem),var(--surface); text-align:center; }
+.admin-message-stage__icon { display:grid; width:3.5rem; height:3.5rem; place-items:center; border:1px solid color-mix(in srgb,var(--color) 38%,var(--line)); border-radius:1.15rem; color:var(--color); background:color-mix(in srgb,var(--color) 10%,transparent); font-size:1.25rem; box-shadow:0 .8rem 2rem color-mix(in srgb,var(--color) 8%,transparent); }
+.admin-message-stage strong { color:var(--foreground); font-family:var(--font-display); font-size:1.15rem; }
+.admin-message-stage span { color:var(--foreground); font-size:.78rem; font-weight:700; }
+.admin-message-stage small { max-width:25rem; color:var(--muted); font-size:.68rem; line-height:1.6; }
+.admin-message-stage.is-ready { background:linear-gradient(145deg,color-mix(in srgb,var(--surface) 94%,var(--color) 6%),var(--surface)); }
+@media (max-width:720px) { .admin-message-inbox { grid-template-columns:1fr; min-height:36rem; }.admin-message-inbox .admin-message-sidebar { max-height:15rem; border-right:0; border-bottom:1px solid var(--line); }.admin-message-stage { min-height:16rem; padding:1.35rem; } }
+
 /* Global motion system: restrained transitions, clear feedback and reduced-motion support. */
 @keyframes waset-page-enter { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 @keyframes waset-soft-pulse { 0%,100% { box-shadow:0 0 0 0 color-mix(in srgb,var(--color) 0%,transparent); } 50% { box-shadow:0 0 0 .35rem color-mix(in srgb,var(--color) 10%,transparent); } }

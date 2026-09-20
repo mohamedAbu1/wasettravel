@@ -1846,3 +1846,70 @@ html[data-site-theme="stone"] .car-booking-input {
 html[data-site-theme="stone"] .car-booking-input::placeholder { color: var(--muted); opacity: .75; }
 html[data-site-theme="stone"] .car-booking-input:focus { border-color: var(--color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 18%, transparent); }
 html[data-site-theme="stone"] .car-booking-input option { color: #30271d; background: #fffaf3; }
+
+/* Editorial review cards: a calmer, more premium treatment for traveler stories. */
+html[data-site-theme="stone"] .home-review-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 24rem;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow: hidden;
+  margin: .75rem .65rem 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 1.6rem;
+  padding: 1.35rem;
+  color: var(--foreground);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--surface-raised) 96%, var(--color) 4%), var(--surface));
+  box-shadow: 0 1rem 2.5rem rgba(51,35,19,.1), inset 0 1px rgba(255,255,255,.2);
+  transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+
+html[data-site-theme="stone"] .home-review-card:hover,
+html[data-site-theme="stone"] .home-review-card:focus-visible {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--color) 62%, var(--line));
+  box-shadow: 0 1.35rem 3rem color-mix(in srgb, var(--color) 18%, transparent), inset 0 1px rgba(255,255,255,.2);
+  outline: none;
+}
+
+html[data-site-theme="stone"] .home-review-card__glow {
+  position: absolute;
+  z-index: -1;
+  top: -5rem;
+  right: -4rem;
+  width: 12rem;
+  height: 12rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color) 15%, transparent);
+  filter: blur(1px);
+}
+
+html[data-site-theme="stone"] .home-review-card__topline,
+html[data-site-theme="stone"] .home-review-card__footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+html[data-site-theme="stone"] .home-review-card__eyebrow { display: inline-flex; align-items: center; gap: .35rem; color: var(--color); font-size: .6rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+html[data-site-theme="stone"] .home-review-card__eyebrow svg { font-size: .75rem; }
+html[data-site-theme="stone"] .home-review-card__index { color: var(--muted); font-family: var(--font-display); font-size: .9rem; font-weight: 700; opacity: .65; }
+html[data-site-theme="stone"] .home-review-card__profile { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+html[data-site-theme="stone"] .home-review-card__avatar-wrap { position: relative; flex: 0 0 auto; }
+html[data-site-theme="stone"] .home-review-card__avatar,
+html[data-site-theme="stone"] .home-review-card__avatar-fallback { display: block; width: 3.2rem; height: 3.2rem; border: 2px solid color-mix(in srgb, var(--color) 72%, transparent); border-radius: 50%; object-fit: cover; background: color-mix(in srgb, var(--color) 13%, var(--surface)); color: var(--color); }
+html[data-site-theme="stone"] .home-review-card__online { position: absolute; right: .05rem; bottom: .12rem; width: .65rem; height: .65rem; border: 2px solid var(--surface-raised); border-radius: 50%; background: #43a76d; }
+html[data-site-theme="stone"] .home-review-card__identity { min-width: 0; flex: 1; }
+html[data-site-theme="stone"] .home-review-card__identity h3 { overflow: hidden; margin: 0 0 .2rem; color: var(--foreground); font-size: .9rem; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+html[data-site-theme="stone"] .home-review-card__identity time { color: var(--muted); font-size: .65rem; }
+html[data-site-theme="stone"] .home-review-card__rating { display: grid; justify-items: end; gap: .18rem; flex: 0 0 auto; border: 1px solid color-mix(in srgb, var(--color) 30%, var(--line)); border-radius: .75rem; padding: .42rem .55rem; background: color-mix(in srgb, var(--color) 9%, transparent); }
+html[data-site-theme="stone"] .home-review-card__rating strong { color: var(--foreground); font-size: .8rem; line-height: 1; }
+html[data-site-theme="stone"] .home-review-card__rating span { display: flex; gap: .12rem; color: var(--color); font-size: .53rem; }
+html[data-site-theme="stone"] .home-review-card__body { position: relative; flex: 1; padding: .9rem .15rem 0; }
+html[data-site-theme="stone"] .home-review-card__quote-mark { position: absolute; top: 0; left: 0; color: var(--color); font-size: 1.45rem; opacity: .35; }
+html[data-site-theme="stone"] .home-review-card__body p { display: -webkit-box; overflow: hidden; margin: 0; padding: 1.3rem 0 0; color: var(--foreground); font-family: var(--font-display); font-size: 1.04rem; line-height: 1.65; -webkit-box-orient: vertical; -webkit-line-clamp: 5; }
+html[data-site-theme="stone"] .home-review-card__read-more { display: inline-flex; align-items: center; gap: .35rem; margin-top: .85rem; color: var(--color); font-size: .68rem; font-weight: 900; }
+html[data-site-theme="stone"] .home-review-card__read-more svg { font-size: .6rem; }
+html[data-site-theme="stone"] .home-review-card__footer { margin-top: auto; border-top: 1px solid var(--line); padding-top: 1rem; }
+html[data-site-theme="stone"] .home-review-card__footer-label { color: var(--muted); font-size: .62rem; font-weight: 700; }
+html[data-site-theme="stone"] .home-review-card__likes { display: inline-flex; align-items: center; gap: .35rem; border-radius: 999px; padding: .42rem .62rem; color: var(--color); background: color-mix(in srgb, var(--color) 11%, transparent); font-size: .68rem; font-weight: 900; }
+html[data-site-theme="stone"] .home-review-card__likes svg { font-size: .65rem; }
+html[data-site-theme="stone"] .home-reviews-section .slick-list { padding: .35rem 0; }
+@media (max-width: 640px) { html[data-site-theme="stone"] .home-review-card { min-height: 22rem; margin-inline: .2rem; padding: 1.15rem; } html[data-site-theme="stone"] .home-review-card__body p { font-size: .98rem; } }

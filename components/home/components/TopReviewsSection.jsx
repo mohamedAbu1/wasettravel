@@ -1,7 +1,7 @@
 "use client";
 import { useReviews } from "@/context/ReviewsContext";
 import { useTheme } from "@/context/ThemeContext";
-import { FaStar, FaUserCircle, FaQuoteLeft, FaHeart } from "react-icons/fa";
+import { FaArrowRight, FaCheckCircle, FaHeart, FaQuoteLeft, FaStar, FaUserCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -78,7 +78,7 @@ export default function TopReviewsSection() {
 
   return (
     <section
-      className={`stone-section py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-screen max-w-full flex flex-col items-center justify-center`}
+      className={`home-reviews-section stone-section py-20 px-4 md:px-8 ${theme.background} ${theme.text} w-screen max-w-full flex flex-col items-center justify-center`}
     >
       <EgyptianBackground />
       <h2
@@ -130,84 +130,38 @@ export default function TopReviewsSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className={`stone-card flex flex-col justify-between gap-4 ml-3 p-4 md:p-6 rounded-2xl min-h-[260px] ${theme.card}`}
-        style={{
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          marginLeft: "20px",
-          border: `1px solid ${theme.logoBorder}`,
-          boxShadow: theme.shadow,
-        }}
+        className="home-review-card"
       >
-        {/* Header */}
-        <div className="flex items-center gap-3 border-b pb-2">
-          {rev.avatar_url ? (
-            <img
-              src={rev.avatar_url}
-              alt={`Avatar of ${rev.name || "Anonymous user"}`} // ✅ وصف أوضح
-              width="56"
-              height="56"
-              loading="lazy"
-              decoding="async"
-              className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 object-cover"
-              style={{ borderColor: theme.logoBorder }}
-            />
-          ) : (
-            <FaUserCircle size={48} className={theme.icon} />
-          )}
-          <div>
-            <h3 className={`font-bold text-base md:text-lg ${theme.title}`}>
-              {rev.name || "Anonymous"}
-            </h3>
-            <div className="flex gap-1">
-              {[...Array(rev.rating || 0)].map((_, i) => (
-                <FaStar
-                  key={i}
-                  className="text-yellow-500 text-sm md:text-base"
-                />
-              ))}
-            </div>
+        <div className="home-review-card__glow" aria-hidden="true" />
+        <div className="home-review-card__topline">
+          <span className="home-review-card__eyebrow"><FaCheckCircle /> Verified traveler</span>
+          <span className="home-review-card__index">0{idx + 1}</span>
+        </div>
+
+        <div className="home-review-card__profile">
+          <div className="home-review-card__avatar-wrap">
+            {rev.avatar_url ? <img src={rev.avatar_url} alt={`Avatar of ${rev.name || "Anonymous user"}`} width="64" height="64" loading="lazy" decoding="async" className="home-review-card__avatar" /> : <FaUserCircle className="home-review-card__avatar-fallback" aria-hidden="true" />}
+            <span className="home-review-card__online" aria-hidden="true" />
+          </div>
+          <div className="home-review-card__identity">
+            <h3>{rev.name || "Anonymous traveler"}</h3>
+            <time dateTime={rev.created_at}>{rev.created_at ? format(new Date(rev.created_at), "dd MMM yyyy") : "Recent journey"}</time>
+          </div>
+          <div className="home-review-card__rating" aria-label={`${rev.rating || 0} out of 5 stars`}>
+            <strong>{Number(rev.rating || 0).toFixed(1)}</strong>
+            <span>{[...Array(Math.max(0, Math.min(5, Number(rev.rating) || 0)))].map((_, i) => <FaStar key={i} />)}</span>
           </div>
         </div>
 
-        {/* Body */}
-        <div className="relative flex-1 mt-4">
-          <FaQuoteLeft
-            className={`absolute top-0 left-0 text-2xl opacity-20 ${theme.icon}`}
-          />
-          <p
-            className={`italic leading-relaxed text-sm md:text-base pl-8 ${theme.subText}`}
-            style={{ textAlign: "justify" }}
-          >
-            {comment}
-          </p>
-          {rev.comment?.length > 150 && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => toggleExpand(rev.id)}
-              aria-label={expanded ? "Hide full review" : "Read full review"} // ✅ اسم واضح
-              className={`text-xs md:text-sm mt-2 font-semibold tracking-wide cursor-pointer transition-all duration-300 ${theme.buttonPrimary}`}
-              style={{ border: `1px solid ${theme.logoBorder}` }}
-            >
-              {expanded ? "إخفاء" : "اقرأ المزيد"}
-            </motion.button>
-          )}
+        <div className="home-review-card__body">
+          <FaQuoteLeft className="home-review-card__quote-mark" aria-hidden="true" />
+          <p>{comment}</p>
+          {rev.comment?.length > 150 ? <motion.button whileHover={{ x: 3 }} whileTap={{ scale: 0.97 }} onClick={() => toggleExpand(rev.id)} aria-label={expanded ? "Hide full review" : "Read full review"} className="home-review-card__read-more">{expanded ? "Show less" : "Read full review"}<FaArrowRight /></motion.button> : null}
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-between items-center mt-4 border-t pt-2">
-          <span className={`text-xs md:text-sm ${theme.subText}`}>
-            {rev.created_at
-              ? format(new Date(rev.created_at), "dd MMM yyyy")
-              : "Unknown date"}
-          </span>
-          <div
-            className={`flex items-center gap-2 font-semibold text-xs md:text-sm px-3 py-1 rounded-full shadow-sm ${theme.buttonPrimary}`}
-          >
-            <FaHeart />
-            <span>{rev.likesCount}</span>
-          </div>
+        <div className="home-review-card__footer">
+          <span className="home-review-card__footer-label">A story worth sharing</span>
+          <span className="home-review-card__likes" aria-label={`${rev.likesCount} likes`}><FaHeart /> {rev.likesCount}</span>
         </div>
       </motion.div>
     );

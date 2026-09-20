@@ -1,16 +1,8 @@
 "use client";
-import { FaCalendarAlt, FaClock } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { motion } from "framer-motion";
 import { useState } from "react";
-
-function formatTime(time) {
-  if (!time) return "";
-  const [hours, minutes] = time.split(":").map(Number);
-  const suffix = hours >= 12 ? "PM" : "AM";
-  const formattedHours = ((hours + 11) % 12) + 1;
-  return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${suffix}`;
-}
 
 const translations = {
   en: { title: "Itinerary" },
@@ -130,11 +122,9 @@ export default function TripItinerary({ trip, lang }) {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: actIdx * 0.1 }}
-                  className={`flex items-center gap-3 text-sm md:text-base ${theme.subText}`}
+                  className={`flex items-start gap-3 text-sm md:text-base ${theme.subText}`}
                 >
-                  <time className="shrink-0 font-semibold text-[#c9a34a]">
-                    {formatTime(act.time)}
-                  </time>
+                  <span className="pt-0.5 text-[#c9a34a]" aria-hidden="true">•</span>
                   <span>{getLocalizedText(act.activity_translations)}</span>
                 </motion.li>
               ))}

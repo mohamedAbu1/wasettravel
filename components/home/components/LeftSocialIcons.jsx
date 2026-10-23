@@ -4,6 +4,7 @@ import React from "react";
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaTiktok } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { siteConfig } from "@/lib/siteConfig";
+import ViatorIcon from "@/components/partners/ViatorIcon";
 
 const LeftSocialIcons = () => {
   const socialLinks = [
@@ -12,6 +13,7 @@ const LeftSocialIcons = () => {
     { Icon: FaWhatsapp, url: siteConfig.whatsapp, label: "Chat with us on WhatsApp" },
     { Icon: MdEmail, url: `mailto:${siteConfig.email}`, label: "Send us an email" },
     { Icon: FaTiktok, url: siteConfig.social.tiktok, label: "Follow us on TikTok" },
+    { Icon: ViatorIcon, url: siteConfig.social.viator, label: "Visit us on Viator" },
   ];
 
   return (

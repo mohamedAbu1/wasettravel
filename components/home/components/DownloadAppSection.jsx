@@ -1,6 +1,8 @@
 "use client";
-import { FaGooglePlay, FaApple, FaGlobe, FaMapMarkedAlt, FaArrowRight } from "react-icons/fa";
+import { FaGooglePlay, FaApple, FaMapMarkedAlt, FaArrowRight } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { siteConfig } from "@/lib/siteConfig";
+import ViatorIcon from "@/components/partners/ViatorIcon";
 
 export default function DownloadAppSection() {
   const { t } = useTranslation("home");
@@ -31,7 +33,15 @@ export default function DownloadAppSection() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <ComingSoonCard icon={FaGooglePlay} title={t("GooglePlay")} />
         <ComingSoonCard icon={FaApple} title={t("AppStore")} />
-        <ComingSoonCard icon={FaGlobe} title={t("Viator")} />
+        <a
+          href={siteConfig.social.viator}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t("Viator")}
+          className="stone-card group flex min-h-28 w-full items-center justify-between rounded-2xl p-5 text-[var(--foreground)] transition hover:-translate-y-1"
+        >
+          <span className="flex items-center gap-3"><ViatorIcon className="h-7 w-7 text-[#ff6b35]" /><span><span className="block text-xs text-[var(--muted)]">Visit us on</span><strong>{t("Viator")}</strong></span></span><FaArrowRight className="text-xs text-[var(--muted)] transition group-hover:translate-x-1" />
+        </a>
 
         {/* Tripadvisor Button */}
         <a

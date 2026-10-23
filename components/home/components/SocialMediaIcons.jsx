@@ -7,8 +7,9 @@ import {
   FaTripadvisor,
   FaBlogger,
 } from "react-icons/fa";
-import { MdTravelExplore } from "react-icons/md";
 import { useTheme } from "@/context/ThemeContext";
+import { siteConfig } from "@/lib/siteConfig";
+import ViatorIcon from "@/components/partners/ViatorIcon";
 
 const SocialMediaIcons = () => {
   const { theme } = useTheme();
@@ -21,7 +22,7 @@ const SocialMediaIcons = () => {
       link: "https://www.tripadvisor.com/UserReviewEdit-g294205-d34511536-Waset_Travel-Luxor_Nile_River_Valley.html",
       label: "Write a review on Tripadvisor"
     },
-    { Icon: MdTravelExplore, link: "https://supplier.viator.com", label: "Explore on Viator" },
+    { Icon: ViatorIcon, link: siteConfig.social.viator, label: "Visit us on Viator" },
     { Icon: FaBlogger, link: "https://wasettravel.blogspot.com", label: "Read our Blog on Blogger" },
   ];
 

@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaTiktok } from "react-icons/fa";
 import { MdEmail, MdArrowOutward } from "react-icons/md";
 import { siteConfig } from "@/lib/siteConfig";
+import ViatorIcon from "@/components/partners/ViatorIcon";
 
 const Footer = () => {
   const { themeName } = useTheme();
@@ -21,6 +22,7 @@ const Footer = () => {
     ["WhatsApp", siteConfig.whatsapp, FaWhatsapp],
     ["Email", `mailto:${siteConfig.email}`, MdEmail],
     ["TikTok", siteConfig.social.tiktok, FaTiktok],
+    ["Viator", siteConfig.social.viator, ViatorIcon],
   ];
 
   return (

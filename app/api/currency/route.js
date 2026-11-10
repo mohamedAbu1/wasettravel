@@ -2,6 +2,34 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
 
+async function saveRate(db, base, target, numericRate) {
+  const [existingRows] = await db.query(
+    `SELECT id FROM currency_rates
+     WHERE base_currency = ? AND target_currency = ?
+     LIMIT 1`,
+    [base, target]
+  );
+
+  if (existingRows[0]?.id) {
+    await db.query(
+      `UPDATE currency_rates
+       SET rate = ?, updated_at = NOW()
+       WHERE id = ?`,
+      [numericRate, existingRows[0].id]
+    );
+    return;
+  }
+
+  // The legacy table may have a non-unique/default id. Always provide a
+  // fresh UUID when creating a missing currency pair so pairs cannot collide.
+  await db.query(
+    `INSERT INTO currency_rates
+       (id, base_currency, target_currency, rate, updated_at)
+     VALUES (UUID(), ?, ?, ?, NOW())`,
+    [base, target, numericRate]
+  );
+}
+
 // ✅ جلب كل أسعار الصرف
 export async function GET() {
   try {
@@ -33,12 +61,7 @@ export async function POST(req) {
     }
 
     const db = await connectDB();
-    await db.query(
-      `INSERT INTO currency_rates (base_currency, target_currency, rate, updated_at)
-       VALUES (?, ?, ?, NOW())
-       ON DUPLICATE KEY UPDATE rate = VALUES(rate), updated_at = NOW()`,
-      [base, target, numericRate]
-    );
+    await saveRate(db, base, target, numericRate);
 
     return NextResponse.json(
       { message: "Rate added or updated successfully!" },
@@ -70,12 +93,7 @@ export async function PUT(req) {
     }
 
     const db = await connectDB();
-    await db.query(
-      `INSERT INTO currency_rates (base_currency, target_currency, rate, updated_at)
-       VALUES (?, ?, ?, NOW())
-       ON DUPLICATE KEY UPDATE rate = VALUES(rate), updated_at = NOW()`,
-      [base, target, numericRate]
-    );
+    await saveRate(db, base, target, numericRate);
 
     return NextResponse.json(
       { message: "Rate updated successfully!" },

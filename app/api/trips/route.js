@@ -198,6 +198,7 @@ export async function GET(req) {
         t.title,
         t.currency,
         t.cover_image,
+        t.solo_price,
         t.group_price,
         COALESCE((SELECT AVG(r.rating) FROM reviews r WHERE r.trip_id = t.id), 0) AS rating,
         COALESCE((SELECT COUNT(*) FROM reviews r WHERE r.trip_id = t.id), 0) AS review_count,
@@ -207,6 +208,7 @@ export async function GET(req) {
       : `
       SELECT 
         t.*,
+        COALESCE((SELECT AVG(r.rating) FROM reviews r WHERE r.trip_id = t.id), 0) AS rating,
         COALESCE((SELECT COUNT(*) FROM reviews r WHERE r.trip_id = t.id), 0) AS review_count,
         COALESCE((SELECT COUNT(*) FROM purchases p WHERE p.trip_id = t.id), 0) AS purchase_count,
         COALESCE(
@@ -335,6 +337,7 @@ export async function GET(req) {
       reviews: safeParse(trip.reviews),
       review_count: Number(trip.review_count ?? 0),
       purchase_count: Number(trip.purchase_count ?? 0),
+      rating: Number(Number(trip.rating ?? 0).toFixed(1)),
       trip_details: safeParse(trip.trip_details),
       discountPercent: Number(trip.discount_percent ?? 0),
     }));

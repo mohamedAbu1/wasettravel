@@ -72,6 +72,7 @@ export default function TripPage({ params }) {
           group_price: Number(loadedTrip.group_price || 0),
           duration: Number(loadedTrip.duration || 0),
           discountPercent: Number(loadedTrip.discount_percent || 0),
+          rating: Number(loadedTrip.rating || 0),
           reviews: Array.isArray(loadedTrip.reviews) ? loadedTrip.reviews : [],
         };
         if (!cancelled) setTrip(normalizedTrip);
@@ -112,7 +113,7 @@ export default function TripPage({ params }) {
               <TripItinerary trip={trip} lang={lang} theme={theme} themeName={themeName} />
               <TripReviews trip={trip} lang={lang} theme={theme} />
             </div>
-            <aside className="trip-detail-booking lg:sticky lg:top-24"><div className="trip-detail-booking__label mb-3 flex items-center gap-2 px-1 text-sm"><FaMapMarkerAlt className="text-[#e0b873]" /> {ui("planJourney")}</div><CalendarWidget trip={trip} id={id} />{userData && String(userData.role || "").trim().toLowerCase() !== "admin" && hasActivePurchase && <div className="mt-4"><CancelButton trip={trip} theme={theme} /></div>}</aside>
+            <aside className="trip-detail-booking lg:sticky lg:top-24"><div className="trip-detail-booking__label mb-3 flex items-center gap-2 px-1 text-sm"><FaMapMarkerAlt className="text-[#e0b873]" /> {ui("planJourney")}</div><CalendarWidget trip={trip} id={id} tripTitle={tripTitle} />{userData && String(userData.role || "").trim().toLowerCase() !== "admin" && hasActivePurchase && <div className="mt-4"><CancelButton trip={trip} theme={theme} /></div>}</aside>
           </div>
         </div>
         <Footer /><SignUpButton /><LoginModal />{userData && <ChatWidget />}{chatUser && <AdminChatWindow user={chatUser} admin={userData} messages={messages} onClose={() => setChatUser(null)} />}

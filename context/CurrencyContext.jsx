@@ -5,9 +5,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 const CurrencyContext = createContext(null);
 const supportedCurrencies = ["USD", "EUR", "EGP"];
 const fallbackRates = {
-  USD_EUR: 0.86,
-  USD_EGP: 51.34,
-  EUR_EGP: 58.6,
+  USD_EUR: 0.89,
+  USD_EGP: 54.88,
+  EUR_EGP: 59.73,
 };
 
 function createRateMap(rows = []) {

@@ -110,7 +110,7 @@ export default function TripsPage() {
     };
     const selectedRange = ranges[group_price];
 
-    const price = Number(trip.group_price);
+    const price = Number(trip.solo_price ?? trip.group_price);
     const matchesPrice =
       group_price === "All" || !group_price
         ? true

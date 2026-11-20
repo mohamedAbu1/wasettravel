@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 const currencyOptions = [
   { value: "USD", label: "USD", symbol: "$" },
   { value: "EUR", label: "EUR", symbol: "€" },
-  { value: "EGP", label: "EGP", symbol: "£" },
+  { value: "EGP", label: "EGP", symbol: "EGP" },
 ];
 
 export default function CurrencySelector() {

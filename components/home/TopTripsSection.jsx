@@ -8,12 +8,13 @@ import { useTranslation } from "react-i18next";
 import DividerWithIcon from "../layout/DividerWithIcon";
 import { useTrip } from "@/context/TripContext";
 import { usePurchase } from "@/context/PurchaseContext";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { resolveTripImage } from "@/lib/imageCatalog";
 import { normalizeNextImageSource } from "@/lib/publicImageUrl";
+import { getAdultTripPrice } from "@/lib/tripPricing";
 
 const MAX_TOP_TRIPS = 6;
 
@@ -21,7 +22,6 @@ const TopTripsSection = () => {
   const { themeName } = useTheme();
   const { t, i18n } = useTranslation("home");
   const { t: ui } = useTranslation("ui");
-  const router = useRouter();
   const { userData } = useAuth();
   const { trips, fetchTrips, loadingTrips, error: tripsError } = useTrip();
   const { currency, purchases } = usePurchase();
@@ -76,8 +76,8 @@ const TopTripsSection = () => {
           <div className="absolute inset-x-5 bottom-4"><p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#e0b873]">Waset experience</p><h3 className="line-clamp-2 text-xl font-bold leading-tight text-white">{title}</h3></div>
         </div>
         <div className="flex items-center justify-between gap-3 px-5 py-4">
-          <div><div className="flex items-center gap-1.5 text-sm text-[#e0b873]"><span>★</span><span className="font-bold">{trip.rating || "4.5"}</span><span className="text-white/45">({trip.review_count ?? trip.reviews?.length ?? 0} {t("reviews")})</span></div><p className="mt-1 text-lg font-bold text-[#f3d18f]">{convertPrice(trip.group_price, trip.currency || "USD", currency)}</p></div>
-          <button onClick={() => router.push(`/${lang}/trips/${trip.id}`)} className={`rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 ${hasPurchased ? "bg-[#83b995] text-[#13251a]" : "stone-button"}`}>{hasPurchased ? t("Tripdetails") : t("BookNow")}</button>
+          <div><div className="flex items-center gap-1.5 text-sm text-[#e0b873]"><span>★</span><span className="font-bold">{Number(trip.rating || 0).toFixed(1)}</span><span className="text-white/45">({trip.review_count ?? trip.reviews?.length ?? 0} {t("reviews")})</span></div><p className="mt-1 text-lg font-bold text-[#f3d18f]">{convertPrice(getAdultTripPrice(trip), trip.currency || "USD", currency)}</p></div>
+          <Link href={`/${lang}/trips/${trip.id}`} aria-label={hasPurchased ? t("Tripdetails") : t("BookNow")} className={`rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 ${hasPurchased ? "bg-[#83b995] text-[#13251a]" : "stone-button"}`}>{hasPurchased ? t("Tripdetails") : t("BookNow")}</Link>
         </div>
       </motion.article>
     );

@@ -1,28 +1,28 @@
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
-import React, { useState } from "react";
+import { usePurchase } from "@/context/PurchaseContext";
+import { useCurrency } from "@/context/CurrencyContext";
 import CalendarBooking from "./components/CalendarBooking";
 import BookingSummaryCard from "./components/BookingSummaryCard";
-import { useChat } from "@/context/ChatContext";
 
-const BookingCalendar = ({ trip,id }) => {
-  const [selectedDate, setSelectedDate] = useState(null);
-  const prise = trip.solo_price;
+const BookingCalendar = ({ trip, id, tripTitle }) => {
   const { themeName } = useTheme();
-  const {
-    participants,
-    setParticipants,
-    childrenCount,
-    setChildrenCount,
-    checkInPrice,
-    setCheckInPrice,
-    checkIn,
-    setCheckIn,
-    checkOut,
-    setCheckOut,
-  } = useChat();
-  const handleDateClick = (day) => {
-    setSelectedDate(day);
-  };
+  const { currency } = usePurchase();
+  const { convertPrice } = useCurrency();
+  const [participants, setParticipants] = useState(0);
+  const [childrenCount, setChildrenCount] = useState(0);
+  const [checkIn, setCheckIn] = useState(null);
+  const [checkOut, setCheckOut] = useState(null);
+
+  const tripCurrency = String(trip?.currency || "USD").toUpperCase();
+  const displayCurrency = String(currency || tripCurrency).toUpperCase();
+
+  useEffect(() => {
+    setParticipants(0);
+    setChildrenCount(0);
+    setCheckIn(null);
+    setCheckOut(null);
+  }, [id]);
 
   return (
     <div
@@ -32,17 +32,11 @@ const BookingCalendar = ({ trip,id }) => {
           : "bg-white/90 text-[#3a2c0a]"
       }`}
     >
-      {/* Participants Section */}
-      <h2
-        className={`text-xl font-semibold mb-4 ${
-          themeName === "dark" ? "text-blue-400" : "text-primary"
-        }`}
-      >
+      <h2 className={`text-xl font-semibold mb-4 ${themeName === "dark" ? "text-blue-400" : "text-primary"}`}>
         Participants
       </h2>
 
       <div className="flex justify-between mb-6">
-        {/* Adults */}
         <div className="flex items-center space-x-1 lg:space-x-4">
           <div>
             <p className="font-medium">Adult</p>
@@ -50,31 +44,24 @@ const BookingCalendar = ({ trip,id }) => {
           </div>
           <div className="flex items-center space-x-2">
             <button
+              type="button"
               onClick={() => setParticipants(Math.max(0, participants - 1))}
-              className={`px-2 py-1 cursor-pointer rounded disabled:opacity-50 ${
-                themeName === "dark"
-                  ? "bg-blue-600 text-white"
-                  : "bg-blue-600 text-white"
-              }`}
+              className="px-2 py-1 cursor-pointer rounded disabled:opacity-50 bg-blue-600 text-white"
               disabled={participants === 0}
             >
               -
             </button>
             <span>{participants}</span>
             <button
+              type="button"
               onClick={() => setParticipants(participants + 1)}
-              className={`px-2 cursor-pointer py-1 rounded ${
-                themeName === "dark"
-                  ? "bg-yellow-500 text-black"
-                  : "bg-yellow-500 text-white"
-              }`}
+              className={`px-2 cursor-pointer py-1 rounded ${themeName === "dark" ? "bg-yellow-500 text-black" : "bg-yellow-500 text-white"}`}
             >
               +
             </button>
           </div>
         </div>
 
-        {/* Children */}
         <div className="flex items-center space-x-1 lg:space-x-4">
           <div>
             <p className="font-medium">Child</p>
@@ -82,24 +69,18 @@ const BookingCalendar = ({ trip,id }) => {
           </div>
           <div className="flex items-center space-x-2">
             <button
+              type="button"
               onClick={() => setChildrenCount(Math.max(0, childrenCount - 1))}
-              className={`px-2 cursor-pointer py-1 rounded disabled:opacity-50 ${
-                themeName === "dark"
-                  ? "bg-blue-600 text-white"
-                  : "bg-blue-600 text-white"
-              }`}
+              className="px-2 cursor-pointer py-1 rounded disabled:opacity-50 bg-blue-600 text-white"
               disabled={childrenCount === 0}
             >
               -
             </button>
             <span>{childrenCount}</span>
             <button
+              type="button"
               onClick={() => setChildrenCount(childrenCount + 1)}
-              className={`px-2 cursor-pointer py-1 rounded ${
-                themeName === "dark"
-                  ? "bg-yellow-500 text-black"
-                  : "bg-yellow-500 text-white"
-              }`}
+              className={`px-2 cursor-pointer py-1 rounded ${themeName === "dark" ? "bg-yellow-500 text-black" : "bg-yellow-500 text-white"}`}
             >
               +
             </button>
@@ -107,40 +88,37 @@ const BookingCalendar = ({ trip,id }) => {
         </div>
       </div>
 
-      {/* Calendar Section OR Message */}
       {participants === 0 ? (
         <div className="text-center py-10">
-          <p
-            className={`text-lg font-semibold ${
-              themeName === "dark" ? "text-gray-300" : "text-gray-700"
-            }`}
-          >
+          <p className={`text-lg font-semibold ${themeName === "dark" ? "text-gray-300" : "text-gray-700"}`}>
             Please add participants to view available dates
           </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Select the number of adults to continue booking.
-          </p>
+          <p className="text-sm text-gray-500 mt-2">Select the number of adults to continue booking.</p>
         </div>
       ) : (
         <CalendarBooking
-          prise={prise}
-          checkInPrice={checkInPrice}
-          setCheckInPrice={setCheckInPrice}
-          setCheckOut={setCheckOut}
+          trip={trip}
+          displayCurrency={displayCurrency}
+          tripCurrency={tripCurrency}
+          convertPrice={convertPrice}
           checkOut={checkOut}
+          setCheckOut={setCheckOut}
           checkIn={checkIn}
           setCheckIn={setCheckIn}
-                    tripId={id}
-
+          participants={participants}
         />
       )}
 
       <BookingSummaryCard
-        checkInPrice={checkInPrice}
+        trip={trip}
+        tripTitle={tripTitle}
         participants={participants}
         childrenCount={childrenCount}
         checkOut={checkOut}
         checkIn={checkIn}
+        currency={displayCurrency}
+        tripCurrency={tripCurrency}
+        convertPrice={convertPrice}
       />
     </div>
   );

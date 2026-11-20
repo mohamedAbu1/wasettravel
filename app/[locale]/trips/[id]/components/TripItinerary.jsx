@@ -58,7 +58,19 @@ export default function TripItinerary({ trip, lang }) {
     tripDays = [];
   }
 
-  const dayGroups = chunkDays(tripDays || []);
+  const dayGroups = chunkDays(
+    (tripDays || [])
+      .slice()
+      .sort((a, b) => Number(a.day_number || 0) - Number(b.day_number || 0))
+      .map((day) => ({
+        ...day,
+        activities: (day.activities || []).slice().sort((a, b) => {
+          const timeA = String(a.time || "99:99");
+          const timeB = String(b.time || "99:99");
+          return timeA.localeCompare(timeB);
+        }),
+      })),
+  );
   const [currentPage, setCurrentPage] = useState(0);
 
   return (

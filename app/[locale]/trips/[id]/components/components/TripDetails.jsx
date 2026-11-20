@@ -3,17 +3,18 @@ import { FaShoppingCart, FaMoneyBillWave, FaUsers } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useCurrency } from "@/context/CurrencyContext";
+import { getAdultTripPrice } from "@/lib/tripPricing";
 
 export default function TripDetails({ trip, groupSize }) {
   const { themeName } = useTheme();
   const { currency } = usePurchase();
   const { convertPrice } = useCurrency();
 
-  const pricePerPerson = convertPrice(trip.price, trip.currency || "USD", currency || trip.currency);
+  const pricePerPerson = convertPrice(getAdultTripPrice(trip, groupSize), trip.currency || "USD", currency || trip.currency);
 
 
   // ✅ السعر النهائي = السعر للفرد × عدد الأشخاص
-  const totalPrice = (pricePerPerson * groupSize).toFixed(2);
+  const totalPrice = (Number(pricePerPerson) * groupSize).toFixed(2);
   return (
     <div className="mb-6">
       <h2

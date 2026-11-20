@@ -1,6 +1,6 @@
 "use client";
 
-import { FaDollarSign, FaEuroSign, FaPoundSign } from "react-icons/fa";
+import { FaDollarSign, FaEuroSign, FaCoins } from "react-icons/fa";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import TravelSelectField from "./TravelSelectField";
@@ -9,7 +9,7 @@ export default function PriceSelect({ price, setPrice, t }) {
   const { currency } = usePurchase();
   const { convertPrice } = useCurrency();
   const symbol = currency === "EUR" ? "€" : currency === "EGP" ? "E£" : "$";
-  const Icon = currency === "EUR" ? FaEuroSign : currency === "EGP" ? FaPoundSign : FaDollarSign;
+  const Icon = currency === "EUR" ? FaEuroSign : currency === "EGP" ? FaCoins : FaDollarSign;
   const ranges = [
     { value: "Economy", min: 0, max: 199 },
     { value: "Standard", min: 200, max: 599 },

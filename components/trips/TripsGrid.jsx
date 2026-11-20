@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { FaStar, FaDollarSign, FaEuroSign, FaPoundSign } from "react-icons/fa";
+import { FaStar, FaDollarSign, FaEuroSign, FaCoins } from "react-icons/fa";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { usePurchase } from "@/context/PurchaseContext";
@@ -18,6 +18,7 @@ import "swiper/css/navigation";
 import { resolveTripImage } from "@/lib/imageCatalog";
 import { normalizeGalleryImages } from "@/lib/galleryImages";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
+import { getAdultTripPrice } from "@/lib/tripPricing";
 
 function localizedValue(value, lang, fallback = "") {
   if (!value) return fallback;
@@ -36,7 +37,6 @@ function localizedValue(value, lang, fallback = "") {
 }
 
 export default function TripsGrid({ trips, cardStyle = "vertical" }) {
-  const router = useRouter();
   const { userData } = useAuth();
   const { currency, purchases } = usePurchase();
   const { convertPrice } = useCurrency();
@@ -59,10 +59,10 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
           cities: trip.cities?.map((city) => localizedValue(city?.name, lang)),
           categories: trip.categories?.map((category) => localizedValue(category?.name, lang)),
         });
-        const avgStars = Math.max(0, Math.min(5, Number(trip.rating) || 4));
+        const avgStars = Math.max(0, Math.min(5, Number(trip.rating) || 0));
         const tripCurrency = String(trip.currency || "USD").toUpperCase();
         const displayCurrency = String(currency || tripCurrency).toUpperCase();
-        const displayedPrice = convertPrice(Number(trip.group_price) || 0, tripCurrency, displayCurrency);
+        const displayedPrice = convertPrice(getAdultTripPrice(trip), tripCurrency, displayCurrency);
         const galleryImages = normalizeGalleryImages(trip.gallery_images);
         const coverImage = typeof trip.cover_image === "string" && trip.cover_image
           ? toPublicImageUrl(trip.cover_image)
@@ -88,7 +88,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
           CurrencyIcon = FaEuroSign;
           currencyColor = theme.eurColor || "#3498db";
         } else if (displayCurrency === "EGP") {
-          CurrencyIcon = FaPoundSign;
+          CurrencyIcon = FaCoins;
           currencyColor = theme.egpColor || "#b8860b";
         }
 
@@ -236,8 +236,8 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 <span className="text-sm text-[var(--muted)]">({trip.review_count ?? 0} {t("reviews")})</span>
               </div>
 
-              <button
-                onClick={() => router.push(`/${lang}/trips/${trip.id}`)}
+              <Link
+                href={`/${lang}/trips/${trip.id}`}
                 aria-label={
                   hasPurchased ? "View trip details" : "Book this trip"
                 }
@@ -245,7 +245,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                   bg-[#C2A878] text-white hover:bg-[#a58a60] shadow-md"
               >
                 {hasPurchased ? t("Tripdetails") : t("btn")}
-              </button>
+              </Link>
             </div>
           </motion.div>
         );

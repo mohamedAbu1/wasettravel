@@ -76,13 +76,13 @@ export async function GET(req, context) {
     // ✅ جلب الأيام والأنشطة
     const [days] = await db.query(
       `SELECT id, day_number 
-       FROM trip_days WHERE trip_id = ?`,
+       FROM trip_days WHERE trip_id = ? ORDER BY day_number ASC`,
       [id]
     );
     for (const day of days) {
       const [activities] = await db.query(
         `SELECT id, time, activity_translations 
-         FROM day_activities WHERE day_id = ?`,
+         FROM day_activities WHERE day_id = ? ORDER BY (time IS NULL OR time = ''), time ASC`,
         [day.id]
       );
       day.activities = activities.map((act) => ({
@@ -130,6 +130,9 @@ export async function GET(req, context) {
           trip_details: parsedDetails,
           reviews,
           review_count: reviews.length,
+           rating: reviews.length
+             ? Number((reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / reviews.length).toFixed(1))
+             : 0,
         },
       },
       { status: 200 }

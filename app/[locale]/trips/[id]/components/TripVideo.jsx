@@ -1,15 +1,21 @@
 "use client";
+import { useEffect, useState } from "react";
+
+const videos = [
+  "d6biIIidvrg",
+  "d51ii4RSwWE",
+  "GLfdt9lZkYk",
+  "eI90PobkLFI",
+];
 
 export default function TripVideo() {
-  const videos = [
-    "d6biIIidvrg",
-    "d51ii4RSwWE",
-    "GLfdt9lZkYk",
-    "eI90PobkLFI",
-  ];
+  const [videoIndex, setVideoIndex] = useState(0);
 
-  const randomIndex = Math.floor(Math.random() * videos.length);
-  const videoId = videos[randomIndex];
+  useEffect(() => {
+    setVideoIndex(Math.floor(Math.random() * videos.length));
+  }, []);
+
+  const videoId = videos[videoIndex];
 
   const videoUrl = `https://www.youtube.com/embed/${videoId}?mute=1&autoplay=1&controls=1&loop=1&playlist=${videoId}`;
 

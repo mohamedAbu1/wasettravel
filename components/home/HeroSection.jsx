@@ -9,7 +9,7 @@ import LeftSocialIcons from "./components/LeftSocialIcons";
 import { usePathname } from "next/navigation";
 import catalog from "@/lib/imageCatalog";
 
-const heroImage = catalog.hero;
+const heroImage = catalog.cities?.luxor || catalog.hero;
 
 export default function HeroSection() {
   const { theme } = useTheme();

@@ -142,7 +142,10 @@
     "Home": "Startseite",
     "AboutUs": "Über uns",
     "Tours": "Touren",
-    "Contact": "Kontakt"
+    "Contact": "Kontakt",
+    "Trips": "Reisen",
+    "privacyPolicyLabel": "Datenschutzrichtlinie",
+    "cancellationPolicyLabel": "Stornierungsrichtlinie"
   },
     "tripsId": {
     "submitReview": "Bewertung abgeben",

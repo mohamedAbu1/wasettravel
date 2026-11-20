@@ -15,12 +15,12 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useTrip } from "@/context/TripContext";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { useQueryFilters } from "@/context/QueryContext";
-import CurrencySelector from "../../../components/layout/CurrencySelector";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
 import AdminChatWindow from "@/components/layout/AdminChatWindow";
 import { usePurchase } from "@/context/PurchaseContext";
 import { useTranslation } from "react-i18next";
 import { FaSlidersH, FaCompass } from "react-icons/fa";
+import { tripCopy } from "@/lib/tripUiCopy";
 
 function localizedValue(value, lang) {
   if (!value) return "";
@@ -83,6 +83,20 @@ export default function TripsPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [search, city, category, group_price, popular, cardStyle]);
+
+  useEffect(() => {
+    if (!mobileFilterOpen) return undefined;
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setMobileFilterOpen(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [mobileFilterOpen]);
 
   if (loadingTrips)
     return <main className="trip-detail-state" aria-busy="true"><span className="trip-detail-state__spinner" aria-hidden="true" /><strong>{t("Loading", { defaultValue: "Loading journeys" })}</strong><p>{t("LoadingTripsMessage", { defaultValue: "Preparing the best journeys for you…" })}</p></main>;
@@ -165,7 +179,7 @@ export default function TripsPage() {
                 <p className="stone-kicker">WasetTravel collection</p>
                 <h1 className="mt-1 text-2xl font-bold text-[var(--foreground)]">{t("ExploreTrips", { defaultValue: "Explore journeys" })}</h1>
               </div>
-              <button type="button" className="trips-filter-trigger" onClick={() => setMobileFilterOpen(true)}>
+              <button type="button" className="trips-filter-trigger" aria-controls="mobile-trip-filters" aria-expanded={mobileFilterOpen} onClick={() => setMobileFilterOpen(true)}>
                 <FaSlidersH /> {t("Filters", { defaultValue: "Filters" })}
               </button>
             </div>
@@ -178,7 +192,9 @@ export default function TripsPage() {
               />
             </div>
 
-            <TripsFilter allCities={allCities} allCategories={allCategories} loading={loading} mobileOnly mobileOpen={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)} />
+            <div id="mobile-trip-filters">
+              <TripsFilter allCities={allCities} allCategories={allCategories} loading={loading} mobileOnly mobileOpen={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)} />
+            </div>
 
             <div className="flex-1 flex flex-col gap-6">
               <TripsSearch
@@ -188,14 +204,14 @@ export default function TripsPage() {
                 setCardStyle={setCardStyle}
               />
               <div className="flex items-center justify-between gap-3 text-sm text-[var(--muted)]" aria-live="polite">
-                <span className="inline-flex items-center gap-2"><FaCompass className="text-[var(--color)]" /> {finalTrips.length} {t("TripsFound", { defaultValue: "journeys found" })}</span>
+                <span className="inline-flex items-center gap-2"><FaCompass className="text-[var(--color)]" /> {finalTrips.length} {tripCopy(lang, "journeysFound")}</span>
                 {search ? <span className="max-w-[55%] truncate">“{search}”</span> : null}
               </div>
               {currentTrips.length ? (
                 <TripsGrid trips={currentTrips} cardStyle={cardStyle} />
               ) : (
                 <div className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-6 py-16 text-center text-[var(--muted)] shadow-sm" role="status">
-                  {t("NoTrips", { defaultValue: "No trips match your current filters yet." })}
+                  {tripCopy(lang, "noTrips")}
                 </div>
               )}
 
@@ -236,7 +252,6 @@ export default function TripsPage() {
             onClose={() => setChatUser(null)}
           />
         )}
-        <CurrencySelector />
       </main>
     </>
   );

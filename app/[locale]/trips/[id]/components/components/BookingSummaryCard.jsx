@@ -38,6 +38,7 @@ const BookingSummaryCard = ({
   const pricePerAdult = convertPrice(pricePerAdultBase, tripCurrency, currency);
   const total = convertPrice(totalBase, tripCurrency, currency);
   const title = tripTitle || trip?.title?.en || "Selected trip";
+  const bookingDisabled = participants < 1 || !checkIn;
 
   const handleBookingClick = () => {
     if (!participants || !checkIn) {
@@ -92,9 +93,11 @@ ${checkOut ? `📅 **End date:** ${formatDate(checkOut)}\n` : ""}
         <motion.button
           type="button"
           onClick={handleBookingClick}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className={`relative w-full text-center flex items-center justify-center gap-2 px-6 py-3 rounded-lg shadow-lg font-semibold transition ${themeName === "dark" ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-indigo-500/50" : "bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:shadow-lg"}`}
+          disabled={bookingDisabled}
+          aria-disabled={bookingDisabled}
+          whileHover={bookingDisabled ? undefined : { scale: 1.02 }}
+          whileTap={bookingDisabled ? undefined : { scale: 0.98 }}
+          className={`relative w-full text-center flex items-center justify-center gap-2 px-6 py-3 rounded-lg shadow-lg font-semibold transition ${bookingDisabled ? "cursor-not-allowed opacity-50" : ""} ${themeName === "dark" ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-indigo-500/50" : "bg-gradient-to-r from-yellow-400 to-orange-500 text-white hover:shadow-lg"}`}
         >
           <FaWhatsapp className="text-xl" />
           <span>Continue on WhatsApp</span>

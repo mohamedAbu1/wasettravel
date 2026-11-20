@@ -40,7 +40,7 @@ const BookingCalendar = ({ trip, id, tripTitle }) => {
         <div className="flex items-center space-x-1 lg:space-x-4">
           <div>
             <p className="font-medium">Adult</p>
-            <p className="text-sm text-gray-500">Age 6 - 100</p>
+            <p className="text-sm text-gray-500">Per person</p>
           </div>
           <div className="flex items-center space-x-2">
             <button
@@ -65,7 +65,7 @@ const BookingCalendar = ({ trip, id, tripTitle }) => {
         <div className="flex items-center space-x-1 lg:space-x-4">
           <div>
             <p className="font-medium">Child</p>
-            <p className="text-sm text-gray-500">Age 6 - 12</p>
+            <p className="text-sm text-gray-500">Child fare</p>
           </div>
           <div className="flex items-center space-x-2">
             <button

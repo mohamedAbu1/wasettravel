@@ -47,7 +47,6 @@ const Footer = dynamic(() => import("@/components/Footer/Footer"), {
 
 // ✅ Lazy load components غير حرجة
 const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr: false });
-const CurrencySelector = dynamic(() => import("@/components/layout/CurrencySelector"), { ssr: false });
 const AdminDashboardButton = dynamic(() => import("@/components/layout/AdminDashboardButton"), { ssr: false });
 const AdminChatWindow = dynamic(() => import("@/components/layout/AdminChatWindow"), { ssr: false });
 const LoginModal = dynamic(() => import("@/components/home/components/LoginModal"), { ssr: false });
@@ -133,7 +132,6 @@ export default function Home() {
             onClose={() => setChatUser(null)}
           />
         )}
-        <CurrencySelector />
       </main>
     </>
   );

@@ -117,15 +117,15 @@ export default function RightBar() {
           color="error"
           className="stone-header-action hidden lg:flex"
         >
-          <NotificationsIcon
+          <button
+            type="button"
+            className="admin-icon-button"
             aria-label={t("notifications")}
             title={t("notifications")}
             onClick={() => { setOpen(true); fetchNotifications(); }}
-            sx={{
-              cursor: "pointer",
-              color: "var(--header-foreground)",
-            }}
-          />
+          >
+            <NotificationsIcon sx={{ color: "var(--header-foreground)" }} />
+          </button>
         </Badge>
       )}
 
@@ -136,15 +136,15 @@ export default function RightBar() {
           color="error"
           className="stone-header-action hidden lg:flex"
         >
-          <MailIcon
+          <button
+            type="button"
+            className="admin-icon-button"
             aria-label={t("messages")}
             title={t("messages")}
             onClick={() => { setOpenMessages(true); fetchNotifications(); }}
-            sx={{
-              cursor: "pointer",
-              color: "var(--header-foreground)",
-            }}
-          />
+          >
+            <MailIcon sx={{ color: "var(--header-foreground)" }} />
+          </button>
         </Badge>
       )}
 

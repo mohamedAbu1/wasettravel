@@ -19,6 +19,8 @@ import { resolveTripImage } from "@/lib/imageCatalog";
 import { normalizeGalleryImages } from "@/lib/galleryImages";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
 import { getAdultTripPrice } from "@/lib/tripPricing";
+import { tripCopy } from "@/lib/tripUiCopy";
+import { normalizePublicCopy } from "@/lib/publicCopy";
 
 function localizedValue(value, lang, fallback = "") {
   if (!value) return fallback;
@@ -55,7 +57,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
     >
       {trips.map((trip, i) => {
         const fallbackImage = resolveTripImage({
-          title: localizedValue(trip.title, lang),
+          title: normalizePublicCopy(localizedValue(trip.title, lang)),
           cities: trip.cities?.map((city) => localizedValue(city?.name, lang)),
           categories: trip.categories?.map((category) => localizedValue(category?.name, lang)),
         });
@@ -68,6 +70,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
           ? toPublicImageUrl(trip.cover_image)
           : fallbackImage;
         const isExpanded = expandedTripId === trip.id;
+        const displayTitle = normalizePublicCopy(localizedValue(trip.title, lang, "Untitled"));
 
         const hasPurchased =
           userData &&
@@ -133,7 +136,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                     <SwiperSlide key={`${image.url}-${idx}`}>
                       <Image
                         src={image.url}
-                        alt={`Trip image: ${localizedValue(trip.title, lang, "Untitled")}`}
+                        alt={`Trip image: ${displayTitle}`}
                         fill
                         quality={75}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 720px"
@@ -150,7 +153,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                 <div className="trips-card__cover relative h-[300px] bg-[#ead9c7] lg:h-[480px]">
                   <Image
                     src={coverImage}
-                    alt={`Trip image: ${localizedValue(trip.title, lang, "Untitled")}`}
+                    alt={`Trip image: ${displayTitle}`}
                     fill
                     quality={75}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 360px"
@@ -160,7 +163,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                     placeholder="blur"
                     blurDataURL={fallbackImage}
                   />
-                  {galleryImages.length > 1 ? <span className="trips-card__gallery-hint">Hover to explore {galleryImages.length} photos</span> : null}
+                  {galleryImages.length > 1 ? <button type="button" className="trips-card__gallery-hint" aria-expanded={isExpanded} onClick={(event) => { event.preventDefault(); event.stopPropagation(); setExpandedTripId(isExpanded ? null : trip.id); }}>{tripCopy(lang, "viewPhotos", galleryImages.length)}</button> : null}
                 </div>
               )}
             </div>
@@ -175,12 +178,12 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               <h3
                 role="heading"
                 aria-level={3}
-                aria-label={localizedValue(trip.title, lang, "Untitled")}
+                aria-label={displayTitle}
                 className="text-1xl font-bold text-[var(--color)]"
               >
-                {localizedValue(trip.title, lang, "Untitled")}
+                {displayTitle}
               </h3>
-              {trip.duration ? <span className="trips-card__duration">{trip.duration} {trip.duration_unit || "days"}</span> : null}
+              {trip.duration ? <span className="trips-card__duration">{trip.duration} {Number(trip.duration) === 1 ? tripCopy(lang, "day") : tripCopy(lang, "days")}</span> : null}
               </div>
 
               <p
@@ -195,7 +198,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                           localizedValue(c?.name, lang, "Unknown City"),
                       )
                       .join(", ")
-                  : "Unknown City"}
+                  : tripCopy(lang, "unknownCity")}
               </p>
 
               <p
@@ -210,7 +213,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                           localizedValue(cat?.name, lang, "Unknown Category"),
                       )
                       .join(", ")
-                  : t("NoCategory")}
+                  : tripCopy(lang, "noCategory")}
               </p>
 
               <p
@@ -223,7 +226,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
 
               <div
                 className="flex items-center gap-2"
-                aria-label={`Average rating ${avgStars} out of 5`}
+                aria-label={tripCopy(lang, "averageRating", avgStars)}
               >
                 {[...Array(5)].map((_, idx) => (
                   <FaStar

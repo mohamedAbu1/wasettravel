@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/purity */
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { FaArrowRight, FaCalendarAlt, FaCheck, FaCompass, FaUsers, FaWhatsapp } from "react-icons/fa";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
 import ChatWidget from "@/components/layout/ChatWidget";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
-import CurrencySelector from "@/components/layout/CurrencySelector";
 import LoginModal from "@/components/home/components/LoginModal";
 import SignUpModal from "@/components/home/components/SignUpButton";
 import { useAuth } from "@/context/AuthContext";
@@ -19,6 +18,11 @@ import { openWhatsAppBooking } from "@/lib/whatsappBooking";
 const destinations = ["Luxor", "Aswan", "Cairo", "Abu Simbel", "Nile cruise"];
 const interests = ["Ancient temples", "Nile moments", "Local food", "Desert adventure", "Family time", "Slow travel"];
 const durations = ["2–3 days", "4–6 days", "7–10 days", "10+ days"];
+const planningSteps = [
+  ["Share your travel wish list", "Tell us the places and experiences that matter most."],
+  ["We refine the route with local insight", "We shape the pace, transport, and stays around you."],
+  ["Receive a personal plan on WhatsApp", "Review the proposal with our team before committing."],
+];
 
 const initialForm = {
   destinations: [],
@@ -39,6 +43,12 @@ export default function TailorYourTripPage() {
   const { lang } = useLanguage();
   const [form, setForm] = useState(initialForm);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [todayIso, setTodayIso] = useState("");
+
+  useEffect(() => {
+    setTodayIso(new Date().toISOString().split("T")[0]);
+  }, []);
 
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
   const toggle = (key, value) => setForm((current) => ({
@@ -53,6 +63,12 @@ export default function TailorYourTripPage() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!form.destinations.length || !form.interests.length) {
+      setError("Please choose at least one destination and one travel style before sending your request.");
+      setSubmitted(false);
+      return;
+    }
+    setError("");
     const message = [
       "✦ *Tailor my trip request*",
       "",
@@ -88,7 +104,7 @@ export default function TailorYourTripPage() {
           </div>
           <div className="rounded-[2rem] border border-[#e0b873]/25 bg-[#2a2520] p-6 text-[#f6eddf] shadow-[0_2rem_5rem_rgba(20,15,10,.22)] sm:p-8">
             <p className="text-xs font-black uppercase tracking-[.2em] text-[#e0b873]">How it works</p>
-            <div className="mt-6 grid gap-5">{["Share your travel wish list", "We refine the route with local insight", "Receive a personal plan on WhatsApp"].map((item, index) => <div className="flex gap-4" key={item}><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#e0b873] text-sm font-black text-[#241b12]">{index + 1}</span><div><strong className="block text-sm">{item}</strong><span className="mt-1 block text-xs leading-5 text-white/55">A simple conversation turns ideas into a clear journey.</span></div></div>)}</div>
+            <div className="mt-6 grid gap-5">{planningSteps.map(([title, description], index) => <div className="flex gap-4" key={title}><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#e0b873] text-sm font-black text-[#241b12]">{index + 1}</span><div><strong className="block text-sm">{title}</strong><span className="mt-1 block text-xs leading-5 text-white/55">{description}</span></div></div>)}</div>
           </div>
         </div>
       </section>
@@ -105,7 +121,7 @@ export default function TailorYourTripPage() {
             <section className="stone-card rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-8">
               <div className="mb-7"><p className="stone-kicker">02 · Your style</p><h2 className="mt-2 text-2xl font-bold sm:text-3xl">What should the journey feel like?</h2><p className="mt-2 text-sm text-[var(--muted)]">Choose as many as you like. There is no wrong answer.</p></div>
               <div className="flex flex-wrap gap-3">{interests.map((item) => <button type="button" key={item} onClick={() => toggle("interests", item)} className={`rounded-full border px-4 py-2.5 text-sm font-semibold transition ${selected("interests", item) ? "border-[var(--color)] bg-[var(--color)] text-[#241b12]" : "border-[var(--line)] text-[var(--muted)] hover:border-[var(--color)]"}`}>{item}</button>)}</div>
-              <div className="mt-8 grid gap-5 sm:grid-cols-3"><label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaUsers className="text-[var(--color)]" /> Travelers</span><select className={inputClass} value={form.travelers} onChange={(event) => update("travelers", event.target.value)}>{[1,2,3,4,5,6,7,8,"9+"] .map((item) => <option key={item} value={item}>{item} {item === 1 ? "traveler" : "travelers"}</option>)}</select></label><label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaCalendarAlt className="text-[var(--color)]" /> Preferred date</span><input type="date" className={inputClass} value={form.date} min={new Date().toISOString().split("T")[0]} onChange={(event) => update("date", event.target.value)} /></label><label className="grid gap-2 text-sm font-semibold"><span>Stay preference</span><select className={inputClass} value={form.accommodation} onChange={(event) => update("accommodation", event.target.value)}><option>Boutique hotels</option><option>Comfort hotels</option><option>Luxury stays</option><option>Mix of stays</option></select></label></div>
+              <div className="mt-8 grid gap-5 sm:grid-cols-3"><label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaUsers className="text-[var(--color)]" /> Travelers</span><select className={inputClass} value={form.travelers} onChange={(event) => update("travelers", event.target.value)}>{[1,2,3,4,5,6,7,8,"9+"] .map((item) => <option key={item} value={item}>{item} {item === 1 ? "traveler" : "travelers"}</option>)}</select></label><label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaCalendarAlt className="text-[var(--color)]" /> Preferred date</span><input type="date" className={inputClass} value={form.date} min={todayIso || undefined} onChange={(event) => update("date", event.target.value)} /></label><label className="grid gap-2 text-sm font-semibold"><span>Stay preference</span><select className={inputClass} value={form.accommodation} onChange={(event) => update("accommodation", event.target.value)}><option>Boutique hotels</option><option>Comfort hotels</option><option>Luxury stays</option><option>Mix of stays</option></select></label></div>
             </section>
 
             <section className="stone-card rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-5 sm:p-8">
@@ -114,11 +130,11 @@ export default function TailorYourTripPage() {
             </section>
           </div>
 
-          <aside className="sticky top-28 rounded-[1.5rem] border border-[#e0b873]/25 bg-[#2a2520] p-5 text-[#f6eddf] shadow-[0_1.5rem_4rem_rgba(20,15,10,.18)] sm:p-6"><p className="text-xs font-black uppercase tracking-[.2em] text-[#e0b873]">Your trip brief</p><h2 className="mt-3 text-2xl font-bold">A journey with intention.</h2><div className="my-6 grid gap-4 border-y border-white/10 py-5 text-sm"><div><span className="block text-xs text-white/45">Destinations</span><strong className="mt-1 block leading-6">{summary.destinations}</strong></div><div><span className="block text-xs text-white/45">Pace</span><strong className="mt-1 block">{form.duration}</strong></div><div><span className="block text-xs text-white/45">Travel style</span><strong className="mt-1 block leading-6">{summary.interests}</strong></div></div><button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#e0b873] px-5 py-3.5 text-sm font-black text-[#241b12] transition hover:-translate-y-0.5 hover:bg-[#f0c979]"><FaWhatsapp /> Send my trip request <FaArrowRight className="text-xs" /></button>{submitted && <p className="mt-3 text-center text-xs font-semibold text-[#9acb89]">WhatsApp is opening with your trip brief.</p>}<p className="mt-4 text-center text-xs leading-5 text-white/45">No payment or commitment. We will refine the details with you first.</p></aside>
+          <aside className="sticky top-28 rounded-[1.5rem] border border-[#e0b873]/25 bg-[#2a2520] p-5 text-[#f6eddf] shadow-[0_1.5rem_4rem_rgba(20,15,10,.18)] sm:p-6"><p className="text-xs font-black uppercase tracking-[.2em] text-[#e0b873]">Your trip brief</p><h2 className="mt-3 text-2xl font-bold">A journey with intention.</h2><div className="my-6 grid gap-4 border-y border-white/10 py-5 text-sm"><div><span className="block text-xs text-white/45">Destinations</span><strong className="mt-1 block leading-6">{summary.destinations}</strong></div><div><span className="block text-xs text-white/45">Pace</span><strong className="mt-1 block">{form.duration}</strong></div><div><span className="block text-xs text-white/45">Travel style</span><strong className="mt-1 block leading-6">{summary.interests}</strong></div></div>{error ? <p role="alert" className="mb-3 rounded-xl border border-[#c9796d]/30 bg-[#c9796d]/10 px-3 py-2 text-xs font-semibold text-[#f0b2a6]">{error}</p> : null}<button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#e0b873] px-5 py-3.5 text-sm font-black text-[#241b12] transition hover:-translate-y-0.5 hover:bg-[#f0c979]"><FaWhatsapp /> Send my trip request <FaArrowRight className="text-xs" /></button>{submitted && <p className="mt-3 text-center text-xs font-semibold text-[#9acb89]">WhatsApp is opening with your trip brief.</p>}<p className="mt-4 text-center text-xs leading-5 text-white/45">No payment or commitment. We will refine the details with you first.</p></aside>
         </form>
       </section>
 
-      <Footer /><SignUpModal /><LoginModal />{userData && <ChatWidget />}{userData && <AdminDashboardButton />}<CurrencySelector />
+      <Footer /><SignUpModal /><LoginModal />{userData && <ChatWidget />}{userData && <AdminDashboardButton />}
     </main>
   );
 }

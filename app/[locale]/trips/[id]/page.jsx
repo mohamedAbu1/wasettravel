@@ -28,6 +28,7 @@ import TripReviews from "./components/TripReviews";
 import CalendarWidget from "./components/CalendarWidget";
 import TripOverviewTable from "./components/TripOverviewTable";
 import AccessibilityInfo from "./components/components/AccessibilityInfo";
+import { normalizePublicCopy } from "@/lib/publicCopy";
 
 export default function TripPage({ params }) {
   const routeParams = useParams();
@@ -89,8 +90,8 @@ export default function TripPage({ params }) {
   if (loadingTrip) return <main className="trip-detail-state"><span className="trip-detail-state__spinner" /><p>{ui("loading", { defaultValue: "Loading trip details…" })}</p></main>;
   if (tripError || !trip) return <main className="trip-detail-state"><strong>{ui("tripNotFound", { defaultValue: "Trip not found" })}</strong><p>{tripError || ui("tripNotFound")}</p><Link href={`/${lang}/trips`} className="stone-button rounded-xl px-5 py-3">{t("Trips", { defaultValue: "Back to trips" })}</Link></main>;
 
-  const tripTitle = trip.title?.[lang] || trip.title?.en || "Egypt tour";
-  const tripDescription = trip.description?.[lang] || trip.description?.en || "Discover an unforgettable Egypt travel experience with WasetTravel.";
+  const tripTitle = normalizePublicCopy(trip.title?.[lang] || trip.title?.en || "Egypt tour");
+  const tripDescription = normalizePublicCopy(trip.description?.[lang] || trip.description?.en || "Discover an unforgettable Egypt travel experience with WasetTravel.");
   const hasActivePurchase = purchases.some((purchase) => purchase.trip_id?.toString() === trip.id?.toString() && purchase.user_id?.toString() === userData?.id?.toString() && purchase.status !== "Cancelled");
   const tripSchema = { "@context": "https://schema.org", "@type": "TouristTrip", name: tripTitle, description: tripDescription, image: [trip.cover_image, ...(trip.gallery_images || []).map((image) => typeof image === "string" ? image : image?.url)].filter(Boolean), offers: { "@type": "Offer", price: trip.group_price, priceCurrency: trip.currency || "USD", availability: "https://schema.org/InStock" } };
 

@@ -104,7 +104,10 @@
     "Home": "Home",
     "AboutUs": "About Us",
     "Tours": "Tours",
-    "Contact": "Contact"
+    "Contact": "Contact",
+    "Trips": "Trips",
+    "privacyPolicyLabel": "Privacy Policy",
+    "cancellationPolicyLabel": "Cancellation Policy"
   },
   "about": {
     "AboutWasetTravel": "About WasetTravel",

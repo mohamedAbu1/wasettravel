@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiMenu, FiX } from "react-icons/fi";
+import LanguageSelector from "./LanguageSelector";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -46,6 +47,7 @@ export default function MobileNav() {
               </Link>
             ))}
           </nav>
+          <LanguageSelector mobile />
         </div>
       )}
     </div>

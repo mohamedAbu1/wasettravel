@@ -141,7 +141,10 @@
     "Home": "Home",
     "AboutUs": "Chi siamo",
     "Tours": "Tour",
-    "Contact": "Contatto"
+    "Contact": "Contatto",
+    "Trips": "Viaggi",
+    "privacyPolicyLabel": "Informativa sulla privacy",
+    "cancellationPolicyLabel": "Politica di cancellazione"
   },
    "tripsId": {
      "submitReview": "Invia recensione",

@@ -36,6 +36,7 @@ const CalendarBooking = ({
   const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7;
   const days = useMemo(() => Array.from({ length: daysInMonth }, (_, index) => index + 1), [daysInMonth]);
   const todayKey = dateKey(now.getFullYear(), now.getMonth(), now.getDate());
+  const isSingleDay = Number(trip?.duration) === 1;
   const price = getAdultTripPrice(trip, participants);
   const displayedPrice = convertPrice(price, tripCurrency, displayCurrency);
 
@@ -45,6 +46,11 @@ const CalendarBooking = ({
 
     if (checkIn === selected) {
       setCheckIn(null);
+      setCheckOut(null);
+      return;
+    }
+    if (isSingleDay) {
+      setCheckIn(selected);
       setCheckOut(null);
       return;
     }
@@ -124,16 +130,16 @@ const CalendarBooking = ({
 
       <p className="text-xs text-gray-400 mt-4 text-center">Showing prices in {displayCurrency}</p>
 
-      <div className="mt-6 grid grid-cols-2 gap-6 text-center">
+      <div className={`mt-6 grid ${isSingleDay ? "grid-cols-1" : "grid-cols-2"} gap-6 text-center`}>
         <div className={`p-4 rounded-lg shadow-md transition ${themeName === "dark" ? "bg-gray-800 text-gray-100" : "bg-blue-50 text-gray-700"}`}>
-          <h3 className="text-sm font-semibold uppercase tracking-wide">Check-in</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide">{isSingleDay ? "Trip date" : "Check-in"}</h3>
           <p className="mt-2 text-lg font-bold">{displayDate(checkIn)}</p>
           {checkIn && <p className="mt-1 text-sm text-gray-500">Price per adult: {displayedPrice} {displayCurrency}</p>}
         </div>
-        <div className={`p-4 rounded-lg shadow-md transition ${themeName === "dark" ? "bg-gray-800 text-gray-100" : "bg-green-50 text-gray-700"}`}>
+        {!isSingleDay && <div className={`p-4 rounded-lg shadow-md transition ${themeName === "dark" ? "bg-gray-800 text-gray-100" : "bg-green-50 text-gray-700"}`}>
           <h3 className="text-sm font-semibold uppercase tracking-wide">Check-out</h3>
           <p className="mt-2 text-lg font-bold">{displayDate(checkOut)}</p>
-        </div>
+        </div>}
       </div>
 
       {(checkIn || checkOut) && (

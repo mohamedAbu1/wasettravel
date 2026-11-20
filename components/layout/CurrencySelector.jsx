@@ -13,10 +13,10 @@ import { useTranslation } from "react-i18next";
 const currencyOptions = [
   { value: "USD", label: "USD", symbol: "$" },
   { value: "EUR", label: "EUR", symbol: "€" },
-  { value: "EGP", label: "EGP", symbol: "EGP" },
+  { value: "EGP", label: "EGP", symbol: "ج.م" },
 ];
 
-export default function CurrencySelector() {
+export default function CurrencySelector({ inline = false }) {
   const { currency, setCurrency } = usePurchase();
   const { themeName } = useTheme();
   const { country } = useApp();
@@ -36,7 +36,7 @@ export default function CurrencySelector() {
   const active = currencyOptions.find((option) => option.value === currency) || currencyOptions[0];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }} className="currency-selector" data-theme-mode={themeName}>
+    <motion.div initial={{ opacity: 0, y: inline ? 0 : 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .35 }} className={`currency-selector ${inline ? "currency-selector--header" : ""}`} data-theme-mode={themeName}>
       <div className="currency-selector__label"><FaCoins aria-hidden="true" /><span>{t("currency")}</span></div>
       <Select
         value={active.value}
@@ -44,9 +44,9 @@ export default function CurrencySelector() {
         variant="standard"
         disableUnderline
         SelectDisplayProps={{ "aria-label": t("currency") }}
-        renderValue={() => `${active.label} ${active.symbol}`}
+        renderValue={() => active.value === "EGP" ? active.label : `${active.label} ${active.symbol}`}
       >
-        {currencyOptions.map((option) => <MenuItem key={option.value} value={option.value}>{option.label} {option.symbol}</MenuItem>)}
+        {currencyOptions.map((option) => <MenuItem key={option.value} value={option.value}>{option.value === "EGP" ? option.label : `${option.label} ${option.symbol}`}</MenuItem>)}
       </Select>
     </motion.div>
   );

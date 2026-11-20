@@ -7,6 +7,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import MobileNav from "./components/MobileNav";
 import ThemeToggle from "../ThemeToggle";
+import CurrencySelector from "../layout/CurrencySelector";
+import LanguageSelector from "./components/LanguageSelector";
 import dynamic from "next/dynamic";
 
 const RightBar = dynamic(() => import("./components/RightBar"), { ssr: false });
@@ -54,6 +56,8 @@ export default function Header({ overlay = true }) {
           </button>
         </motion.div>
 
+        <LanguageSelector />
+        <CurrencySelector inline />
         <ThemeToggle scrolled={scrolled} />
         <MobileHeaderAuth />
         <MobileNav />

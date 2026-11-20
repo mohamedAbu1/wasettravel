@@ -13,7 +13,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import DividerWithIcon from "@/components/layout/DividerWithIcon";
 import AdminDashboardButton from "@/components/layout/AdminDashboardButton";
-import CurrencySelector from "@/components/layout/CurrencySelector";
 import SignUpModal from "@/components/home/components/SignUpButton";
 import { siteConfig } from "@/lib/siteConfig";
 
@@ -48,13 +47,15 @@ export default function ContactPage() {
     email: "",
     message: "",
   });
+  const [status, setStatus] = useState({ type: "", message: "" });
 
 
   const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((current) => ({ ...current, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus({ type: "", message: "" });
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -67,12 +68,12 @@ export default function ContactPage() {
       });
       const data = await res.json();
       if (data.success) {
-        alert("✅ تم إرسال الرسالة بنجاح!");
+        setStatus({ type: "success", message: t("success", { defaultValue: "Your message was sent successfully. We will get back to you shortly." }) });
       } else {
-        alert("❌ حدث خطأ أثناء الإرسال: " + data.error);
+        setStatus({ type: "error", message: data.error || t("error", { defaultValue: "We could not send your message. Please try again." }) });
       }
-    } catch (err) {
-      console.error("❌ Error submitting form:", err);
+    } catch {
+      setStatus({ type: "error", message: t("error", { defaultValue: "We could not send your message. Please try again." }) });
     }
   };
 
@@ -88,13 +89,13 @@ export default function ContactPage() {
               <span
                 key={i}
                 className={`absolute ${themeName === "dark" ? "text-gray-700" : "text-[#8f5d2e]"} opacity-[0.06] text-5xl animate-pulse`}
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  transform: `rotate(${Math.random() * 360}deg)`,
+                  style={{
+                  top: `${8 + i * 7}%`,
+                  left: `${5 + ((i * 37) % 88)}%`,
+                  transform: `rotate(${i * 31}deg)`,
                 }}
               >
-                {symbols[Math.floor(Math.random() * symbols.length)]}
+                {symbols[(i * 7) % symbols.length]}
               </span>
             ))}
           </div>
@@ -124,7 +125,7 @@ export default function ContactPage() {
                         themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                       }
                     />
-                    <span>{siteConfig.phone}</span>
+                    <a href={`tel:${siteConfig.phone}`} className="transition hover:text-[#c9a34a]">{siteConfig.phone}</a>
                   </div>
                   <div className="flex items-center gap-3">
                     <FaEnvelope
@@ -132,7 +133,7 @@ export default function ContactPage() {
                         themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                       }
                     />
-                    <span>{siteConfig.email}</span>
+                    <a href={`mailto:${siteConfig.email}`} className="transition hover:text-[#c9a34a]">{siteConfig.email}</a>
                   </div>
                   <div className="flex items-center gap-3">
                     <FaMapMarkerAlt
@@ -261,6 +262,7 @@ export default function ContactPage() {
                 >
                   {t("btn")}
                 </button>
+                {status.message ? <p role={status.type === "error" ? "alert" : "status"} aria-live="polite" className={`rounded-lg border px-4 py-3 text-sm font-semibold ${status.type === "error" ? "border-red-400/30 bg-red-400/10 text-red-300" : "border-green-400/30 bg-green-400/10 text-green-300"}`}>{status.message}</p> : null}
               </motion.form>
             </div>
           </section>
@@ -272,7 +274,6 @@ export default function ContactPage() {
         <LoginModal />
         {userData && <ChatWidget />}
         {userData && <AdminDashboardButton />}
-        <CurrencySelector />
       </main>
     </>
   );

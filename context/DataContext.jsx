@@ -10,8 +10,10 @@ export function DataProvider({ children }) {
   const [city, setCity] = useState("");
   const [price, setPrice] = useState("Economy");
   const [tripType, setTripType] = useState("");
-  const [arrival, setArrival] = useState(addDays(new Date(), 2));
-  const [departure, setDeparture] = useState(addDays(new Date(), 9));
+  // Dates are populated after mount so the server and browser render the same
+  // initial markup. This prevents date-dependent hydration mismatches.
+  const [arrival, setArrival] = useState(null);
+  const [departure, setDeparture] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [images, setImages] = useState(desktopImages);
@@ -47,6 +49,12 @@ export function DataProvider({ children }) {
   const specialDates = specialDatesBase;
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  useEffect(() => {
+    const today = new Date();
+    setArrival(addDays(today, 2));
+    setDeparture(addDays(today, 9));
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);

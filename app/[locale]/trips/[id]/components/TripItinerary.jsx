@@ -5,12 +5,12 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 
 const translations = {
-  en: { title: "Itinerary" },
-  de: { title: "Reiseplan" },
-  it: { title: "Itinerario" },
-  es: { title: "Itinerario" },
-  zh: { title: "行程" },
-  fr: { title: "Itinéraire" },
+  en: { title: "Itinerary", routeDataNotice: "Some pickup or return details need confirmation. Please confirm the route with our team before booking." },
+  de: { title: "Reiseplan", routeDataNotice: "Einige Abhol- oder Rückfahrtdetails müssen bestätigt werden. Bitte klären Sie die Route vor der Buchung mit unserem Team." },
+  it: { title: "Itinerario", routeDataNotice: "Alcuni dettagli di prelievo o rientro devono essere confermati. Verifica il percorso con il nostro team prima di prenotare." },
+  es: { title: "Itinerario", routeDataNotice: "Algunos detalles de recogida o regreso deben confirmarse. Confirma la ruta con nuestro equipo antes de reservar." },
+  zh: { title: "行程", routeDataNotice: "部分接送或返程信息需要确认。预订前请先与我们的团队确认路线。" },
+  fr: { title: "Itinéraire", routeDataNotice: "Certains détails de prise en charge ou de retour doivent être confirmés. Vérifiez l’itinéraire avec notre équipe avant de réserver." },
 };
 
 export default function TripItinerary({ trip, lang }) {
@@ -71,6 +71,13 @@ export default function TripItinerary({ trip, lang }) {
         }),
       })),
   );
+  const itineraryText = dayGroups.flat().flatMap((day) => day.activities || []).map((activity) => getLocalizedText(activity.activity_translations)).join(" ");
+  const tripContext = [
+    getLocalizedText(trip?.title),
+    ...(trip?.cities || []).map((city) => getLocalizedText(city?.name)),
+    getLocalizedText(trip?.start_point),
+  ].join(" ");
+  const hasRouteConflict = /luxor/i.test(tripContext) && /hurgada|hurghada/i.test(itineraryText);
   const [currentPage, setCurrentPage] = useState(0);
 
   return (
@@ -101,6 +108,8 @@ export default function TripItinerary({ trip, lang }) {
         </motion.div>
         {t.title}
       </motion.h2>
+
+      {hasRouteConflict ? <div role="alert" className="mb-5 rounded-xl border border-amber-400/35 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-800 dark:text-amber-200">{t.routeDataNotice}</div> : null}
 
       {/* عرض المجموعة الحالية فقط */}
       <motion.div

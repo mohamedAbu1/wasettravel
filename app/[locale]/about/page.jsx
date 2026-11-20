@@ -18,7 +18,6 @@ const ChatWidget = dynamic(() => import("@/components/layout/ChatWidget"), { ssr
 const LoginModal = dynamic(() => import("@/components/home/components/LoginModal"), { ssr: false });
 const SignUpModal = dynamic(() => import("@/components/home/components/SignUpButton"), { ssr: false });
 const AdminDashboardButton = dynamic(() => import("@/components/layout/AdminDashboardButton"), { ssr: false });
-const CurrencySelector = dynamic(() => import("@/components/layout/CurrencySelector"), { ssr: false });
 
 export default function AboutPage() {
   const { theme } = useTheme();
@@ -44,7 +43,6 @@ export default function AboutPage() {
         <LoginModal />
         {userData && <ChatWidget />}
         {userData && <AdminDashboardButton />}
-        <CurrencySelector />
       </main>
     </>
   );

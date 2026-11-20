@@ -34,7 +34,7 @@ const Footer = () => {
           <div><p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-[#e0b873]">{t("support")}</p><nav className="grid gap-3 text-sm text-white/65"><Link href={`/${locale}/contact`} className="transition hover:text-[#f0c979]">{footerT("Contact")}</Link><Link href={`/${locale}/privacy-policy`} className="transition hover:text-[#f0c979]">{footerT("privacyPolicyLabel", { defaultValue: "Privacy Policy" })}</Link><Link href={`/${locale}/cancellation-policy`} className="transition hover:text-[#f0c979]">{footerT("cancellationPolicyLabel", { defaultValue: "Cancellation Policy" })}</Link></nav></div>
         <div className="rounded-2xl border border-[#e0b873]/20 bg-[#e0b873]/[.06] p-5"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#e0b873]">{t("planEscape")}</p><h3 className="mt-3 text-xl font-bold text-white">{t("egyptWaiting")}</h3><p className="mt-2 text-sm leading-6 text-white/55">{t("footerPlanText")}</p><Link href={`/${locale}/contact`} className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-[#f0c979]">{t("talkTeam")} <MdArrowOutward /></Link></div>
         </div>
-        <div className="flex flex-col gap-2 pt-5 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between"><p>© {new Date().getFullYear()} WasetTravel. All rights reserved.</p><p>Made for meaningful journeys across Egypt.</p></div>
+        <div className="flex flex-col gap-2 pt-5 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between"><p>© <span suppressHydrationWarning>{new Date().getFullYear()}</span> WasetTravel. All rights reserved.</p><p>Made for meaningful journeys across Egypt.</p></div>
       </div>
     </footer>
   );

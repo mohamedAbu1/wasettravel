@@ -27,7 +27,12 @@ const CarBookingSection = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
+  const [todayIso, setTodayIso] = useState("");
   const benefits = ["Professional driver", "Comfortable premium vehicle", "On-time airport pickup"];
+
+  useEffect(() => {
+    setTodayIso(new Date().toISOString().split("T")[0]);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -119,7 +124,7 @@ const CarBookingSection = () => {
                 <label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaPhone className="text-[#8f5d2e]" /> Phone / WhatsApp <b className="text-[#a34e42]">*</b></span><input required name="phone" value={form.phone} onChange={updateField} autoComplete="tel" placeholder="+20 1xx xxx xxxx" className="car-booking-input" /></label>
                 <label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaMapMarkerAlt className="text-[#8f5d2e]" /> Pickup location <b className="text-[#a34e42]">*</b></span><input required name="pickup" value={form.pickup} onChange={updateField} placeholder="Airport, hotel, or address" className="car-booking-input" /></label>
                 <label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaMapMarkerAlt className="text-[#8f5d2e]" /> Drop-off location <b className="text-[#a34e42]">*</b></span><input required name="dropoff" value={form.dropoff} onChange={updateField} placeholder="Hotel, airport, or address" className="car-booking-input" /></label>
-                <label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaCalendarAlt className="text-[#8f5d2e]" /> Date <b className="text-[#a34e42]">*</b></span><input required type="date" name="date" value={form.date} onChange={updateField} min={new Date().toISOString().split("T")[0]} className="car-booking-input" /></label>
+                <label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaCalendarAlt className="text-[#8f5d2e]" /> Date <b className="text-[#a34e42]">*</b></span><input required type="date" name="date" value={form.date} onChange={updateField} min={todayIso || undefined} className="car-booking-input" /></label>
                 <label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaClock className="text-[#8f5d2e]" /> Pickup time <b className="text-[#a34e42]">*</b></span><input required type="time" name="time" value={form.time} onChange={updateField} className="car-booking-input" /></label>
                 <label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaUsers className="text-[#8f5d2e]" /> Passengers</span><select name="passengers" value={form.passengers} onChange={updateField} className="car-booking-input"><option value="1">1 passenger</option><option value="2">2 passengers</option><option value="3">3 passengers</option><option value="4">4 passengers</option><option value="5+">5+ passengers</option></select></label>
                 <label className="grid gap-2 text-sm font-semibold"><span className="flex items-center gap-2"><FaCarSide className="text-[#8f5d2e]" /> Vehicle type</span><select name="vehicle" value={form.vehicle} onChange={updateField} className="car-booking-input"><option>Private car</option><option>Minivan</option><option>Premium SUV</option><option>Airport transfer</option></select></label>

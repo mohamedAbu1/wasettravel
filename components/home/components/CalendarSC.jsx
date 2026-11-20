@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-duplicate-props */
 /* eslint-disable react/display-name */
 "use client";
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useData } from "@/context/DataContext.jsx";
@@ -19,6 +19,7 @@ const CustomInput = forwardRef(({ value, onClick, placeholder }, ref) => (
 ));
 
 const CalendarSC = () => {
+  const [today, setToday] = useState(null);
   const {
     setArrival,
     arrival,
@@ -28,6 +29,10 @@ const CalendarSC = () => {
     specialDates,
   } = useData();
   const { t } = useTranslation("home");
+
+  useEffect(() => {
+    setToday(new Date());
+  }, []);
 
   return (
     <div className="flex gap-6">
@@ -39,7 +44,7 @@ const CalendarSC = () => {
           dateFormat="dd/MM/yyyy"
           placeholderText={t("Checkin")}
           customInput={<CustomInput />}
-          minDate={addDays(new Date(), 2)}
+          minDate={today ? addDays(today, 2) : undefined}
           dayClassName={(day) => {
             const special = specialDates.find(
               (item) => item.date.toDateString() === day.toDateString()
@@ -54,7 +59,7 @@ const CalendarSC = () => {
         <DatePicker
           selected={departure}
           onChange={(date) => setDeparture(date)}
-          minDate={arrival ? addDays(arrival, 1) : addDays(new Date(), 4)}
+          minDate={arrival ? addDays(arrival, 1) : today ? addDays(today, 4) : undefined}
           dateFormat="dd/MM/yyyy"
           placeholderText={t("Checkout")}
           customInput={<CustomInput />}

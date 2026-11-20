@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { FaChevronLeft, FaChevronRight, FaStar } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { resolveTripImage } from "@/lib/imageCatalog";
+import { normalizePublicCopy } from "@/lib/publicCopy";
 
 export default function TripHeader({ trip, lang }) {
   const { t } = useTranslation("ui");
@@ -29,8 +30,8 @@ export default function TripHeader({ trip, lang }) {
     if (normalized.length) return normalized;
     return trip?.cover_image ? [{ url: trip.cover_image }] : [];
   }, [trip?.gallery_images, trip?.cover_image]);
-  const title = trip?.title?.[lang] || trip?.title?.en || "Egypt tour";
-  const description = trip?.description?.[lang] || trip?.description?.en || "Discover an unforgettable Egypt travel experience.";
+  const title = normalizePublicCopy(trip?.title?.[lang] || trip?.title?.en || "Egypt tour");
+  const description = normalizePublicCopy(trip?.description?.[lang] || trip?.description?.en || "Discover an unforgettable Egypt travel experience.");
   const fallbackImage = resolveTripImage({
     title,
     cities: trip?.cities?.map((city) => city?.name?.[lang] || city?.name?.en || city?.name),

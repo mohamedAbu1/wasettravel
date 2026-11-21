@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
 import { normalizeGalleryImages } from "@/lib/galleryImages";
+import { validateItinerary } from "@/lib/tripValidation";
 
 const parseJson = (value, fallback) => {
   if (value == null) return fallback;
@@ -152,6 +153,10 @@ export async function PUT(req, context) {
   try {
     const { id } = await context.params;
     const body = await req.json();
+    const itineraryError = validateItinerary(body.itinerary);
+    if (itineraryError) {
+      return NextResponse.json({ success: false, error: itineraryError }, { status: 400 });
+    }
     const pool = await connectDB();
     db = await pool.getConnection();
     await db.beginTransaction();
@@ -270,7 +275,7 @@ export async function PUT(req, context) {
       try { await db.rollback(); } catch (rollbackError) { console.error("Rollback failed:", rollbackError.message); }
     }
     console.error("❌ [PUT] Exception:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Unable to update this trip right now" }, { status: 500 });
   } finally {
     if (db) db.release();
   }

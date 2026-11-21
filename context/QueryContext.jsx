@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { encodeBase64Json, decodeBase64Json } from "@/lib/utils/base64";
+import { getAdultTripPrice } from "@/lib/tripPricing";
 
 const encodeData = encodeBase64Json;
 const decodeData = (encoded) => {
@@ -89,14 +90,15 @@ export function QueryProvider({ children }) {
           return false;
       }
 
-      if (queryState.group_price === "Economy" && !(trip.group_price <= 199))
+      const price = getAdultTripPrice(trip);
+      if (queryState.group_price === "Economy" && !(price <= 199 && price > 0))
         return false;
       if (
         queryState.group_price === "Standard" &&
-        !(trip.group_price > 199 && trip.group_price <= 599)
+        !(price > 199 && price <= 599)
       )
         return false;
-      if (queryState.group_price === "Luxury" && !(trip.group_price >= 600))
+      if (queryState.group_price === "Luxury" && !(price >= 600))
         return false;
 
       return true;

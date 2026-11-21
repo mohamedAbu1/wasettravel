@@ -8,7 +8,9 @@ const DataContext = createContext();
 // ? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 export function DataProvider({ children }) {
   const [city, setCity] = useState("");
-  const [price, setPrice] = useState("Economy");
+  // Do not silently constrain homepage searches to the Economy range.
+  // The price filter is optional and must be explicit in the query.
+  const [price, setPrice] = useState("All");
   const [tripType, setTripType] = useState("");
   // Dates are populated after mount so the server and browser render the same
   // initial markup. This prevents date-dependent hydration mismatches.

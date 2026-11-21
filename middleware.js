@@ -5,6 +5,12 @@ import { jwtVerify } from "jose";
 const protectedAdminPattern = /^\/(en|es|fr|de|it|zh)\/admin(?:\/|$)/;
 const primaryAdminEmail = "wasettraveleg@gmail.com";
 
+function continueWithLocale(req, locale) {
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-waset-locale", locale);
+  return NextResponse.next({ request: { headers: requestHeaders } });
+}
+
 async function isAdminRequest(req) {
   const tokens = [req.cookies.get("token")?.value, req.cookies.get("access-token")?.value].filter(Boolean);
   if (!tokens.length || !process.env.JWT_SECRET) return false;
@@ -34,9 +40,12 @@ export async function middleware(req) {
 
   // Filter state is useful for visitors but should not become a separate
   // indexable URL. Keep the clean /trips page canonical in search results.
-  const hasFilterQuery = ["data", "city", "category", "group_price", "popular"].some((key) => url.searchParams.has(key));
-  if (hasFilterQuery && url.pathname.match(/^\/(en|es|fr|de|it|zh)\/trips\/?$/)) {
-    const response = NextResponse.next();
+  const hasAnyQuery = [...url.searchParams.keys()].length > 0;
+  if (hasAnyQuery && url.pathname.match(/^\/(en|es|fr|de|it|zh)\/trips\/?$/)) {
+    const locale = segments[0];
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-waset-locale", locale);
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
     response.headers.set("X-Robots-Tag", "noindex, follow");
     return response;
   }
@@ -93,9 +102,11 @@ export async function middleware(req) {
       : "en";
     url.pathname = `/${langToUse}${url.pathname}`;
     // Rewrite internally so the first request does not pay for a second round trip.
-    return NextResponse.rewrite(url);
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-waset-locale", langToUse);
+    return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
   }
 
   // لو اللغة موجودة بالفعل → لا تعمل أي إعادة توجيه
-  return NextResponse.next();
+  return continueWithLocale(req, segments[0]);
 }

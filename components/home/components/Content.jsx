@@ -15,7 +15,7 @@ export default function Content() {
   const {
     city,
     setCity,
-    group_price,
+    price,
     tripType,
     setTripType,
     arrival,
@@ -33,7 +33,7 @@ export default function Content() {
     const query = {
       city: [city],
       category: [tripType],
-      group_price,
+      group_price: price || "All",
       arrival,
       departure,
       popular: false,

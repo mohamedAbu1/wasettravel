@@ -3,6 +3,7 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useCitiesCategories } from "@/context/CitiesCategoriesContext";
 import { motion } from "framer-motion";
+import { normalizePublicCopy } from "@/lib/publicCopy";
 
 const translations = {
   en: { title: "Cities" },
@@ -77,11 +78,12 @@ export default function TripCities({ trip, lang, themeName }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {cities.filter(Boolean).map((c, idx) => {
           const cityId = c?.id || c?.city_id || c?.cityId || idx;
-          const cityName =
+          const cityName = normalizePublicCopy(
             getLocalizedText(c?.name) ||
             getLocalizedText(
               allCities.find((city) => city.id === cityId)?.name,
-            );
+            ),
+          );
 
           return (
             <motion.div

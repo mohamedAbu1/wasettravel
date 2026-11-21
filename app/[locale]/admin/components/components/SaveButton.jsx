@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useTrip } from "../../context/TripContext";
+import { validateItinerary } from "@/lib/tripValidation";
 
 export default function SaveButton() {
   const { tripData, saveTrip } = useTrip();
@@ -14,6 +15,12 @@ export default function SaveButton() {
     setErrorMessage("");
 
     try {
+      const itineraryError = validateItinerary(tripData.itinerary);
+      if (itineraryError) {
+        setStatus("error");
+        setErrorMessage(itineraryError);
+        return;
+      }
       const res = await saveTrip();
 
       if (res.success) {

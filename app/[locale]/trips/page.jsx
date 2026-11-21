@@ -21,6 +21,7 @@ import { usePurchase } from "@/context/PurchaseContext";
 import { useTranslation } from "react-i18next";
 import { FaSlidersH, FaCompass } from "react-icons/fa";
 import { tripCopy } from "@/lib/tripUiCopy";
+import { getAdultTripPrice } from "@/lib/tripPricing";
 
 function localizedValue(value, lang) {
   if (!value) return "";
@@ -77,7 +78,9 @@ export default function TripsPage() {
   const { city, category, group_price, popular } = useQueryFilters();
 
   useEffect(() => {
-    fetchTrips();
+    // Cards and filters only need the summary payload. Full itinerary data is
+    // fetched on the detail page, which keeps the list fast on mobile.
+    fetchTrips("?summary=1");
   }, []);
 
   useEffect(() => {
@@ -124,7 +127,7 @@ export default function TripsPage() {
     };
     const selectedRange = ranges[group_price];
 
-    const price = Number(trip.solo_price ?? trip.group_price);
+    const price = getAdultTripPrice(trip);
     const matchesPrice =
       group_price === "All" || !group_price
         ? true

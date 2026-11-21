@@ -1563,6 +1563,8 @@ html[data-theme="light"] .currency-selector { box-shadow: 0 .8rem 2rem rgba(88,5
 @media (max-width: 639px) { .site-header__inner > .language-selector { display: none; } }
 
 .admin-currency-card { padding: clamp(1rem, 3vw, 1.75rem); border: 1px solid var(--line); border-radius: 1.25rem; color: var(--foreground); background: var(--surface); box-shadow: 0 1rem 2rem rgba(51,35,19,.08); }
+.admin-currency-stale { margin:.85rem 0 0; border:1px solid color-mix(in srgb,#b85a50 32%,var(--line)); border-radius:.8rem; padding:.7rem .85rem; color:#b85a50; background:color-mix(in srgb,#b85a50 8%,var(--surface)); font-size:.75rem; font-weight:800; }
+.admin-currency-updated { margin:.65rem 0 0; color:var(--muted); font-size:.7rem; }
 .admin-currency-card__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .admin-currency-card__eyebrow { color: var(--color); font-size: .62rem; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
 .admin-currency-card h2 { margin: .35rem 0 .3rem; font-family: var(--font-display); font-size: clamp(1.4rem, 3vw, 2rem); }

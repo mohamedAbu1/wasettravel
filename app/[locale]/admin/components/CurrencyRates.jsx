@@ -11,7 +11,7 @@ const pairs = [
 ];
 
 export default function CurrencyRates() {
-  const { rates, loading, saving, error, refreshRates, saveRates } = useCurrency();
+  const { rates, loading, saving, error, isStale, latestUpdatedAt, refreshRates, saveRates } = useCurrency();
   const [draft, setDraft] = useState({ USD_EUR: "", USD_EGP: "", EUR_EGP: "" });
   const [message, setMessage] = useState("");
 
@@ -43,6 +43,8 @@ export default function CurrencyRates() {
         <button type="button" className="admin-currency-refresh" onClick={() => { setMessage(""); refreshRates(); }} disabled={saving}><FaRedoAlt /> Refresh</button>
       </div>
       <div className="admin-currency-notice"><FaExchangeAlt /><span>All customer-facing prices use these values across trips, details, filters, and booking summaries.</span></div>
+      {isStale ? <p className="admin-currency-stale" role="alert">These rates are more than 24 hours old. Refresh or update them before publishing new prices.</p> : null}
+      {latestUpdatedAt ? <p className="admin-currency-updated">Last updated: {new Date(latestUpdatedAt).toLocaleString()}</p> : null}
       <div className="admin-currency-grid">
         {pairs.map((pair) => {
           const key = `${pair.base}_${pair.target}`;

@@ -43,6 +43,7 @@ export default function CurrencySelector({ inline = false }) {
         onChange={handleChange}
         variant="standard"
         disableUnderline
+        MenuProps={{ PaperProps: { className: "waset-currency-menu" } }}
         SelectDisplayProps={{ "aria-label": t("currency") }}
         renderValue={() => active.value === "EGP" ? active.label : `${active.label} ${active.symbol}`}
       >

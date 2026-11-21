@@ -1,6 +1,7 @@
 // app/layout.tsx
 import "./style/globals.css";
 import Providers from "./providers";
+import { headers } from "next/headers";
 
 export const metadata = {
   metadataBase: new URL("https://wasettravel.com"),
@@ -40,9 +41,18 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children, params }) {
+  const routeParams = params ? await params : {};
+  const requestHeaders = await headers();
+  const requestLocale = requestHeaders.get("x-waset-locale");
+  const locale = ["en", "es", "fr", "de", "it", "zh"].includes(requestLocale)
+    ? requestLocale
+    : ["en", "es", "fr", "de", "it", "zh"].includes(routeParams.locale)
+    ? routeParams.locale
+    : "en";
+
   return (
-    <html lang="en" data-site-theme="stone" suppressHydrationWarning>
+    <html lang={locale} data-site-theme="stone" suppressHydrationWarning>
       <body>
         <a href="#main-content-root" className="skip-link">Skip to content</a>
         <Providers><div id="main-content-root" tabIndex={-1}>{children}</div></Providers>

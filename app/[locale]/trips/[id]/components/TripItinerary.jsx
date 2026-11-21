@@ -5,12 +5,12 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 
 const translations = {
-  en: { title: "Itinerary", routeDataNotice: "Some pickup or return details need confirmation. Please confirm the route with our team before booking." },
-  de: { title: "Reiseplan", routeDataNotice: "Einige Abhol- oder Rückfahrtdetails müssen bestätigt werden. Bitte klären Sie die Route vor der Buchung mit unserem Team." },
-  it: { title: "Itinerario", routeDataNotice: "Alcuni dettagli di prelievo o rientro devono essere confermati. Verifica il percorso con il nostro team prima di prenotare." },
-  es: { title: "Itinerario", routeDataNotice: "Algunos detalles de recogida o regreso deben confirmarse. Confirma la ruta con nuestro equipo antes de reservar." },
-  zh: { title: "行程", routeDataNotice: "部分接送或返程信息需要确认。预订前请先与我们的团队确认路线。" },
-  fr: { title: "Itinéraire", routeDataNotice: "Certains détails de prise en charge ou de retour doivent être confirmés. Vérifiez l’itinéraire avec notre équipe avant de réserver." },
+  en: { title: "Itinerary", routeDataNotice: "Some pickup or return details need confirmation. Please confirm the route with our team before booking.", missingActivity: "Activity details are being confirmed by our travel team." },
+  de: { title: "Reiseplan", routeDataNotice: "Einige Abhol- oder Rückfahrtdetails müssen bestätigt werden. Bitte klären Sie die Route vor der Buchung mit unserem Team.", missingActivity: "Die Aktivitätsdetails werden von unserem Reiseteam bestätigt." },
+  it: { title: "Itinerario", routeDataNotice: "Alcuni dettagli di prelievo o rientro devono essere confermati. Verifica il percorso con il nostro team prima di prenotare.", missingActivity: "I dettagli dell'attività sono in fase di conferma." },
+  es: { title: "Itinerario", routeDataNotice: "Algunos detalles de recogida o regreso deben confirmarse. Confirma la ruta con nuestro equipo antes de reservar.", missingActivity: "Nuestro equipo está confirmando los detalles de la actividad." },
+  zh: { title: "行程", routeDataNotice: "部分接送或返程信息需要确认。预订前请先与我们的团队确认路线。", missingActivity: "活动详情正在由旅行团队确认。" },
+  fr: { title: "Itinéraire", routeDataNotice: "Certains détails de prise en charge ou de retour doivent être confirmés. Vérifiez l’itinéraire avec notre équipe avant de réserver.", missingActivity: "Les détails de l'activité sont en cours de confirmation." },
 };
 
 export default function TripItinerary({ trip, lang }) {
@@ -19,7 +19,7 @@ export default function TripItinerary({ trip, lang }) {
 
   // ✅ دالة ترجمة النصوص من JSON أو object
   const getLocalizedText = (obj) => {
-    if (!obj) return "Unknown";
+    if (!obj) return "";
     if (typeof obj === "string") {
       try {
         const parsed = JSON.parse(obj);
@@ -29,7 +29,7 @@ export default function TripItinerary({ trip, lang }) {
       }
     }
     if (typeof obj === "object") {
-      return obj?.[lang] || obj?.en || Object.values(obj)[0];
+      return obj?.[lang] || obj?.en || Object.values(obj).find((value) => typeof value === "string" && value.trim()) || "";
     }
     return "Unknown";
   };
@@ -136,7 +136,10 @@ export default function TripItinerary({ trip, lang }) {
               Day {day.day_number}
             </h3>
             <ul className="space-y-3">
-              {day.activities?.map((act, actIdx) => (
+              {day.activities?.map((act, actIdx) => {
+                const activityText = getLocalizedText(act.activity_translations);
+                if (!activityText) return null;
+                return (
                 <motion.li
                   key={act.id || actIdx}
                   initial={{ opacity: 0, x: -20 }}
@@ -148,7 +151,9 @@ export default function TripItinerary({ trip, lang }) {
                   <span className="pt-0.5 text-[#c9a34a]" aria-hidden="true">•</span>
                   <span>{getLocalizedText(act.activity_translations)}</span>
                 </motion.li>
-              ))}
+                );
+              })}
+              {!(day.activities || []).some((activity) => getLocalizedText(activity.activity_translations)) ? <li className={`text-sm ${theme.subText}`}>{t.missingActivity}</li> : null}
             </ul>
           </motion.div>
         ))}

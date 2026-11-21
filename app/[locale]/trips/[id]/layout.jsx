@@ -1,4 +1,6 @@
 import { createLocalizedMetadata } from "@/lib/metadata/nextMetadata";
+import { notFound } from "next/navigation";
+import { connectDB } from "@/lib/db";
 
 export async function generateMetadata({ params }) {
   const { locale, id } = await params;
@@ -14,6 +16,16 @@ export async function generateMetadata({ params }) {
   );
 }
 
-export default function TripLayout({ children }) {
+export default async function TripLayout({ children, params }) {
+  const { id } = await params;
+  try {
+    const db = await connectDB();
+    const [rows] = await db.query("SELECT id FROM trips WHERE id = ? LIMIT 1", [id]);
+    if (!rows.length) notFound();
+  } catch (error) {
+    // Let the client page show its recoverable error state when the database
+    // is temporarily unavailable; only confirmed missing IDs become 404s.
+    console.error("Trip existence check failed:", error.message);
+  }
   return children;
 }

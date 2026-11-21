@@ -63,11 +63,11 @@ export async function POST(request) {
       expiresIn: "30d",
     });
 
-    // ✅ تجهيز الرد بصيغة JSON واضحة للتطبيق
+    // The tokens are stored in HttpOnly cookies below. Do not expose the
+    // access token to browser JavaScript unnecessarily.
     const response = NextResponse.json(
       {
         message: "تم تسجيل الدخول بنجاح",
-        accessToken,
         user: {
           id: user.id,
           email: user.email,

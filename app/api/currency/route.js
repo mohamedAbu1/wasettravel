@@ -35,7 +35,7 @@ export async function GET() {
   try {
     const db = await connectDB();
     const [rows] = await db.query("SELECT id, base_currency, target_currency, rate, updated_at FROM currency_rates WHERE base_currency IN ('USD','EUR','EGP') AND target_currency IN ('USD','EUR','EGP') ORDER BY base_currency, target_currency");
-    return NextResponse.json(rows, { status: 200 });
+    return NextResponse.json(rows, { status: 200, headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("GET /currency Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -88,7 +88,12 @@ export function CurrencyProvider({ children }) {
     }
   }, [refreshRates]);
 
-  const value = useMemo(() => ({ rates, rows, loading, saving, error, refreshRates, saveRates, convertPrice }), [rates, rows, loading, saving, error, refreshRates, saveRates, convertPrice]);
+  const latestUpdatedAt = rows.reduce((latest, row) => {
+    const timestamp = Date.parse(row.updated_at || "");
+    return Number.isFinite(timestamp) && timestamp > latest ? timestamp : latest;
+  }, 0);
+  const isStale = latestUpdatedAt > 0 && Date.now() - latestUpdatedAt > 24 * 60 * 60 * 1000;
+  const value = useMemo(() => ({ rates, rows, loading, saving, error, isStale, latestUpdatedAt, refreshRates, saveRates, convertPrice }), [rates, rows, loading, saving, error, isStale, latestUpdatedAt, refreshRates, saveRates, convertPrice]);
   return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>;
 }
 

@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
 import { normalizeGalleryImages } from "@/lib/galleryImages";
+import { getAdultTripPrice } from "@/lib/tripPricing";
+import { validateItinerary } from "@/lib/tripValidation";
 
 // دالة آمنة لتحويل أي قيمة إلى JSON نصي
 const safeStringify = (value) => {
@@ -20,6 +22,10 @@ export async function POST(req) {
   let db;
   try {
     const body = await req.json();
+    const itineraryError = validateItinerary(body.itinerary);
+    if (itineraryError) {
+      return new Response(JSON.stringify({ success: false, error: itineraryError }), { status: 400 });
+    }
     const tripId = uuidv4();
 
     const pool = await connectDB();
@@ -179,7 +185,7 @@ export async function POST(req) {
     }
     console.error("❌ API Error:", err);
     return new Response(
-      JSON.stringify({ success: false, error: err.message }),
+      JSON.stringify({ success: false, error: "Unable to save this trip right now" }),
       { status: 500 },
     );
   } finally {
@@ -188,7 +194,9 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
-  const summary = new URL(req.url).searchParams.get("summary") === "1";
+  const url = new URL(req.url);
+  const params = url.searchParams;
+  const summary = params.get("summary") === "1";
   try {
     const db = await connectDB();
     const query = summary
@@ -196,10 +204,32 @@ export async function GET(req) {
       SELECT
         t.id,
         t.title,
+        t.description,
         t.currency,
+        t.duration,
+        t.duration_unit,
+        t.priceLevel,
         t.cover_image,
         t.solo_price,
         t.group_price,
+        COALESCE(
+          CAST(
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'name', c.name, 'images', c.images))
+             FROM trip_cities tc
+             JOIN cities c ON tc.city_id = c.id
+             WHERE tc.trip_id = t.id)
+          AS CHAR
+        ), '[]'
+        ) AS cities,
+        COALESCE(
+          CAST(
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', cat.id, 'name', cat.name, 'images', cat.images))
+             FROM trip_categories tc
+             JOIN categories cat ON tc.category_id = cat.id
+             WHERE tc.trip_id = t.id)
+          AS CHAR
+        ), '[]'
+        ) AS categories,
         COALESCE((SELECT AVG(r.rating) FROM reviews r WHERE r.trip_id = t.id), 0) AS rating,
         COALESCE((SELECT COUNT(*) FROM reviews r WHERE r.trip_id = t.id), 0) AS review_count,
         COALESCE((SELECT COUNT(*) FROM purchases p WHERE p.trip_id = t.id), 0) AS purchase_count
@@ -341,9 +371,42 @@ export async function GET(req) {
       trip_details: safeParse(trip.trip_details),
       discountPercent: Number(trip.discount_percent ?? 0),
     }));
-    return new Response(JSON.stringify({ success: true, trips: parsedTrips }), {
+
+    const parseFilterValues = (key) => params.get(key)
+      ?.split(",")
+      .map((value) => value.trim().toLowerCase())
+      .filter(Boolean) || [];
+    const filterValues = (value) => {
+      if (!value) return [];
+      if (typeof value === "object") return Object.values(value).flatMap(filterValues);
+      return [String(value).trim().toLowerCase()];
+    };
+    const matchesRelations = (items, selected) => !selected.length || items.some((item) => {
+      const values = [item?.id, item?.slug, item?.name].flatMap(filterValues);
+      return selected.some((value) => values.includes(value));
+    });
+    const selectedCities = parseFilterValues("city");
+    const selectedCategories = parseFilterValues("category");
+    const selectedPrice = params.get("group_price");
+    let filteredTrips = parsedTrips.filter((trip) => {
+      if (!matchesRelations(trip.cities, selectedCities)) return false;
+      if (!matchesRelations(trip.categories, selectedCategories)) return false;
+      const price = getAdultTripPrice(trip);
+      if (selectedPrice === "Economy" && !(price > 0 && price <= 199)) return false;
+      if (selectedPrice === "Standard" && !(price > 199 && price <= 599)) return false;
+      if (selectedPrice === "Luxury" && !(price >= 600)) return false;
+      return true;
+    });
+    if (params.get("popular") === "true") {
+      filteredTrips = filteredTrips
+        .slice()
+        .sort((a, b) => (Number(b.purchase_count) || 0) - (Number(a.purchase_count) || 0))
+        .slice(0, 9);
+    }
+
+    return new Response(JSON.stringify({ success: true, trips: filteredTrips }), {
       status: 200,
-      headers: { "Cache-Control": summary ? "no-store" : "public, max-age=3600" },
+      headers: { "Cache-Control": summary ? "public, max-age=300, stale-while-revalidate=600" : "public, max-age=3600" },
     });
   } catch (err) {
     console.error("GET /api/trips database unavailable; returning an empty catalog:", err.message);

@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { useTheme } from "@/context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import TravelSelectField from "@/components/home/components/TravelSelectField";
 
 export default function AdditionalDetails({
   hasChildren,
@@ -80,17 +81,7 @@ export default function AdditionalDetails({
           {hasChildren && (
             <div className="ml-6 mb-3 flex items-center gap-2">
               <label className="font-medium">{t("numberOfChildren")}:</label>
-              <select
-                value={childrenCount}
-                onChange={(e) => setChildrenCount(Number(e.target.value))}
-                className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {options.map((num) => (
-                  <option key={num} value={num} style={{backgroundColor:"#999"}}>
-                    {num}
-                  </option>
-                ))}
-              </select>
+              <TravelSelectField compact label={t("numberOfChildren")} value={String(childrenCount)} onChange={(value) => setChildrenCount(Number(value))} options={options.map((num) => ({ value: String(num), label: String(num) }))} />
             </div>
           )}
         </div>
@@ -188,17 +179,7 @@ export default function AdditionalDetails({
             <FaUsers className="text-[#c9a34a]" />
             <label className="block mb-1 font-medium">{t("groupSize")}</label>
           </div>
-          <select
-            value={groupSize}
-            onChange={(e) => setGroupSize(Number(e.target.value))}
-            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {options.map((num) => (
-              <option key={num} value={num} style={{backgroundColor:"#999"}}>
-                {num}
-              </option>
-            ))}
-          </select>
+          <TravelSelectField compact label={t("groupSize")} value={String(groupSize)} onChange={(value) => setGroupSize(Number(value))} options={options.map((num) => ({ value: String(num), label: String(num) }))} />
         </div>
       </div>
     </div>

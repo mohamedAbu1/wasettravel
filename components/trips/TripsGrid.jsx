@@ -195,7 +195,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                       .filter(Boolean)
                       .map(
                         (c) =>
-                          localizedValue(c?.name, lang, "Unknown City"),
+                          normalizePublicCopy(localizedValue(c?.name, lang, "Unknown City")),
                       )
                       .join(", ")
                   : tripCopy(lang, "unknownCity")}

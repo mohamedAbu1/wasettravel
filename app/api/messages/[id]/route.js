@@ -18,8 +18,8 @@ export async function GET(req, { params }) {
     }
 
     return NextResponse.json(rows[0], { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Unable to load the message right now" }, { status: 503 });
   }
 }
 
@@ -31,11 +31,15 @@ export async function PUT(req, { params }) {
   try {
     const { id } = params;
     const { status = "seen" } = await req.json();
+    const normalizedStatus = String(status).toLowerCase();
+    if (!["sent", "seen"].includes(normalizedStatus)) {
+      return NextResponse.json({ error: "Invalid message status" }, { status: 400 });
+    }
 
     const db = await connectDB();
     const [result] = await db.query(
       "UPDATE messages SET status = ?, updated_at = NOW() WHERE id = ?",
-      [status, id]
+      [normalizedStatus, id]
     );
 
     if (result.affectedRows === 0) {
@@ -43,8 +47,8 @@ export async function PUT(req, { params }) {
     }
 
     return NextResponse.json({ message: "Message updated successfully!" }, { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Unable to update the message right now" }, { status: 500 });
   }
 }
 
@@ -64,7 +68,7 @@ export async function DELETE(req, { params }) {
     }
 
     return NextResponse.json({ message: "Message deleted successfully!" }, { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Unable to delete the message right now" }, { status: 500 });
   }
 }

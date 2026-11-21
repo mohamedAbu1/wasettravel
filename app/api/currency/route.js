@@ -38,7 +38,7 @@ export async function GET() {
     return NextResponse.json(rows, { status: 200, headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("GET /currency Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Unable to load currency rates right now" }, { status: 503 });
   }
 }
 
@@ -69,7 +69,7 @@ export async function POST(req) {
     );
   } catch (error) {
     console.error("POST /currency Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Unable to save the currency rate right now" }, { status: 500 });
   }
 }
 
@@ -101,6 +101,6 @@ export async function PUT(req) {
     );
   } catch (error) {
     console.error("PUT /currency Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Unable to update the currency rate right now" }, { status: 500 });
   }
 }

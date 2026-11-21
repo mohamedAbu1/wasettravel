@@ -1,4 +1,5 @@
 import { siteConfig } from "@/lib/siteConfig";
+import { serializeJsonLd } from "@/lib/jsonLd";
 
 const { siteUrl } = siteConfig;
 
@@ -44,5 +45,5 @@ export default function StructuredData({ locale = "en", pathname = "" }) {
     }] : []),
   ];
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />;
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(data) }} />;
 }

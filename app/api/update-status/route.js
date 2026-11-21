@@ -9,6 +9,10 @@ export async function POST(req) {
 
   try {
     const { purchaseId, status } = await req.json();
+    const normalizedStatus = String(status || "").trim();
+    if (!purchaseId || !["Pending", "Confirmed", "Cancelled", "Completed"].includes(normalizedStatus)) {
+      return NextResponse.json({ error: "Invalid purchase status" }, { status: 400 });
+    }
     const db = await connectDB();
 
     // ✅ تحديث حالة الحجز
@@ -16,7 +20,7 @@ export async function POST(req) {
       `UPDATE purchases 
        SET status = ?, updated_at = NOW() 
        WHERE id = ?`,
-      [status, purchaseId]
+      [normalizedStatus, purchaseId]
     );
 
     if (result.affectedRows === 0) {
@@ -24,7 +28,7 @@ export async function POST(req) {
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+  } catch {
+    return NextResponse.json({ error: "Unable to update the purchase status right now" }, { status: 500 });
   }
 }

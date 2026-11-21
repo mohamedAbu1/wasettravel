@@ -26,7 +26,7 @@ export async function POST(req) {
   } catch (err) {
     console.error("❌ Error updating role:", err);
     return NextResponse.json(
-      { success: false, error: err.message },
+      { success: false, error: "Unable to update the user role right now" },
       { status: 500 }
     );
   }

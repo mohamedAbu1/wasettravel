@@ -11,7 +11,7 @@ export async function GET(req) {
     const tripId = searchParams.get("tripId");
 
     const db = await connectDB();
-    let query = "SELECT * FROM reviews";
+    let query = "SELECT id, trip_id, user_id, rating, comment, name, avatar_url, time, created_at FROM reviews";
     let params = [];
 
     if (tripId) {
@@ -24,8 +24,8 @@ export async function GET(req) {
     const [rows] = await db.query(query, params);
 
     return NextResponse.json({ success: true, reviews: rows }, { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+  } catch {
+    return NextResponse.json({ success: false, error: "Unable to load reviews right now" }, { status: 503 });
   }
 }
 
@@ -46,6 +46,9 @@ export async function POST(req) {
     if (!Number.isInteger(normalizedRating) || normalizedRating < 1 || normalizedRating > 5) {
       return NextResponse.json({ success: false, error: "Rating must be between 1 and 5" }, { status: 400 });
     }
+    if (normalizedComment.length > 2000) {
+      return NextResponse.json({ success: false, error: "Review is too long" }, { status: 400 });
+    }
 
     const db = await connectDB();
     const [trips] = await db.query("SELECT id FROM trips WHERE id = ? LIMIT 1", [trip_id]);
@@ -54,7 +57,7 @@ export async function POST(req) {
     }
 
     const reviewId = uuidv4();
-    const normalizedName = String(name || auth.user.name || auth.user.email || "Traveler").trim();
+    const normalizedName = String(auth.user.name || auth.user.email || "Traveler").trim().slice(0, 120);
     const normalizedAvatar = String(avatar_url || auth.user.avatar_url || auth.user.image || "/default-avatar.png").trim();
     const normalizedTime = String(time || new Date().toLocaleTimeString()).trim();
     const query = `
@@ -71,6 +74,6 @@ export async function POST(req) {
     );
   } catch (err) {
     console.error("Error in POST /api/reviews:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Unable to submit the review right now" }, { status: 500 });
   }
 }

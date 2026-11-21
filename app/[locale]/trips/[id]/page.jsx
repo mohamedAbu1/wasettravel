@@ -29,6 +29,7 @@ import CalendarWidget from "./components/CalendarWidget";
 import TripOverviewTable from "./components/TripOverviewTable";
 import AccessibilityInfo from "./components/components/AccessibilityInfo";
 import { normalizePublicCopy } from "@/lib/publicCopy";
+import { serializeJsonLd } from "@/lib/jsonLd";
 
 export default function TripPage({ params }) {
   const routeParams = useParams();
@@ -97,7 +98,7 @@ export default function TripPage({ params }) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tripSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(tripSchema) }} />
       <Head><title>{tripTitle}</title><meta name="description" content={tripDescription} /></Head>
       <main className={`trip-detail-page site-shell min-h-screen overflow-hidden ${theme.text}`}>
         <Header />

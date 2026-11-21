@@ -16,10 +16,10 @@ export async function DELETE(req, { params }) {
       isAdmin ? [id, auth.user.id, auth.user.id] : [id, auth.user.id],
     );
 
-    return NextResponse.json({ success: true, message: "تم حذف الإشعار بنجاح" });
-  } catch (error) {
+    return NextResponse.json({ success: true, message: "Notification deleted successfully" });
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Unable to delete the notification right now" },
       { status: 500 }
     );
   }

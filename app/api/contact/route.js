@@ -51,6 +51,9 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: "Please check the form fields and try again." }, { status: 400 });
     }
     const { name, phone, email, message } = parsed.data;
+    if (!process.env.SENDGRID_API_KEY) {
+      return NextResponse.json({ success: false, error: "Contact service is temporarily unavailable." }, { status: 503 });
+    }
     const safeName = escapeHtml(name);
     const safePhone = escapeHtml(phone);
     const safeEmail = escapeHtml(email);
@@ -107,6 +110,6 @@ export async function POST(req) {
     return NextResponse.json({ success: true, message: "✅ Email sent successfully" });
   } catch (error) {
     console.error("❌ Error:", error);
-    return NextResponse.json({ success: false, error: "Unable to process your message right now." }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Contact service is temporarily unavailable." }, { status: 503 });
   }
 }

@@ -9,15 +9,15 @@ export async function GET(req, { params }) {
     const { id: reviewId } = await params;
     const db = await connectDB();
 
-    const [rows] = await db.query("SELECT * FROM reviews WHERE id = ?", [reviewId]);
+    const [rows] = await db.query("SELECT id, trip_id, user_id, rating, comment, name, avatar_url, time, created_at FROM reviews WHERE id = ?", [reviewId]);
 
     if (rows.length === 0) {
       return NextResponse.json({ ok: false, error: "Review not found" }, { status: 404 });
     }
 
     return NextResponse.json({ ok: true, review: rows[0] }, { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ ok: false, error: err.message }, { status: 400 });
+  } catch {
+    return NextResponse.json({ ok: false, error: "Unable to load the review right now" }, { status: 503 });
   }
 }
 
@@ -45,8 +45,8 @@ export async function DELETE(req, { params }) {
     await db.query("DELETE FROM reviews WHERE id = ?", [reviewId]);
 
     return NextResponse.json({ ok: true, success: true, reviewId, message: "Review deleted successfully" }, { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ ok: false, error: err.message }, { status: 400 });
+  } catch {
+    return NextResponse.json({ ok: false, error: "Unable to delete the review right now" }, { status: 500 });
   }
 }
 
@@ -60,7 +60,7 @@ export async function PUT(req, { params }) {
     const { comment, rating } = body || {};
     const normalizedComment = String(comment || "").trim();
     const normalizedRating = Number(rating);
-    if (!normalizedComment || !Number.isInteger(normalizedRating) || normalizedRating < 1 || normalizedRating > 5) {
+    if (!normalizedComment || normalizedComment.length > 2000 || !Number.isInteger(normalizedRating) || normalizedRating < 1 || normalizedRating > 5) {
       return NextResponse.json({ ok: false, error: "Valid comment and rating are required" }, { status: 400 });
     }
 
@@ -80,7 +80,7 @@ export async function PUT(req, { params }) {
     await db.query("UPDATE reviews SET comment = ?, rating = ? WHERE id = ?", [normalizedComment, normalizedRating, reviewId]);
 
     return NextResponse.json({ ok: true, message: "Review updated successfully" }, { status: 200 });
-  } catch (err) {
-    return NextResponse.json({ ok: false, error: err.message }, { status: 400 });
+  } catch {
+    return NextResponse.json({ ok: false, error: "Unable to update the review right now" }, { status: 500 });
   }
 }

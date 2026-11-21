@@ -4,6 +4,7 @@ import path from "path";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
 import { createUniqueImageFilename } from "@/lib/imageFilename";
+import { isSupportedImage } from "@/lib/imageValidation";
 
 export async function POST(req) {
   const auth = requireAdmin(req);
@@ -31,6 +32,9 @@ export async function POST(req) {
   const allowedExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
   if (!allowedExtensions.has(extension)) {
     return NextResponse.json({ error: "Unsupported image type" }, { status: 415 });
+  }
+  if (!isSupportedImage(buffer, extension)) {
+    return NextResponse.json({ error: "The uploaded file is not a valid image" }, { status: 415 });
   }
 
   const fileName = createUniqueImageFilename(file.name, uploadDir);

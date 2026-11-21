@@ -19,7 +19,7 @@ export async function POST(req) {
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
-        { error: "لم يتم العثور على الحجز" },
+        { error: "Booking not found" },
         { status: 404 }
       );
     }
@@ -27,6 +27,6 @@ export async function POST(req) {
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (err) {
     console.error("❌ Error cancelling purchase:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Unable to cancel this booking right now" }, { status: 500 });
   }
 }

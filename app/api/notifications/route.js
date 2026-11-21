@@ -15,6 +15,9 @@ export async function POST(req) {
     if (!body.user_id || !body.event_type || !String(body.message || "").trim()) {
       return NextResponse.json({ success: false, error: "user_id, event_type and message are required" }, { status: 400 });
     }
+    if (String(body.message).trim().length > 1000) {
+      return NextResponse.json({ success: false, error: "Notification is too long" }, { status: 400 });
+    }
 
     const id = uuidv4(); // توليد id فريد
 
@@ -44,9 +47,9 @@ export async function POST(req) {
     }
 
     return NextResponse.json({ success: true, id });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Unable to create the notification right now" },
       { status: 500 },
     );
   }
@@ -69,10 +72,10 @@ export async function GET(req) {
     );
 
     return NextResponse.json({ success: true, notifications: rows });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 },
+      { success: false, error: "Unable to load notifications right now" },
+      { status: 503 },
     );
   }
 }

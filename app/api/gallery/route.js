@@ -4,6 +4,7 @@ import path from "path";
 import { requireAdmin } from "@/lib/auth/admin";
 import { toPublicImageUrl } from "@/lib/publicImageUrl";
 import { createUniqueImageFilename } from "@/lib/imageFilename";
+import { isSupportedImage } from "@/lib/imageValidation";
 
 export async function POST(req) {
   const auth = requireAdmin(req);
@@ -28,9 +29,13 @@ export async function POST(req) {
         if (![".jpg", ".jpeg", ".png", ".webp", ".avif"].includes(extension)) {
           return new Response(JSON.stringify({ success: false, error: "Unsupported image type" }), { status: 415 });
         }
+        const buffer = Buffer.from(await file.arrayBuffer());
+        if (!isSupportedImage(buffer, extension)) {
+          return new Response(JSON.stringify({ success: false, error: "The uploaded file is not a valid image" }), { status: 415 });
+        }
         const storedName = createUniqueImageFilename(file.name, uploadDir);
         const uploadPath = path.join(uploadDir, storedName);
-        fs.writeFileSync(uploadPath, Buffer.from(await file.arrayBuffer()));
+        fs.writeFileSync(uploadPath, buffer);
 
         const fileUrl = toPublicImageUrl(`/${folder}/${storedName}`);
 
@@ -56,9 +61,9 @@ export async function POST(req) {
       JSON.stringify({ success: true, gallery_images: galleryImageObjects }),
       { status: 201 }
     );
-  } catch (err) {
+  } catch {
     return new Response(
-      JSON.stringify({ success: false, error: err.message }),
+      JSON.stringify({ success: false, error: "Unable to upload gallery images right now" }),
       { status: 500 }
     );
   }

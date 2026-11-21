@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 // مهم: القالب لازم يكون نص داخل backticks
 export const bookingTemplateSource = String.raw`
 <div style="background:#f9f9f9;border-radius:12px;padding:16px;font-family:sans-serif;color:#333;line-height:1.6;">

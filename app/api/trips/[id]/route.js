@@ -140,7 +140,7 @@ export async function GET(req, context) {
     );
   } catch (err) {
     console.error("❌ [GET] Exception:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Unable to load this trip right now" }, { status: 503 });
   }
 }
 
@@ -333,6 +333,6 @@ export async function DELETE(req, context) {
     );
   } catch (err) {
     console.error("❌ [DELETE] Exception:", err.message);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Unable to delete this trip right now" }, { status: 500 });
   }
 }

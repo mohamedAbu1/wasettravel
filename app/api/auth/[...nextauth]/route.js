@@ -2,7 +2,8 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { connectDB } from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
-import bcrypt from "bcryptjs"; // ✅ مكتبة التشفير
+import bcrypt from "bcryptjs";
+import { effectiveRole } from "@/lib/auth/admin";
 
 const pool = await connectDB();
 
@@ -15,21 +16,12 @@ export const authOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      const adminEmails = [
-        "info@wasettravel.com",
-      ];
-
       const [rows] = await pool.query("SELECT id, password FROM users WHERE email = ?", [user.email]);
       const userId = rows.length > 0 ? rows[0].id : uuidv4();
-
-      const role = adminEmails.includes(user.email) ? "ADMIN" : "USER";
-
-      // ✅ لو مفيش باسورد، نحط باسورد افتراضي مشفر
-      let password = rows.length > 0 ? rows[0].password : null;
-      if (!password) {
-        const salt = await bcrypt.genSalt(10);
-        password = await bcrypt.hash("Mohamed19971126", salt);
-      }
+      const role = effectiveRole({ email: user.email });
+      // Google users never share a known password. Rotating this random,
+      // unusable hash also removes legacy default hashes on their next sign-in.
+      const password = await bcrypt.hash(uuidv4(), 12);
 
       await pool.query(
         `INSERT INTO users (id, email, name, avatar_url, gender, role, password, created_at)
@@ -46,7 +38,7 @@ export const authOptions = {
           user.image || "default.webp",
           "other",
           role,
-          password, // ✅ الباسورد المشفر
+          password,
           new Date(),
         ]
       );

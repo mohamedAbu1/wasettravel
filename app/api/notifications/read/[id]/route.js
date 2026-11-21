@@ -16,10 +16,10 @@ export async function PUT(req, { params }) {
       isAdmin ? [id, auth.user.id, auth.user.id] : [id, auth.user.id],
     );
 
-    return NextResponse.json({ success: true, message: "تم تحديث الإشعار إلى مقروء" });
-  } catch (error) {
+    return NextResponse.json({ success: true, message: "Notification marked as read" });
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Unable to update the notification right now" },
       { status: 500 }
     );
   }

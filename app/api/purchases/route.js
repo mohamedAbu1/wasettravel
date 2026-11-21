@@ -70,6 +70,6 @@ export async function GET(req) {
     return NextResponse.json(enrichedPurchases, { status: 200 });
   } catch (err) {
     console.error("❌ Error fetching purchases:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Unable to load bookings right now" }, { status: 503 });
   }
 }

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Header from "@/components/header/Header";
 import Footer from "@/components/Footer/Footer";
 import AuthModalPortal from "@/components/layout/AuthModalPortal";
+import { serializeJsonLd } from "@/lib/jsonLd";
 
 const locales = ["en", "de", "es", "fr", "it", "zh"];
 const destinations = {
@@ -141,7 +142,7 @@ export default async function DestinationPage({ params }) {
     <main className="site-shell min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <Header />
       <div className="px-5 pb-20 pt-32 sm:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }} />
       <article className="mx-auto max-w-5xl">
         <nav aria-label="Breadcrumb" className="mb-8 text-sm text-[var(--muted)]">
           <Link href={`/${locale}`} className="hover:text-[var(--color)]">WasetTravel</Link>

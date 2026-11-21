@@ -6,6 +6,7 @@ import path from "path";
 import { isPrimaryAdmin, requireUser, requireAdmin } from "@/lib/auth/admin";
 import { notifyAdmins, notifyUser } from "@/lib/notifications";
 import { siteConfig } from "@/lib/siteConfig";
+import { isSupportedImage } from "@/lib/imageValidation";
 
 export async function POST(req) {
   const auth = requireUser(req);
@@ -45,6 +46,10 @@ export async function POST(req) {
 
       // تحويل الملف إلى buffer
       const buffer = Buffer.from(await file.arrayBuffer());
+      const extension = path.extname(file.name).toLowerCase();
+      if (!isSupportedImage(buffer, extension)) {
+        return NextResponse.json({ error: "The uploaded file is not a valid image" }, { status: 415 });
+      }
 
       // حفظ نسخة في المشروع
       await fs.promises.writeFile(projectPath, buffer);
@@ -93,6 +98,7 @@ export async function POST(req) {
 
     if (!user_id) return NextResponse.json({ error: "user_id is required" }, { status: 400 });
     if (typeof content !== "string" || !content.trim()) return NextResponse.json({ error: "Content cannot be empty" }, { status: 400 });
+    if (content.trim().length > 5000) return NextResponse.json({ error: "Content is too long" }, { status: 400 });
 
     const isAdmin = isPrimaryAdmin(auth.user);
     const normalizedSenderType = String(sender_type).trim().toLowerCase();
@@ -139,7 +145,7 @@ export async function POST(req) {
     return NextResponse.json(newMessage, { status: 201 });
   } catch (err) {
     console.error("❌ Error inserting message:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Unable to send the message right now" }, { status: 500 });
   }
 }
 
@@ -177,7 +183,7 @@ export async function GET(req) {
     return NextResponse.json(rows, { status: 200 });
   } catch (err) {
     console.error("❌ Error fetching messages:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Unable to load messages right now" }, { status: 503 });
   }
 }
 
@@ -220,7 +226,7 @@ export async function PUT(req) {
     );
   } catch (err) {
     console.error("❌ Error updating message:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+      return NextResponse.json({ error: "Unable to update the message right now" }, { status: 500 });
   }
 }
 
@@ -258,6 +264,6 @@ export async function DELETE(req) {
     );
   } catch (err) {
     console.error("❌ Error deleting message:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+      return NextResponse.json({ error: "Unable to delete the message right now" }, { status: 500 });
   }
 }

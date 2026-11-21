@@ -183,7 +183,15 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
               >
                 {displayTitle}
               </h3>
-              {trip.duration ? <span className="trips-card__duration">{trip.duration} {Number(trip.duration) === 1 ? tripCopy(lang, "day") : tripCopy(lang, "days")}</span> : null}
+              {trip.duration ? (() => {
+                const duration = Number(trip.duration);
+                const unit = String(trip.duration_unit || "days").toLowerCase();
+                const unitKey = unit === "hours" ? (duration === 1 ? "hour" : "hours")
+                  : unit === "weeks" ? (duration === 1 ? "week" : "weeks")
+                    : unit === "months" ? (duration === 1 ? "month" : "months")
+                      : duration === 1 ? "day" : "days";
+                return <span className="trips-card__duration">{duration} {tripCopy(lang, unitKey)}</span>;
+              })() : null}
               </div>
 
               <p

@@ -142,6 +142,7 @@ const EditTripBasicInfo = () => {
               onChange={(e) => updateTripField("duration_unit", e.target.value)}
               className={selectClass}
             >
+              <option value="hours">Hours</option>
               <option value="days">Days</option>
               <option value="weeks">Weeks</option>
               <option value="months">Months</option>

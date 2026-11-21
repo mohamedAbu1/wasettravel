@@ -14,6 +14,9 @@ export async function POST(req) {
     if (!userId || !event_type || !String(message || "").trim()) {
       return NextResponse.json({ success: false, error: "userId, event_type and message are required" }, { status: 400 });
     }
+    if (String(message).trim().length > 1000) {
+      return NextResponse.json({ success: false, error: "Message is too long" }, { status: 400 });
+    }
 
     const [users] = await db.query("SELECT name, email, avatar_url FROM users WHERE id = ? LIMIT 1", [userId]);
     if (!users.length) return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
@@ -32,7 +35,7 @@ export async function POST(req) {
     if (expoPushToken) await sendPushNotification(expoPushToken, `إشعار جديد (${event_type})`, message, { screen: "chat", userId, messageId });
 
     return NextResponse.json({ success: true, id: notificationId });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ success: false, error: "Unable to create the notification right now" }, { status: 500 });
   }
 }

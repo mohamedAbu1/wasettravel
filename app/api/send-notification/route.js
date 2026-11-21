@@ -35,9 +35,9 @@ export async function POST(req) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Unable to send the notification right now" },
       { status: 500 },
     );
   }

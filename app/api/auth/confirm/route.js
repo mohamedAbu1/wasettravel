@@ -8,7 +8,7 @@ export async function GET(req) {
     const token = searchParams.get("sb_access");
 
     if (!token) {
-      return NextResponse.redirect(new URL("/en/login?error=missing_token", req.url));
+      return NextResponse.redirect(new URL("/en?auth_error=missing_token", req.url));
     }
 
     const db = await connectDB();
@@ -20,7 +20,7 @@ export async function GET(req) {
     );
 
     if (rows.length === 0) {
-      return NextResponse.redirect(new URL("/en/login?error=invalid_token", req.url));
+      return NextResponse.redirect(new URL("/en?auth_error=invalid_token", req.url));
     }
 
     const user = rows[0];
@@ -28,9 +28,9 @@ export async function GET(req) {
     // ✅ تحديث حالة المستخدم
     await db.query("UPDATE users SET confirmed = 1 WHERE id = ?", [user.id]);
 
-    return NextResponse.redirect(new URL("/en/login?confirmed=true", req.url));
+    return NextResponse.redirect(new URL("/en?confirmed=true", req.url));
   } catch (err) {
     console.error("❌ Error confirming user:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.redirect(new URL("/en?auth_error=confirmation_failed", req.url));
   }
 }

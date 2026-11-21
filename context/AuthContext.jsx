@@ -158,7 +158,7 @@ export function AuthProvider({ children }) {
       const data = res.data;
 
       if (res.status !== 200) {
-        console.error("❌ فشل تسجيل الدخول:", data.error);
+        console.error("❌ Login failed:", data.error);
         throw new Error(data.error || "Login failed");
       }
 
@@ -197,7 +197,7 @@ export function AuthProvider({ children }) {
     try {
       const result = await signIn("google", { redirect: false });
       if (result?.error) {
-        toast.error("❌ خطأ أثناء تسجيل الدخول بجوجل: " + result.error);
+        toast.error("❌ Google sign-in failed: " + result.error);
         return;
       }
 
@@ -206,22 +206,22 @@ export function AuthProvider({ children }) {
       const userData = sessionData?.user;
 
       if (!userData) {
-        toast.error("❌ لم يتم العثور على بيانات المستخدم.");
+        toast.error("❌ Google account details were not found.");
         return;
       }
 
       // ✅ استدعاء API route للتعامل مع MySQL
       const authenticatedUser = await syncGoogleSession(userData);
       if (!authenticatedUser) {
-        toast.error("❌ تعذر مزامنة جلسة Google مع الموقع.");
+        toast.error("❌ Could not sync your Google session.");
         return;
       }
       handleLoginClose();
-      toast.success("✅ تم تسجيل الدخول بجوجل!");
+      toast.success("✅ Signed in with Google!");
       return authenticatedUser;
     } catch (err) {
       console.error("OAuth Error:", err);
-      toast.error("❌ حدث خطأ غير متوقع أثناء تسجيل الدخول بجوجل.");
+      toast.error("❌ An unexpected Google sign-in error occurred.");
     }
   };
 

@@ -42,6 +42,9 @@ function getAvatarByGender(gender) {
 
 export async function POST(request) {
   try {
+    if (!process.env.JWT_SECRET) {
+      return NextResponse.json({ error: "Authentication is temporarily unavailable" }, { status: 503 });
+    }
 
     const db = await connectDB();
 
@@ -53,19 +56,19 @@ export async function POST(request) {
     const normalizedGender = typeof gender === "string" ? gender.trim().toLowerCase() : "";
 
     if (!normalizedName || normalizedName.length > 100 || !/^[\p{L}\p{M}\p{N}\s.'-]+$/u.test(normalizedName)) {
-      return NextResponse.json({ error: "الاسم غير صالح" }, { status: 400 });
+      return NextResponse.json({ error: "Please enter a valid name" }, { status: 400 });
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      return NextResponse.json({ error: "البريد الإلكتروني غير صالح" }, { status: 400 });
+      return NextResponse.json({ error: "Please enter a valid email address" }, { status: 400 });
     }
     if (!["male", "female"].includes(normalizedGender)) {
-      return NextResponse.json({ error: "يرجى اختيار النوع" }, { status: 400 });
+      return NextResponse.json({ error: "Please choose a gender" }, { status: 400 });
     }
 
     // ✅ تحقق من قوة كلمة المرور
     if (typeof password !== "string" || password.length < 8 || password.length > 128) {
       return NextResponse.json(
-        { error: "كلمة المرور يجب أن تكون 8 أحرف على الأقل" },
+        { error: "Password must be between 8 and 128 characters" },
         { status: 400 }
       );
     }
@@ -78,7 +81,7 @@ export async function POST(request) {
 
     if (existing.length > 0) {
       return NextResponse.json(
-        { error: "هذا البريد مسجل مسبقًا، يرجى استخدام بريد آخر" },
+        { error: "This email is already registered" },
         { status: 400 }
       );
     }
@@ -96,14 +99,10 @@ export async function POST(request) {
     );
 
     // ✅ جلب بيانات المستخدم الجديد
-    const [rows] = await db.query("SELECT * FROM users WHERE LOWER(email) = LOWER(?)", [email]);
+    const [rows] = await db.query("SELECT * FROM users WHERE LOWER(email) = LOWER(?)", [normalizedEmail]);
     const newUser = rows[0];
 
     // ✅ إنشاء JWT token
-    if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined in environment variables");
-    }
-
     const tokenPayload = { id: newUser.id, email: newUser.email, role: newUser.role, name: newUser.name, avatar_url: newUser.avatar_url, gender: newUser.gender };
     const accessToken = jwt.sign(
       tokenPayload,
@@ -132,7 +131,7 @@ export async function POST(request) {
     response.cookies.set("refresh-token", refreshToken, cookieOptions);
     return response;
   } catch (e) {
-    console.error("❌ [API REGISTER] خطأ داخلي:", e);
-    return NextResponse.json({ error: "خطأ داخلي" }, { status: 500 });
+    console.error("[API REGISTER] Internal error:", e);
+    return NextResponse.json({ error: "Unable to create the account right now" }, { status: 500 });
   }
 }

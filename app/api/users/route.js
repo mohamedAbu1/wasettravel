@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { effectiveRole } from "@/lib/auth/admin";
 
 export async function GET(req) {
   const auth = requireAdmin(req);
@@ -15,7 +16,7 @@ export async function GET(req) {
         u.id,
         u.name,
         u.email,
-        CASE WHEN LOWER(u.email) = 'wasettraveleg@gmail.com' THEN 'ADMIN' ELSE 'USER' END AS role,
+        u.role,
         u.avatar_url,
         u.created_at,
         (SELECT COUNT(*) FROM review_likes rl WHERE rl.user_id = u.id) AS likes_count,
@@ -27,6 +28,7 @@ export async function GET(req) {
 
     const users = rows.map((user) => ({
       ...user,
+      role: effectiveRole(user),
       likes_count: Number(user.likes_count || 0),
       comments_count: Number(user.comments_count || 0),
       average_rating: Number(Number(user.average_rating || 0).toFixed(1)),
@@ -36,8 +38,8 @@ export async function GET(req) {
   } catch (err) {
     console.error("❌ Error fetching users:", err);
     return NextResponse.json(
-      { success: false, error: err.message },
-      { status: 500 },
+      { success: false, error: "Unable to load users right now" },
+      { status: 503 },
     );
   }
 }

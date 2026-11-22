@@ -339,6 +339,21 @@ html[data-site-theme="stone"] .stone-section a:not(.hero-primary-cta):not(.hero-
   html[data-site-theme="stone"] .hero-search-card { border-radius: 1.25rem; }
 }
 
+/* Keep the decorative section frame outside the content gutter on phones.
+   The sections already use horizontal padding; matching the frame inset to
+   that padding made headings appear flush against the visible border. */
+@media (max-width: 639px) {
+  html[data-site-theme="stone"] .stone-section::before {
+    inset: .75rem .7rem;
+    border-radius: 1.25rem;
+  }
+
+  html[data-site-theme="stone"] .stone-section::after {
+    top: 1.5rem;
+    right: 1.15rem;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

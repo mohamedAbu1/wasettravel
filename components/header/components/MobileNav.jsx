@@ -23,7 +23,7 @@ export default function MobileNav() {
   ];
 
   return (
-    <div className="lg:hidden">
+    <div className="header-mobile-only">
       <button
         type="button"
         aria-label={open ? "Close navigation" : "Open navigation"}

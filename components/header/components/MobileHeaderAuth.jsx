@@ -10,7 +10,7 @@ import { useData } from "@/context/DataContext";
 import { useState } from "react";
 
 export default function MobileHeaderAuth() {
-  const isMobile = useMediaQuery("(max-width:600px)");
+  const isMobile = useMediaQuery("(max-width:1319px)");
   const { userData, logout } = useAuth();
   const { handleLoginOpen } = useData();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -27,7 +27,7 @@ export default function MobileHeaderAuth() {
 
  
   return (
-    <div>
+    <div className="header-mobile-only header-mobile-auth">
       {!userData ? (
         <IconButton onClick={handleLoginOpen} aria-label="Sign in" title="Sign in" style={{ borderRadius: "15px" }}>
           <FaUserPlus size={22} />

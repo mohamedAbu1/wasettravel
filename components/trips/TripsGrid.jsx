@@ -145,6 +145,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                         className="object-cover w-full h-full rounded-lg"
                         placeholder="blur"
                         blurDataURL={fallbackImage}
+                        onError={(event) => { event.currentTarget.src = fallbackImage; }}
                       />
                     </SwiperSlide>
                   ))}
@@ -162,6 +163,7 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
                     className="object-cover w-full h-full rounded-lg"
                     placeholder="blur"
                     blurDataURL={fallbackImage}
+                    onError={(event) => { event.currentTarget.src = fallbackImage; }}
                   />
                   {galleryImages.length > 1 ? <button type="button" className="trips-card__gallery-hint" aria-expanded={isExpanded} onClick={(event) => { event.preventDefault(); event.stopPropagation(); setExpandedTripId(isExpanded ? null : trip.id); }}>{tripCopy(lang, "viewPhotos", galleryImages.length)}</button> : null}
                 </div>

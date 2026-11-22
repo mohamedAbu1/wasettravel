@@ -44,7 +44,7 @@ export default function Header({ overlay = true }) {
         <RightBar scrolled={scrolled} />
 
         {/* ✅ زر تسجيل الدخول/الخروج */}
-        <motion.div whileHover={{ scale: 1.03 }} className="header-auth-wrap hidden lg:flex">
+        <motion.div whileHover={{ scale: 1.03 }} className="header-auth-wrap header-desktop-only">
           <button
             type="button"
             aria-label={userData ? "Sign out" : "Sign in"} // ✅ تحسين الـ accessibility

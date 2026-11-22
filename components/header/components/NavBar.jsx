@@ -25,7 +25,7 @@ export default function NavBar({ scrolled }) {
         hidden: { opacity: 0 },
         visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
       }}
-      className="site-nav hidden lg:flex items-center gap-1 font-medium"
+      className="site-nav header-desktop-only items-center gap-1 font-medium"
     >
       {navItems.map((item) => {
         let path;
@@ -52,6 +52,7 @@ export default function NavBar({ scrolled }) {
           >
             <Link
               href={`/${langPrefix}${path}`}
+              aria-current={isActive ? "page" : undefined}
               className={`site-nav__link relative uppercase group px-4 py-2.5 rounded-full transition-all duration-300 ${
                 isActive
                   ? "site-nav__link--active font-bold"

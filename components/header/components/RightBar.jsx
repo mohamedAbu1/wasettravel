@@ -109,7 +109,7 @@ export default function RightBar() {
   };
 
   return (
-    <div className="hidden lg:flex items-center gap-4">
+    <div className="header-desktop-only items-center gap-4">
       {/* ✅ أيقونة الإشعارات العامة */}
       {isAdmin && (
         <Badge

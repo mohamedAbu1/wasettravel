@@ -223,6 +223,9 @@ export default function TripsPage() {
                   {Array.from({ length: totalPages }, (_, i) => (
                     <button
                       key={i}
+                      type="button"
+                      aria-label={`${t("Page", { defaultValue: "Page" })} ${i + 1}`}
+                      aria-current={safeCurrentPage === i + 1 ? "page" : undefined}
                       onClick={() => {
                         setCurrentPage(i + 1);
                         window.scrollTo({ top: 30, behavior: "smooth" });

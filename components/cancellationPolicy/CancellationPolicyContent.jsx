@@ -14,12 +14,12 @@ export default function CancellationPolicyContent({ theme }) {
       initial={{ opacity: 0, y: 100 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.5 }}
-      className={`${theme.card} shadow-lg p-10 mt-[-4rem] relative z-10 max-w-5xl mx-auto`}
+      className={`${theme.card} policy-content relative z-10 mx-auto mt-[-4rem] w-[calc(100%-2rem)] max-w-5xl p-5 shadow-lg sm:w-[calc(100%-3rem)] sm:p-10`}
     >
       <article
         role="article"
         aria-label="Cancellation Policy Content"
-        className={`prose max-w-none prose-lg leading-relaxed ${theme.text} flex flex-col gap-3`}
+        className={`policy-content__article prose max-w-none prose-lg leading-relaxed ${theme.text} flex flex-col gap-3`}
       >
         <h1 role="heading" aria-level={1} aria-label={t("title")} className={`${theme.title} text-3xl pt-5 capitalize`}>
           {t("title")}

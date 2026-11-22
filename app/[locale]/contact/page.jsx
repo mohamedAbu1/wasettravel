@@ -101,7 +101,7 @@ export default function ContactPage() {
           </div>
 
           {/* المحتوى */}
-          <section className="relative z-10 pt-20 px-6 mt-9">
+          <section className="relative z-10 mt-9 px-4 pt-20 sm:px-6">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               {/* معلومات التواصل */}
               <motion.div
@@ -109,47 +109,47 @@ export default function ContactPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className={`rounded-2xl p-8 shadow-xl ${
+                className={`rounded-2xl p-5 shadow-xl sm:p-8 ${
                   themeName === "dark"
                     ? "bg-black/40 border border-gold/30"
                     : "bg-[#fffaf3] border border-[#8f5d2e]/20 backdrop-blur-sm"
                 }`}
               >
-                <h2 className="text-3xl font-bold mb-6">{t("h1")}</h2>
+                <h2 className="mb-6 text-2xl font-bold sm:text-3xl">{t("h1")}</h2>
                 <DividerWithIcon />
                 <p className="mb-6 opacity-80">{t("p1")}</p>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
                     <FaPhoneAlt
                       className={
                         themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                       }
                     />
-                    <a href={`tel:${siteConfig.phone}`} className="transition hover:text-[#c9a34a]">{siteConfig.phone}</a>
+                    <a href={`tel:${siteConfig.phone}`} className="min-w-0 break-words transition hover:text-[#c9a34a]">{siteConfig.phone}</a>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
                     <FaEnvelope
                       className={
                         themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                       }
                     />
-                    <a href={`mailto:${siteConfig.email}`} className="transition hover:text-[#c9a34a]">{siteConfig.email}</a>
+                    <a href={`mailto:${siteConfig.email}`} className="min-w-0 break-words transition hover:text-[#c9a34a]">{siteConfig.email}</a>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
                     <FaMapMarkerAlt
                       className={
                         themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                       }
                     />
-                    <span>{t("sp")}</span>
+                    <span className="min-w-0 break-words">{t("sp")}</span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
                     <FaMapMarkerAlt
                       className={
                         themeName === "dark" ? "text-gold" : "text-[#c9a34a]"
                       }
                     />
-                    <span>owner : Mohamed Ahmed Abdelkader Ali </span>
+                    <span className="min-w-0 break-words">owner : Mohamed Ahmed Abdelkader Ali </span>
                   </div>
                 </div>
               </motion.div>
@@ -162,13 +162,13 @@ export default function ContactPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className={`rounded-2xl p-8 shadow-xl space-y-6 ${
+                className={`space-y-5 rounded-2xl p-5 shadow-xl sm:space-y-6 sm:p-8 ${
                   themeName === "dark"
                     ? "bg-black/40 border border-gold/30"
                     : "bg-[#fffaf3] border border-[#8f5d2e]/20 backdrop-blur-sm"
                 }`}
               >
-                <h2 className="text-3xl font-bold mb-6">{t("h2")}</h2>
+                <h2 className="mb-6 text-2xl font-bold sm:text-3xl">{t("h2")}</h2>
                 <DividerWithIcon />
 
                 {/* الاسم */}

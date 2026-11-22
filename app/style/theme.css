@@ -382,6 +382,33 @@ html[data-site-theme="stone"] .stone-section h2 {
   text-wrap: balance;
 }
 
+/* Keep public copy readable inside cards and long-form panels. Long translated
+   labels should wrap inside their container instead of touching or pushing the
+   page edge on narrow screens. */
+html[data-site-theme="stone"] .site-shell :where(h1, h2, h3, h4, p, li) {
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.policy-content__article {
+  width: min(100%, 68ch);
+  margin-inline: auto;
+}
+.policy-content__article p,
+.policy-content__article li {
+  line-height: 1.85;
+}
+.policy-content__article ul,
+.policy-content__article ol {
+  padding-inline-start: 1.35rem;
+}
+.policy-content__article h1,
+.policy-content__article h2,
+.policy-content__article h3,
+.policy-content__article h4 {
+  text-wrap: balance;
+}
+
 html[data-site-theme="stone"] .site-header {
   transition: background .35s ease, border-color .35s ease, box-shadow .35s ease;
 }

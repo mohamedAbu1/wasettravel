@@ -19,7 +19,7 @@ export default function TripOverviewTable({ trip }) {
 
   return (
     <section
-      className={`trip-detail-panel h-fit p-6 rounded-xl shadow-lg transition ${
+      className={`trip-detail-panel h-fit rounded-xl p-4 shadow-lg transition sm:p-6 ${
         themeName === "dark"
           ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
           : "bg-white/90 text-[#3a2c0a]"
@@ -49,11 +49,11 @@ export default function TripOverviewTable({ trip }) {
               return (
                 <tr key={index} className={`border-b ${theme.border}`}>
                   <td
-                    className={`py-3 px-4 font-semibold w-1/3 ${theme.heading}`}
+                    className={`w-1/3 px-3 py-3 text-sm font-semibold sm:px-4 sm:text-base ${theme.heading}`}
                   >
                     {label}
                   </td>
-                  <td className={`py-3 px-4 ${theme.subText}`}>{value}</td>
+                  <td className={`break-words px-3 py-3 text-sm sm:px-4 sm:text-base ${theme.subText}`}>{value}</td>
                 </tr>
               );
             })}

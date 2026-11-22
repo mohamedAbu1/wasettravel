@@ -53,7 +53,7 @@ export default function TripCategories({ trip, lang, themeName }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-       className={`trip-detail-panel h-fit p-6 rounded-xl shadow-lg transition ${
+       className={`trip-detail-panel h-fit rounded-xl p-4 shadow-lg transition sm:p-6 ${
         themeName === "dark"
           ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
           : "bg-white/90 text-[#3a2c0a]"

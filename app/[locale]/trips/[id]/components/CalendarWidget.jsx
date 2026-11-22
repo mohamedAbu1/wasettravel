@@ -26,7 +26,7 @@ const BookingCalendar = ({ trip, id, tripTitle }) => {
 
   return (
     <div
-      className={`trip-detail-panel w-full h-fit p-6 rounded-xl shadow-lg transition font-sans ${
+      className={`trip-detail-panel h-fit w-full rounded-xl p-4 font-sans shadow-lg transition sm:p-6 ${
         themeName === "dark"
           ? "bg-gradient-to-r from-gray-900 to-gray-800 text-gray-100"
           : "bg-white/90 text-[#3a2c0a]"

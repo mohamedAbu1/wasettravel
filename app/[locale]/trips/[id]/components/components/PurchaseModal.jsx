@@ -30,9 +30,9 @@ export default function PurchaseModal({ trip, onClose }) {
       : "bg-gradient-to-b from-white via-gray-100 to-white text-gray-900 z-55";
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-54 transition-opacity animate-fadeIn overflow-y-scroll">
+    <div className="fixed inset-0 z-54 flex items-start justify-center overflow-y-auto bg-black/70 p-3 backdrop-blur-sm transition-opacity animate-fadeIn sm:items-center sm:p-6">
       <div
-        className={`rounded-2xl shadow-2xl p-8 w-[100%] max-w-[1000px] mt-25 relative transform animate-slideUp ${modalClasses}`}
+        className={`relative mt-3 max-h-[calc(100dvh-1.5rem)] w-full max-w-[1000px] overflow-y-auto rounded-2xl p-5 shadow-2xl transform animate-slideUp sm:mt-12 sm:max-h-[calc(100dvh-3rem)] sm:p-8 ${modalClasses}`}
       >
         {/* زر الإغلاق */}
         <button

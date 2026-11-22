@@ -98,7 +98,7 @@ const CalendarBooking = ({
           const isInvalid = Boolean(checkIn && !checkOut && selected <= checkIn);
 
           return (
-            <div key={selected} className="flex flex-col items-center">
+            <div key={selected} className="flex min-w-0 flex-col items-center">
               <motion.button
                 type="button"
                 aria-label={`${displayDate(selected)} at ${displayedPrice} ${displayCurrency}`}
@@ -106,7 +106,7 @@ const CalendarBooking = ({
                 disabled={isPast || isInvalid}
                 whileHover={{ scale: isPast || isInvalid ? 1 : 1.1 }}
                 whileTap={{ scale: isPast || isInvalid ? 1 : 0.9 }}
-                className={`relative cursor-pointer w-10 h-10 rounded-lg transition ${
+                className={`relative h-auto min-h-8 w-full aspect-square cursor-pointer rounded-lg transition sm:h-10 sm:w-10 ${
                   isPast || isInvalid
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed border border-dashed border-gray-400"
                     : isCheckIn
@@ -122,7 +122,7 @@ const CalendarBooking = ({
               >
                 {day}
               </motion.button>
-              {!isPast && !isInvalid && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{displayedPrice} {displayCurrency}</p>}
+              {!isPast && !isInvalid && <p className="trip-calendar__day-price mt-1 text-xs text-gray-500 dark:text-gray-400">{displayedPrice} {displayCurrency}</p>}
             </div>
           );
         })}

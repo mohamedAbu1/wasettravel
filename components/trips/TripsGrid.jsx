@@ -111,15 +111,15 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget)) setExpandedTripId(null);
             }}
-            className={`trips-card ${isExpanded ? "trips-card--expanded" : ""} flex ${
-              cardStyle === "vertical" ? "w-full flex-col" : "flex-row"
+            className={`trips-card ${isExpanded ? "trips-card--expanded" : ""} flex min-w-0 ${
+              cardStyle === "vertical" ? "w-full flex-col" : "w-full flex-col md:flex-row"
             } stone-card rounded-xl shadow-lg overflow-hidden`}
           >
             {/* Show only the cover by default. Mount the slider on hover/focus. */}
             <div
               className={`trips-card__media ${
-                cardStyle === "vertical" ? "w-full" : "lg:w-1/2"
-              } w-full relative`}
+                cardStyle === "vertical" ? "w-full" : "w-full md:w-1/2"
+              } relative min-w-0`}
             >
               {isExpanded && galleryImages.length > 1 ? (
                 <Swiper
@@ -173,8 +173,8 @@ export default function TripsGrid({ trips, cardStyle = "vertical" }) {
             {/* قسم المعلومات */}
             <div
               className={`${
-                cardStyle === "vertical" ? "w-full" : "lg:w-1/2"
-              } w-full p-6 flex flex-col gap-4`}
+                cardStyle === "vertical" ? "w-full" : "w-full md:w-1/2"
+              } min-w-0 p-6 flex flex-col gap-4`}
             >
               <div className="flex items-start justify-between gap-3">
               <h3

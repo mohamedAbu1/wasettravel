@@ -64,9 +64,9 @@ export default function AdditionalDetails({
         {t("additionalDetails")}
       </h3>
 
-      <div className="flex flex-row gap-8">
+      <div className="grid gap-5 sm:grid-cols-2 lg:flex lg:flex-row lg:gap-8">
         {/* الأطفال */}
-        <div className="flex flex-col">
+        <div className="flex min-w-0 flex-col">
           <label className="flex items-center gap-2 mb-2 cursor-pointer">
             <input
               type="checkbox"
@@ -87,7 +87,7 @@ export default function AdditionalDetails({
         </div>
 
         {/* الحيوانات */}
-        <div className="flex flex-col">
+        <div className="flex min-w-0 flex-col">
           <label className="flex items-center gap-2 mb-2 cursor-pointer">
             <input
               type="checkbox"
@@ -138,7 +138,7 @@ export default function AdditionalDetails({
         </div>
 
         {/* المرشد السياحي */}
-        <div className="flex flex-col">
+        <div className="flex min-w-0 flex-col">
           <label className="flex items-center gap-2 mb-2 cursor-pointer">
             <input
               type="checkbox"
@@ -174,7 +174,7 @@ export default function AdditionalDetails({
         </div>
 
         {/* حجم المجموعة */}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex min-w-0 flex-col items-start gap-2 sm:items-center">
           <div className="flex flex-row items-center gap-2">
             <FaUsers className="text-[#c9a34a]" />
             <label className="block mb-1 font-medium">{t("groupSize")}</label>

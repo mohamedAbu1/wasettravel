@@ -58,7 +58,9 @@ export default function Header({ overlay = true }) {
 
         <LanguageSelector />
         <CurrencySelector inline />
-        <ThemeToggle scrolled={scrolled} />
+        <div className="header-theme-toggle">
+          <ThemeToggle scrolled={scrolled} />
+        </div>
         <MobileHeaderAuth />
         <MobileNav />
       </div>

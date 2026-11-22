@@ -49,9 +49,9 @@ export default function TripSchedule({
 
       {/* ✅ إخفاء الحقول لو المستخدم بالفعل في مصر */}
       {!alreadyInEgypt && (
-        <div className="flex flex-row gap-5 ">
+        <div className="grid gap-3 sm:flex sm:flex-row sm:gap-5">
           {/* موعد الوصول */}
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 mb-3">
             <FaPlaneArrival
               className={`${
                 themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"
@@ -63,12 +63,12 @@ export default function TripSchedule({
               value={arrivalDate}
               onChange={(e) => setArrivalDate(e.target.value)}
               min={minArrival.toISOString().split("T")[0]}
-              className="ml-2 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="ml-0 min-w-0 flex-1 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 sm:ml-2"
             />
           </div>
 
           {/* موعد المغادرة */}
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <FaPlaneDeparture
               className={`${
                 themeName === "dark" ? "text-yellow-300" : "text-[#c9a34a]"
@@ -80,7 +80,7 @@ export default function TripSchedule({
               value={departureDate}
               onChange={(e) => setDepartureDate(e.target.value)}
               min={minDeparture.toISOString().split("T")[0]}
-              className="ml-2 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="ml-0 min-w-0 flex-1 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 sm:ml-2"
             />
           </div>
         </div>
